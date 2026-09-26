@@ -1,0 +1,26 @@
+name = "projective-modules"
+version = "0.1.0"
+defaultTargets = ["ProjectiveModules", "ProjectiveModulesTests"]
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4.git"
+rev = "83abb3e776bdefcbc447a1e44d0debe4010039e5"
+
+[[require]]
+name = "general-linear-groups"
+git = "https://github.com/FormalFrontier/general-linear-groups.git"
+rev = "1f8fd3e39080be39586ea22fa56c157167eefd00"
+
+[[require]]
+name = "stable-range"
+git = "https://github.com/FormalFrontier/stable-range.git"
+rev = "9ac79cf93ac2d7f3e22c660100a65592df5ac976"
+
+[[lean_lib]]
+name = "ProjectiveModules"
+
+[[lean_lib]]
+name = "ProjectiveModulesTests"
+srcDir = "tests"
+roots = ["PublicAPIClient"]
