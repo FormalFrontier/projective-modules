@@ -27,6 +27,7 @@ public import ProjectiveModules.Module.CountableCoordinateClosure
 public import ProjectiveModules.Module.CountableLocalProjective
 public import ProjectiveModules.Module.CountableLocalProjectiveFree
 public import ProjectiveModules.Module.CountablyGenerated
+public import ProjectiveModules.Module.CountablyGenerated.Noetherian
 public import ProjectiveModules.Module.ComponentwiseFree
 public import ProjectiveModules.Module.HomExact
 public import ProjectiveModules.Module.InvariantSupportedProjection

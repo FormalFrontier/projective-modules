@@ -51,3 +51,18 @@ outputs. The Lake manifest records dependency metadata, not vendored code.
 The unaccepted candidate and a projected public history still require their own
 independent file-inventory/rights determination. See the dated issue #83
 evidence and its exact source/evidence revisions; this page is not approval.
+
+At the separate 2026-09-29 static transfer checkpoint, the original complete
+countably generated submodule proof and guide, as well as the two private
+integer-finsupp client expressions, are by formalization-worker-a Task
+`hive-request-28cfdf6ba1d2a6f171a71c470886d04ad9f55fe1`, UID
+`76ebce97-c0af-4921-8b96-7e85289b92db`. Their adapted destination paths
+are `ProjectiveModules/Module/CountablyGenerated/Noetherian.lean`,
+`docs/NoetherianSubmodule.md` and `tests/PublicAPIClient.lean`. The distinct
+destination transfer, public import wiring, metadata and focused documentation
+are by formalization-worker-a Task
+`hive-request-6a313f21a767b4bf8199b4955c5d85ba33406fa8`, UID
+`8f0f0b7c-434b-4ec5-84e5-9f071c73fa64`. No predecessor proof, prior native
+output or original verification is claimed by this transfer execution. The
+new guide is authored, not a native doc-gen4 product; destination compilation,
+proof audit, rights review, acceptance and official publication remain pending.

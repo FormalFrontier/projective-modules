@@ -19,6 +19,39 @@ Compilation and regression clients do not replace semantic review, complete
 proof auditing, rights clearance or release promotion. See the
 [native API documentation](docs/README.md) and its explicit limitations.
 
+**Transfer-author checkpoint, 2026-09-29:** this candidate extends accepted
+Projective Modules main with a countably generated submodule theorem over a
+possibly noncommutative left-Noetherian ring. The original proof has prior
+shared-project review, but its destination imports, aggregate root and new
+ordinary clients have not yet received destination-specific build/axiom checks,
+fresh independent transfer review, owner acceptance or publication. The
+2026-09-26 evidence and counts below remain historical, not checks of this
+transfer; library delivery does not decide source-specific coverage.
+
+## Headline results
+
+- **Countably generated submodules over Noetherian rings.** Over a possibly
+  noncommutative left-Noetherian ring, every submodule of a module spanned by
+  a sequence is itself spanned by a sequence. The arbitrary submodule needs
+  no finite-generation, ambient Noetherian-module, freeness or projectivity
+  assumption. This supports, for example, submodules of infinite free
+  modules on countable bases; see the new
+  [`Module.CountablyGenerated.submodule_of_isNoetherianRing`](ProjectiveModules/Module/CountablyGenerated/Noetherian.lean)
+  and its [focused guide](docs/NoetherianSubmodule.md).
+- **Arbitrary-rank freeness over commutative PIDs.** Every submodule of an
+  arbitrary-rank free module over a commutative principal ideal domain is free;
+  consequently every projective module over such a ring is free, without a
+  finite-rank hypothesis. These separate
+  [`Submodule.free_of_pid_of_free` and `Module.Projective.free_of_pid`](ProjectiveModules/Module/PID.lean)
+  endpoints require a commutative domain/PID and, respectively, an ambient
+  free or projective module. They do not assert freeness in the general
+  Noetherian-submodule setting above.
+
+These are this library's declarations, not results imported wholesale from
+its dependencies; their proofs reuse mathlib. The new Noetherian endpoint is
+present in this transfer branch, but has not yet passed destination-specific
+checks or independent transfer review.
+
 ## Use
 
 Use the aggregate public import, or a focused production module from the map below.
@@ -43,6 +76,11 @@ example (R P : Type*) [Ring R] [AddCommGroup P] [Module R P]
     Nonempty (P ≃ₗ[R] (ℕ →₀ R)) :=
   ⟨Module.Free.natFinsuppEquivOfProdFinFinsuppEquiv R n e⟩
 ```
+
+For the new theorem alone, import
+`ProjectiveModules.Module.CountablyGenerated.Noetherian`; its precise ring
+hypotheses, proof outline and infinite-finsupp usage appear in the
+[countably generated submodule guide](docs/NoetherianSubmodule.md).
 
 The two legacy-module migrations keep their definitions public but their private
 implementation bodies opaque across ordinary imports. Use the exterior-algebra
@@ -77,6 +115,7 @@ families. `Dual/BaseChange` is reached through `Contraction/BaseChange`.
 | `Module/RightEndomorphismMatrix` | Column matrices and same-order composition; quasi-regular quotient reflection |
 | `Module/LocalProjective*`, `ArbitraryLocalProjectiveFree` | Finite, one-element, countable and arbitrary-rank local projective freeness |
 | `Module/CountablyGenerated`, `CountableCoordinateClosure`, `InvariantSupportedProjection`, `Transfinite*` | Countable spanning sequences and transfinite split-range assembly |
+| `Module/CountablyGenerated/Noetherian` | Submodules of countably generated modules over possibly noncommutative left-Noetherian rings remain countably generated |
 | `Module/ProjectiveComplement`, `HomExact` | Explicit complements and additive Hom exactness over arbitrary semirings |
 | `Category` | Finite-projective full subcategory; preadditive stable category and Ext¹ detection |
 | `Module/LocallyConstantRank`, `RankFiberDecomposition`, `ComponentwiseFree` | Rank realization, fiber decomposition and conditional componentwise-free classification |
@@ -222,6 +261,10 @@ presentation of right modules.
 Over any commutative principal ideal domain, every submodule of an
 arbitrary-rank free module is free.  Consequently every projective module over
 such a ring is free, with no finite-generation or cardinality hypothesis.
+Separately, over any possibly noncommutative left-Noetherian ring, every
+submodule of a countably generated left module is countably generated, without
+assuming the ambient module is Noetherian, free, projective or finitely
+generated. See the [focused guide](docs/NoetherianSubmodule.md).
 
 This repository is organized around source-independent algebra. Interpretation,
 provenance, correspondence, and coverage for motivating sources remain in their
@@ -374,6 +417,8 @@ independent disposition; the literal lint diagnostics remain nonpassing.
 Likewise, the 49 private regression theorems in `tests/PublicAPIClient.lean`
 have a narrowly accepted private-module convention, not a literal lint pass.
 Neither disposition accepts other diagnostics or the whole release.
+The count of 49 belongs to that historical readiness checkpoint; this
+transfer adds two private integer-finsupp clients, not an updated lint pass.
 
 This library was developed by AI agents. Prism authored the foundational and
 noncommutative/local/PID work, reviewed/integrated later contributions, and authored
@@ -388,6 +433,15 @@ execution, not just pooled service identity:
 | Rank fibers, worker-a | `09b084714cb7a2baee194e8b5b8a4dd6abc6dc71` | `hive-request-fb505ab2a5fe64f01fbe0ac730ab345706adbd08` / `f96d1f45-b072-4402-98cd-4f1140793488` |
 | Componentwise classification/examples, worker-a | `af19441303f2cacda14f9a03eb137488db7843a9` | `hive-request-70aa82000140d686d99ea82d298e809aefcf9683` / `ba211454-5a4c-4bd7-beef-f963adcfb317` |
 | Exterior direct sum, worker-b | `db77a4c278a64bbbd0bf97b46c4cb08675618e13` | `hive-request-b0d122b4c4e1959f47e5cd0cefd863380123726d` / `694d0d15-fb65-4c2d-bad1-ae1aab3ee612` |
+
+The original countably generated submodule proof, guide and two private
+integer-finsupp client expressions were developed by formalization-worker-a
+Task `hive-request-28cfdf6ba1d2a6f171a71c470886d04ad9f55fe1`, UID
+`76ebce97-c0af-4921-8b96-7e85289b92db`. The separate destination transfer,
+import wiring and documentation adaptation are by formalization-worker-a Task
+`hive-request-6a313f21a767b4bf8199b4955c5d85ba33406fa8`, UID
+`8f0f0b7c-434b-4ec5-84e5-9f071c73fa64`. The prior proof and checks are not
+attributed to this transfer execution; its own candidate awaits review.
 
 This README-only origin/credit correction is by worker-b Task
 `hive-request-7b3ba4c1b0c704bd9407edac4d9a3e7e15d546c1`, UID

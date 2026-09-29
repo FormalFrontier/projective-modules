@@ -3,11 +3,13 @@ SPDX-License-Identifier: Apache-2.0
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Formal Frontier Agents
 -/
--- Contributors: Prism
+-- Contributors: Prism; formalization-worker-a (original Noetherian clients and destination transfer)
 module
 
 import ProjectiveModules
 import ProjectiveModules.Module.ComponentwiseFreeExamples
+import Mathlib.Algebra.EuclideanDomain.Int
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Ordinary aggregate-import regression clients
@@ -116,6 +118,15 @@ private theorem evaluation_change {S : Type w} [CommRing S] [Algebra R S]
   ibc.contract_of_projective
 
 end Commutative
+
+private theorem arbitrary_integer_finsupp_submodule
+    (N : Submodule ℤ (ℕ →₀ ℤ)) : Module.CountablyGenerated ℤ N :=
+  Module.CountablyGenerated.submodule_of_isNoetherianRing
+    (Module.CountablyGenerated.finsupp (R := ℤ) ℕ) N
+
+private theorem zero_integer_finsupp_submodule :
+    Module.CountablyGenerated ℤ (⊥ : Submodule ℤ (ℕ →₀ ℤ)) :=
+  arbitrary_integer_finsupp_submodule ⊥
 
 private theorem characteristic_two_base_change :
     Nonempty (ExteriorAlgebra (ZMod 2) ((ZMod 2) ⊗[ℤ] ℤ) ≃ₐ[ZMod 2]

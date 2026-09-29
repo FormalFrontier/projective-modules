@@ -19,6 +19,8 @@ project:
     - "formalization-worker-a (AI agent; separate coordinate-stage source and native-documentation successor identified under automation)"
     - "formalization-worker-a (AI agent; later syntax, finite-binder and focused proof repairs identified under automation)"
     - "formalization-worker-a (AI agent; lightweight documentation assembly and source-inspected API corrections identified under automation)"
+    - "formalization-worker-a (AI agent; original countably generated submodule proof and guide identified under automation)"
+    - "formalization-worker-a (AI agent; separate destination transfer identified under automation)"
   responsible_maintainers:
     - "Prism (on behalf of the source-maintainer team)"
   license: "Apache-2.0"
@@ -194,6 +196,15 @@ status:
     stored-proof replay and repeated consumer builds are optional, not gates.
     No whole-candidate acceptance, official release or source coverage decision
     is claimed; applicable unchanged evidence is retained for reuse.
+    Separately, the 2026-09-29 static transfer candidate adds one theorem on
+    arbitrary submodules of sequence-spanned modules over possibly
+    noncommutative left-Noetherian rings, one source-authored guide and two
+    private ordinary aggregate clients to accepted Projective Modules main
+    d90317bba522e36d8fa5177c0e77afd31455be22. The original proof had
+    prior independent shared-project review, but the changed destination
+    import/root/client graph has no destination-specific build or complete
+    transitive axiom audit yet. Transfer review, owner acceptance, official
+    publication and source-specific correspondence remain separate and open.
   main_results:
     - declaration: "IsBaseChange.toDualBaseChangeOfProjective"
       file: "ProjectiveModules/Dual/BaseChange.lean"
@@ -308,6 +319,9 @@ status:
     - declaration: "Module.CountablyGenerated"
       file: "ProjectiveModules/Module/CountablyGenerated.lean"
       note: "Sequence-spanning countable generation, including padded finite families and countable supported free modules."
+    - declaration: "Module.CountablyGenerated.submodule_of_isNoetherianRing"
+      file: "ProjectiveModules/Module/CountablyGenerated/Noetherian.lean"
+      note: "Every submodule of a sequence-spanned module over a possibly noncommutative left-Noetherian ring is countably generated; no ambient Noetherian, free or projective module assumption."
     - declaration: "Module.Projective.exists_fin_rightFree_biorthogonal_exhaustion_of_countablyGenerated"
       file: "ProjectiveModules/Module/CountableLocalProjective.lean"
       note: "Countable finite-free biorthogonal exhaustion for projectives under proper-ideal/unit-complement hypotheses."
@@ -381,6 +395,11 @@ automation:
         documentation draft. The final Task entry credits lightweight assembly
         on that exact repaired source and source-inspected API corrections,
         without new native output.
+        The separate 2026-09-29 original contributor produced the countably
+        generated submodule proof, guide and private integer-finsupp clients;
+        a different transfer execution adapted them to this destination,
+        wired the import and recorded new documentation and metadata. Neither
+        entry claims this transfer has received changed-input checks or review.
       prompting_notes: >-
         Bounded assignments required source-independent native interfaces,
         exact hypotheses, handedness and universe checks, boundary clients,
@@ -438,6 +457,14 @@ automation:
       author: "formalization-worker-a"
       task: "hive-request-cd60aa62dac1faaf3664d5588c99b0c5cc895da8"
       uid: "c6b3e41b-9228-4074-b620-68ec2aa67ba3"
+    - artifact: "original countably generated submodule theorem, complete guide and two private integer-finsupp client expressions"
+      author: "formalization-worker-a"
+      task: "hive-request-28cfdf6ba1d2a6f171a71c470886d04ad9f55fe1"
+      uid: "76ebce97-c0af-4921-8b96-7e85289b92db"
+    - artifact: "2026-09-29 static ProjectiveModules/Module/CountablyGenerated/Noetherian.lean transfer, root/ordinary client and authored documentation/metadata"
+      author: "formalization-worker-a"
+      task: "hive-request-6a313f21a767b4bf8199b4955c5d85ba33406fa8"
+      uid: "8f0f0b7c-434b-4ec5-84e5-9f071c73fa64"
   notes: >-
     Code, proofs, documentation and this metadata are AI-agent contributions.
     No human mathematical review, source-author endorsement or complete model,
@@ -516,6 +543,11 @@ review:
     Markdown/JSON, adapted script and proposed public lineage remains pending;
     no native HTML/assets or external implementations are shipped.
     Metadata schema validity and license selection certify none of these matters.
+    The 2026-09-29 Noetherian-submodule destination transfer is a new candidate,
+    not a revision to those historical decisions: it still requires applicable
+    changed-input build/standard-axiom evidence, independent source and candidate
+    review, Prism's acceptance and official release. No source-coverage decision
+    or new native documentation-generation result follows from the transfer.
 
 acknowledgements: >-
   The mathlib community supplies the underlying formal mathematics; GLG and

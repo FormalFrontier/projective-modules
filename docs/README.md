@@ -6,6 +6,12 @@ binders and affected source links in [API.md](API.md) are labeled
 **source-inspected amendments**, not new native records. No fresh docgen run is
 claimed or required as a computational release prerequisite.
 
+The [countably generated submodule guide](NoetherianSubmodule.md) is new
+source-authored documentation for the 2026-09-29 transfer candidate. Its
+theorem and ordinary client are **outside** the historical 43-module,
+469-display, 477-database-row native output described here. This addition
+does not regenerate or rebind the historical API inventory.
+
 [API.md](API.md) contains native doc-gen4 display signatures, attached Lean
 docstrings, and checkout-relative source links for the frozen source/dependency
 checkpoint `5d1b1b276d4a11ee6ce9ae238c9511de8dbec1e9`. The pinned native run
