@@ -11,10 +11,10 @@ Module.CountablyGenerated.submodule_of_isNoetherianRing
 
 The hypotheses are `[Ring R]`, `[IsNoetherianRing R]`, `[AddCommGroup M]` and
 `[Module R M]`. The ring may be noncommutative, and neither `M` nor `N` needs
-an ambient Noetherian-module instance. The local
-`ProjectiveModules.Module.CountablyGenerated` predicate says that a sequence
-`x : ℕ → M` has range spanning `M`; it does not require a countable underlying
-carrier. There is no finite-generation, PID, basis, freeness, projectivity or
+an ambient Noetherian-module instance. The local `Module.CountablyGenerated`
+predicate, defined in `ProjectiveModules.Module.CountablyGenerated`, says
+that a sequence `x : ℕ → M` has range spanning `M`; it does not require a
+countable underlying carrier. There is no finite-generation, PID, basis, freeness, projectivity or
 splitting hypothesis.
 
 For an infinite free module over the integers, add the two instance imports:
@@ -58,10 +58,8 @@ lake exe cache get
 lake --wfail -KwarningAsError=true build
 ```
 
-**Transfer-author checkpoint (2026-09-29):** this is source-authored
-documentation adapted for a candidate destination import graph, not native
-generated API output. The original producer was registered and reviewed in
-the shared project before transfer. This destination transfer has not yet
-received its own changed-input build, transitive axiom audit, independent
-review, owner acceptance, integration or official publication; no
-source-specific coverage is inferred from this library theorem.
+This guide is authored mathematical documentation, not generated API output.
+The theorem and producer module are public; the ordinary aggregate-import
+client’s example theorems are private regressions, not additional API.
+The existence of this reusable theorem alone does not establish
+source-specific coverage.

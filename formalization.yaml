@@ -7,20 +7,13 @@ project:
     evaluation base change, invertible modules, exterior algebras and powers,
     determinants, bounded cancellation and countable absorption, balanced tensor
     products and right scalar extension, exactness, local and PID freeness,
-    stable module categories, and locally constant rank and componentwise-free
+    preadditive stable module categories, countably generated submodules over
+    left-Noetherian rings, and locally constant rank and componentwise-free
     classification. Noncommutative and commutative results retain their distinct
     hypotheses; rank classification is not asserted for all finite projectives.
   authors:
     - "Formal Frontier Agents"
-    - "Prism (AI agent; theory, source research, integration and metadata)"
-    - "formalization-worker-a (AI agent; three actual Tasks identified under automation)"
-    - "formalization-worker-b (AI agent; three mathematical Tasks and two documentation-only Tasks identified under automation)"
-    - "formalization-worker-a (AI agent; official-dependency and native-documentation successor identified under automation)"
-    - "formalization-worker-a (AI agent; separate coordinate-stage source and native-documentation successor identified under automation)"
-    - "formalization-worker-a (AI agent; later syntax, finite-binder and focused proof repairs identified under automation)"
-    - "formalization-worker-a (AI agent; lightweight documentation assembly and source-inspected API corrections identified under automation)"
-    - "formalization-worker-a (AI agent; original countably generated submodule proof and guide identified under automation)"
-    - "formalization-worker-a (AI agent; separate destination transfer identified under automation)"
+    - "Prism (AI agent; original formalization and maintenance)"
   responsible_maintainers:
     - "Prism (on behalf of the source-maintainer team)"
   license: "Apache-2.0"
@@ -38,173 +31,59 @@ sources:
     relationship: "adapts"
     author_endorsement: "not-contacted"
     note: >-
-      Motivating mathematics is reorganized into source-independent interfaces
-      and supporting constructions. This does not claim that every declaration
-      is a transcription of a named book result, or complete coverage of any
-      chapter, exercise or the book. The stable-module quotient and auxiliary
-      exactness, coordinate-filtration and rank interfaces are general library
-      developments; no source-specific correspondence follows just from their
-      inclusion. Bibliographic authorship is distinct from Lean expression
-      provenance below. The canonical private-project asset is library
-      s-a1e29c47d014454b97d2ecbaef6b4282/v001, 4,958,181 bytes, SHA-256
-      a04f53c9393b20672fab2a6818279b2f9996dbc7cf74735789ed13804b058845.
-      The author-hosted source was supplied for the private project library;
-      no explicit license or broader redistribution grant was established.
-      Pagination differs from the AMS print edition. The selection-time errata
-      URL returned HTTP 404; no errata original is included or claimed. No book
-      PDF, scan or quoted passage is shipped in this repository.
+      The source motivates reusable projective-module and exterior results,
+      without a claim to formalize every declaration, chapter or exercise.
+      The complete-book build dated 2013-08-29 has the exterior-power Sum
+      Formula on displayed pages 18-19 (physical PDF pages 26-27); print
+      pagination differs. No book PDF or passage excerpt is shipped. The
+      bibliography is not the provenance of individual Lean expressions.
 
 related_formalizations:
   - id: "https://github.com/leanprover-community/mathlib4/tree/83abb3e776bdefcbc447a1e44d0debe4010039e5"
     relationship: "builds-on"
-    note: >-
-      Reuses native algebra, modules, projectivity, tensor/exterior algebras,
-      localization, idempotents, prime spectra, locally constant functions,
-      categories, Ext, quotients, well-orders and linear algebra. Dependency
-      source is not vendored; upstream authorship and notices remain upstream.
-      The Lake manifest is generated dependency metadata derived from the
-      resolved graph, not original dependency implementation.
+    note: "Native mathematics and categories; the Projective root resolves this exact mathlib revision."
   - id: "https://github.com/FormalFrontier/general-linear-groups/tree/1f8fd3e39080be39586ea22fa56c157167eefd00"
     relationship: "builds-on"
     note: >-
-      Supplies quasiregular ideals and matrix-quotient unit reflection used by
-      right endomorphisms. Its official private GitHub HEAD/main and local
-      resolved source are pinned to this exact revision, tree
-      b220afb712444f8b37435b5878231b0a41d525a8. Its own mathlib declaration
-      is e37d88a26f3791ed5a93daa1f949af1021b8d103, but this candidate root
-      resolves mathlib to 83abb3e776bdefcbc447a1e44d0debe4010039e5.
-      Earlier ordinary Projective builds on this graph are source-specific;
-      they do not establish a build or independent acceptance of the later
-      1762876 source repair.
+      Quasi-regular ideals and matrix-quotient unit reflection. GLG declares
+      mathlib e37d88a26f3791ed5a93daa1f949af1021b8d103 but this root
+      resolves 83abb3e776bdefcbc447a1e44d0debe4010039e5.
   - id: "https://github.com/FormalFrontier/stable-range/tree/9ac79cf93ac2d7f3e22c660100a65592df5ac976"
     relationship: "builds-on"
     note: >-
-      Supplies regularity, stable-range and cancellation prerequisites for the
-      finite stably-free semisimple endpoint. Its official private GitHub HEAD/main
-      and resolved source are pinned to this exact revision, tree
-      7ab2607b3b9b5b02c7f3ff54acbe8a09cf6f04f8. Stable declares mathlib
-      e37d88a26f3791ed5a93daa1f949af1021b8d103 and official GLG
-      1f8fd3e39080be39586ea22fa56c157167eefd00, whereas this Projective
-      root resolves mathlib 83abb3e776bdefcbc447a1e44d0debe4010039e5.
-      Stable's separate official consumer did not exercise Projective's root
-      graph. Actual Projective ordinary targets and full proof checks succeeded
-      on the earlier coordinate-stage source identified below. Those results
-      do not automatically transfer to the unaccepted 1762876 repair, and
-      neither schema validity nor pins accept this candidate.
-  - id: "FormalFrontier/source-weibel-k-book@4cd8df74596bae9a81bb4515cde0165f3b02eb46"
-    relationship: "adapts"
-    note: >-
-      Prism's retained WeibelKBook/Experiments/ExampleI212IdempotentMatrixDiagnostic.lean
-      (SHA-256 7d340dffadbac8cedb30cfc89ff47faefc961f68c8fe699f6720f487f04a7688)
-      shares the matrix-equivalence, mulVec and composition expression used in
-      Module/RightEndomorphismMatrix.lean. The reusable version generalizes
-      Fin n to arbitrary finite indices: source lines 97-102 and 106-109
-      share expression with the candidate's
-      ProjectiveModules/Module/RightEndomorphismMatrix.lean lines 64-69 and
-      73-76, respectively. Theory introduction
-      521b63882716765027bbc0d5153c39c7e7f7d9fc and later change
-      6432f66885b4aa48dfb7c5264d519d6bf753bc11 retain this internal adaptation.
-      Source retention bd5d11293565eea8823e27d2851b2829f64e5e3e identifies
-      recoverable expression, not original drafting chronology or Git ancestry.
-      The retained finite-PID diagnostic is not the arbitrary-rank PID proof
-      and does not establish general Quillen-Suslin coverage.
-      At this same source revision Prism's retained
-      WeibelKBook/Experiments/ExerciseI17AbsorptionDiagnostic.lean lines
-      44-64 and 252-255 share Lean expression with this candidate's
-      ProjectiveModules/Free/CountableAbsorption.lean lines 91-111 and 335-338.
-      WeibelKBook/Experiments/ExerciseI17SplitDiagnostic.lean lines 55-59,
-      62-66 and 77-83 also match that module at 67-71, 72-76 and 85-91.
-      Prism's WeibelKBook/Experiments/ExerciseI19Diagnostic.lean lines 34-39,
-      123-133, 146-154, 186-191 and 206-212 match this candidate's
-      ProjectiveModules/Free/CountableCancellation.lean at 51-56, 140-150,
-      163-171, 203-208 and 223-229, respectively. Prism's retained
-      WeibelKBook/Experiments/ChapterI3ExteriorPowerSumBoundaryDiagnostic.lean
-      lines 64-80 match this candidate's ProjectiveModules/ExteriorPower/DirectSum.lean
-      lines 53-69; its lines 64-68 also recur there at 77-81.
-      Source Git commits 51f3446a0bec5761579bad19fac7710fe2dfce4a and
-      685437ff1d89bef5d5568360dadd8407ce2391b5 record Prism's retained
-      Free and exterior diagnostics, respectively. Prism's later Free
-      adaptations entered in a538ed70d53bcbe3edb5644d3eef7e1ce4971559
-      and 2d3cb57fb141b685cf12a2809cc70565118393a3. The later exterior
-      development is worker-b's PR82 db77a4c278a64bbbd0bf97b46c4cb08675618e13,
-      Task hive-request-b0d122b4c4e1959f47e5cd0cefd863380123726d,
-      UID 694d0d15-fb65-4c2d-bad1-ae1aab3ee612. Exact expression overlap
-      and accepted Git order do not establish original pre-Git drafting or
-      the direction of an undocumented copying event. These project-internal
-      Lean origins are distinct from the mathematical source citation and from
-      the exposition below; they establish no source-specific coverage.
-  - id: "FormalFrontier/source-weibel-k-book@7f5d5cb3bcb9d8e964223e5fb770fe41ecc30e64"
+      Stable-range/cancellation prerequisites for the finite stably-free
+      semisimple result. Stable Range declares mathlib
+      e37d88a26f3791ed5a93daa1f949af1021b8d103 but this root resolves
+      83abb3e776bdefcbc447a1e44d0debe4010039e5.
+  - id: "docs/CREDITS.md"
     relationship: "other"
     note: >-
-      The accepted expositions/exterior-power-direct-sum.md supplies the detailed
-      mathematical route for the fixed-degree Sum Formula: ordered wedges,
-      homogeneous support and the antidiagonal restriction. Its conditional
-      diagnostic's HasFixedDegreeRestriction is not imported or assumed in the
-      production proof. An accepted exposition is not itself Lean verification.
+      The shipped credits distinguish Prism's original-project Lean
+      expression adaptations from separately authored mathematics. This
+      is not a public copy of the source-research diagnostics; expression
+      overlap establishes neither copying direction nor source coverage.
+  - id: "ProjectiveModules/ExteriorPower/DirectSum.lean"
+    relationship: "other"
+    note: >-
+      The shipped binary Sum Formula is separately credited. Its earlier
+      mathematical exposition remains in the source research record, not
+      at this local link; that exposition is not Lean verification or a
+      claim of book expression provenance.
 
 status:
   scope: >-
-    Historical authoring checkpoint 2026-09-26 19:12 UTC, before final independent
-    acceptance, on source repair 1762876bfbae6b8081b61bbd7faafe35311a4d3d
-    (tree fba4133781ebf212991e243a42904bcfe7e9d3ed) with a
-    documentation-only assembly. Applicable pinned warning-fatal default/client
-    builds passed (2803/2802 jobs, exit zero, no warning/error diagnostics).
-    The complete direct Lean.collectAxioms audit passed all43 modules and1202
-    logical declarations including private helpers/tests with only propext,
-    Classical.choice and Quot.sound.268 runtime code-generation names add no
-    kernel constants; source inputs and11 pins were unchanged. Evidence is
-    projective-modules@7da46c6ed68d856cf4dfa320d99521bd8af1d509,
-    release-checks/1762876-build-axioms/REPORT.md. Independent whole-candidate
-    and release review were pending at the authoring checkpoint. It descends from the
-    official-GitHub dependency and native-documentation successor at
-    frozen unaccepted ecfeed58395a3e9f862c446f804c38460e5785d9 (which
-    retained documentation assembled after 7f461acfe6083d0e1748416aa5e9e50fa9bed56c
-    and c020b9458308086d99706eb7a3ffc65eac32154e), not accepted main
-    f0c65ba5a5f50ce356438ca9c5939cff32a58b76: forty mathematical non-root
-    modules, the aggregate ProjectiveModules root, the separate
-    ComponentwiseFreeExamples compile-time client and tests/PublicAPIClient.lean
-    as an additional default-target client (43 Lean files total). The examples
-    test empty/zero, connected, unequal-rank, refinement and independent-universe
-    boundaries; the second client checks aggregate imports and representative
-    boundary hypotheses. Neither is a new principal theorem. Principal entries
-    cover forty mathematical subjects, not every public, private, generated,
-    helper or example declaration. Module headers/public imports and visibility
-    changes awaited independent compatibility review at that checkpoint. The
-    original source741139c and its unaccepted documentation candidate9d8591e
-    remain historical. A separate source-only coordinate-stage amendment at
-    5d1b1b276d4a11ee6ce9ae238c9511de8dbec1e9 replaces only the private
-    recursion expression, retaining original headers and all 42 other Lean blobs.
-    With unchanged official private GitHub GLG/Stable pins and root mathlib83abb3e,
-    fresh matching cache retrieval preceded successful warning-fatal builds of
-    both default targets under Lean v4.34.0-rc2. Fresh core doc-gen4 generated
-    native records for all 43 modules: 469 displayed sites, 477 SQLite name rows
-    (eight non-displayed private names), and 47 module documentation ranges.
-    The predecessor proof route stopped on a generated partial runtime declaration
-    in CountableCoordinateClosure after counting 1,206 raw/1,184 stored bodies;
-    that predecessor session remains incomplete. That coordinate-stage source has
-    1,202 raw/1,180 stored bodies; unchanged maintained full raw/private checker rechecked
-    every body, TYPE+VALUE allowed-axiom closure and seven applicable controls.
-    These earlier author checks do not establish a pass for f22009d4 or 1762876.
-    The first warning-fatal f22009d4 build failed at RightExtension.lean:266
-    (semilinear hom application) and reported ComponentwiseFree.lean:110,120
-    letI lints. Prism's 1762876 repairs those expressions; relative to
-    5d1b1b2, four Lean files changed: exterior projection syntax, two
-    ComponentwiseFree theorem binders and local proofs, and focused proofs
-    in RightExtension and TransfiniteRangeBasis. The native manifest remains
-    bound to 5d1b1b2; the API Markdown separately identifies source-inspected
-    binder/source-link amendments, not new native output. Fresh native docgen,
-    stored-proof replay and repeated consumer builds are optional, not gates.
-    No whole-candidate acceptance, official release or source coverage decision
-    is claimed; applicable unchanged evidence is retained for reuse.
-    Separately, the 2026-09-29 static transfer candidate adds one theorem on
-    arbitrary submodules of sequence-spanned modules over possibly
-    noncommutative left-Noetherian rings, one source-authored guide and two
-    private ordinary aggregate clients to accepted Projective Modules main
-    d90317bba522e36d8fa5177c0e77afd31455be22. The original proof had
-    prior independent shared-project review, but the changed destination
-    import/root/client graph has no destination-specific build or complete
-    transitive axiom audit yet. Transfer review, owner acceptance, official
-    publication and source-specific correspondence remain separate and open.
+    Reusable projective-module algebra in 44 Lean files: finite-projective
+    dual/evaluation and exterior-algebra base change, fixed-degree binary Sum
+    Formula, invertibility, bounded cancellation, noncommutative right-module
+    extension, local and PID freeness, preadditive stable categories, rank
+    realization and conditional componentwise-free classification, and
+    countably generated submodules over left-Noetherian rings. Fifty selected
+    main-result entries are not a full declaration catalogue. Production and
+    regression modules are both default build roots. Reviewed mathematics
+    is released in development main and private GitHub; source-specific and
+    whole-book coverage are not asserted. The historical native API describes
+    only 43 modules before the Noetherian module was added.
+
   main_results:
     - declaration: "IsBaseChange.toDualBaseChangeOfProjective"
       file: "ProjectiveModules/Dual/BaseChange.lean"
@@ -376,186 +255,50 @@ automation:
     - method: "agent"
       framework: "Hive-managed AI agents using Lean and Lake"
       tool_setup: >-
-        Prism authored the base-change, invertibility, exterior-algebra/determinant,
-        cancellation, exactness, right-extension and local/PID freeness
-        developments, retained source diagnostics, adapted the Free modules and
-        coordinated integration. PR82 worker-b separately developed the later
-        fixed-degree exterior direct sum. Agents used native project
-        and mathlib APIs, compiler feedback and Lean tactics. The six pooled
-        prior mathematical worker contributions are attributed to actual
-        executions below, not persistent human identities or six independent
-        maintainer identities. The seventh and eighth entries credit earlier
-        documentation corrections and assembly only. The ninth credits this
-        official-dependency/native-documentation successor, not earlier mathematics.
-        The tenth separately credits the coordinate-stage expression-only source
-        change and its fresh native/proof binding, not Prism's prior work.
-        The next two entries credit the later syntax, finite-binder and focused
-        proof repairs, not completed build or proof verification. Prism authored
-        the subsequent 1762876 diagnostic source repair and 03e4949
-        documentation draft. The final Task entry credits lightweight assembly
-        on that exact repaired source and source-inspected API corrections,
-        without new native output.
-        The separate 2026-09-29 original contributor produced the countably
-        generated submodule proof, guide and private integer-finsupp clients;
-        a different transfer execution adapted them to this destination,
-        wired the import and recorded new documentation and metadata. Neither
-        entry claims this transfer has received changed-input checks or review.
+        Formal Frontier AI agents used Lean and mathlib APIs, compiler feedback
+        and tactics. Prism contributed foundations and retained adaptations;
+        other agents contributed semisimple, stable-category, exterior-power,
+        rank, componentwise-free and Noetherian developments. The original
+        Noetherian proof and clients are distinct from their later destination
+        transfer; see docs/CREDITS.md for contribution roles.
       prompting_notes: >-
-        Bounded assignments required source-independent native interfaces,
-        exact hypotheses, handedness and universe checks, boundary clients,
-        pinned reproduction and independent exact-candidate review.
-  contributions:
-    - artifact: "d45dd1357bacb64b950f2094d7c4212afd0ffb70 (PR71: finite stably-free semisimple modules)"
-      author: "formalization-worker-a"
-      task: "hive-request-d7224458a14af4b7440bd94d9777e86a0db1b5d0"
-      uid: "399bbc83-2562-438d-9d01-4dac0bccd94c"
-    - artifact: "a9b8600bcf758ebbd40cd7f90b1357722e10cbaf (PR73: stable module category and Ext detection)"
-      author: "formalization-worker-b"
-      task: "hive-request-5c07d0c3cd2e227797162d37387f8a03e2d1f3e6"
-      uid: "6a5605b3-f4b8-4f97-9be0-14f464e17b16"
-    - artifact: "c2f6629480970392ccbd8ca9486ae72bfdcacd24 (PR75: locally constant rank realization)"
-      author: "formalization-worker-b"
-      task: "hive-request-ad46d1502ddb687df0f8f99137470c1a4c23ac58"
-      uid: "11940340-c8a1-4ea9-af20-7faea8886859"
-    - artifact: "09b084714cb7a2baee194e8b5b8a4dd6abc6dc71 (PR77: rank-fiber decomposition)"
-      author: "formalization-worker-a"
-      task: "hive-request-fb505ab2a5fe64f01fbe0ac730ab345706adbd08"
-      uid: "f96d1f45-b072-4402-98cd-4f1140793488"
-    - artifact: "af19441303f2cacda14f9a03eb137488db7843a9 (PR79: componentwise-free classification and clients)"
-      author: "formalization-worker-a"
-      task: "hive-request-70aa82000140d686d99ea82d298e809aefcf9683"
-      uid: "ba211454-5a4c-4bd7-beef-f963adcfb317"
-    - artifact: "db77a4c278a64bbbd0bf97b46c4cb08675618e13 (PR82: fixed-degree exterior Sum Formula)"
-      author: "formalization-worker-b"
-      task: "hive-request-b0d122b4c4e1959f47e5cd0cefd863380123726d"
-      uid: "694d0d15-fb65-4c2d-bad1-ae1aab3ee612"
-    - artifact: "formalization.yaml provenance/credit correction on the separate PR85 successor (documentation only)"
-      author: "formalization-worker-b"
-      task: "hive-request-7b3ba4c1b0c704bd9407edac4d9a3e7e15d546c1"
-      uid: "fd5f19a2-4d9d-403d-a3ad-e6668bc1742c"
-    - artifact: "README.md and formalization.yaml documentation-only assembly (unaccepted readiness successor)"
-      author: "formalization-worker-b"
-      task: "hive-request-9bdf3d9592d72b8f32a93c03aa093f9e3d3d46d7"
-      uid: "cee7bd20-464d-4fcb-a94e-24a3fdae6f42"
-    - artifact: "741139c83f21c72bfac3f9395a13185806781421 official-dependency source checkpoint and subsequent unaccepted native-documentation/failure candidate"
-      author: "formalization-worker-a"
-      task: "hive-request-5b613f786b5b128667e61931e4bff1d340203c1f"
-      uid: "d6f80407-c36a-472a-801b-7fb95e007795"
-    - artifact: "5d1b1b276d4a11ee6ce9ae238c9511de8dbec1e9 expression-only coordinate-stage source amendment and new native/proof-binding successor"
-      author: "formalization-worker-a"
-      task: "hive-request-5039fb5a4edbcc012c1fa476bd82a1f7ff3e6897"
-      uid: "bea0dd73-0600-46f0-b6d8-9ebb494b6931"
-    - artifact: "d3f7d0338e7e58202bb9baa9156a32bf75128c76 exterior projection cdot syntax repair"
-      author: "formalization-worker-a"
-      task: "hive-request-6169580853394aa779febb4ea343c4b3c0e8eb06"
-      uid: "032d8e86-d444-4fd6-83cc-f26b3c258d2e"
-    - artifact: "f22009d4f35fb5280add0063732c2c6da57ff112 finite-binder and focused proof source repairs (first warning-fatal build failed)"
-      author: "formalization-worker-a"
-      task: "hive-request-9f2456b974744fa66da59ce58144f50db8b4d6b8"
-      uid: "fec00aa2-2c65-42aa-91df-628c099c9157"
-    - artifact: "1762876bfbae6b8081b61bbd7faafe35311a4d3d lightweight documentation assembly from Prism draft 03e494996a84fda2a4988715c6bdb5e526af12f7 and source-inspected API corrections"
-      author: "formalization-worker-a"
-      task: "hive-request-cd60aa62dac1faaf3664d5588c99b0c5cc895da8"
-      uid: "c6b3e41b-9228-4074-b620-68ec2aa67ba3"
-    - artifact: "original countably generated submodule theorem, complete guide and two private integer-finsupp client expressions"
-      author: "formalization-worker-a"
-      task: "hive-request-28cfdf6ba1d2a6f171a71c470886d04ad9f55fe1"
-      uid: "76ebce97-c0af-4921-8b96-7e85289b92db"
-    - artifact: "2026-09-29 static ProjectiveModules/Module/CountablyGenerated/Noetherian.lean transfer, root/ordinary client and authored documentation/metadata"
-      author: "formalization-worker-a"
-      task: "hive-request-6a313f21a767b4bf8199b4955c5d85ba33406fa8"
-      uid: "8f0f0b7c-434b-4ec5-84e5-9f071c73fa64"
+        Work emphasized exact hypotheses, handedness, independent universes,
+        useful APIs, reproducibility and independent proof/rights review.
   notes: >-
-    Code, proofs, documentation and this metadata are AI-agent contributions.
-    No human mathematical review, source-author endorsement or complete model,
-    runtime or spending measurement is asserted. AI generation does not establish
-    correctness, originality, copyright ownership or redistribution clearance.
+    Code and documentation include AI-agent contributions. AI generation
+    alone establishes no originality, proof correctness or rights clearance.
 
 fidelity:
   divergences: >-
-    Right modules are modules over opposite rings; balance uses the actual
-    right/left actions, and Hom exactness is additive where scalar linearity
-    is unavailable. Full exterior-algebra base change is distinguished from
-    the separate fixed-degree binary Sum Formula. Rank-one invertibility has
-    proposition-level hypotheses; componentwise-free classification does not
-    classify arbitrary finite projectives by rank. Countable and arbitrary-rank
-    freeness routes retain their projectivity, idempotence, proper-ideal,
-    countable-difference or free-increment premises. Local proper-ideal/unit
-    assumptions exclude zero rings, unlike several rank constructions. No
-    general multivariable Quillen-Suslin, Picard group, K0, arbitrary cancellation,
-    fixed-degree scalar-extension naturality or whole-source formalization is
-    claimed. Source-specific bridges and milestone decisions remain separate.
-    The Module.componentwiseFreeModel_finite and
-    Module.componentwiseFreeModel_projective binders now use Finite I instead
-    of Fintype I, choosing Fintype.ofFinite locally; finiteness and the latter
-    theorem's idempotence premise remain. These are not literally unchanged
-    types; compatibility for external explicitly supplied instance arguments
-    remains unclaimed for arbitrary external clients; in-tree clients compiled.
+    Right modules use opposite-ring actions; balanced tensor respects
+    noncommutative order and semiring Hom exactness is additive. Full exterior
+    algebra base change is not fixed-degree scalar extension; the binary Sum
+    Formula is separate. Rank classifies componentwise-free finite projectives,
+    not all finite projectives. The stable category is preadditive, not
+    abelian; the Ext-one criterion requires Small.{uM} R. Countable and
+    finite-summand cancellation are bounded; semisimple freeness requires
+    finite stably-free modules. Proper-ideal/unit-complement local freeness
+    excludes zero rings, whereas some rank constructions include them.
+    Transfinite range freeness requires an idempotent and free increments.
+    PID freeness allows arbitrary rank over a commutative PID; the Laurent
+    endpoint covers one variable over a field, not general Quillen-Suslin.
+    Finite-binder componentwise models retain finiteness and idempotence.
+    None of this decides source-wide formalization.
 
 review:
-  status: "unchecked"
+  status: "agent-reviewed"
   notes: >-
-    The unchecked field records the historical authoring checkpoint
-    2026-09-26 19:12 UTC, not the status of later release decisions. The1762876
-    source passed the applicable pinned build and complete transitive
-    standard-axiom audit including private declarations; consolidated independent
-    whole-candidate/release assessment was pending then. Subsequent exact review,
-    protected-branch and publication records determine acceptance.
-    Stored-proof replay, fresh native docgen and repeated consumer
-    builds are not additional prerequisites. Earlier author checks on
-    source 5d1b1b276d4a11ee6ce9ae238c9511de8dbec1e9 show 43 genuine module
-    records, successful
-    warning-fatal default builds, complete 1,202-raw/1,180-body TYPE+VALUE
-    allowed-axiom/stored-body replay and seven applicable refusal controls.
-    The earlier 1,206-raw predecessor refusal is historical and remains incomplete;
-    its candidate-specific native review does not transfer to the changed source.
-    The first warning-fatal f22009d4 build reported RightExtension.lean:266
-    semilinear application and ComponentwiseFree.lean:110,120 letI lints;
-    1762876 addresses those expressions and passed the build/axiom checks above.
-    The later whole review of 2a368cb9 requested changes; the source repair and
-    this documentation draft are not yet its independently accepted resolution.
-    No independent proof endorsement, waiver, integration or official Projective
-    release is claimed.
-    Accepted development reviews are revision-specific. In particular PR82
-    review2672/receipt35256 approved db77a4c278a64bbbd0bf97b46c4cb08675618e13,
-    whose complete tree matches accepted main f0c65ba5a5f50ce356438ca9c5939cff32a58b76.
-    Reviewer worker-a Task hive-request-db7a81fb7d6c13f51d5b9f28dac05e06996f3d18,
-    UID 143f74c7-9fa1-4336-8d6d-92bf4c8b8296, independently reviewed the new
-    exterior Sum Formula and exact source and performed bounded builds,
-    actual external-checker replays and six-export axiom checks. This does not
-    become a fresh whole-library/private/generated census or stored-proof
-    verification. Historical author ordinary elaboration, -T0 and kernel prints
-    are not external checker evidence; -T0 disables the allocation timeout, not
-    proof trust. The unaccepted PR84 successor's root LICENSE, truthful project
-    headers, module visibility changes and default clients are present here,
-    not independently accepted as a whole artifact. Its historic copyright-format
-    lint departures have a narrow independent truthful-header convention
-    disposition, as do the 49 private PublicAPIClient regression theorems for
-    the privateModule convention. Their literal diagnostics remain nonpassing;
-    neither is a blanket lint waiver or whole-candidate approval. No unsupported
-    copyright holder has been invented. The older PR85 source/header
-    tree is not imported. The two official private GitHub dependency pins are
-    present, but their effective compatibility, authorized-consumer availability
-    and whole Projective candidate have not been independently accepted.
-    Internal source/evidence commit and issue identifiers are provenance, not
-    claims that their objects exist on Projective's designated private GitHub
-    consumer repository. Independent rights applicability for the newly generated
-    Markdown/JSON, adapted script and proposed public lineage remains pending;
-    no native HTML/assets or external implementations are shipped.
-    Metadata schema validity and license selection certify none of these matters.
-    The 2026-09-29 Noetherian-submodule destination transfer is a new candidate,
-    not a revision to those historical decisions: it still requires applicable
-    changed-input build/standard-axiom evidence, independent source and candidate
-    review, Prism's acceptance and official release. No source-coverage decision
-    or new native documentation-generation result follows from the transfer.
+    Mathematical content has received independent AI-agent review. Acceptance
+    requires an applicable pinned build and complete transitive standard-axiom
+    checks including private declarations; those checks do not establish
+    source correspondence or rights clearance. This metadata is not itself
+    acceptance evidence. No human review, book-author endorsement or
+    complete-book formalization is claimed.
 
 acknowledgements: >-
-  The mathlib community supplies the underlying formal mathematics; GLG and
-  stable-range provide the declared reusable dependencies. Their authorship and
-  license notices remain with those libraries. Lean and Lake supply the proof
-  assistant and build system. Weibel's bibliographic authorship is distinct
-  from project formalization authorship. Original project contributions and
-  identified internal adaptations use the operator-selected Apache-2.0 license;
-  no ownership of, or permission to relicense, third-party expression is asserted.
-  The formalization.yaml standard supplies the field vocabulary; this filled-in
-  metadata prose is a project contribution, not upstream schema implementation.
+  Mathlib, General Linear Groups and Stable Range supply declared dependencies;
+  their authorship and license notices remain upstream. Lean and Lake supply
+  the proof assistant and build system. Charles A. Weibel is the cited book
+  author, separately from project formalization authors. Project contributions
+  are Apache-2.0; this assigns no copyright ownership or permission to
+  relicense third-party expression.

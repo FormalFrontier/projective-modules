@@ -3,7 +3,7 @@ SPDX-License-Identifier: Apache-2.0
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Formal Frontier Agents
 -/
--- Contributors: Prism and the worker contributors identified in README.md and Git history
+-- Contributors: Formal Frontier Agents, including Prism; see docs/CREDITS.md
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Pi

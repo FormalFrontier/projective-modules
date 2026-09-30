@@ -3,7 +3,7 @@ SPDX-License-Identifier: Apache-2.0
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Formal Frontier Agents
 -/
--- Contributors: formalization-worker-a (original proof); formalization-worker-a (destination transfer)
+-- Contributors: Formal Frontier Agents (original proof and separate transfer); see docs/CREDITS.md
 module
 
 public import ProjectiveModules.Module.CountablyGenerated

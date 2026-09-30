@@ -1,20 +1,27 @@
 # Generated API reference
 
-Historical native doc-gen4 at source `5d1b1b276d4a11ee6ce9ae238c9511de8dbec1e9`
-displays 469 named sites across 43 selected modules. The native database
-additionally retains eight non-displayed private name rows.
-These sites are not a raw/private/generated declaration census or proof audit.
-The example and private regression clients do not export their private declarations.
+This is a **historical native display**, not an exhaustive current-release API.
+Doc-gen4 on original source `5d1b1b276d4a11ee6ce9ae238c9511de8dbec1e9`
+selected 43 modules and displayed 469 named sites, with 477 database name rows
+(eight non-displayed private names) and 47 module-documentation positions.
+The released tree contains 44 Lean files: the later
+`ProjectiveModules/Module/CountablyGenerated/Noetherian.lean` is guide-only in
+[this documentation](NoetherianSubmodule.md), **outside** the 43-module run.
+Neither the displayed sites nor the historical manifest field
+`public_display_names` constitute an exported-declaration census: displayed
+names include local instances. The example and private regression clients do
+not export their private declarations.
 
-Headers below are historical native *display* signatures, including implicit
-parameters and visible modifiers, **except** the two explicitly labeled
-source-inspected `[Finite I]` amendments. Source links in `ComponentwiseFree` and
-`RightExtension` are corrected for source `1762876bfbae6b8081b61bbd7faafe35311a4d3d`;
-parenthetical native database ranges and [manifest](api-manifest.json) remain
-bound to `5d1b1b2`. No native regeneration or proof check is claimed for `1762876`.
-Headers are not proof bodies. Pretty-printing can suppress inferable types;
-consult the linked source for elaboration context. Links resolve relative to
-this checkout, not to an unpublished GitHub commit.
+Headers below reproduce historical native *display* signatures, including
+visible modifiers and implicit parameters, except for the two explicitly
+marked source-inspected `[Finite I]` amendments. Relative source links point
+into this checkout; corrected `ComponentwiseFree` and `RightExtension` ranges
+may differ from parenthetical historical native database ranges. The
+[manifest](api-manifest.json) remains bound to the original source and native
+records, not these later source-inspected edits. No new native output, current
+all-files census, proof audit or source-coverage certification is asserted.
+Headers are not proof bodies; pretty-printing can suppress inferable types.
+Consult the linked source for elaboration context.
 [Generation and limits](README.md) · [Credits](CREDITS.md) ·
 [source and tool manifest](api-manifest.json).
 

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 # Authors: Formal Frontier Agents
-"""Data-only controls for the fixed Projective native-record adapter.
+"""Synthetic adapter and refusal controls, not native records or Lean evidence.
 
-Synthetic markup from shipped signatures exercises refusals, not the genuine
-native-record provenance. Run separate native generation and --check for that.
+Optional historical reproduction needs private original source, records and
+SQLite; --check cannot match the source-amended release documentation.
 """
 
 import copy
@@ -22,6 +22,11 @@ import generate_api as api
 
 
 ROOT = Path(__file__).resolve().parent.parent
+AMENDED_NAMES = ("Module.componentwiseFreeModel_finite",
+                 "Module.componentwiseFreeModel_projective")
+AMENDMENT_NOTE = ("*Source-inspected amendment at `1762876`: `[Finite I]` replaces "
+                  "the historical\nnative `[Fintype I]`; the native range below "
+                  "remains historical.*\n\n")
 
 
 def fixture():
@@ -33,9 +38,17 @@ def fixture():
                             instances=copy.deepcopy(meta["instances"]), declarations=[])
                for module, meta in api.EXPECTED_MODULES.items()}
     sources = {path: (ROOT / path).read_bytes() for path in api.INPUTS}
+    restored = set()
     for name, signature, prose in entries:
         api.require(name in api.EXPECTED, "synthetic fixture has unknown name")
         meta = api.EXPECTED[name]
+        if name in AMENDED_NAMES:
+            api.require(signature.count("[Finite I]") == 1 and
+                        prose.startswith(AMENDMENT_NOTE),
+                        "source-inspected amendment fixture differs")
+            signature = signature.replace("[Finite I]", "[Fintype I]", 1)
+            prose = prose[len(AMENDMENT_NOTE):]
+            restored.add(name)
         prefix = meta["display_kind"] + " " + name
         api.require(signature.startswith(prefix), "synthetic fixture identity differs")
         header = ('<div class="decl_header"><span class="decl_kind">'
@@ -45,11 +58,17 @@ def fixture():
         module = meta["module"]
         path = api.MODULE_PATHS[module]
         doc = "" if prose.startswith("*No source docstring is attached") else prose
+        if name in AMENDED_NAMES:
+            api.require(api.digest(api.Header(header).rendered().encode()) ==
+                        meta["header_sha256"] and
+                        api.digest(doc.strip().encode()) == meta["doc_sha256"],
+                        "historical amendment header/docstring differs")
         records[module]["declarations"].append(dict(header=header, info=dict(
             name=name, kind=meta["kind"], line=meta["line"],
             sourceLink=api.SOURCE_SNAPSHOT + api.SOURCE + "/" + path,
             docLink="./" + module.replace(".", "/") + ".html#" + name,
             doc=doc)))
+    api.require(restored == set(AMENDED_NAMES), "missing historical amendment")
     return records, sources
 
 
@@ -59,6 +78,33 @@ def first(records):
 
 
 class Controls(unittest.TestCase):
+    def test_two_historical_amendments_and_unexpected_data_refusal(self):
+        records, sources = fixture()
+        restored = {row["info"]["name"]: row for record in records.values()
+                    for row in record["declarations"] if row["info"]["name"] in AMENDED_NAMES}
+        self.assertEqual(set(restored), set(AMENDED_NAMES))
+        for name, row in restored.items():
+            self.assertIn("[Fintype I]", api.Header(row["header"]).rendered())
+            self.assertNotIn(AMENDMENT_NOTE, row["info"]["doc"])
+            self.assertEqual(api.digest(api.Header(row["header"]).rendered().encode()),
+                             api.EXPECTED[name]["header_sha256"])
+            self.assertEqual(api.digest(row["info"]["doc"].strip().encode()),
+                             api.EXPECTED[name]["doc_sha256"])
+        api.render(records, api.SOURCE, sources)
+        original = (ROOT / "docs/API.md").read_text()
+        self.assertEqual(original.count(AMENDMENT_NOTE), 2)
+        finite_header = ("theorem Module.componentwiseFreeModel_finite "
+                         "{R : Type u} [CommRing R] {I : Type u_1} [Finite I]")
+        for old, new in ((AMENDMENT_NOTE, AMENDMENT_NOTE.replace("1762876", "other")),
+                         (finite_header, finite_header.replace("[Finite I]", "[Other I]")),
+                         ("The explicit component model is finitely generated.",
+                          "Unexpected new note.\n\nThe explicit component model is finitely generated.")):
+            with self.subTest(changed=old), mock.patch.object(
+                    Path, "read_text", return_value=original.replace(old, new, 1)):
+                with self.assertRaises(ValueError):
+                    amended_records, amended_sources = fixture()
+                    api.render(amended_records, api.SOURCE, amended_sources)
+
     def test_full_inventory_and_all_module_records(self):
         records, sources = fixture()
         markdown, raw_manifest = api.render(records, api.SOURCE, sources)

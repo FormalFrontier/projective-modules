@@ -1,68 +1,59 @@
 # Credits and provenance
 
-At coordinate-stage source `5d1b1b276d4a11ee6ce9ae238c9511de8dbec1e9`,
-42 Lean sources were unchanged and one had an expression-only amendment.
-The later repairs described below also retain original file headers and contributor
-notices; the root README and `formalization.yaml` retain the fourteen established
-internal source-expression spans and prior Task credits. The predecessor native
-records, fixed library inventory, adapted data-only regression tests and
-generated Markdown were prepared by
-`formalization-worker-a`, Task
-`hive-request-5b613f786b5b128667e61931e4bff1d340203c1f`, execution UID
-`d6f80407-c36a-472a-801b-7fb95e007795`. The library-specific adapter adapts
-the Stable Range `scripts/generate_api.py` accepted upstream author packet and
-its database/range/source binding, itself derived from original Formal Frontier
-project contributions. The actual five module-documentation positions and eight
-non-displayed database-only names require Projective-specific presentation;
-they are not invented or silently suppressed. Original project contributions
-use the operator's Apache-2.0 authorization; authorship does not establish
-copyright ownership or clearance of unidentified copying.
+Projective Modules is an AI-agent-developed Formal Frontier library. Prism
+contributed the original base-change, evaluation, invertible, exterior-algebra,
+determinant, right-extension, cancellation, local and PID freeness and exactness
+work; maintained the shared library; retained mathematical diagnostics; adapted
+the Free-module constructions; and made subsequent diagnostic and documentation
+repairs. Other Formal Frontier contributors developed the mathematical results
+listed below; responsibility for maintenance and review is shared with the
+source-maintainer team. Their original mathematical contributions are distinct
+from later transfer, adaptation, integration and documentation work.
 
-The source-only coordinate-stage commit
-`5d1b1b276d4a11ee6ce9ae238c9511de8dbec1e9` and the new actual-source
-native documentation and proof evidence were produced by the separate worker-a
-Task `hive-request-5039fb5a4edbcc012c1fa476bd82a1f7ff3e6897`, UID
-`bea0dd73-0600-46f0-b6d8-9ebb494b6931`. The source change only replaces
-private equation recursion by explicit `Nat.rec`; at that commit all surrounding
-Lean source, headers and earlier contributor attributions remain byte-identical. The old
-native run and predecessor proof refusal remain historical, not transferred
-or renamed to this Task.
+| Mathematical contribution | Original contribution |
+| --- | --- |
+| Finite stably-free semisimple modules | Formal Frontier agent contributing the semisimple endpoint |
+| Preadditive stable module category and Ext¹ detection | Formal Frontier agent contributing the stable-category construction (not Prism-authored) |
+| Locally constant rank realization | Formal Frontier agent contributing the realization construction |
+| Rank-fiber decomposition | Formal Frontier agent contributing the decomposition |
+| Componentwise-free models, classification and examples | Formal Frontier agent contributing the componentwise-free development |
+| Fixed-degree binary exterior-power Sum Formula | Formal Frontier agent contributing the direct-sum construction, separately from Prism’s retained exterior diagnostic |
+| Countably generated submodules over left-Noetherian rings, the detailed guide and two private integer-finsupp client expressions | Formal Frontier agent contributing the original proof and clients; a separate contribution later transferred the theorem into this library, wired public imports and adapted documentation |
 
-The exterior projection syntax repair at
-`d3f7d0338e7e58202bb9baa9156a32bf75128c76` is by worker-a Task
-`hive-request-6169580853394aa779febb4ea343c4b3c0e8eb06`, UID
-`032d8e86-d444-4fd6-83cc-f26b3c258d2e`. The finite-binder and focused proof
-repairs at `f22009d4f35fb5280add0063732c2c6da57ff112` are by worker-a Task
-`hive-request-9f2456b974744fa66da59ce58144f50db8b4d6b8`, UID
-`fec00aa2-2c65-42aa-91df-628c099c9157`. Neither execution claims the earlier
-mathematics or native output as its own. The first warning-fatal build of `f22009d4`
-failed with a semilinear hom application error and `letI` lints. Prism authored
-the diagnostic repair `1762876bfbae6b8081b61bbd7faafe35311a4d3d` and the
-documentation draft `03e494996a84fda2a4988715c6bdb5e526af12f7`.
-The lightweight assembly and source-inspected API corrections on `1762876`
-are by worker-a Task `hive-request-cd60aa62dac1faaf3664d5588c99b0c5cc895da8`,
-UID `c6b3e41b-9228-4074-b620-68ec2aa67ba3`. Historical native records
-and manifest remain bound to `5d1b1b2`; no new native generation is claimed.
+The documentation and metadata were assembled and corrected in subsequent
+contributions. One contributor adapted the historical native API generator and
+its database/range bindings from a Stable Range project script; another made
+an expression-only recursion repair and bound native documentation to that
+particular source. Separate contributions repaired exterior syntax, finite
+binders and focused proof expressions; Prism repaired the later diagnostic
+source and drafted updated documentation; a subsequent contributor assembled
+that documentation and made source-inspected historical API corrections.
+These are not claims that documentation authors produced the earlier proofs,
+or that the Noetherian destination assembler wrote the original theorem.
 
-`leanprover/doc-gen4` and its build inputs, mathlib, General Linear Groups,
-Stable Range and Weibel's *K-book* remain external. None of their implementations,
-native HTML/assets or source book bytes are included in these Markdown/JSON
-outputs. The Lake manifest records dependency metadata, not vendored code.
-The unaccepted candidate and a projected public history still require their own
-independent file-inventory/rights determination. See the dated issue #83
-evidence and its exact source/evidence revisions; this page is not approval.
+Prism retained finite matrix, free-module absorption/cancellation and exterior
+sum diagnostics in the Weibel K-book source-research repository. Identifiable
+Lean expression from these diagnostics was adapted into the corresponding
+projective-modules developments; the exterior direct-sum result was separately
+developed by another agent. The source citation describes mathematical
+motivation, not the origin of every Lean expression. Retained expressions and
+Git order do not resolve pre-Git drafting chronology or an undocumented
+copying direction. See the original repository histories and the owning source
+research record for exact internal correspondences; these credits do not
+establish source coverage.
 
-At the separate 2026-09-29 static transfer checkpoint, the original complete
-countably generated submodule proof and guide, as well as the two private
-integer-finsupp client expressions, are by formalization-worker-a Task
-`hive-request-28cfdf6ba1d2a6f171a71c470886d04ad9f55fe1`, UID
-`76ebce97-c0af-4921-8b96-7e85289b92db`. Their adapted destination paths
-are `ProjectiveModules/Module/CountablyGenerated/Noetherian.lean`,
-`docs/NoetherianSubmodule.md` and `tests/PublicAPIClient.lean`. The distinct
-destination transfer, public import wiring, metadata and focused documentation
-are by formalization-worker-a Task
-`hive-request-6a313f21a767b4bf8199b4955c5d85ba33406fa8`, UID
-`8f0f0b7c-434b-4ec5-84e5-9f071c73fa64`. No predecessor proof, prior native
-output or original verification is claimed by this transfer execution. The
-new guide is authored, not a native doc-gen4 product; destination compilation,
-proof audit, rights review, acceptance and official publication remain pending.
+The historical [API index](README.md) links generated Markdown and a JSON
+manifest whose native source predates the Noetherian module. Documentation,
+manifest and project-specific generator adaptations are project contributions;
+the generator was adapted from a project script, not from doc-gen code or
+assets. The Lake manifest records
+dependency versions; mathlib, General Linear Groups and Stable Range code and
+notices remain in their own repositories.
+
+Project contributions use [Apache-2.0](../LICENSE) and the truthful
+`Authors: Formal Frontier Agents` headers. Weibel’s book is cited as a
+mathematical source; no book PDF, page excerpt or third-party implementation is
+redistributed here. AI involvement, a bibliographic citation and project
+licensing do not establish copyright ownership, human review, source-author
+endorsement, permission to relicense third-party content or complete
+formalization of the book.
