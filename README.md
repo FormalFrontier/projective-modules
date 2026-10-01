@@ -177,6 +177,25 @@ declare an older mathlib `e37d88a26f3791ed5a93daa1f949af1021b8d103`.
 The effective root resolution is the first mathlib revision; do not repin
 other projects to infer this graph. Dependencies are not vendored.
 
+### Expected build cost
+
+For this pinned dependency graph, a 2026-09-30 build of both roots with
+`lake --offline --no-cache build ProjectiveModules ProjectiveModulesTests`
+took about **66 seconds wall time** (2,804 Lake jobs, 44 Lean modules) after
+the matching mathlib cache was fetched and verified. This ordinary build did
+not use `--wfail`; it does not time cache retrieval, a cold toolchain or a full
+dependency rebuild. Its thread setting, CPU allocation, peak memory and cache
+disk footprint are not reported, so the timing is an example, not a portable
+resource minimum or bound.
+
+For comparison only, a separate 2026-09-25 clean-project baseline took about
+**64 seconds wall time** (2,803 Lake jobs, 43 tracked Lean files) with
+`LEAN_NUM_THREADS=2 lake --wfail build` after fetching a matching cache and
+running `lake clean projective-modules`; dependencies remained precompiled.
+That older run used different development dependency revisions: it neither
+establishes compatibility with this graph nor measures a cold-toolchain or
+full-dependency build. Neither run establishes a process or memory bound.
+
 ## Documentation limits
 
 The [API index](docs/README.md) and [generated API](docs/API.md) describe a
