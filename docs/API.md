@@ -4,9 +4,14 @@ This is a **historical native display**, not an exhaustive current-release API.
 Doc-gen4 on original source `5d1b1b276d4a11ee6ce9ae238c9511de8dbec1e9`
 selected 43 modules and displayed 469 named sites, with 477 database name rows
 (eight non-displayed private names) and 47 module-documentation positions.
-The released tree contains 44 Lean files: the later
-`ProjectiveModules/Module/CountablyGenerated/Noetherian.lean` is guide-only in
-[this documentation](NoetherianSubmodule.md), **outside** the 43-module run.
+Outside this historical module display,
+[`Noetherian`](../ProjectiveModules/Module/CountablyGenerated/Noetherian.lean)
+proves that submodules of countably generated modules over Noetherian rings are
+countably generated (see [the guide](NoetherianSubmodule.md)), while
+[`InfiniteCoordinates`](../ProjectiveModules/Free/InfiniteCoordinates.lean)
+proves that, when the first index type is infinite, free coordinate modules over
+a nontrivial semiring are linearly equivalent if and only if their index types
+are equivalent.
 Neither the displayed sites nor the historical manifest field
 `public_display_names` constitute an exported-declaration census: displayed
 names include local instances. The example and private regression clients do

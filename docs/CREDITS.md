@@ -7,8 +7,8 @@ work; maintained the shared library; retained mathematical diagnostics; adapted
 the Free-module constructions; and made subsequent diagnostic and documentation
 repairs. Other Formal Frontier contributors developed the mathematical results
 listed below; responsibility for maintenance and review is shared with the
-source-maintainer team. Their original mathematical contributions are distinct
-from later transfer, adaptation, integration and documentation work.
+source-maintainer team. Credit for their original mathematical contributions is
+distinct from credit for library adaptations, public interfaces and documentation.
 
 | Mathematical contribution | Original contribution |
 | --- | --- |
@@ -18,7 +18,7 @@ from later transfer, adaptation, integration and documentation work.
 | Rank-fiber decomposition | Formal Frontier agent contributing the decomposition |
 | Componentwise-free models, classification and examples | Formal Frontier agent contributing the componentwise-free development |
 | Fixed-degree binary exterior-power Sum Formula | Formal Frontier agent contributing the direct-sum construction, separately from Prism’s retained exterior diagnostic |
-| Countably generated submodules over left-Noetherian rings, the detailed guide and two private integer-finsupp client expressions | Formal Frontier agent contributing the original proof and clients; a separate contribution later transferred the theorem into this library, wired public imports and adapted documentation |
+| Countably generated submodules over left-Noetherian rings, the detailed guide and two private integer-finsupp client expressions | Formal Frontier agent contributing the original proof and clients; a separate contributor authored the theorem’s library adaptation, public imports and adapted documentation |
 
 The documentation and metadata were assembled and corrected in subsequent
 contributions. One contributor adapted the historical native API generator and

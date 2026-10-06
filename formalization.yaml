@@ -5,15 +5,19 @@ project:
   description: >-
     Reusable Lean theory of projective modules: finite-projective dual and
     evaluation base change, invertible modules, exterior algebras and powers,
-    determinants, bounded cancellation and countable absorption, balanced tensor
-    products and right scalar extension, exactness, local and PID freeness,
+    determinants, bounded cancellation and countable absorption, infinite free
+    coordinates, finite stable presentations and IBN-only integer-rank
+    independence, balanced tensor products and right scalar extension, exactness,
+    local and PID freeness,
     preadditive stable module categories, countably generated submodules over
     left-Noetherian rings, and locally constant rank and componentwise-free
     classification. Noncommutative and commutative results retain their distinct
     hypotheses; rank classification is not asserted for all finite projectives.
+    Over arbitrary rings, the library also describes stably-free kernels of
+    surjections onto finitely generated stably-free targets, finite-coordinate
+    kernel presentations and surjective right-linear matrix kernels.
   authors:
     - "Formal Frontier Agents"
-    - "Prism (AI agent; original formalization and maintenance)"
   responsible_maintainers:
     - "Prism (on behalf of the source-maintainer team)"
   license: "Apache-2.0"
@@ -26,8 +30,9 @@ sources:
     type: "book"
     location: >-
       Complete-book build dated 2013-08-29, Chapter I module and projective-module
-      material, including Example I.2.1.2 and the exterior-power Sum Formula on
-      displayed pages 18-19 (physical PDF pages 26-27).
+      material, including Definition I.1.2 on finite stable coordinates,
+      Example I.2.1.2 and the exterior-power Sum Formula on displayed pages
+      18-19 (physical PDF pages 26-27).
     relationship: "adapts"
     author_endorsement: "not-contacted"
     note: >-
@@ -58,31 +63,50 @@ related_formalizations:
   - id: "docs/CREDITS.md"
     relationship: "other"
     note: >-
-      The shipped credits distinguish Prism's original-project Lean
-      expression adaptations from separately authored mathematics. This
-      is not a public copy of the source-research diagnostics; expression
-      overlap establishes neither copying direction nor source coverage.
+      The credits distinguish Prism's original-project Lean expression
+      adaptations from separately authored mathematics. Expression overlap
+      alone establishes neither copying direction nor source coverage.
   - id: "ProjectiveModules/ExteriorPower/DirectSum.lean"
     relationship: "other"
     note: >-
-      The shipped binary Sum Formula is separately credited. Its earlier
-      mathematical exposition remains in the source research record, not
-      at this local link; that exposition is not Lean verification or a
-      claim of book expression provenance.
+      The binary Sum Formula has separate mathematical credit. Its
+      bibliographic citation does not establish the provenance of individual
+      Lean expressions or source-wide verification.
 
 status:
   scope: >-
-    Reusable projective-module algebra in 44 Lean files: finite-projective
-    dual/evaluation and exterior-algebra base change, fixed-degree binary Sum
-    Formula, invertibility, bounded cancellation, noncommutative right-module
+    Reusable projective-module algebra: finite-projective dual/evaluation and
+    exterior-algebra base change, fixed-degree binary Sum Formula,
+    invertibility, bounded cancellation, noncommutative right-module
     extension, local and PID freeness, preadditive stable categories, rank
     realization and conditional componentwise-free classification, and
-    countably generated submodules over left-Noetherian rings. Fifty selected
-    main-result entries are not a full declaration catalogue. Production and
-    regression modules are both default build roots. Reviewed mathematics
-    is released in development main and private GitHub; source-specific and
-    whole-book coverage are not asserted. The historical native API describes
-    only 43 modules before the Noetherian module was added.
+    countably generated submodules over left-Noetherian rings. Over a
+    nontrivial semiring, bases with an infinite first index have equal lifted
+    index cardinalities; infinite free coordinate modules are linearly
+    equivalent exactly when their index types are equivalent. This needs no
+    invariant basis number, strong rank condition or commutativity, and index,
+    scalar and module types may inhabit independent universes. The chosen
+    index equivalence need not preserve basis vectors. Library and regression
+    modules are default build roots. Rank condition and invariant basis number
+    each pull back along arbitrary unital semiring homomorphisms, provided the
+    target has the corresponding property; the IBN pullback does not require
+    target rank condition. Over arbitrary rings, finite-coordinate stable
+    presentations exist exactly for finitely generated stably-free modules,
+    including the zero-ring case. Under IBN alone, two finite-index
+    presentations over a semiring give
+    equal cross-sums and integer coordinate differences, even when the presented
+    module is not separately assumed free or finite; no rank condition or
+    natural-number subtraction is used. No source-specific or whole-book
+    coverage is asserted.
+    Over arbitrary rings, a surjection from a stably-free module onto a finitely
+    generated stably-free module has stably-free kernel; the domain need not be
+    finitely generated, and this statement does not assert finite generation of
+    its kernel.
+    Finitely generated stably-free modules are exactly those linearly equivalent
+    to kernels of surjections between finite coordinate modules. Surjective
+    opposite-scalar matrix maps have finitely generated stably-free right-module
+    kernels, with left matrix coefficients. No IBN, rank condition, commutativity
+    or nonzero-ring hypothesis is needed, and kernel freeness is not asserted.
 
   main_results:
     - declaration: "IsBaseChange.toDualBaseChangeOfProjective"
@@ -135,6 +159,60 @@ status:
     - declaration: "Module.Free.rightIdealProdEndNatFinsuppEquiv"
       file: "ProjectiveModules/Free/CountableAbsorption.lean"
       note: "Corresponding absorption for complemented right ideals of a countable free endomorphism ring."
+    - declaration: "RingHom.rankCondition"
+      file: "ProjectiveModules/Free/InvariantBasisNumber.lean"
+      note: "Rank condition descends along any unital semiring homomorphism from a target with rank condition, with independent source and target universes; the map need not be injective or surjective."
+    - declaration: "RingHom.invariantBasisNumber"
+      file: "ProjectiveModules/Free/InvariantBasisNumber.lean"
+      note: "Invariant basis number descends along any unital semiring homomorphism from a target with invariant basis number; no rank-condition or injectivity premise is needed."
+    - declaration: "Module.exists_fin_prod_linearEquiv_iff_finite_isStablyFree"
+      file: "ProjectiveModules/Free/StablePresentation.lean"
+      note: "Over arbitrary rings, existence of a finite-coordinate stable presentation is equivalent to finite generation and stable freeness, without IBN or a nontriviality assumption."
+    - declaration: "Module.card_add_card_eq_of_prod_linearEquiv"
+      file: "ProjectiveModules/Free/StablePresentation.lean"
+      note: "IBN-only cross-sum equality for any two finite-index presentations over semirings, with independent index universes and no freeness premise on the presented module."
+    - declaration: "Module.int_card_sub_eq_of_prod_linearEquiv"
+      file: "ProjectiveModules/Free/StablePresentation.lean"
+      note: "The associated integer coordinate differences agree without a rank condition, nonnegativity or natural subtraction."
+    - declaration: "Module.IsStablyFree.ker_of_surjective"
+      file: "ProjectiveModules/Free/StableKernel.lean"
+      note: >-
+        Over an arbitrary ring, a surjection from a stably-free module onto a
+        finitely generated stably-free module has stably-free kernel. No finite
+        generation of the domain is assumed or of the kernel is concluded.
+    - declaration: "Module.finite_isStablyFree_iff_exists_fin_surjective_ker_equiv"
+      file: "ProjectiveModules/Free/StableKernel.lean"
+      note: >-
+        Over an arbitrary ring, a module is finitely generated and stably free
+        iff it is linearly equivalent to the kernel of a surjection between
+        Fin n and Fin m coordinate modules for some natural m and n. This asserts
+        neither a rank inequality nor an ordinary finite-presentation equivalence.
+    - declaration: "Matrix.finite_isStablyFree_ker_mulVecBilin_of_surjective"
+      file: "ProjectiveModules/Free/StableKernel.lean"
+      note: >-
+        For independently universe-polymorphic finite row and column index types
+        over any ring, a surjective Matrix.mulVecBilin R Rᵐᵒᵖ A has finitely
+        generated stably-free right-module kernel. Entries multiply coordinates
+        on the left as A i j * x j. Empty index types and zero rings are included
+        where surjectivity holds; no IBN, commutativity or free-kernel claim.
+    - declaration: "mk_eq_mk_of_basis_of_infinite"
+      file: "ProjectiveModules/Free/InfiniteCoordinates.lean"
+      note: "Equal lifted index cardinalities for two bases of the same module, when the first index is infinite over a nontrivial semiring; no IBN, SRC or commutativity."
+    - declaration: "Module.Basis.indexEquivOfInfinite"
+      file: "ProjectiveModules/Free/InfiniteCoordinates.lean"
+      note: "A choice of index equivalence for these bases; it need not carry one basis vector to another."
+    - declaration: "Module.Basis.indexEquivOfInfinite_eq_indexEquiv"
+      file: "ProjectiveModules/Free/InfiniteCoordinates.lean"
+      note: "Under IBN, the chosen index equivalence agrees with Basis.indexEquiv."
+    - declaration: "Finsupp.nonempty_linearEquiv_iff_equiv"
+      file: "ProjectiveModules/Free/InfiniteCoordinates.lean"
+      note: "With an infinite first index, free coordinate modules are linearly equivalent iff their index types are equivalent, including across index universes."
+    - declaration: "Finsupp.nonempty_linearEquiv_iff_lift_mk_eq"
+      file: "ProjectiveModules/Free/InfiniteCoordinates.lean"
+      note: "Equivalent lifted-cardinality criterion for free coordinates in distinct index universes."
+    - declaration: "Finsupp.not_nonempty_linearEquiv_of_infinite_finite"
+      file: "ProjectiveModules/Free/InfiniteCoordinates.lean"
+      note: "No linear equivalence from infinite to finite free coordinates over a nontrivial semiring."
     - declaration: "Module.free_of_finite_isStablyFree_of_isSemisimpleRing"
       file: "ProjectiveModules/Free/Semisimple.lean"
       note: "Finite stably-free modules over arbitrary semisimple rings are free; not all semisimple modules."
@@ -253,17 +331,14 @@ status:
 automation:
   methods:
     - method: "agent"
-      framework: "Hive-managed AI agents using Lean and Lake"
+      framework: "AI agents using Lean and Lake"
       tool_setup: >-
         Formal Frontier AI agents used Lean and mathlib APIs, compiler feedback
-        and tactics. Prism contributed foundations and retained adaptations;
-        other agents contributed semisimple, stable-category, exterior-power,
-        rank, componentwise-free and Noetherian developments. The original
-        Noetherian proof and clients are distinct from their later destination
-        transfer; see docs/CREDITS.md for contribution roles.
+        and tactics. Prism contributed original results; separately authored
+        mathematics and expression adaptations are credited in docs/CREDITS.md.
       prompting_notes: >-
-        Work emphasized exact hypotheses, handedness, independent universes,
-        useful APIs, reproducibility and independent proof/rights review.
+        Prompts emphasized exact hypotheses, handedness, independent universes
+        and reusable mathematical APIs.
   notes: >-
     Code and documentation include AI-agent contributions. AI generation
     alone establishes no originality, proof correctness or rights clearance.
@@ -283,6 +358,9 @@ fidelity:
     PID freeness allows arbitrary rank over a commutative PID; the Laurent
     endpoint covers one variable over a field, not general Quillen-Suslin.
     Finite-binder componentwise models retain finiteness and idempotence.
+    Infinite-coordinate results do not assert Module.rank equality or
+    finite-rank invariance; their chosen index equivalence need not preserve
+    basis vectors.
     None of this decides source-wide formalization.
 
 review:
@@ -302,3 +380,7 @@ acknowledgements: >-
   author, separately from project formalization authors. Project contributions
   are Apache-2.0; this assigns no copyright ownership or permission to
   relicense third-party expression.
+  Weibel's Definition I.1.2 motivates finite-free kernel splitting; the more
+  general kernel interfaces also use Mathlib's stably-free and matrix APIs and
+  Prism's (Formal Frontier) finite stable presentation and projective splitting
+  formalization.

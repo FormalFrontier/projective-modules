@@ -1,7 +1,7 @@
 # Native API documentation
 
-This release contains **44 Lean files**. [API.md](API.md) records an older,
-selected **43-module** native doc-gen4 run on original source
+The library includes modules beyond the historical API selection. [API.md](API.md)
+records an older, selected **43-module** native doc-gen4 run on original source
 `5d1b1b276d4a11ee6ce9ae238c9511de8dbec1e9`: forty mathematical leaves,
 the aggregate import root, an example module and a private regression client.
 It displays 469 declaration sites and has 477 database name rows (eight of them
@@ -9,10 +9,10 @@ non-displayed private names) and 47 module-documentation positions. In
 particular, `ProjectiveModules.Free.CountableCancellation` has five separate
 module-documentation positions. These counts describe the historical selection,
 **not** a complete inventory of the released Lean files or exported declarations.
-The later `ProjectiveModules/Module/CountablyGenerated/Noetherian.lean` is the
-44th file; its mathematics is described in the
-[countably generated submodule guide](NoetherianSubmodule.md), not in new native
-rows of this older API reference.
+The later [countably generated Noetherian submodule](../ProjectiveModules/Module/CountablyGenerated/Noetherian.lean)
+and [infinite free-coordinate classification](../ProjectiveModules/Free/InfiniteCoordinates.lean)
+results are outside this older API reference. See the
+[countably generated submodule guide](NoetherianSubmodule.md) for the former.
 
 The historical headers and source docstrings in [API.md](API.md) retain that
 run's attribution and provenance. Two `ComponentwiseFree` entries explicitly
@@ -28,8 +28,8 @@ names, modules and ranges; its `public_display_names` field describes historical
 *displayed* sites, including local-instance displays, not an exported-API census.
 
 The original source, genuine native records, SQLite database and invocation
-receipts needed to reproduce the historic binding are preserved privately with
-the issue #83 evidence. They are **not shipped**, and official public release
+receipts needed to reproduce the historic binding are preserved privately.
+They are **not shipped**, and official public release
 history alone does not provide those inputs. The neutral
 `source-snapshot/<commit>/<path>` identifiers are not public website links.
 The distinct predecessor run for `741139c83f21c72bfac3f9395a13185806781421`
@@ -62,7 +62,7 @@ Create the analysis directory first, then run `lake env /absolute/doc-gen4
 bibPrepass --build /absolute/rendered --none` and `lake env /absolute/doc-gen4
 fromDb --build /absolute/rendered --manifest /absolute/rendered/manifest.json
 /absolute/analysis/api.db`. Original invocation receipts and SQLite are
-preserved privately with issue #83, not shipped. Check the exact generated
+preserved privately, not shipped. Check the exact generated
 Markdown and source-binding manifest with:
 
 ```sh
@@ -91,7 +91,7 @@ generator loads dependencies and is not an independent kernel proof checker.
 The repaired Python controls use **synthetic** records reconstructed from this
 API to test adapter behavior and refusals; they do not supply original native
 data, regenerate the released API, or establish Lean evidence. Original native
-and proof provenance is retained privately with issue #83 rather than repeated
+and proof provenance is retained privately rather than repeated
 as a changing acceptance ledger here.
 
 The released root manifest pins mathlib

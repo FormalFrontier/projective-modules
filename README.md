@@ -61,6 +61,34 @@ Prism on behalf of the Formal Frontier source-maintainer team.
   [Laurent endpoint](ProjectiveModules/Module/LaurentPolynomial.lean)
   proves finite-projective freeness over the one-variable Laurent polynomial
   ring of a field, not multivariable Quillen–Suslin.
+- **Infinite free coordinates:** Over a nontrivial semiring, two bases of the
+  same module have equal lifted index cardinalities when the first index is
+  infinite, without invariant basis number, a rank condition or commutative
+  scalars. [The coordinate classification](ProjectiveModules/Free/InfiniteCoordinates.lean)
+  characterizes linear equivalences of infinite free coordinate modules by
+  equivalences of their indices, even across index universes, and excludes
+  finite target indices. Its chosen index equivalence need not map basis
+  vectors to basis vectors; finite-rank uniqueness is not asserted.
+- **Finite stable presentations:** Over an arbitrary ring, a module admits a
+  finite-coordinate stable presentation exactly when it is finitely generated
+  and stably free; stable freeness alone also permits infinite free modules.
+  [The finite stable presentation interface](ProjectiveModules/Free/StablePresentation.lean)
+  compares any two presentations over an invariant-basis-number semiring by a
+  cross-sum equality and a common *integer* coordinate difference, without
+  assuming that the presented module is free, that the ring is commutative,
+  or that a rank condition holds. This is not the generators-and-relations
+  notion `Module.FinitePresentation`.
+- **Stably free kernels:** A surjection from a stably free module onto a finite
+  stably free module has stably free kernel. Finite stably free modules are
+  precisely kernels of surjections between finite coordinate modules;
+  [finite matrix kernels](ProjectiveModules/Free/StableKernel.lean) specialize
+  this to right-linear maps over arbitrary rings, without an IBN hypothesis.
+- **Rank condition and invariant basis number:** Both properties pull back
+  along any unital homomorphism of semirings, without injectivity or
+  surjectivity. [The rank-condition pullback](ProjectiveModules/Free/InvariantBasisNumber.lean)
+  assumes the target has rank condition; the invariant-basis-number pullback
+  assumes only target invariant basis number, not rank condition. Source and
+  target may inhabit independent universes.
 
 These are declarations of this library whose proofs reuse its pinned
 [dependencies](#build); they are not presented as imported results or as
@@ -104,7 +132,8 @@ aggregate import.
 | --- | --- |
 | [Dual](ProjectiveModules/Dual/BaseChange.lean), [Contraction](ProjectiveModules/Contraction/BaseChange.lean), [Invertible](ProjectiveModules/Invertible/OfRankOne.lean) | Dual/evaluation base change, rank-one iff, scalar endomorphisms and finite-summand cancellation |
 | [Exterior algebra](ProjectiveModules/ExteriorAlgebra/BaseChange.lean), [exterior powers](ProjectiveModules/ExteriorPower/DirectSum.lean) | Full algebra base change; projective powers, determinants/top powers and binary fixed-degree Sum Formula |
-| [Free modules](ProjectiveModules/Free/CountableCancellation.lean) | Countable cancellation/absorption; finite stably-free semisimple endpoint |
+| [Free modules](ProjectiveModules/Free/CountableCancellation.lean), [infinite coordinates](ProjectiveModules/Free/InfiniteCoordinates.lean), [rank conditions](ProjectiveModules/Free/InvariantBasisNumber.lean) | Countable cancellation/absorption; finite stably-free semisimple endpoint; infinite basis cardinality and free-coordinate classification without IBN; semiring-homomorphism pullbacks of rank condition and IBN |
+| [Finite stable presentations](ProjectiveModules/Free/StablePresentation.lean) | Arbitrary-ring finite/stably-free existence equivalence; IBN-only cross-sum and integer-difference invariance for semirings |
 | [Balanced tensor](ProjectiveModules/Module/BalancedTensorProduct.lean), [right extension](ProjectiveModules/Module/RightExtension.lean) | Right-module scalar extension over arbitrary ring homomorphisms, quotients, finite free coordinates |
 | [Right endomorphism matrices](ProjectiveModules/Module/RightEndomorphismMatrix.lean) | Column convention and quasi-regular quotient unit reflection |
 | [Local projectives](ProjectiveModules/Module/LocalProjective.lean), [arbitrary local freeness](ProjectiveModules/Module/ArbitraryLocalProjectiveFree.lean) | Finite, countable and arbitrary-rank right-module routes under proper-ideal/unit-complement hypotheses |
@@ -115,7 +144,9 @@ aggregate import.
 | [PID](ProjectiveModules/Module/PID.lean), [Laurent](ProjectiveModules/Module/LaurentPolynomial.lean) | Arbitrary-rank commutative PID freeness; one-variable Laurent finite-projective freeness |
 
 `ProjectiveModules/Module/ComponentwiseFreeExamples.lean` and
-`tests/PublicAPIClient.lean` are regression clients, not modules of the
+`tests/PublicAPIClient.lean` and
+`tests/ProjectiveModulesTests/InfiniteCoordinatesClient.lean` are regression
+clients, not modules of the
 production aggregate. The project’s [documentation index](docs/README.md)
 links the historical generated [API](docs/API.md) and
 [Noetherian guide](docs/NoetherianSubmodule.md).
@@ -202,11 +233,12 @@ The [API index](docs/README.md) and [generated API](docs/API.md) describe a
 **historical** native output for 43 modules at source `5d1b1b2`: 469 displayed
 sites, 477 database names and 47 module-documentation ranges. Later
 source-inspected finite-binder and link corrections are not a new native run.
-This release includes a 44th Lean module defining the Noetherian theorem,
-outside that generated API. Header-only edits likewise change source hashes
+The Noetherian and infinite-coordinate modules added since that historical
+output are outside the generated API. Header-only edits likewise change source hashes
 without moving declaration line anchors. The historical API is not an
 exhaustive current catalogue; use the actual modules and the focused
-[Noetherian guide](docs/NoetherianSubmodule.md). No successful current API
+[Noetherian guide](docs/NoetherianSubmodule.md) and the
+[infinite-coordinate module](ProjectiveModules/Free/InfiniteCoordinates.lean). No successful current API
 regeneration is represented here.
 
 The full exterior-algebra base-change interface is not fixed-degree scalar
@@ -225,8 +257,10 @@ Original Formal Frontier contributions are released under
 AI agents developed and documented the library: Prism contributed the
 foundational mathematics and retained source-expression adaptations; other
 agents contributed the stable category, exterior Sum Formula, rank and
-componentwise-free constructions, semisimple endpoint, the original Noetherian
-proof and its distinct later transfer/assembly. See [credits](docs/CREDITS.md)
+componentwise-free constructions, semisimple endpoint, and the original
+Noetherian proof and clients; a separate agent contributed the Noetherian
+theorem’s library adaptation, public imports and adapted documentation.
+See [credits](docs/CREDITS.md)
 for truthful roles and provenance. These credits do not assign copyright
 ownership, assert human mathematical review or source-author endorsement,
 or relicense dependency code or Weibel’s book; no book text or PDF is shipped.

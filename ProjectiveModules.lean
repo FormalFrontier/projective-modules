@@ -16,7 +16,11 @@ public import ProjectiveModules.ExteriorPower.Projective
 public import ProjectiveModules.ExteriorPower.Top
 public import ProjectiveModules.Free.CountableAbsorption
 public import ProjectiveModules.Free.CountableCancellation
+public import ProjectiveModules.Free.InfiniteCoordinates
+public import ProjectiveModules.Free.InvariantBasisNumber
 public import ProjectiveModules.Free.Semisimple
+public import ProjectiveModules.Free.StablePresentation
+public import ProjectiveModules.Free.StableKernel
 public import ProjectiveModules.Invertible.Endomorphism
 public import ProjectiveModules.Invertible.OfRankOne
 public import ProjectiveModules.Invertible.StableCancellation
