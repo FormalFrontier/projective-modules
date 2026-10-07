@@ -6,7 +6,7 @@ Authors: Formal Frontier Agents
 -- Contributors: Formal Frontier Agents, including Prism; see docs/CREDITS.md
 module
 
-import ProjectiveModules
+public import ProjectiveModules
 import ProjectiveModules.Module.ComponentwiseFreeExamples
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.RingTheory.PrincipalIdealDomain
@@ -16,8 +16,9 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 
 The production API is consumed through `ProjectiveModules`, without `import all`.
 The second import deliberately brings the eight existing internal example proofs
-into the default test closure; it adds no production export. These private clients
-check explicit conclusions and boundary hypotheses, not full release verification.
+into the default test closure; it adds no production export. The rank-one
+characterization is exposed here; the remaining private clients check explicit
+conclusions and boundary hypotheses, not full release verification.
 -/
 
 set_option warningAsError true
@@ -34,7 +35,8 @@ section Commutative
 variable {R : Type u} [CommRing R] {M : Type v} [AddCommGroup M] [Module R M]
 
 -- Deliberately before any finite/projective/invertible instance variables.
-private theorem rank_one_iff :
+/-- Invertible modules are exactly the finite projective modules of rank one at each stalk. -/
+public theorem rank_one_iff :
     Module.Invertible R M ↔ Module.Finite R M ∧ Module.Projective R M ∧
       Module.rankAtStalk (R := R) M = 1 :=
   Module.invertible_iff_finite_projective_rankAtStalk_eq_one

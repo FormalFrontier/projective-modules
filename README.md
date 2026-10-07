@@ -69,6 +69,13 @@ Prism on behalf of the Formal Frontier source-maintainer team.
   equivalences of their indices, even across index universes, and excludes
   finite target indices. Its chosen index equivalence need not map basis
   vectors to basis vectors; finite-rank uniqueness is not asserted.
+- **Fixed-simple multiplicity:** For a simple left module `S` over an arbitrary
+  ring and a semisimple module isotypic of type `S`, the
+  [multiplicity interface](ProjectiveModules/Module/IsotypicMultiplicity.lean)
+  defines a cardinal using the rank of `Hom(S, M)` over the opposite division
+  ring of `End(S)`. Its statements compare arbitrary direct-sum indices across
+  universes and cover zero and one copy. They do not assign a multiplicity of
+  all of `M` when `M` is not semisimple and isotypic of the specified simple type.
 - **Finite stable presentations:** Over an arbitrary ring, a module admits a
   finite-coordinate stable presentation exactly when it is finitely generated
   and stably free; stable freeness alone also permits infinite free modules.
@@ -133,6 +140,7 @@ aggregate import.
 | [Dual](ProjectiveModules/Dual/BaseChange.lean), [Contraction](ProjectiveModules/Contraction/BaseChange.lean), [Invertible](ProjectiveModules/Invertible/OfRankOne.lean) | Dual/evaluation base change, rank-one iff, scalar endomorphisms and finite-summand cancellation |
 | [Exterior algebra](ProjectiveModules/ExteriorAlgebra/BaseChange.lean), [exterior powers](ProjectiveModules/ExteriorPower/DirectSum.lean) | Full algebra base change; projective powers, determinants/top powers and binary fixed-degree Sum Formula |
 | [Free modules](ProjectiveModules/Free/CountableCancellation.lean), [infinite coordinates](ProjectiveModules/Free/InfiniteCoordinates.lean), [rank conditions](ProjectiveModules/Free/InvariantBasisNumber.lean) | Countable cancellation/absorption; finite stably-free semisimple endpoint; infinite basis cardinality and free-coordinate classification without IBN; semiring-homomorphism pullbacks of rank condition and IBN |
+| [Fixed-simple multiplicity](ProjectiveModules/Module/IsotypicMultiplicity.lean) | Hom-dimension cardinal of a semisimple isotypic module, direct-sum cardinal statements and linear-equivalence invariance |
 | [Finite stable presentations](ProjectiveModules/Free/StablePresentation.lean) | Arbitrary-ring finite/stably-free existence equivalence; IBN-only cross-sum and integer-difference invariance for semirings |
 | [Balanced tensor](ProjectiveModules/Module/BalancedTensorProduct.lean), [right extension](ProjectiveModules/Module/RightExtension.lean) | Right-module scalar extension over arbitrary ring homomorphisms, quotients, finite free coordinates |
 | [Right endomorphism matrices](ProjectiveModules/Module/RightEndomorphismMatrix.lean) | Column convention and quasi-regular quotient unit reflection |

@@ -35,6 +35,7 @@ public import ProjectiveModules.Module.CountablyGenerated.Noetherian
 public import ProjectiveModules.Module.ComponentwiseFree
 public import ProjectiveModules.Module.HomExact
 public import ProjectiveModules.Module.InvariantSupportedProjection
+public import ProjectiveModules.Module.IsotypicMultiplicity
 public import ProjectiveModules.Module.LaurentPolynomial
 public import ProjectiveModules.Module.LocalProjective
 public import ProjectiveModules.Module.LocalProjectiveElement

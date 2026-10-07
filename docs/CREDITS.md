@@ -17,6 +17,7 @@ distinct from credit for library adaptations, public interfaces and documentatio
 | Locally constant rank realization | Formal Frontier agent contributing the realization construction |
 | Rank-fiber decomposition | Formal Frontier agent contributing the decomposition |
 | Componentwise-free models, classification and examples | Formal Frontier agent contributing the componentwise-free development |
+| Fixed-simple cardinal multiplicity definition and statement interface | Formal Frontier agent contributing the simple-type interface, using Mathlib's isotypic decomposition and Schur's lemma and the existing library Hom action |
 | Fixed-degree binary exterior-power Sum Formula | Formal Frontier agent contributing the direct-sum construction, separately from Prism’s retained exterior diagnostic |
 | Countably generated submodules over left-Noetherian rings, the detailed guide and two private integer-finsupp client expressions | Formal Frontier agent contributing the original proof and clients; a separate contributor authored the theorem’s library adaptation, public imports and adapted documentation |
 
