@@ -76,6 +76,12 @@ Prism on behalf of the Formal Frontier source-maintainer team.
   ring of `End(S)`. Its statements compare arbitrary direct-sum indices across
   universes and cover zero and one copy. They do not assign a multiplicity of
   all of `M` when `M` is not semisimple and isotypic of the specified simple type.
+- **Right matrix rows:** Over a division ring and a finite nonempty index type,
+  the canonical opposite-matrix action on a row is simple. The
+  [matrix-row interface](ProjectiveModules/Module/MatrixRow.lean) identifies
+  every right module as isotypic of this row and supplies a direct-sum
+  decomposition without a finite-generation or nonzero-module assumption.
+  Its multiplicity is given by the fixed-simple interface above.
 - **Finite stable presentations:** Over an arbitrary ring, a module admits a
   finite-coordinate stable presentation exactly when it is finitely generated
   and stably free; stable freeness alone also permits infinite free modules.
@@ -141,6 +147,7 @@ aggregate import.
 | [Exterior algebra](ProjectiveModules/ExteriorAlgebra/BaseChange.lean), [exterior powers](ProjectiveModules/ExteriorPower/DirectSum.lean) | Full algebra base change; projective powers, determinants/top powers and binary fixed-degree Sum Formula |
 | [Free modules](ProjectiveModules/Free/CountableCancellation.lean), [infinite coordinates](ProjectiveModules/Free/InfiniteCoordinates.lean), [rank conditions](ProjectiveModules/Free/InvariantBasisNumber.lean) | Countable cancellation/absorption; finite stably-free semisimple endpoint; infinite basis cardinality and free-coordinate classification without IBN; semiring-homomorphism pullbacks of rank condition and IBN |
 | [Fixed-simple multiplicity](ProjectiveModules/Module/IsotypicMultiplicity.lean) | Hom-dimension cardinal of a semisimple isotypic module, direct-sum cardinal statements and linear-equivalence invariance |
+| [Right matrix rows](ProjectiveModules/Module/MatrixRow.lean) | Canonical opposite-matrix row simplicity, fixed-row isotypy and arbitrary direct-sum decompositions |
 | [Finite stable presentations](ProjectiveModules/Free/StablePresentation.lean) | Arbitrary-ring finite/stably-free existence equivalence; IBN-only cross-sum and integer-difference invariance for semirings |
 | [Balanced tensor](ProjectiveModules/Module/BalancedTensorProduct.lean), [right extension](ProjectiveModules/Module/RightExtension.lean) | Right-module scalar extension over arbitrary ring homomorphisms, quotients, finite free coordinates |
 | [Right endomorphism matrices](ProjectiveModules/Module/RightEndomorphismMatrix.lean) | Column convention and quasi-regular quotient unit reflection |

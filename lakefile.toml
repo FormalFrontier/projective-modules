@@ -29,4 +29,4 @@ name = "ProjectiveModules"
 [[lean_lib]]
 name = "ProjectiveModulesTests"
 srcDir = "tests"
-roots = ["PublicAPIClient", "ProjectiveModulesTests.InfiniteCoordinatesClient", "ProjectiveModulesTests.InvariantBasisNumberClient", "ProjectiveModulesTests.StablePresentationClient", "ProjectiveModulesTests.StableKernelClient", "ProjectiveModulesTests.IsotypicMultiplicityClient"]
+roots = ["PublicAPIClient", "ProjectiveModulesTests.InfiniteCoordinatesClient", "ProjectiveModulesTests.InvariantBasisNumberClient", "ProjectiveModulesTests.StablePresentationClient", "ProjectiveModulesTests.StableKernelClient", "ProjectiveModulesTests.IsotypicMultiplicityClient", "ProjectiveModulesTests.MatrixRowClient"]
