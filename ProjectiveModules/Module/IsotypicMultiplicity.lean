@@ -24,6 +24,8 @@ The characterization compares this cardinal with every direct-sum decomposition,
 including decompositions indexed in unrelated universes.
 Its proof uses Schur's lemma, finite generation of a simple module, and Mathlib's
 finite-source Hom/direct-sum bijection.
+For a chosen ring equivalence, semilinear equivalences of both the ambient modules
+and the specified simple modules compare the same cardinal after universe lifts.
 
 The simple-type and semisimplicity assumptions are essential. Over `k × k` for
 a field `k`, the two simple modules `k × 0` and `0 × k` cannot both be counted
@@ -39,6 +41,9 @@ Charles A. Weibel, *The K-book*, Example I.1.1.1, motivates the number of
 copies of a simple module over a simple Artinian ring. This interface instead
 fixes an arbitrary simple left module over an arbitrary ring. It does not
 identify concrete right row modules or assert a rank formula for nonfree modules.
+Mathlib's `LinearEquiv.arrowCongrAddEquiv`, `LinearEquiv.conjRingEquiv`, and
+`lift_rank_eq_of_equiv_equiv` provide the transport primitives for a chosen
+change of coefficient ring.
 -/
 
 @[expose] public section
@@ -47,7 +52,7 @@ noncomputable section
 
 open Cardinal
 
-universe u v w x
+universe u v w x y z
 
 private theorem endOpp_isUnit_of_ne_zero
     {A : Type u} [Ring A] {S : Type v} [AddCommGroup S] [Module A S]
@@ -210,6 +215,33 @@ theorem lift_multiplicity_eq_of_linearEquiv
   have hr := (linearMapCongrRight (S := S) e).lift_rank_eq
   apply (Cardinal.lift_inj.{_, w}).mp
   simpa only [multiplicity_eq_rank, Cardinal.lift_lift] using hr
+
+attribute [local instance] RingHomInvPair.of_ringEquiv
+
+/-- Semilinear equivalences over the same chosen ring equivalence preserve the
+cardinal multiplicity of corresponding simple types, across independent universes.
+No finiteness or commutativity of the coefficient rings is required. -/
+theorem lift_multiplicity_eq_of_semilinearEquiv
+    {B : Type z} [Ring B] {N : Type x} [AddCommGroup N] [Module B N]
+    [IsSemisimpleModule B N] {T : Type y} [AddCommGroup T] [Module B T]
+    [IsSimpleModule B T] (hM : IsIsotypicOfType A M S)
+    (hN : IsIsotypicOfType B N T) (e : A ≃+* B)
+    (eM : M ≃ₛₗ[(e : A →+* B)] N) (eS : S ≃ₛₗ[(e : A →+* B)] T) :
+    Cardinal.lift.{max x y} hM.multiplicity =
+      Cardinal.lift.{max v w} hN.multiplicity := by
+  let ringEquivalence : (Module.End A S)ᵐᵒᵖ ≃+* (Module.End B T)ᵐᵒᵖ :=
+    RingEquiv.op (LinearEquiv.conjRingEquiv eS)
+  let homEquivalence : (S →ₗ[A] M) ≃+ (T →ₗ[B] N) :=
+    LinearEquiv.arrowCongrAddEquiv eS eM
+  have compatible (a : (Module.End A S)ᵐᵒᵖ) (f : S →ₗ[A] M) :
+      homEquivalence (a • f) = ringEquivalence a • homEquivalence f := by
+    ext t
+    change eM.toLinearMap (f (a.unop (eS.invFun t))) =
+      eM.toLinearMap (f (eS.invFun (eS.toFun (a.unop (eS.invFun t)))))
+    rw [eS.left_inv]
+  simpa only [multiplicity_eq_rank] using
+    lift_rank_eq_of_equiv_equiv ringEquivalence homEquivalence
+      ringEquivalence.bijective compatible
 
 /-- A zero module has no copies of a simple module. -/
 theorem multiplicity_eq_zero_of_subsingleton [Subsingleton M]

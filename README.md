@@ -74,8 +74,12 @@ Prism on behalf of the Formal Frontier source-maintainer team.
   [multiplicity interface](ProjectiveModules/Module/IsotypicMultiplicity.lean)
   defines a cardinal using the rank of `Hom(S, M)` over the opposite division
   ring of `End(S)`. Its statements compare arbitrary direct-sum indices across
-  universes and cover zero and one copy. They do not assign a multiplicity of
-  all of `M` when `M` is not semisimple and isotypic of the specified simple type.
+  universes, cover zero and one copy, and preserve multiplicity under a chosen
+  ring equivalence with compatible semilinear equivalences of ambient modules
+  and specified simple types, using independent universe lifts. Both types must
+  be simple and both ambient modules semisimple and isotypic of their specified
+  types. They do not assign a multiplicity of all of `M` when `M` is not
+  semisimple and isotypic of the specified simple type.
 - **Right matrix rows:** Over a division ring and a finite nonempty index type,
   the canonical opposite-matrix action on a row is simple. The
   [matrix-row interface](ProjectiveModules/Module/MatrixRow.lean) identifies
@@ -156,7 +160,7 @@ aggregate import.
 | [Dual](ProjectiveModules/Dual/BaseChange.lean), [Contraction](ProjectiveModules/Contraction/BaseChange.lean), [Invertible](ProjectiveModules/Invertible/OfRankOne.lean) | Dual/evaluation base change, rank-one iff, scalar endomorphisms and finite-summand cancellation |
 | [Exterior algebra](ProjectiveModules/ExteriorAlgebra/BaseChange.lean), [exterior powers](ProjectiveModules/ExteriorPower/DirectSum.lean) | Full algebra base change; projective powers, determinants/top powers and binary fixed-degree Sum Formula |
 | [Free modules](ProjectiveModules/Free/CountableCancellation.lean), [infinite coordinates](ProjectiveModules/Free/InfiniteCoordinates.lean), [rank conditions](ProjectiveModules/Free/InvariantBasisNumber.lean) | Countable cancellation/absorption; finite stably-free semisimple endpoint; infinite basis cardinality and free-coordinate classification without IBN; semiring-homomorphism pullbacks of rank condition and IBN |
-| [Fixed-simple multiplicity](ProjectiveModules/Module/IsotypicMultiplicity.lean) | Hom-dimension cardinal of a semisimple isotypic module, direct-sum cardinal statements and linear-equivalence invariance |
+| [Fixed-simple multiplicity](ProjectiveModules/Module/IsotypicMultiplicity.lean) | Hom-dimension cardinal of a semisimple isotypic module, direct-sum cardinal statements and invariance under compatible linear or chosen-ring semilinear equivalences, with universe lifts |
 | [Right matrix rows](ProjectiveModules/Module/MatrixRow.lean) | Canonical opposite-matrix row simplicity, fixed-row isotypy and arbitrary direct-sum decompositions |
 | [Scalar rank](ProjectiveModules/Module/ScalarRank.lean) | Compatible-scalar rank times fixed-simple multiplicity; canonical noncommutative right matrix-row dimension |
 | [Finite stable presentations](ProjectiveModules/Free/StablePresentation.lean) | Arbitrary-ring finite/stably-free existence equivalence; IBN-only cross-sum and integer-difference invariance for semirings |
