@@ -37,6 +37,7 @@ public import ProjectiveModules.Module.HomExact
 public import ProjectiveModules.Module.InvariantSupportedProjection
 public import ProjectiveModules.Module.IsotypicMultiplicity
 public import ProjectiveModules.Module.MatrixRow
+public import ProjectiveModules.Module.ScalarRank
 public import ProjectiveModules.Module.LaurentPolynomial
 public import ProjectiveModules.Module.LocalProjective
 public import ProjectiveModules.Module.LocalProjectiveElement

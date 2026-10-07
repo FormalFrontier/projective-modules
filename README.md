@@ -82,6 +82,16 @@ Prism on behalf of the Formal Frontier source-maintainer team.
   every right module as isotypic of this row and supplies a direct-sum
   decomposition without a finite-generation or nonzero-module assumption.
   Its multiplicity is given by the fixed-simple interface above.
+- **Scalar rank of fixed-simple modules:** For a scalar semiring satisfying
+  the strong rank condition, a fixed simple type free over those scalars,
+  and compatible scalar actions,
+  the [scalar-rank interface](ProjectiveModules/Module/ScalarRank.lean) compares
+  the scalar rank of a semisimple isotypic module with the rank of one simple
+  summand times its cardinal multiplicity. Restriction along the opposite of
+  `Matrix.scalar` identifies the canonical row action with componentwise
+  right multiplication and gives the corresponding dimension identity for
+  every right module over `Matrix ι ι D`, with `D` a division ring and `ι`
+  finite and nonempty, including nonfree modules and infinite direct sums.
 - **Finite stable presentations:** Over an arbitrary ring, a module admits a
   finite-coordinate stable presentation exactly when it is finitely generated
   and stably free; stable freeness alone also permits infinite free modules.
@@ -148,6 +158,7 @@ aggregate import.
 | [Free modules](ProjectiveModules/Free/CountableCancellation.lean), [infinite coordinates](ProjectiveModules/Free/InfiniteCoordinates.lean), [rank conditions](ProjectiveModules/Free/InvariantBasisNumber.lean) | Countable cancellation/absorption; finite stably-free semisimple endpoint; infinite basis cardinality and free-coordinate classification without IBN; semiring-homomorphism pullbacks of rank condition and IBN |
 | [Fixed-simple multiplicity](ProjectiveModules/Module/IsotypicMultiplicity.lean) | Hom-dimension cardinal of a semisimple isotypic module, direct-sum cardinal statements and linear-equivalence invariance |
 | [Right matrix rows](ProjectiveModules/Module/MatrixRow.lean) | Canonical opposite-matrix row simplicity, fixed-row isotypy and arbitrary direct-sum decompositions |
+| [Scalar rank](ProjectiveModules/Module/ScalarRank.lean) | Compatible-scalar rank times fixed-simple multiplicity; canonical noncommutative right matrix-row dimension |
 | [Finite stable presentations](ProjectiveModules/Free/StablePresentation.lean) | Arbitrary-ring finite/stably-free existence equivalence; IBN-only cross-sum and integer-difference invariance for semirings |
 | [Balanced tensor](ProjectiveModules/Module/BalancedTensorProduct.lean), [right extension](ProjectiveModules/Module/RightExtension.lean) | Right-module scalar extension over arbitrary ring homomorphisms, quotients, finite free coordinates |
 | [Right endomorphism matrices](ProjectiveModules/Module/RightEndomorphismMatrix.lean) | Column convention and quasi-regular quotient unit reflection |
