@@ -16,6 +16,7 @@ public import ProjectiveModules.ExteriorPower.Projective
 public import ProjectiveModules.ExteriorPower.Top
 public import ProjectiveModules.Free.CountableAbsorption
 public import ProjectiveModules.Free.CountableCancellation
+public import ProjectiveModules.Free.CyclicTrace
 public import ProjectiveModules.Free.InfiniteCoordinates
 public import ProjectiveModules.Free.InvariantBasisNumber
 public import ProjectiveModules.Free.FiniteFreeSummand

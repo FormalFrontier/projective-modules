@@ -124,6 +124,14 @@ Prism on behalf of the Formal Frontier source-maintainer team.
   assumes the target has rank condition; the invariant-basis-number pullback
   assumes only target invariant basis number, not rank condition. Source and
   target may inhabit independent universes.
+- **Cyclic additive traces and invariant basis number:** For an additive
+  commutative monoid with multiplication, a cyclic additive map into any
+  additive commutative monoid identifies the traces of opposite matrix
+  products for finite (possibly empty) rectangular index types. Over a
+  semiring, injectivity of the natural multiples of the image of one under
+  such a map implies invariant basis number, without multiplication on the
+  target or a rank condition on the source. See the
+  [cyclic trace criteria](ProjectiveModules/Free/CyclicTrace.lean).
 
 These are declarations of this library whose proofs reuse its pinned
 [dependencies](#build); they are not presented as imported results or as

@@ -58,3 +58,15 @@ redistributed here. AI involvement, a bibliographic citation and project
 licensing do not establish copyright ownership, human review, source-author
 endorsement, permission to relicense third-party content or complete
 formalization of the book.
+
+P. M. Cohn, *Some remarks on the invariant basis property*, §3, Proposition
+3.1 and its corollary, supplies the ring/additive-commutator trace argument;
+C. A. Weibel, *The K-book: An Introduction to Algebraic K-theory*, Exercise
+I.1.2 motivates the invariant-basis-number application. Using Mathlib's
+matrix trace and invariant-basis-number interfaces, the library proves a
+finite rectangular trace identity with only additive commutative monoids
+and source multiplication, and a semiring invariant-basis-number criterion
+with an arbitrary additive commutative monoid target. Both assume a cyclic
+additive map; the criterion also assumes injective natural multiples of its
+value at one. Neither constructs a universal trace or ring or a strictness
+example.

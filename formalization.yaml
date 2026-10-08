@@ -327,6 +327,46 @@ status:
     - declaration: "ModuleCat.componentwiseFreeSkeletonEquiv"
       file: "ProjectiveModules/Module/ComponentwiseFree.lean"
       note: "Locally constant ranks classify the skeleton of componentwise-free finite projectives, not all finite projectives."
+    - declaration: "Module.End.subsingleton_of_linearEquiv_prod"
+      file: "ProjectiveModules/Module/SummandCancellation.lean"
+      note: >-
+        Over a semiring, a Dedekind-finite endomorphism monoid of M forces P to
+        be subsingleton whenever M is linearly equivalent to M × P. Neither
+        finite generation nor freeness is needed; scalar, M and P universes
+        are independent.
+    - declaration: "RankCondition.card_le_of_linearEquiv_prod"
+      file: "ProjectiveModules/Free/FiniteFreeSummand.lean"
+      note: >-
+        Over a semiring with the rank condition, finite bases of M and N give
+        the target basis cardinality at most the source basis cardinality if
+        M is linearly equivalent to N × P for any semimodule P. Scalar, module,
+        complement and basis-index universes are independent.
+    - declaration: "IsStablyFiniteRing.subsingleton_of_linearEquiv_prod"
+      file: "ProjectiveModules/Free/FiniteFreeSummand.lean"
+      note: >-
+        A finite-free semimodule over a stably finite semiring cancels from an
+        equivalence with itself times any complementary semimodule; scalar,
+        module and complement universes are independent.
+    - declaration: "IsStablyFiniteRing.subsingleton_of_finite_projective_linearEquiv_prod"
+      file: "ProjectiveModules/Free/FiniteFreeSummand.lean"
+      note: >-
+        A finite projective module over a stably finite ring cancels from an
+        equivalence with itself times any complementary module, with independent
+        scalar, module and complement universes.
+    - declaration: "rankCondition_iff_le_of_fin_linearEquiv_fin_prod"
+      file: "ProjectiveModules/Free/FiniteFreeSummand.lean"
+      note: >-
+        For a ring, the rank condition is equivalent to n ≤ m whenever a finite
+        coordinate module of size m is linearly equivalent to one of size n
+        times a complementary module in the ring's universe. The converse does
+        not assert splitting for arbitrary semirings.
+    - declaration: "isStablyFiniteRing_iff_subsingleton_of_fin_linearEquiv_fin_prod"
+      file: "ProjectiveModules/Free/FiniteFreeSummand.lean"
+      note: >-
+        For a ring, stable finiteness is equivalent to every equivalence from
+        the finite coordinate module of size n to itself times P forcing P to
+        be subsingleton, for complements P in the ring's universe. No
+        arbitrary-semiring converse is claimed.
 
 automation:
   methods:
