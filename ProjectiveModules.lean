@@ -18,6 +18,7 @@ public import ProjectiveModules.Free.CountableAbsorption
 public import ProjectiveModules.Free.CountableCancellation
 public import ProjectiveModules.Free.InfiniteCoordinates
 public import ProjectiveModules.Free.InvariantBasisNumber
+public import ProjectiveModules.Free.FiniteFreeSummand
 public import ProjectiveModules.Free.Semisimple
 public import ProjectiveModules.Free.StablePresentation
 public import ProjectiveModules.Free.StableKernel
@@ -45,6 +46,7 @@ public import ProjectiveModules.Module.LocallyConstantRank
 public import ProjectiveModules.Module.MinimalSupport
 public import ProjectiveModules.Module.PID
 public import ProjectiveModules.Module.ProjectiveComplement
+public import ProjectiveModules.Module.SummandCancellation
 public import ProjectiveModules.Module.RankFiberDecomposition
 public import ProjectiveModules.Module.RightEndomorphismMatrix
 public import ProjectiveModules.Module.RightExtension

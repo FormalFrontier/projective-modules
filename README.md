@@ -61,6 +61,14 @@ Prism on behalf of the Formal Frontier source-maintainer team.
   [Laurent endpoint](ProjectiveModules/Module/LaurentPolynomial.lean)
   proves finite-projective freeness over the one-variable Laurent polynomial
   ring of a field, not multivariable Quillen–Suslin.
+- **Finite direct summands:** A Dedekind-finite endomorphism monoid forces the
+  complement in `M ≃ₗ[R] M × P` to be trivial
+  ([generic cancellation](ProjectiveModules/Module/SummandCancellation.lean)).
+  [Finite-free and finite-projective cancellation](ProjectiveModules/Free/FiniteFreeSummand.lean)
+  specialize this to stably finite semirings and rings, respectively; a rank
+  condition bounds the ranks of finite-free direct summands. Over rings,
+  finite-coordinate product equivalences characterize both the rank condition
+  and stable finiteness. The complementary module need not be finite or free.
 - **Infinite free coordinates:** Over a nontrivial semiring, two bases of the
   same module have equal lifted index cardinalities when the first index is
   infinite, without invariant basis number, a rank condition or commutative
