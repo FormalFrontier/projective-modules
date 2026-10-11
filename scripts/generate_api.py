@@ -6,7 +6,7 @@
 This fixed-library adapter checks source bytes, display identities, signatures,
 docstring contents, and module records. Native generation and proof checks remain
 separate evidence; a matching data file alone does not authenticate its producer.
-Adapted from accepted Stable Range native/range binding, with actual module docs.
+Adapted from Stable Range's native-data/range-binding implementation, with module docs.
 """
 
 import argparse

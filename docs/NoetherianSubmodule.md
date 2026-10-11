@@ -55,7 +55,7 @@ the existing default production and ordinary-client targets:
 
 ```sh
 lake exe cache get
-lake --wfail -KwarningAsError=true build
+lake build
 ```
 
 This guide is authored mathematical documentation, not generated API output.

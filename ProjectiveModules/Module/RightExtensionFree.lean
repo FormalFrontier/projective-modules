@@ -28,7 +28,9 @@ namespace Module
 variable (R : Type uR) [Semiring R]
 variable (ι : Type uι)
 
-/-- The standard free module over `Rᵐᵒᵖ`, written with coordinates in `R`. -/
+/-- The coordinatewise equivalence between opposite-valued and right-valued
+function modules. When `ι` is finite, these are the standard finite free right
+modules; no freeness assertion is made for arbitrary function modules. -/
 noncomputable def rightFreeCoordEquiv :
     (ι → Rᵐᵒᵖ) ≃ₗ[Rᵐᵒᵖ] (ι → R) :=
   LinearEquiv.piCongrRight fun _ ↦

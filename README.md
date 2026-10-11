@@ -161,8 +161,8 @@ complete coverage of a motivating book.
 
 Use `import ProjectiveModules` for the production aggregate, or import a
 focused module from the [module map](#module-map). No source-research
-repository is needed to use the library. The official private GitHub repository
-is `https://github.com/FormalFrontier/projective-modules.git` (access required).
+repository is needed to use the library. The official public GitHub repository
+is `https://github.com/FormalFrontier/projective-modules.git`.
 
 ```lean
 import ProjectiveModules
@@ -260,14 +260,16 @@ roots are built by:
 
 ```sh
 lake exe cache get
-lake --wfail -KwarningAsError=true build
+lake build
 ```
 
 The default targets are `ProjectiveModules` and `ProjectiveModulesTests`;
 the latter compiles example and ordinary-import regression modules. A focused
-check after the cache fetch is `lake --wfail build ProjectiveModules` or
-`lake --wfail build ProjectiveModulesTests`. The root resolves mathlib
-`83abb3e776bdefcbc447a1e44d0debe4010039e5`, GLG
+check after the cache fetch is `lake build ProjectiveModules` or
+`lake build ProjectiveModulesTests`. The test target includes an intentionally
+private finite-projective importing client, which can report a `privateModule`
+warning. These ordinary commands do not make warnings fatal. The root resolves
+mathlib `83abb3e776bdefcbc447a1e44d0debe4010039e5`, GLG
 `1f8fd3e39080be39586ea22fa56c157167eefd00` and Stable Range
 `9ac79cf93ac2d7f3e22c660100a65592df5ac976`; both latter libraries
 declare an older mathlib `e37d88a26f3791ed5a93daa1f949af1021b8d103`.
@@ -298,7 +300,8 @@ full-dependency build. Neither run establishes a process or memory bound.
 The [API index](docs/README.md) and [generated API](docs/API.md) describe a
 **historical** native output for 43 modules at source `5d1b1b2`: 469 displayed
 sites, 477 database names and 47 module-documentation ranges. Later
-source-inspected finite-binder and link corrections are not a new native run.
+source-inspected finite-binder, link and docstring-wording corrections are not
+a new native run.
 The Noetherian and infinite-coordinate modules added since that historical
 output are outside the generated API. Header-only edits likewise change source hashes
 without moving declaration line anchors. The historical API is not an

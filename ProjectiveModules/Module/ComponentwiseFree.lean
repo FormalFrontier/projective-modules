@@ -590,7 +590,7 @@ noncomputable def rankModuleEquivComponentwiseFreeModel
           · rw [zero_mul]
         · simp }
 
-/-- The accepted canonical realization of any locally constant rank is
+/-- The canonical realization of any locally constant rank is
 componentwise free in the explicit complete-orthogonal-idempotent sense. -/
 theorem componentwiseFree_ofLocallyConstantRank
     (f : LocallyConstant (PrimeSpectrum R) ℕ) :

@@ -2502,8 +2502,11 @@ complete-orthogonal-idempotent component model.
 theorem Module.componentwiseFree_ofLocallyConstantRank {R : Type u} [CommRing R] (f : LocallyConstant (PrimeSpectrum R) ℕ) : ComponentwiseFree R ↑(ModuleCat.FiniteProjective.ofLocallyConstantRank R f)
 ```
 
-The accepted canonical realization of any locally constant rank is
+The canonical realization of any locally constant rank is
 componentwise free in the explicit complete-orthogonal-idempotent sense.
+
+*Source-amended docstring display; the manifest still records the historical
+source and native-record hashes. No new native output is asserted.*
 
 [Source](../ProjectiveModules/Module/ComponentwiseFree.lean#L593-L604) (native database range lines 591–602).
 

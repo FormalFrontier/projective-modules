@@ -3,7 +3,7 @@ SPDX-License-Identifier: Apache-2.0
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Formal Frontier Agents
 -/
--- Contributors: Prism
+-- Contributors: Prism, Lens
 module
 
 public import ProjectiveModules.Module.BalancedTensorProduct
@@ -149,8 +149,9 @@ theorem map_add (g h : M →ₗ[Rᵐᵒᵖ] N) : map f (g + h) = map f g + map f
   exact BalancedTensorProduct.add_tmul (g m) (h m) s
 
 /-- Extension of scalars along a homomorphism of arbitrary rings, as a functor
-between categories of right modules. -/
-abbrev functor : ModuleCat.{max uM uS} (MulOpposite R) ⥤
+between categories of right modules. The target carrier universe includes the
+source carrier universe and the target scalar universe. -/
+abbrev functor' : ModuleCat.{uM} (MulOpposite R) ⥤
     ModuleCat.{max uM uS} (MulOpposite S) where
   obj M := ModuleCat.of Sᵐᵒᵖ (Obj f M)
   map g := ModuleCat.ofHom (map f g.hom)
@@ -161,10 +162,40 @@ abbrev functor : ModuleCat.{max uM uS} (MulOpposite R) ⥤
     apply ModuleCat.hom_ext
     exact map_comp f g.hom h.hom
 
-instance functorAdditive : (functor f).Additive where
+/-- The object underlying the scalar-extension functor is the balanced tensor. -/
+@[simp]
+theorem functor'_obj (M : ModuleCat.{uM} Rᵐᵒᵖ) :
+    (functor' f).obj M = ModuleCat.of Sᵐᵒᵖ (Obj f M) :=
+  rfl
+
+/-- The linear map underlying the scalar-extension functor is scalar extension
+of the original linear map. -/
+@[simp]
+theorem functor'_map_hom {M N : ModuleCat.{uM} Rᵐᵒᵖ} (g : M ⟶ N) :
+    ((functor' f).map g).hom = map f g.hom :=
+  rfl
+
+/-- Scalar extension of a categorical morphism acts on the first factor of a
+pure tensor. -/
+@[simp]
+theorem functor'_map_tmul {M N : ModuleCat.{uM} Rᵐᵒᵖ} (g : M ⟶ N) (m : M) (s : S) :
+    (functor' f).map g (tmul f m s) = tmul f (g m) s :=
+  map_tmul f g.hom m s
+
+instance functor'Additive : (functor' f).Additive where
   map_add {X Y} g h := by
     apply ModuleCat.hom_ext
     exact map_add f g.hom h.hom
+
+/-- Extension of scalars for right modules at a common carrier universe
+containing the target scalar universe. -/
+abbrev functor : ModuleCat.{max uM uS} (MulOpposite R) ⥤
+    ModuleCat.{max uM uS} (MulOpposite S) :=
+  functor'.{uR, uS, max uM uS} f
+
+-- Prefer the independent-universe instance above to this derived closed-universe view.
+instance (priority := low) functorAdditive : (functor.{uR, uS, uM} f).Additive :=
+  inferInstanceAs (functor'.{uR, uS, max uM uS} f).Additive
 
 section SemilinearHomEquiv
 

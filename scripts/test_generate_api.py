@@ -27,6 +27,10 @@ AMENDED_NAMES = ("Module.componentwiseFreeModel_finite",
 AMENDMENT_NOTE = ("*Source-inspected amendment at `1762876`: `[Finite I]` replaces "
                   "the historical\nnative `[Fintype I]`; the native range below "
                   "remains historical.*\n\n")
+DOCSTRING_AMENDED_NAME = "Module.componentwiseFree_ofLocallyConstantRank"
+DOCSTRING_AMENDMENT_NOTE = (
+    "*Source-amended docstring display; the manifest still records the historical\n"
+    "source and native-record hashes. No new native output is asserted.*")
 
 
 def fixture():
@@ -49,6 +53,15 @@ def fixture():
             signature = signature.replace("[Finite I]", "[Fintype I]", 1)
             prose = prose[len(AMENDMENT_NOTE):]
             restored.add(name)
+        if name == DOCSTRING_AMENDED_NAME:
+            api.require(prose.count(DOCSTRING_AMENDMENT_NOTE) == 1 and
+                        prose.endswith("\n\n" + DOCSTRING_AMENDMENT_NOTE) and
+                        prose.startswith("The canonical realization"),
+                        "source-amended docstring fixture differs")
+            # Undo only the marked editorial amendment in this synthetic record.
+            prose = prose.removesuffix("\n\n" + DOCSTRING_AMENDMENT_NOTE)
+            prose = prose.replace("The canonical realization",
+                                  "The accepted canonical realization", 1)
         prefix = meta["display_kind"] + " " + name
         api.require(signature.startswith(prefix), "synthetic fixture identity differs")
         header = ('<div class="decl_header"><span class="decl_kind">'
@@ -58,7 +71,7 @@ def fixture():
         module = meta["module"]
         path = api.MODULE_PATHS[module]
         doc = "" if prose.startswith("*No source docstring is attached") else prose
-        if name in AMENDED_NAMES:
+        if name in AMENDED_NAMES or name == DOCSTRING_AMENDED_NAME:
             api.require(api.digest(api.Header(header).rendered().encode()) ==
                         meta["header_sha256"] and
                         api.digest(doc.strip().encode()) == meta["doc_sha256"],
@@ -104,6 +117,29 @@ class Controls(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     amended_records, amended_sources = fixture()
                     api.render(amended_records, api.SOURCE, amended_sources)
+
+    def test_source_amended_docstring_and_editorial_note_refusals(self):
+        records, sources = fixture()
+        row = next(row for record in records.values() for row in record["declarations"]
+                   if row["info"]["name"] == DOCSTRING_AMENDED_NAME)
+        self.assertTrue(row["info"]["doc"].startswith("The accepted canonical realization"))
+        self.assertNotIn(DOCSTRING_AMENDMENT_NOTE, row["info"]["doc"])
+        self.assertEqual(api.digest(row["info"]["doc"].strip().encode()),
+                         api.EXPECTED[DOCSTRING_AMENDED_NAME]["doc_sha256"])
+        api.render(records, api.SOURCE, sources)
+        original = (ROOT / "docs/API.md").read_text()
+        self.assertEqual(original.count(DOCSTRING_AMENDMENT_NOTE), 1)
+        for old, new in ((DOCSTRING_AMENDMENT_NOTE, ""),
+                         (DOCSTRING_AMENDMENT_NOTE,
+                          DOCSTRING_AMENDMENT_NOTE.replace("historical", "current")),
+                         (DOCSTRING_AMENDMENT_NOTE,
+                          DOCSTRING_AMENDMENT_NOTE + "\n\n" + DOCSTRING_AMENDMENT_NOTE),
+                         ("The canonical realization of any locally constant rank is",
+                          "The canonical realization of every rank is")):
+            with self.subTest(changed=old), mock.patch.object(
+                    Path, "read_text", return_value=original.replace(old, new, 1)):
+                with self.assertRaises(ValueError):
+                    fixture()
 
     def test_full_inventory_and_all_module_records(self):
         records, sources = fixture()
