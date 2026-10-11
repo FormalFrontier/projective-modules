@@ -7,8 +7,9 @@ project:
     evaluation base change, invertible modules, exterior algebras and powers,
     determinants, bounded cancellation and countable absorption, infinite free
     coordinates, finite stable presentations and IBN-only integer-rank
-    independence, balanced tensor products and right scalar extension, exactness,
-    local and PID freeness,
+    independence, balanced tensor products, right scalar extension and chosen
+    right-free coefficient transport along arbitrary unital semiring
+    homomorphisms, exactness, local and PID freeness,
     preadditive stable module categories, countably generated submodules over
     left-Noetherian rings, and locally constant rank and componentwise-free
     classification. Noncommutative and commutative results retain their distinct
@@ -16,10 +17,14 @@ project:
     Over arbitrary rings, the library also describes stably-free kernels of
     surjections onto finitely generated stably-free targets, finite-coordinate
     kernel presentations and surjective right-linear matrix kernels.
+    Rectangular right-coordinate maps need finite source coordinates but allow
+    arbitrary target indices; transporting a supplied equivalence needs both
+    indices finite. These constructions use left coefficients and right
+    scalars, without commutativity, injectivity, IBN or equal index cardinalities.
   authors:
     - "Formal Frontier Agents"
   responsible_maintainers:
-    - "Prism (on behalf of the source-maintainer team)"
+    - "Formal Frontier source-maintainer team"
   license: "Apache-2.0"
 
 sources:
@@ -252,9 +257,81 @@ status:
     - declaration: "ModuleCat.RightExtension.rightFreeLinearEquiv"
       file: "ProjectiveModules/Module/RightExtensionFree.lean"
       note: "Explicit scalar extension of finite standard right-free modules, including empty coordinates."
+    - declaration: "Module.rightFreeLinearMapScalarExtension"
+      file: "ProjectiveModules/Module/RightEndomorphismMatrix.lean"
+      note: >-
+        Transport a supplied right-linear map from ι → R to κ → R along any
+        unital homomorphism R →+* S of semirings. Only the source requires a
+        Fintype instance; the target is arbitrary. Scalar and index universes
+        are independent. Empty indices and zero semirings are not excluded.
+        No commutativity, injectivity, surjectivity, IBN or equal
+        index cardinalities are assumed. The noncomputable constructor needs
+        no caller DecidableEq instance. Laws cover zero, addition, identities,
+        coefficient images and coefficient-homomorphism composition.
+    - declaration: "Module.rightFreeScalarExtensionEquiv"
+      file: "ProjectiveModules/Module/RightEndomorphismMatrix.lean"
+      note: >-
+        Under the same semiring and homomorphism hypotheses, transport a
+        supplied right-linear equivalence and its inverse, with Fintype
+        instances on both indices in independent universes. This does not
+        assert that unequal finite ranks admit an equivalence. Laws give
+        compatibility with the underlying transported map, inverse,
+        equivalence composition, identity and coefficient-homomorphism
+        identity and composition, without caller DecidableEq instances.
+    - declaration: "Module.rightFreeLinearMapScalarExtension_apply"
+      file: "ProjectiveModules/Module/RightEndomorphismMatrix.lean"
+      note: >-
+        For a finite source and arbitrary target, the i-th coordinate on y is
+        ∑ j, f (g (Pi.single j 1) i) * y j. Coefficients multiply on the left;
+        opposite-semiring module scalars act on the right. The single-vector
+        and entrywise opposite-coordinate row-matrix laws characterize the
+        same transport.
+    - declaration: "Module.rightFreeLinearMapScalarExtension_map_comp"
+      file: "ProjectiveModules/Module/RightEndomorphismMatrix.lean"
+      note: >-
+        Transport respects composition when the source and intermediate
+        coordinate types have Fintype instances; the final target is
+        arbitrary. All three index universes remain independent.
+    - declaration: "Module.rightFreeScalarExtensionEquiv_apply"
+      file: "ProjectiveModules/Module/RightEndomorphismMatrix.lean"
+      note: >-
+        For a supplied equivalence with both coordinate types finite, the
+        i-th coordinate on y is ∑ j, f (e (Pi.single j 1) i) * y j, agreeing
+        with transport of its underlying right-linear map.
+    - declaration: "Module.rightFreeLinearMapScalarExtension_eq_rightExtension_of_decidableEq"
+      file: "ProjectiveModules/Module/RightEndomorphismMatrix.lean"
+      note: >-
+        Over rings with both indices finite, identify coefficient transport
+        with the unbundled ModuleCat.RightExtension.map conjugated by the
+        finite right-free coordinate equivalences. This variant uses the
+        caller's DecidableEq instances on both indices; the corresponding
+        rightFreeLinearMapScalarExtension_eq_rightExtension law chooses them
+        internally. These are data-compatibility bridges, not extra
+        mathematical premises of the semiring constructor.
+    - declaration: "Module.rightFreeLinearMapScalarExtension_tmul_of_decidableEq"
+      file: "ProjectiveModules/Module/RightEndomorphismMatrix.lean"
+      note: >-
+        Over rings with both indices finite and caller DecidableEq instances,
+        compatibility on pure tensors sends the coordinates of x ⊗ s to
+        those of g x ⊗ s. The rightFreeLinearMapScalarExtension_tmul law chooses
+        equality decisions internally. No infinite-product tensor
+        equivalence is asserted by arbitrary-target map transport.
+    - declaration: "Module.rightFreeScalarExtensionEquiv_toLinearMap_eq_rightExtension_of_decidableEq"
+      file: "ProjectiveModules/Module/RightEndomorphismMatrix.lean"
+      note: >-
+        Over rings with both indices finite, the underlying map of a supplied
+        transported equivalence agrees with the unbundled tensor map in
+        finite right-free coordinates, using caller DecidableEq instances.
+        The rightFreeScalarExtensionEquiv_toLinearMap_eq_rightExtension law
+        chooses equality decisions internally. Independent index and scalar
+        universes are retained.
     - declaration: "Module.rightEndomorphismMatrixEquiv"
       file: "ProjectiveModules/Module/RightEndomorphismMatrix.lean"
-      note: "Column-convention matrices represent opposite-scalar linear maps with same-order composition."
+      note: >-
+        Column-convention square matrices represent opposite-scalar linear
+        endomorphisms with same-order composition. The square
+        rightEndomorphismScalarExtension specializes rectangular coefficient
+        transport and retains its finite-coordinate Ring tensor bridge.
     - declaration: "Module.rightEndomorphism_bijective_of_quotientScalarExtension_bijective"
       file: "ProjectiveModules/Module/RightEndomorphismMatrix.lean"
       note: "Reflect finite right-module invertibility through a quasiregular two-sided quotient, not arbitrary quotients."

@@ -3,7 +3,7 @@ SPDX-License-Identifier: Apache-2.0
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Formal Frontier Agents
 -/
--- Contributors: Prism
+-- Contributors: Prism, Lens
 module
 
 public import ProjectiveModules.Module.RightExtensionQuotient
@@ -14,8 +14,9 @@ public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 This file identifies scalar extension of the canonical finite free right
 `R`-module `ι → R` along an arbitrary ring homomorphism `R →+* S` with the
-canonical finite free right `S`-module `ι → S`.  It also specializes the
-equivalence to quotients by two-sided ideals.
+canonical finite free right `S`-module `ι → S`. The coordinate equivalence itself
+works over semirings. The tensor equivalence
+is Ring-only and also specializes to quotients by two-sided ideals.
 -/
 
 @[expose] public section
@@ -24,7 +25,7 @@ universe uR uS uι
 
 namespace Module
 
-variable (R : Type uR) [Ring R]
+variable (R : Type uR) [Semiring R]
 variable (ι : Type uι)
 
 /-- The standard free module over `Rᵐᵒᵖ`, written with coordinates in `R`. -/

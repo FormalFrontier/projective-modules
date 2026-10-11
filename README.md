@@ -4,7 +4,7 @@ A reusable Lean library for projective and free modules, scalar extension,
 exterior algebra, cancellation, local freeness, stable categories and rank.
 Its results have different commutativity, handedness and finiteness assumptions;
 the declarations and focused modules below specify each interface. Maintained by
-Prism on behalf of the Formal Frontier source-maintainer team.
+the Formal Frontier source-maintainer team.
 
 ## Headline results
 
@@ -118,6 +118,26 @@ Prism on behalf of the Formal Frontier source-maintainer team.
   precisely kernels of surjections between finite coordinate modules;
   [finite matrix kernels](ProjectiveModules/Free/StableKernel.lean) specialize
   this to right-linear maps over arbitrary rings, without an IBN hypothesis.
+- **Chosen right-free coefficient transport:** Along any unital homomorphism
+  `f : R →+* S` of possibly noncommutative semirings,
+  [`Module.rightFreeLinearMapScalarExtension`](ProjectiveModules/Module/RightEndomorphismMatrix.lean)
+  transports a supplied map `g : (ι → R) →ₗ[Rᵐᵒᵖ] (κ → R)` to a right-linear
+  map over `S`. Only the source index `ι` must be finite; `κ` is arbitrary.
+  At a target coordinate `i`, the result on `y : ι → S` is
+  `∑ j, f (g (Pi.single j 1) i) * y j`: coefficients multiply on the left,
+  while module scalars act on the right. With both index types finite,
+  [`Module.rightFreeScalarExtensionEquiv`](ProjectiveModules/Module/RightEndomorphismMatrix.lean)
+  transports a supplied equivalence and its inverse, with the same application
+  formula; it does not assert the existence of an equivalence between unequal
+  finite ranks. The homomorphism need not be injective or surjective; no
+  commutativity, IBN or equality of index cardinalities is assumed. Scalar and
+  index universes are independent. Characteristic and functorial laws cover
+  basis vectors, coefficient images, zero/addition, identities and composition
+  of maps and coefficient homomorphisms. Map composition additionally needs a
+  finite intermediate index. Equivalence transport is compatible with underlying
+  maps, inverses and composition. The Ring tensor bridges require both index
+  types finite; their `_of_decidableEq` variants use caller equality-decision
+  data, not extra hypotheses on the primary constructions.
 - **Rank condition and invariant basis number:** Both properties pull back
   along any unital homomorphism of semirings, without injectivity or
   surjectivity. [The rank-condition pullback](ProjectiveModules/Free/InvariantBasisNumber.lean)
@@ -181,7 +201,7 @@ aggregate import.
 | [Scalar rank](ProjectiveModules/Module/ScalarRank.lean) | Compatible-scalar rank times fixed-simple multiplicity; canonical noncommutative right matrix-row dimension |
 | [Finite stable presentations](ProjectiveModules/Free/StablePresentation.lean) | Arbitrary-ring finite/stably-free existence equivalence; IBN-only cross-sum and integer-difference invariance for semirings |
 | [Balanced tensor](ProjectiveModules/Module/BalancedTensorProduct.lean), [right extension](ProjectiveModules/Module/RightExtension.lean) | Right-module scalar extension over arbitrary ring homomorphisms, quotients, finite free coordinates |
-| [Right endomorphism matrices](ProjectiveModules/Module/RightEndomorphismMatrix.lean) | Column convention and quasi-regular quotient unit reflection |
+| [Right endomorphism matrices and coefficient transport](ProjectiveModules/Module/RightEndomorphismMatrix.lean) | Semiring coefficient transport with finite source and arbitrary target; supplied equivalences with both indices finite; column convention for square endomorphism matrices, finite-coordinate Ring tensor bridges and quasi-regular quotient unit reflection |
 | [Local projectives](ProjectiveModules/Module/LocalProjective.lean), [arbitrary local freeness](ProjectiveModules/Module/ArbitraryLocalProjectiveFree.lean) | Finite, countable and arbitrary-rank right-module routes under proper-ideal/unit-complement hypotheses |
 | [Countably generated](ProjectiveModules/Module/CountablyGenerated.lean), [Noetherian submodules](ProjectiveModules/Module/CountablyGenerated/Noetherian.lean), [filtration](ProjectiveModules/Module/TransfiniteRangeBasis.lean) | Sequence-span predicate, submodule theorem, invariant countable supports and split-range assembly |
 | [Complements](ProjectiveModules/Module/ProjectiveComplement.lean), [Hom exactness](ProjectiveModules/Module/HomExact.lean) | Splittings and additive Hom exactness over semirings |
