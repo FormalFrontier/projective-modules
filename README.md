@@ -26,6 +26,16 @@ the Formal Frontier source-maintainer team.
   require no nontriviality, domain or local hypothesis. Over a commutative
   ring, these ideals are finite projective, so an idempotent with `e ≠ 0`
   and `e ≠ 1` gives a nonfree finite projective module.
+- **Principal-right-ideal extension:** For arbitrary source and target rings
+  `R` and `S` and a unital map `f : R →+* S`, the
+  [principal-ideal interface](ProjectiveModules/Module/RightExtensionIdeal.lean)
+  sends `m ⊗ s` to `op (f (unop m) * s)`. If the generator `e` maps to one,
+  this is an equivalence with the regular right target module, with inverse
+  `op s ↦ e ⊗ s`; no idempotence assumption on `e` is needed. If `e` is
+  idempotent and maps to zero, the entire extension is zero. These two
+  computations retain distinct hypotheses and require neither commutative
+  nor nonzero scalars. The finite-projective constructors separately retain
+  a commutative source-ring hypothesis.
 - **Exterior constructions:** The [full exterior algebra](ProjectiveModules/ExteriorAlgebra/BaseChange.lean)
   commutes with arbitrary scalar extension; separately, the
   [fixed-degree binary Sum Formula](ProjectiveModules/ExteriorPower/DirectSum.lean)
@@ -48,7 +58,12 @@ the Formal Frontier source-maintainer team.
   assembles projective countable-coordinate filtration increments that are
   free under the local hypotheses. The [split-range assembly](ProjectiveModules/Module/TransfiniteRangeBasis.lean)
   itself requires explicitly free increments and idempotence, not just an
-  arbitrary idempotent range. Properness excludes the zero ring.
+  arbitrary idempotent range. Properness excludes the zero ring. The
+  [standard local-ring scalar form](ProjectiveModules/Module/LocalRing.lean)
+  states `Module.Projective R P → Module.Free R P` using `[Ring R]`
+  and `[IsLocalRing R]`, with independent scalar and module universes and
+  no finite or countable generation hypothesis. Commutativity is not required;
+  right modules are recovered by specializing the scalars to `Rᵐᵒᵖ`.
 - **Finite-projective size and representatives:** For an arbitrary ring
   `R : Type u` and independent carrier universe `v`,
   `ModuleCat.FiniteProjective.{u, v} R` is essentially small in universe `u`,
@@ -271,9 +286,10 @@ aggregate import.
 | [Scalar rank](ProjectiveModules/Module/ScalarRank.lean) | Compatible-scalar rank times fixed-simple multiplicity; canonical noncommutative right matrix-row dimension |
 | [Finite stable presentations](ProjectiveModules/Free/StablePresentation.lean) | Arbitrary-ring finite/stably-free existence equivalence; IBN-only cross-sum and integer-difference invariance for semirings |
 | [Balanced tensor](ProjectiveModules/Module/BalancedTensorProduct.lean), [right extension](ProjectiveModules/Module/RightExtension.lean) | Right-module scalar extension over arbitrary ring homomorphisms, quotients, finite free coordinates |
+| [Principal right ideals](ProjectiveModules/Module/RightExtensionIdeal.lean) | Arbitrary-ring image-one extension equivalence without idempotence and image-zero annihilation with idempotence; commutative-source idempotent ideals as finite projectives |
 | [Right-extension comparisons](ProjectiveModules/Module/RightExtensionComparison.lean), [comparison coherence](ProjectiveModules/Module/RightExtensionComparisonCoherence.lean) | `ModuleCat.RightExtension.idLinearEquiv` and `compLinearEquiv`: identity/composition linear equivalences and both-direction pure-tensor API; `compLinearEquiv_id_left`, `compLinearEquiv_id_right` and `compLinearEquiv_assoc`: pointwise unit and triple-composition laws over arbitrary rings/right modules with independent universes |
 | [Right endomorphism matrices and coefficient transport](ProjectiveModules/Module/RightEndomorphismMatrix.lean) | Semiring coefficient transport with finite source and arbitrary target; supplied equivalences with both indices finite; column convention for square endomorphism matrices, finite-coordinate Ring tensor bridges and quasi-regular quotient unit reflection |
-| [Local projectives](ProjectiveModules/Module/LocalProjective.lean), [arbitrary local freeness](ProjectiveModules/Module/ArbitraryLocalProjectiveFree.lean) | Finite, countable and arbitrary-rank right-module routes under proper-ideal/unit-complement hypotheses |
+| [Local projectives](ProjectiveModules/Module/LocalProjective.lean), [arbitrary local freeness](ProjectiveModules/Module/ArbitraryLocalProjectiveFree.lean), [local scalar interface](ProjectiveModules/Module/LocalRing.lean) | Finite, countable and arbitrary-rank right-module routes under proper-ideal/unit-complement hypotheses; `IsLocalRing` scalar formulation |
 | [Countably generated](ProjectiveModules/Module/CountablyGenerated.lean), [Noetherian submodules](ProjectiveModules/Module/CountablyGenerated/Noetherian.lean), [filtration](ProjectiveModules/Module/TransfiniteRangeBasis.lean) | Sequence-span predicate, submodule theorem, invariant countable supports and split-range assembly |
 | [Complements](ProjectiveModules/Module/ProjectiveComplement.lean), [right inverse defects](ProjectiveModules/Module/RightRegularDefect.lean), [Hom exactness](ProjectiveModules/Module/HomExact.lean) | Splittings and additive Hom exactness over semirings; specified right regular decomposition and defect kernel over rings |
 | [Finite-projective category](ProjectiveModules/Category/FiniteProjective.lean), [stable category](ProjectiveModules/Category/Stable.lean) | Finite biproducts, preadditive stable quotient and small-ring Ext¹ detection |
@@ -335,6 +351,24 @@ the opposite of a product of two fields in independent universes, as well as
 zero/unit boundaries and a nonfree ideal over `ℕ × ℕ`. The freeness criterion
 is not asserted for noncommutative scalars.
 
+For right extension along an arbitrary ring map `f : R →+* S`, the principal
+ideal generated by `op e` in `Rᵐᵒᵖ` evaluates in the regular right target
+module by `m ⊗ s ↦ op (f (unop m) * s)`. The image-one equivalence has
+characteristic equations for both directions; idempotence is required only
+for the finite-projective constructor and the image-zero computation. Only
+the finite-projective constructor also requires a commutative source.
+[Projection clients](tests/ProjectiveModulesTests/RightIdempotentExtensionClient.lean)
+for independent-universe fields `K` and `L` give dimension pairs `(1, 0)` and
+`(0, 1)` for the two principal right summands of `K × L`. Reduction of the
+non-idempotent integer `3` modulo two and a zero target ring illustrate the
+image-one hypothesis. Noncommutative matrix-product projections also give
+an image-one equivalence for the non-idempotent generator `(E₀₁, 1)` and an
+image-zero extension for the noncentral idempotent `(E₀₀, 0)`. Their pure-tensor
+and inverse-map equations retain multiplication order. An explicit member
+of the latter ideal is not fixed by the idempotent action. These are
+scalar-extension computations of modules, not assertions that their K₀
+generators are distinct.
+
 ## Build
 
 The project pins Lean `v4.34.0-rc2`; `lakefile.toml` and
@@ -355,11 +389,10 @@ private importing clients for finite-projective modules and right-extension
 comparison coherence, which can report a `privateModule` warning. These
 ordinary commands do not make warnings fatal. The root resolves
 mathlib `83abb3e776bdefcbc447a1e44d0debe4010039e5`, GLG
-`1f8fd3e39080be39586ea22fa56c157167eefd00` and Stable Range
-`9ac79cf93ac2d7f3e22c660100a65592df5ac976`; both latter libraries
-declare an older mathlib `e37d88a26f3791ed5a93daa1f949af1021b8d103`.
-The effective root resolution is the first mathlib revision; do not repin
-other projects to infer this graph. Dependencies are not vendored.
+`2683f75e2c5774ddd1295c46062035cb6afabb8a` and Stable Range
+`71625754592cadb5330b3452d626dc659405da65`. Both latter libraries declare
+the same mathlib revision and Lean `4.34.0-rc2` toolchain as this root.
+Dependencies are not vendored.
 
 ## Documentation limits
 
@@ -389,6 +422,17 @@ arbitrary cancellation. Semisimple freeness still requires finite stably-free
 modules. The Laurent result concerns one variable over a field. A source
 citation does not assert a source-by-source correspondence or whole-book
 formalization; such accounting belongs in source repositories.
+
+## References
+
+- I. Kaplansky, *Projective modules*, Annals of Mathematics **68** (1958),
+  372–377.
+- C. A. Weibel, *The K-book: An Introduction to Algebraic K-theory*,
+  author-hosted complete-book build dated 2013-08-29; Remark I.2.2.1 cites
+  Kaplansky's theorem.
+
+The focused modules list their mathematical references and prior formalization
+APIs; [credits](docs/CREDITS.md) describe the contributions and Mathlib reuse.
 
 ## License and credit
 

@@ -44,6 +44,7 @@ public import ProjectiveModules.Module.ScalarRank
 public import ProjectiveModules.Module.LaurentPolynomial
 public import ProjectiveModules.Module.LocalProjective
 public import ProjectiveModules.Module.LocalProjectiveElement
+public import ProjectiveModules.Module.LocalRing
 public import ProjectiveModules.Module.LocallyConstantRank
 public import ProjectiveModules.Module.MinimalSupport
 public import ProjectiveModules.Module.PID
@@ -57,6 +58,7 @@ public import ProjectiveModules.Module.RightExtensionComparison
 public import ProjectiveModules.Module.RightExtensionComparisonCoherence
 public import ProjectiveModules.Module.RightExtensionFiniteResidue
 public import ProjectiveModules.Module.RightExtensionFree
+public import ProjectiveModules.Module.RightExtensionIdeal
 public import ProjectiveModules.Module.RightExtensionQuotient
 public import ProjectiveModules.Module.TransfiniteCoordinateFiltration
 public import ProjectiveModules.Module.TransfiniteRangeBasis

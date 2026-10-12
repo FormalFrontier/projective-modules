@@ -16,12 +16,12 @@ rev = "83abb3e776bdefcbc447a1e44d0debe4010039e5"
 [[require]]
 name = "general-linear-groups"
 git = "https://github.com/FormalFrontier/general-linear-groups.git"
-rev = "1f8fd3e39080be39586ea22fa56c157167eefd00"
+rev = "2683f75e2c5774ddd1295c46062035cb6afabb8a"
 
 [[require]]
 name = "stable-range"
 git = "https://github.com/FormalFrontier/stable-range.git"
-rev = "9ac79cf93ac2d7f3e22c660100a65592df5ac976"
+rev = "71625754592cadb5330b3452d626dc659405da65"
 
 [[lean_lib]]
 name = "ProjectiveModules"
@@ -29,4 +29,4 @@ name = "ProjectiveModules"
 [[lean_lib]]
 name = "ProjectiveModulesTests"
 srcDir = "tests"
-roots = ["PublicAPIClient", "ProjectiveModulesTests.InfiniteCoordinatesClient", "ProjectiveModulesTests.InvariantBasisNumberClient", "ProjectiveModulesTests.CyclicTraceClient", "ProjectiveModulesTests.StablePresentationClient", "ProjectiveModulesTests.StableKernelClient", "ProjectiveModulesTests.IsotypicMultiplicityClient", "ProjectiveModulesTests.MatrixRowClient", "ProjectiveModulesTests.ScalarRankClient", "ProjectiveModulesTests.FreeMatrixRankClient", "ProjectiveModulesTests.FiniteScalarExtensionClient", "ProjectiveModulesTests.FiniteFreeSummandClient", "ProjectiveModulesTests.RightFreeScalarExtensionClient", "ProjectiveModulesTests.RightFiniteProjectiveExtensionClient", "ProjectiveModulesTests.RightRegularDefectClient", "ProjectiveModulesTests.RightExtensionComparisonClient", "ProjectiveModulesTests.FiniteProjectiveSmallnessClient", "ProjectiveModulesTests.RightExtensionComparisonCoherenceClient", "ProjectiveModulesTests.IdempotentSpanClient"]
+roots = ["PublicAPIClient", "ProjectiveModulesTests.InfiniteCoordinatesClient", "ProjectiveModulesTests.InvariantBasisNumberClient", "ProjectiveModulesTests.CyclicTraceClient", "ProjectiveModulesTests.StablePresentationClient", "ProjectiveModulesTests.StableKernelClient", "ProjectiveModulesTests.IsotypicMultiplicityClient", "ProjectiveModulesTests.MatrixRowClient", "ProjectiveModulesTests.ScalarRankClient", "ProjectiveModulesTests.FreeMatrixRankClient", "ProjectiveModulesTests.FiniteScalarExtensionClient", "ProjectiveModulesTests.FiniteFreeSummandClient", "ProjectiveModulesTests.RightFreeScalarExtensionClient", "ProjectiveModulesTests.RightFiniteProjectiveExtensionClient", "ProjectiveModulesTests.RightRegularDefectClient", "ProjectiveModulesTests.RightExtensionComparisonClient", "ProjectiveModulesTests.FiniteProjectiveSmallnessClient", "ProjectiveModulesTests.RightExtensionComparisonCoherenceClient", "ProjectiveModulesTests.IdempotentSpanClient", "ProjectiveModulesTests.RightIdempotentExtensionClient", "ProjectiveModulesTests.LocalRingClient"]

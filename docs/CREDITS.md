@@ -59,6 +59,18 @@ licensing do not establish copyright ownership, human review, source-author
 endorsement, permission to relicense third-party content or complete
 formalization of the book.
 
+The local-ring scalar interface uses Mathlib's `IsLocalRing`,
+`Module.Projective` and `Module.Free` classes and the existing arbitrary-rank
+right-module local-freeness formalization in
+`ProjectiveModules.Module.ArbitraryLocalProjectiveFree`. It also uses the
+local Jacobson-radical characterization in `StableRange.Local` and Mathlib's
+semilinear equivalence transport. Its mathematical source is I. Kaplansky,
+*Projective modules*, Annals of Mathematics **68** (1958),
+372–377; C. A. Weibel, *The K-book: An Introduction to Algebraic K-theory*,
+author-hosted complete-book build dated 2013-08-29, Remark I.2.2.1, cites this
+theorem. The interface adds no new transfinite freeness argument, local-ring
+class or rank invariant.
+
 P. M. Cohn, *Some remarks on the invariant basis property*, §3, Proposition
 3.1 and its corollary, supplies the ring/additive-commutator trace argument;
 C. A. Weibel, *The K-book: An Introduction to Algebraic K-theory*, Exercise
