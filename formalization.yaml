@@ -32,8 +32,11 @@ project:
     modules, with five independent scalar and module universes.
     Principal right ideals over arbitrary source and target rings have an
     image-one scalar-extension equivalence without idempotence, and an
-    image-zero annihilation theorem with idempotence. Their finite-projective
-    constructors separately retain a commutative source-ring hypothesis.
+    image-zero annihilation theorem with idempotence. An idempotent right
+    ideal and its scalar extension are bundled as finite projectives over
+    arbitrary rings, including noncentral matrix idempotents.
+    The right-ideal bundle has an identity linear equivalence to its
+    canonical principal ideal, identifying zero and scalar action.
     Canonical right regular modules on ordinary semiring carriers are finite
     and free, including zero semirings. A finite projective common stabilizer
     can be replaced by a common standard finite free one, without finiteness
@@ -453,7 +456,10 @@ status:
       note: "Right-module scalar extension/restriction adjunction for arbitrary ring maps, with finite/projective preservation."
     - declaration: "IsIdempotentElem.rightSpanFiniteProjective"
       file: "ProjectiveModules/Module/RightExtensionIdeal.lean"
-      note: "Bundle the principal right ideal of an idempotent over a commutative ring as a finite projective right module."
+      note: "Bundle the principal right ideal of an idempotent over an arbitrary ring as a finite projective right module."
+    - declaration: "ModuleCat.RightExtension.spanFiniteProjective"
+      file: "ProjectiveModules/Module/RightExtensionIdeal.lean"
+      note: "Bundle scalar extension of an idempotent right ideal as a finite projective right module over arbitrary source and target rings."
     - declaration: "ModuleCat.RightExtension.spanLinearEquivOfMapEqOne"
       file: "ProjectiveModules/Module/RightExtensionIdeal.lean"
       note: >-
