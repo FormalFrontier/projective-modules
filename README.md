@@ -262,9 +262,19 @@ the Formal Frontier source-maintainer team.
   assumes the target has rank condition; the invariant-basis-number pullback
   assumes only target invariant basis number, not rank condition. Source and
   target may inhabit independent universes.
-- **Free-word finite-free injection:** For any semiring `K`
-  and any alphabet `ι` with distinct letters `a` and `b`, the
-  [word-map interface](ProjectiveModules/Free/FreeWordAlgebra.lean) sends
+- **Free-word generator independence:** For any semiring `K` and any alphabet
+  `ι` in an independent universe, the letter monomials form a linearly independent
+  family in the **left A-module** `A = MonoidAlgebra K (FreeMonoid ι)`.
+  Canonical finitely supported linear combinations multiply polynomial coordinates
+  by their letters on the **right**; coefficients at disjoint terminal letters
+  recover every coordinate. This is independence over **A**, not just over `K`.
+  Injective reindexing gives independent subfamilies, including infinite ones.
+  The [suffix-family examples](tests/ProjectiveModulesTests/FreeWordSuffixFamilyClient.lean)
+  include rational, noncommutative matrix, infinite-index and trivial-coefficient
+  cases and the failure of repeating a letter over nontrivial coefficients.
+  For distinct letters `a` and `b`, the finite-coordinate equivalence identifies
+  the canonical linear combination with the
+  [word-map interface](ProjectiveModules/Free/FreeWordAlgebra.lean), which sends
   `(p, q)` to `p * single (of a) 1 + q * single (of b) 1` over
   `A = MonoidAlgebra K (FreeMonoid ι)`. It is **left A-linear** and appends
   letters on the **right**. It is injective: coefficients at disjoint final

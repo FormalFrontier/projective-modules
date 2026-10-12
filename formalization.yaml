@@ -249,6 +249,25 @@ status:
     - declaration: "RingHom.invariantBasisNumber"
       file: "ProjectiveModules/Free/InvariantBasisNumber.lean"
       note: "Invariant basis number descends along any unital semiring homomorphism from a target with invariant basis number; no rank-condition or injectivity premise is needed."
+    - declaration: "MonoidAlgebra.linearIndependent_freeMonoid_of"
+      file: "ProjectiveModules/Free/FreeWordAlgebra.lean"
+      note: >-
+        The letter monomials form a linearly independent family over the left
+        regular module of A = MonoidAlgebra K (FreeMonoid alphabet), for arbitrary
+        Semiring K and independently universed alphabet. Canonical finitely
+        supported linear combinations multiply each polynomial coordinate by
+        its letter on the right; its terminal-word coefficients recover the
+        coordinate. Injective reindexing gives arbitrary independent subfamilies.
+        No Nontrivial, commutativity, centrality or finite-alphabet hypothesis.
+        Trivial coefficients and the empty family are included without implying
+        a nonzero module; repeated letters over nontrivial coefficients need
+        not be independent. This is A-linear independence, not merely K-linearity.
+    - declaration: "MonoidAlgebra.freeWordPairMap_eq_linearCombination"
+      file: "ProjectiveModules/Free/FreeWordAlgebra.lean"
+      note: >-
+        The two-letter left-A-linear map equals the canonical finitely supported
+        linear combination after the inverse finite coordinate equivalence.
+        Its distinct-letter injectivity follows by reindexing the general family.
     - declaration: "MonoidAlgebra.freeWordPairMap_injective"
       file: "ProjectiveModules/Free/FreeWordAlgebra.lean"
       note: >-
