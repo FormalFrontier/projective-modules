@@ -121,13 +121,18 @@ the Formal Frontier source-maintainer team.
   homomorphisms and composition as equalities of entire additive maps.
   Noncommutative and zero rings are included; the induced maps need not be
   injective, and no projective-module cancellation is asserted.
-- **Dimension on K₀:** Over a division ring, [finite dimension](ProjectiveModules/KTheory/Rank.lean)
-  gives a natural-valued additive map on projective classes and an integer-valued
-  homomorphism on K₀, evaluating on modules in arbitrary carrier universes.
-  These maps do not assert classification by dimension. Over a
-  [zero ring](ProjectiveModules/KTheory/ZeroRing.lean), both the class monoid
-  and the entire K₀ group are subsingletons; module dimension is not used as an
-  additive invariant there.
+- **Dimension classification over division rings:** For `[DivisionRing D]`,
+  [finite dimension](ProjectiveModules/KTheory/Rank.lean) gives additive equivalences
+  `KTheory.ProjectiveClass.finrankEquiv D : ProjectiveClass D ≃+ ℕ` and
+  `KTheory.K0.finrankEquiv D : K0 D ≃+ ℤ`, with the canonical `finrankHom` maps
+  as their forward homomorphisms. The inverses send `n : ℕ` to the class of
+  `Fin n → Dᵐᵒᵖ` and every `z : ℤ`, including negatives, to `z` times the
+  regular right-module generator. Evaluation accepts finitely generated modules
+  in independent carrier universes. Scalar extension along any unital map
+  between division rings preserves both dimensions as equalities of entire
+  additive homomorphisms. Over a [zero ring](ProjectiveModules/KTheory/ZeroRing.lean),
+  which is not a division ring, both the class monoid and the entire K₀ group
+  are subsingletons; module dimension is not used as an additive invariant there.
 - **Stable categories and rank:** [Stable module morphisms](ProjectiveModules/Category/Stable.lean)
   modulo maps through projectives form a *preadditive* category over a ring;
   the Ext¹ criterion additionally requires `Small.{uM} R`. For commutative
@@ -375,7 +380,7 @@ aggregate import.
 | [Right regular module](ProjectiveModules/Module/RightRegular.lean) | Canonical opposite-scalar free and finite instances on the ordinary semiring carrier, including zero semirings |
 | [Right-module K₀](ProjectiveModules/KTheory/K0.lean), [stabilization](ProjectiveModules/KTheory/Stabilization.lean) | Ring-sized projective class monoid and group completion; arbitrary-universe module generators, descent/universal properties, difference representatives and common finite-projective or finite-free stabilization |
 | [K₀ scalar extension](ProjectiveModules/KTheory/ScalarExtension.lean) | Additive change-of-rings maps on finite-projective right-module classes and K₀; arbitrary-carrier evaluation and whole-map identity/composition laws over arbitrary rings |
-| [K₀ dimension](ProjectiveModules/KTheory/Rank.lean), [zero rings](ProjectiveModules/KTheory/ZeroRing.lean) | Natural class dimension and integer K₀ dimension over division rings; entire class/group collapse over subsingleton rings |
+| [K₀ dimension](ProjectiveModules/KTheory/Rank.lean), [zero rings](ProjectiveModules/KTheory/ZeroRing.lean) | Additive dimension classifications of projective classes by ℕ and K₀ by ℤ over division rings, preserved by unital division-ring scalar extension; entire class/group collapse over subsingleton rings |
 | [Rank realization](ProjectiveModules/Module/LocallyConstantRank.lean), [fibers](ProjectiveModules/Module/RankFiberDecomposition.lean), [component models](ProjectiveModules/Module/ComponentwiseFree.lean) | Locally constant ranks and conditional componentwise-free classification |
 | [PID](ProjectiveModules/Module/PID.lean), [Laurent](ProjectiveModules/Module/LaurentPolynomial.lean) | Arbitrary-rank commutative PID freeness; one-variable Laurent finite-projective freeness |
 
@@ -478,8 +483,25 @@ Grothendieck group of that monoid, not a quotient that assumes projective-module
 cancellation. The [common-stabilization clients](tests/ProjectiveModulesTests/K0FiniteStabilizationClient.lean)
 include explicitly nonfree finite projective ideals over `ℚ × ℚ`, products and
 independent carrier lifts, and zero rings. Nonfreeness alone does not detect
-nonzero K₀ classes. Division-ring dimension descends by the monoid and group
-universal properties; no class or group classification by dimension is asserted.
+nonzero K₀ classes. For arbitrary rings, finite coordinate classes are natural
+multiples of the regular class by the direct-sum law, not an IBN assertion.
+
+Over a division ring `D`, dimension descends by the monoid and group universal
+properties and classifies the projective class monoid by ℕ and K₀ by ℤ.
+`ProjectiveClass.finrankEquiv D` and `K0.finrankEquiv D` are `AddEquiv`s, not ring
+equivalences; their whole forward homomorphisms are the existing canonical
+`finrankHom` maps. The natural-number inverse is the class of `Fin n → Dᵐᵒᵖ`;
+the integer inverse is `z • K0.of D Dᵐᵒᵖ` for every integer, including negatives.
+The inverse and canonical dimension maps satisfy both round-trip laws and agree
+with the canonical cast from ℕ to ℤ on class generators. Every finitely generated
+right-module class and K₀ generator, in any carrier universe, is recovered from
+its dimension; over a division ring, freeness and projectivity are automatic.
+Equality of two such K₀ generators is equivalent to right-linear isomorphism,
+even for independent carrier universes. The whole-homomorphism laws
+`ProjectiveClass.finrankHom_comp_map` and `K0.finrankHom_comp_map` state that
+scalar extension along any unital `φ : D →+* S` between division rings preserves
+natural and integer dimensions. These classifications do not identify stable
+K₀ equality with module isomorphism over arbitrary rings.
 
 ## Build
 
@@ -522,11 +544,13 @@ exhaustive current catalogue; use the actual modules and the focused
 regeneration is represented here.
 
 The full exterior-algebra base-change interface is not fixed-degree scalar
-extension. Rank classification does not extend to all finite projectives.
+extension. Over arbitrary rings, rank does not classify all finite projectives.
 The finite-projective size and isomorphism-class interfaces alone do not
 construct a K₀ group. The separate K₀ modules form and use their direct-sum
-class monoid and group completion; they do not assert cancellation of
-projectives or classification by dimension. Right-extension comparison coherence gives
+class monoid and group completion; their arbitrary-ring stabilization criteria
+do not assert cancellation of projectives or classification by dimension.
+Division-ring dimension separately gives additive class and K₀ equivalences
+with ℕ and ℤ. Right-extension comparison coherence gives
 pointwise unit and triple-composition equalities, not categorical triangle or
 pentagon laws, common-universe carrier lifts, or compatibility of scalar
 extension with such lifts.

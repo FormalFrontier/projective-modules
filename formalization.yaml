@@ -13,7 +13,8 @@ project:
     preadditive stable module categories, countably generated submodules over
     left-Noetherian rings, and locally constant rank and componentwise-free
     classification. Noncommutative and commutative results retain their distinct
-    hypotheses; rank classification is not asserted for all finite projectives.
+    hypotheses; rank classification is not asserted for all finite projectives
+    over arbitrary rings.
     Over arbitrary rings, the library also describes stably-free kernels of
     surjections onto finitely generated stably-free targets, finite-coordinate
     kernel presentations and surjective right-linear matrix kernels.
@@ -47,9 +48,12 @@ project:
     Finite projective right-module classes form a ring-sized direct-sum monoid
     and additive Grothendieck group, with arbitrary-carrier generators,
     universal properties and common finite-projective or finite-free
-    stabilization criteria. Division-ring dimension gives natural-valued class
-    and integer-valued group homomorphisms; subsingleton rings give trivial
-    class monoids and groups. Classification by dimension is not asserted.
+    stabilization criteria over arbitrary rings. Over division rings, canonical
+    natural-valued class and integer-valued group dimensions give additive
+    equivalences with ℕ and ℤ, with finite-coordinate and all-integer
+    regular-generator inverses. Scalar extension along arbitrary unital maps
+    between division rings preserves both dimensions. Subsingleton rings give
+    trivial class monoids and groups, not division-ring dimension invariants.
     Every unital ring homomorphism induces additive scalar-extension maps on
     right-module classes and K₀, with arbitrary-carrier evaluation and entire-map
     identity and composition laws over noncommutative and zero rings.
@@ -158,10 +162,24 @@ status:
     finite projective stabilizer may be replaced by Fin n → Rᵐᵒᵖ, with
     existential n and no IBN or projective-module cancellation premise.
     Equality of differences stabilizes the cross-sums P × Q' and P' × Q.
-    Inputs may have independent carrier universes. Over division rings,
-    natural-valued class dimension extends uniquely to integer-valued K₀
-    dimension; these maps do not assert classification. Over subsingleton
-    rings both entire class monoids and groups are subsingletons, without
+    Inputs may have independent carrier universes. For arbitrary rings, finite
+    coordinate classes are natural multiples of the regular class by the
+    direct-sum law, not an IBN assertion. Over a division ring D, the canonical
+    natural-valued class dimension and its unique integer-valued K₀ extension
+    are the whole forward homomorphisms of additive equivalences
+    ProjectiveClass D ≃+ ℕ and K0 D ≃+ ℤ. These use the standard AddEquiv
+    interface, not ring equivalences. Their inverses send n to the class of
+    Fin n → Dᵐᵒᵖ and every integer z, including negatives, to
+    z • K0.of D Dᵐᵒᵖ. Both canonical-map round trips and compatibility with
+    the natural-to-integer cast on class generators are provided. Evaluation
+    and dimension recovery accept finitely generated modules in independent
+    carrier universes; freeness and projectivity follow from DivisionRing.
+    Equality of finite-module K₀ generators is equivalent to right-linear
+    isomorphism only under the division-ring hypothesis, not for arbitrary rings.
+    Scalar extension along any unital φ : D →+* S between division rings
+    preserves both natural and integer dimensions as equalities of entire
+    canonical homomorphisms. Over subsingleton rings, which are not division
+    rings, both entire class monoids and groups are subsingletons, without
     treating module finrank as an additive invariant.
     For arbitrary rings and an arbitrary additive commutative right module,
     identity and iterated right scalar extension are linearly equivalent to
@@ -400,7 +418,8 @@ status:
       note: >-
         Mathlib's additive Grothendieck group of the projective class monoid,
         in the ring universe, for arbitrary rings including the zero ring.
-        Equality of generators is not identified with module isomorphism.
+        For arbitrary rings, generator equality means common stabilization,
+        not necessarily module isomorphism.
     - declaration: "KTheory.K0.lift"
       file: "ProjectiveModules/KTheory/K0.lean"
       note: >-
@@ -419,8 +438,9 @@ status:
       note: >-
         The induced K₀ map extends the class map through group completion,
         agrees on every class and arbitrary-carrier module generator, and
-        respects identity and composition as whole homomorphisms. No injectivity,
-        dimension classification or cancellation of projective modules is asserted.
+        respects identity and composition as whole homomorphisms. This general-ring
+        scalar-extension API alone asserts no injectivity, dimension classification
+        or cancellation of projective modules.
     - declaration: "KTheory.K0.exists_sub"
       file: "ProjectiveModules/KTheory/Stabilization.lean"
       note: >-
@@ -455,14 +475,47 @@ status:
       file: "ProjectiveModules/KTheory/Rank.lean"
       note: >-
         Finite dimension descends to a natural-valued additive class map over
-        a division ring. Evaluation requires finite generation, with projectivity
-        supplied by division-ring scalars; no dimension classification is asserted.
+        a division ring. Evaluation requires finite generation, with freeness
+        and projectivity supplied by division-ring scalars. This is the whole
+        forward homomorphism of ProjectiveClass.finrankEquiv.
+    - declaration: "KTheory.ProjectiveClass.finrankEquiv"
+      file: "ProjectiveModules/KTheory/Rank.lean"
+      note: >-
+        For DivisionRing D, an AddEquiv ProjectiveClass D ≃+ ℕ whose forward
+        homomorphism is the canonical finrankHom. Its inverse sends every n
+        to the class of Fin n → Dᵐᵒᵖ. Both canonical-map round trips,
+        arbitrary-carrier finite-module evaluation and dimension recovery,
+        and regular-class one and inverse-one laws are provided.
     - declaration: "KTheory.K0.finrankHom"
       file: "ProjectiveModules/KTheory/Rank.lean"
       note: >-
         Integer-valued K₀ dimension uniquely extends natural class dimension,
-        evaluates on modules in arbitrary carrier universes, and sends the
-        regular generator to one. It is not asserted to be an equivalence.
+        evaluates on finitely generated modules in arbitrary carrier universes,
+        and sends the regular generator to one. This is the whole forward
+        homomorphism of K0.finrankEquiv.
+    - declaration: "KTheory.K0.finrankEquiv"
+      file: "ProjectiveModules/KTheory/Rank.lean"
+      note: >-
+        For DivisionRing D, an AddEquiv K0 D ≃+ ℤ whose forward homomorphism
+        is the canonical finrankHom. Its inverse sends every integer z,
+        including negatives, to z • K0.of D Dᵐᵒᵖ; natural casts recover
+        finite-coordinate generators. Both canonical-map round trips,
+        arbitrary-carrier finite-module evaluation and dimension recovery,
+        regular-generator one and inverse-one laws, and class-completion
+        compatibility are provided. Equality of finite-module generators
+        is equivalent to right-linear isomorphism over division rings only.
+    - declaration: "KTheory.ProjectiveClass.finrankHom_comp_map"
+      file: "ProjectiveModules/KTheory/Rank.lean"
+      note: >-
+        Scalar extension along any unital φ : D →+* S between division rings
+        preserves natural class dimension as an equality of whole canonical
+        additive homomorphisms, with independent scalar universes.
+    - declaration: "KTheory.K0.finrankHom_comp_map"
+      file: "ProjectiveModules/KTheory/Rank.lean"
+      note: >-
+        The induced K₀ scalar-extension map along the same arbitrary unital
+        division-ring homomorphism preserves integer dimension as an equality
+        of whole canonical homomorphisms, by group completion.
     - declaration: "KTheory.K0.subsingleton_of_subsingleton"
       file: "ProjectiveModules/KTheory/ZeroRing.lean"
       note: >-
@@ -799,8 +852,9 @@ fidelity:
     Right modules use opposite-ring actions; balanced tensor respects
     noncommutative order and semiring Hom exactness is additive. Full exterior
     algebra base change is not fixed-degree scalar extension; the binary Sum
-    Formula is separate. Rank classifies componentwise-free finite projectives,
-    not all finite projectives. The stable category is preadditive, not
+    Formula is separate. Over arbitrary rings, rank does not classify all finite
+    projectives; the commutative stalk-rank classification concerns the
+    componentwise-free finite projectives. The stable category is preadditive, not
     abelian; the Ext-one criterion requires Small.{uM} R. Countable and
     finite-summand cancellation are bounded; semisimple freeness requires
     finite stably-free modules. Proper-ideal/unit-complement local freeness
@@ -814,10 +868,14 @@ fidelity:
     basis vectors.
     K₀ is the group completion of all finite projective right-module classes,
     not a quotient imposing module cancellation. Finite-free stabilization uses
-    an existential rank, without IBN. Division-ring dimension maps are not
-    classification equivalences. Allowing subsingleton rings generalizes the
-    source's nonzero-ring convention; module finrank is not an additive K₀
-    invariant in this case.
+    an existential rank, without IBN. For arbitrary rings, these stabilization
+    criteria do not identify K₀ generator equality with module isomorphism or
+    provide a dimension classification. Over division rings, canonical dimension
+    does give additive equivalences of the class monoid with ℕ and K₀ with ℤ,
+    preserved by unital division-ring scalar extension; these are not ring
+    equivalences. Allowing subsingleton rings generalizes the source's nonzero-ring
+    convention; their entire class monoid and K₀ collapse, and module finrank
+    is not an additive K₀ invariant in this case. Zero rings are not division rings.
     None of this decides source-wide formalization.
 
 review:

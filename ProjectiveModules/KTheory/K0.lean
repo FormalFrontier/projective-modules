@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Module.Opposite
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Skeleton
 public import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
+public import Mathlib.LinearAlgebra.StdBasis
 
 /-!
 # K₀ of finite projective right modules
@@ -43,6 +44,7 @@ Grothendieck group, without any cancellation assumption.
   Chapter II, group completion and the definition of K₀.
 * Mathlib's skeleton, chosen finite-product Cartesian monoidal structure,
   algebraic transport to `Shrink`, and additive Grothendieck group.
+* Mathlib's finite-coordinate linear equivalence and free-module instances.
 * The finite-projective category and representative formalization in this
   library, and Formal Frontier's Algebraic Direct Limits object-class
   group-completion formalization, whose skeleton-based approach this file
@@ -191,6 +193,21 @@ theorem of_prod (N : Type w) [AddCommGroup N] [Module Rᵐᵒᵖ N]
       (Skeleton.toSkeleton_tensorObj
         (ModuleCat.FiniteProjective.repr Rᵐᵒᵖ M)
         (ModuleCat.FiniteProjective.repr Rᵐᵒᵖ N))
+
+/-- The finite coordinate module has the class of `n` copies of the regular
+right module, for arbitrary rings. -/
+@[simp]
+theorem of_fin_fun_eq_nsmul (n : ℕ) :
+    of R (Fin n → Rᵐᵒᵖ) = n • of R Rᵐᵒᵖ := by
+  induction n with
+  | zero => simp only [of_zero, zero_nsmul]
+  | succ n ih =>
+    calc
+      of R (Fin (n + 1) → Rᵐᵒᵖ) = of R (Rᵐᵒᵖ × (Fin n → Rᵐᵒᵖ)) :=
+        of_eq_of_equiv R _
+          (Fin.consLinearEquiv Rᵐᵒᵖ (fun _ : Fin (n + 1) ↦ Rᵐᵒᵖ)).symm
+      _ = of R Rᵐᵒᵖ + of R (Fin n → Rᵐᵒᵖ) := of_prod R _ _
+      _ = (n + 1) • of R Rᵐᵒᵖ := by rw [ih, succ_nsmul']
 
 /-- Every class is the class of a module in the ring-universe reference category. -/
 theorem of_surjective :
