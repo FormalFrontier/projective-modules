@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 -- Contributors: Prism
 module
 
+public import ProjectiveModules.Category.FiniteModuleDimension
 public import ProjectiveModules.Category.FiniteProjective
 public import ProjectiveModules.Category.FiniteProjectiveSmallness
 public import ProjectiveModules.Category.Stable
@@ -36,6 +37,7 @@ public import ProjectiveModules.Module.CountableLocalProjectiveFree
 public import ProjectiveModules.Module.CountablyGenerated
 public import ProjectiveModules.Module.CountablyGenerated.Noetherian
 public import ProjectiveModules.Module.ComponentwiseFree
+public import ProjectiveModules.Module.FiniteStabilization
 public import ProjectiveModules.Module.HomExact
 public import ProjectiveModules.Module.InvariantSupportedProjection
 public import ProjectiveModules.Module.IsotypicMultiplicity
@@ -52,6 +54,7 @@ public import ProjectiveModules.Module.ProjectiveComplement
 public import ProjectiveModules.Module.SummandCancellation
 public import ProjectiveModules.Module.RankFiberDecomposition
 public import ProjectiveModules.Module.RightEndomorphismMatrix
+public import ProjectiveModules.Module.RightRegular
 public import ProjectiveModules.Module.RightRegularDefect
 public import ProjectiveModules.Module.RightExtension
 public import ProjectiveModules.Module.RightExtensionComparison

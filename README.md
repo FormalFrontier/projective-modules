@@ -80,6 +80,26 @@ the Formal Frontier source-maintainer team.
   to `Rᵐᵒᵖ` gives right modules. Essential smallness alone does not make a
   category with a smaller carrier universe contain all finite projective
   classes.
+- **Finite-free stabilization:** If `M × T` and `N × T` are linearly
+  equivalent and `T` is finite projective, then `M` and `N` become equivalent
+  after adjoining the same standard finite free module `Fin n → R`. The
+  [common-stabilizer interface](ProjectiveModules/Module/FiniteStabilization.lean)
+  works over arbitrary rings and independent carrier universes, without
+  assuming that `M` or `N` is finite, free or projective. The witness `n` is
+  existential, not a prescribed rank; no module cancellation or IBN is used.
+- **Finite dimension bridges:** Finitely generated free objects in
+  `ModuleCat` and `FGModuleCat` over a ring satisfying the strong rank
+  condition are isomorphic exactly when their finite ranks agree. The
+  [dimension interface](ProjectiveModules/Category/FiniteModuleDimension.lean)
+  also preserves finite rank under the chosen ring-universe representative,
+  with independent scalar and carrier universes. Over a division ring,
+  freeness follows automatically. This is not rank classification of all
+  finite projectives over arbitrary rings.
+- **Right regular modules:** For every semiring, including the zero semiring,
+  the ordinary carrier `R` is free and finite as an `Rᵐᵒᵖ`-module under the
+  canonical action `op a • x = x * a`; projectivity follows from freeness.
+  The [regular-module instances](ProjectiveModules/Module/RightRegular.lean)
+  transport Mathlib's left regular module through its opposite equivalence.
 - **Stable categories and rank:** [Stable module morphisms](ProjectiveModules/Category/Stable.lean)
   modulo maps through projectives form a *preadditive* category over a ring;
   the Ext¹ criterion additionally requires `Small.{uM} R`. For commutative
@@ -297,6 +317,9 @@ aggregate import.
 | [Complements](ProjectiveModules/Module/ProjectiveComplement.lean), [right inverse defects](ProjectiveModules/Module/RightRegularDefect.lean), [Hom exactness](ProjectiveModules/Module/HomExact.lean) | Splittings and additive Hom exactness over semirings; specified right regular decomposition and defect kernel over rings |
 | [Finite-projective category](ProjectiveModules/Category/FiniteProjective.lean), [stable category](ProjectiveModules/Category/Stable.lean) | Finite biproducts, preadditive stable quotient and small-ring Ext¹ detection |
 | [Finite-projective representatives](ProjectiveModules/Category/FiniteProjectiveSmallness.lean) | Derived ring-universe essential smallness at independent carrier universes; ring-sized representatives, linear equivalences and class equality in one reference skeleton |
+| [Finite dimension](ProjectiveModules/Category/FiniteModuleDimension.lean) | Finite-rank representative transport; finite-free categorical isomorphism criteria over strong-rank-condition rings |
+| [Finite stabilization](ProjectiveModules/Module/FiniteStabilization.lean) | Replace a finite projective common stabilizer by a common standard finite free one; no hypotheses on the two ambient modules |
+| [Right regular module](ProjectiveModules/Module/RightRegular.lean) | Canonical opposite-scalar free and finite instances on the ordinary semiring carrier, including zero semirings |
 | [Rank realization](ProjectiveModules/Module/LocallyConstantRank.lean), [fibers](ProjectiveModules/Module/RankFiberDecomposition.lean), [component models](ProjectiveModules/Module/ComponentwiseFree.lean) | Locally constant ranks and conditional componentwise-free classification |
 | [PID](ProjectiveModules/Module/PID.lean), [Laurent](ProjectiveModules/Module/LaurentPolynomial.lean) | Arbitrary-rank commutative PID freeness; one-variable Laurent finite-projective freeness |
 

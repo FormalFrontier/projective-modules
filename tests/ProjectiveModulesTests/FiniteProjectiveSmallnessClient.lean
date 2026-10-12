@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.Category.FiniteProjectiveSmallness
+public import ProjectiveModules.Category.FiniteModuleDimension
 public import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Ring.PUnit
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
@@ -82,7 +83,18 @@ theorem isoClass_eq_iff_finrank_eq (K : Type u) [DivisionRing K]
     FiniteProjective.isoClass Kᵐᵒᵖ M = FiniteProjective.isoClass Kᵐᵒᵖ N ↔
       Module.finrank Kᵐᵒᵖ M = Module.finrank Kᵐᵒᵖ N := by
   rw [FiniteProjective.isoClass_eq_iff]
-  exact FiniteDimensional.nonempty_linearEquiv_iff_finrank_eq
+  constructor
+  · rintro ⟨e⟩
+    exact e.finrank_eq
+  · intro h
+    have hrepr : Module.finrank Kᵐᵒᵖ (Module.Finite.repr Kᵐᵒᵖ M) =
+        Module.finrank Kᵐᵒᵖ (Module.Finite.repr Kᵐᵒᵖ N) := by
+      simpa only [Module.Finite.finrank_repr] using h
+    obtain ⟨e⟩ := (ModuleCat.nonempty_iso_iff_finrank_eq
+      (X := ModuleCat.of Kᵐᵒᵖ (Module.Finite.repr Kᵐᵒᵖ M))
+      (Y := ModuleCat.of Kᵐᵒᵖ (Module.Finite.repr Kᵐᵒᵖ N))).2 hrepr
+    exact ⟨(Module.Finite.reprEquiv Kᵐᵒᵖ M).symm.trans
+      (e.toLinearEquiv.trans (Module.Finite.reprEquiv Kᵐᵒᵖ N))⟩
 
 private theorem rightFreeClasses (K : Type u) [DivisionRing K] (n m : ℕ) :
     FiniteProjective.isoClass Kᵐᵒᵖ (Fin n → Kᵐᵒᵖ) =

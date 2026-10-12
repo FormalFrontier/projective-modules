@@ -7,8 +7,8 @@ module
 
 public import ProjectiveModules.Free.StablePresentation
 public import ProjectiveModules.Module.ProjectiveComplement
+public import ProjectiveModules.Module.RightRegular
 public import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.Algebra.Module.Equiv.Opposite
 
 /-!
 # Stably free kernels and finite matrix presentations
@@ -164,10 +164,6 @@ theorem finite_isStablyFree_ker_mulVecBilin_of_surjective
     (hA : Function.Surjective (Matrix.mulVecBilin R Rᵐᵒᵖ A)) :
     Module.Finite Rᵐᵒᵖ (LinearMap.ker (Matrix.mulVecBilin R Rᵐᵒᵖ A)) ∧
       Module.IsStablyFree Rᵐᵒᵖ (LinearMap.ker (Matrix.mulVecBilin R Rᵐᵒᵖ A)) := by
-  let regular : Rᵐᵒᵖ ≃ₗ[Rᵐᵒᵖ] R :=
-    (MulOpposite.opLinearEquiv Rᵐᵒᵖ).symm
-  let _ : Module.Free Rᵐᵒᵖ R := Module.Free.of_equiv regular
-  let _ : Module.Finite Rᵐᵒᵖ R := Module.Finite.equiv regular
   let _ : Module.Finite Rᵐᵒᵖ (κ → R) := inferInstance
   let _ : Module.Free Rᵐᵒᵖ (κ → R) := Module.Free.pi _ _
   let _ : Module.IsStablyFree Rᵐᵒᵖ (κ → R) := inferInstance

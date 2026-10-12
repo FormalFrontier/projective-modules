@@ -34,6 +34,13 @@ project:
     image-one scalar-extension equivalence without idempotence, and an
     image-zero annihilation theorem with idempotence. Their finite-projective
     constructors separately retain a commutative source-ring hypothesis.
+    Canonical right regular modules on ordinary semiring carriers are finite
+    and free, including zero semirings. A finite projective common stabilizer
+    can be replaced by a common standard finite free one, without finiteness
+    or projectivity assumptions on the ambient modules. Finite ranks are
+    preserved by ring-universe representatives; finitely generated free
+    categorical objects are classified by finite rank over rings satisfying
+    the strong rank condition, not all finite projectives over arbitrary rings.
   authors:
     - "Formal Frontier Agents"
   responsible_maintainers:
@@ -144,6 +151,24 @@ status:
     scalar-extension compatibility with such lifts.
 
   main_results:
+    - declaration: "Module.Free.right_regular"
+      file: "ProjectiveModules/Module/RightRegular.lean"
+      note: "The ordinary semiring carrier is free under the canonical opposite-scalar right action; zero semirings are included."
+    - declaration: "Module.Finite.right_regular"
+      file: "ProjectiveModules/Module/RightRegular.lean"
+      note: "The same right regular carrier is finitely generated, by transport of the left regular module."
+    - declaration: "Module.Finite.finrank_repr"
+      file: "ProjectiveModules/Category/FiniteModuleDimension.lean"
+      note: "Finite rank is preserved by the chosen ring-universe representative, with independent scalar and carrier universes."
+    - declaration: "ModuleCat.nonempty_iso_iff_finrank_eq"
+      file: "ProjectiveModules/Category/FiniteModuleDimension.lean"
+      note: "Finitely generated free objects over a strong-rank-condition ring are isomorphic exactly when finite ranks agree."
+    - declaration: "FGModuleCat.nonempty_iso_iff_finrank_eq"
+      file: "ProjectiveModules/Category/FiniteModuleDimension.lean"
+      note: "The finite-free isomorphism criterion in the finitely generated module category; division-ring freeness is automatic."
+    - declaration: "Module.Projective.exists_free_stabilizer"
+      file: "ProjectiveModules/Module/FiniteStabilization.lean"
+      note: "For arbitrary rings and arbitrary ambient modules, replace a common finite projective stabilizer by the same standard finite free module; n is existential, with no IBN or module cancellation."
     - declaration: "IsBaseChange.toDualBaseChangeOfProjective"
       file: "ProjectiveModules/Dual/BaseChange.lean"
       note: "Canonical dual base change for finite projective modules over commutative semirings."
