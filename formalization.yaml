@@ -25,6 +25,8 @@ project:
     the ring universe at independent carrier universes. Ring-universe
     representatives and linear equivalences give a common reference skeleton
     for comparing arbitrary input classes.
+    Over a commutative semiring, an idempotent-generated ideal is free exactly
+    for the zero and unit idempotents, without a nontriviality assumption.
   authors:
     - "Formal Frontier Agents"
   responsible_maintainers:
@@ -432,6 +434,30 @@ status:
     - declaration: "LaurentPolynomial.module_free_of_finite_projective"
       file: "ProjectiveModules/Module/LaurentPolynomial.lean"
       note: "Finite projectives over one-variable Laurent polynomials over a field are free, with a separate opposite-ring endpoint."
+    - declaration: "IsIdempotentElem.free_span_iff"
+      file: "ProjectiveModules/Module/LocallyConstantRank.lean"
+      note: >-
+        For a commutative semiring R and idempotent e,
+        Module.Free R (Ideal.span {e}) iff e = 0 or e = 1. Includes the zero
+        and unit ideals and the zero semiring; no nontriviality, domain or
+        local hypothesis is required.
+    - declaration: "IsIdempotentElem.not_free_span"
+      file: "ProjectiveModules/Module/LocallyConstantRank.lean"
+      note: >-
+        For a commutative semiring and idempotent e with e ≠ 0 and e ≠ 1,
+        the principal ideal Ideal.span {e} is not free. Nontriviality of the
+        ideal is derived from its nonzero generator, not assumed.
+    - declaration: "IsIdempotentElem.smul_span"
+      file: "ProjectiveModules/Module/LocallyConstantRank.lean"
+      note: >-
+        Over a commutative semiring, an idempotent e acts identically on its
+        principal ideal: e • x = x for every x : Ideal.span {e}.
+    - declaration: "IsIdempotentElem.one_sub_smul_span"
+      file: "ProjectiveModules/Module/LocallyConstantRank.lean"
+      note: >-
+        Over a commutative ring, the complementary idempotent annihilates
+        the principal ideal: (1 - e) • x = 0 for every x : Ideal.span {e},
+        assuming IsIdempotentElem e.
     - declaration: "ModuleCat.FiniteProjective.rankAtStalk_ofLocallyConstantRank"
       file: "ProjectiveModules/Module/LocallyConstantRank.lean"
       note: "Every locally constant natural-valued prime-spectrum function is realized by a finite projective over a commutative ring."
