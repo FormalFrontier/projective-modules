@@ -50,6 +50,7 @@ public import ProjectiveModules.Module.ProjectiveComplement
 public import ProjectiveModules.Module.SummandCancellation
 public import ProjectiveModules.Module.RankFiberDecomposition
 public import ProjectiveModules.Module.RightEndomorphismMatrix
+public import ProjectiveModules.Module.RightRegularDefect
 public import ProjectiveModules.Module.RightExtension
 public import ProjectiveModules.Module.RightExtensionFiniteResidue
 public import ProjectiveModules.Module.RightExtensionFree
