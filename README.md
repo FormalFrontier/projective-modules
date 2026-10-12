@@ -147,6 +147,19 @@ the Formal Frontier source-maintainer team.
   maps, inverses and composition. The Ring tensor bridges require both index
   types finite; their `_of_decidableEq` variants use caller equality-decision
   data, not extra hypotheses on the primary constructions.
+- **Pointwise right scalar-extension comparisons:** For arbitrary rings
+  `R`, `S`, `T`, a right `R`-module `M`, and unital homomorphisms
+  `φ : R →+* S`, `ψ : S →+* T`,
+  [`ModuleCat.RightExtension.idLinearEquiv` and `compLinearEquiv`](ProjectiveModules/Module/RightExtensionComparison.lean)
+  compare identity and iterated extension with the original module and direct
+  composite extension. Identity sends `m ⊗ r ↦ op r • m`, with inverse
+  `m ↦ m ⊗ 1`; composition sends `(m ⊗ s) ⊗ t ↦ m ⊗ (ψ(s) * t)`, with
+  inverse `m ⊗ t ↦ (m ⊗ 1) ⊗ t`. Scalar and module universes are independent;
+  no finiteness or projectivity is required. Four characteristic `[simp]`
+  equations describe both directions, with
+  [noncommutative matrix, zero-boundary and independent-universe examples](tests/ProjectiveModulesTests/RightExtensionComparisonClient.lean).
+  These are pointwise linear equivalences, not categorical natural
+  isomorphisms or a full coherence package.
 - **Rank condition and invariant basis number:** Both properties pull back
   along any unital homomorphism of semirings, without injectivity or
   surjectivity. [The rank-condition pullback](ProjectiveModules/Free/InvariantBasisNumber.lean)
@@ -210,6 +223,7 @@ aggregate import.
 | [Scalar rank](ProjectiveModules/Module/ScalarRank.lean) | Compatible-scalar rank times fixed-simple multiplicity; canonical noncommutative right matrix-row dimension |
 | [Finite stable presentations](ProjectiveModules/Free/StablePresentation.lean) | Arbitrary-ring finite/stably-free existence equivalence; IBN-only cross-sum and integer-difference invariance for semirings |
 | [Balanced tensor](ProjectiveModules/Module/BalancedTensorProduct.lean), [right extension](ProjectiveModules/Module/RightExtension.lean) | Right-module scalar extension over arbitrary ring homomorphisms, quotients, finite free coordinates |
+| [Right-extension comparisons](ProjectiveModules/Module/RightExtensionComparison.lean) | `ModuleCat.RightExtension.idLinearEquiv` and `ModuleCat.RightExtension.compLinearEquiv`: pointwise identity/composition linear equivalences, both-direction pure-tensor API, arbitrary rings/right modules and independent universes |
 | [Right endomorphism matrices and coefficient transport](ProjectiveModules/Module/RightEndomorphismMatrix.lean) | Semiring coefficient transport with finite source and arbitrary target; supplied equivalences with both indices finite; column convention for square endomorphism matrices, finite-coordinate Ring tensor bridges and quasi-regular quotient unit reflection |
 | [Local projectives](ProjectiveModules/Module/LocalProjective.lean), [arbitrary local freeness](ProjectiveModules/Module/ArbitraryLocalProjectiveFree.lean) | Finite, countable and arbitrary-rank right-module routes under proper-ideal/unit-complement hypotheses |
 | [Countably generated](ProjectiveModules/Module/CountablyGenerated.lean), [Noetherian submodules](ProjectiveModules/Module/CountablyGenerated/Noetherian.lean), [filtration](ProjectiveModules/Module/TransfiniteRangeBasis.lean) | Sequence-span predicate, submodule theorem, invariant countable supports and split-range assembly |
