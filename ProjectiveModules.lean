@@ -71,6 +71,7 @@ public import ProjectiveModules.Module.RightExtensionFiniteResidue
 public import ProjectiveModules.Module.RightExtensionFree
 public import ProjectiveModules.Module.RightExtensionIdeal
 public import ProjectiveModules.Module.RightExtensionQuotient
+public import ProjectiveModules.Module.RightExtensionTensorProduct
 public import ProjectiveModules.Module.TransfiniteCoordinateFiltration
 public import ProjectiveModules.Module.TransfiniteRangeBasis
 

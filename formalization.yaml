@@ -63,6 +63,13 @@ project:
     under the left regular word-semiring action. These results allow arbitrary,
     possibly noncommutative or trivial coefficient semirings and empty or
     infinite alphabets, with independent coefficient and alphabet universes.
+    Over a commutative base ring R and an arbitrary target ring S, right
+    scalar extension agrees with the module-first Mathlib tensor product,
+    with the specified homomorphism-induced coefficient action and right
+    multiplication on coefficients. For commutative S, a separate pointwise
+    comparison lands in the right-module view of Mathlib's scalar-first
+    extension. Pure-tensor, inverse and map-naturality laws retain independent
+    scalar and carrier universes without finiteness or centrality hypotheses.
   authors:
     - "Formal Frontier Agents"
   responsible_maintainers:
@@ -208,6 +215,24 @@ status:
     and alphabet universes; noncommutative or trivial coefficients and empty
     or infinite alphabets are included. No basis or linear equivalence onto
     this kernel is constructed.
+
+    For CommRing R, Ring S, a unital φ : R →+* S and M : ModuleCat Rᵐᵒᵖ,
+    tensorProductObj uses the source action restricted along
+    (RingEquiv.toOpposite R).toRingHom and the coefficient module
+    (ModuleCat.restrictScalars φ).obj (ModuleCat.of S S). Its carrier is the
+    module-first TensorProduct in Type (max uM uS), independent of uR, and
+    op t acts on m tensor s by right multiplication s * t. The coefficient
+    left action is φ r * s, including when R = S and φ is not the identity;
+    no Algebra R S, centrality, finiteness, projectivity, injectivity or
+    nontriviality is required. tensorProductLinearEquiv and its inverse
+    preserve the module-first pure tensors and intertwine source morphisms
+    with TensorProduct.map and the right-extension functor'. With CommRing S,
+    extendScalarsLinearEquiv instead sends m tensor s to s tensor m in the
+    right-module view of ModuleCat.extendScalars φ. Its inverse restores
+    module-first order, it agrees with TensorProduct.comm, and its naturality
+    uses the specified Mathlib extension/restriction maps. Both are pointwise
+    linear equivalences, not categorical natural isomorphisms or laws about
+    identity/composition coherence or compatibility with carrier lifts.
 
   main_results:
     - declaration: "Module.Free.right_regular"
@@ -672,6 +697,68 @@ status:
         The pure-tensor identity is θ (ψ s * t) * u = θ (ψ s) * (θ t * u).
         No commutativity, injectivity, surjectivity, freeness, finiteness or
         projectivity is required, and no categorical coherence is asserted.
+    - declaration: "ModuleCat.RightExtension.tensorProductObj_smul_tmul"
+      file: "ProjectiveModules/Module/RightExtensionTensorProduct.lean"
+      note: >-
+        Right target scalars act on the module-first tensor by coefficient right
+        multiplication s * t, for a commutative base and arbitrary ring target;
+        no central image is assumed.
+    - declaration: "ModuleCat.RightExtension.tensorProductLinearEquiv"
+      file: "ProjectiveModules/Module/RightExtensionTensorProduct.lean"
+      note: >-
+        For CommRing R, Ring S and any right R-module in an independent
+        universe, right extension along a unital φ agrees with the module-first
+        Mathlib tensor using the canonical restricted source and coefficient
+        actions.
+    - declaration: "ModuleCat.RightExtension.tensorProductLinearEquiv_tmul"
+      file: "ProjectiveModules/Module/RightExtensionTensorProduct.lean"
+      note: >-
+        The module-first comparison sends the balanced pure tensor m tensor s to
+        tensorProductTmul φ M m s with the specified coefficient action.
+    - declaration: "ModuleCat.RightExtension.tensorProductLinearEquiv_symm_tmul"
+      file: "ProjectiveModules/Module/RightExtensionTensorProduct.lean"
+      note: >-
+        The inverse module-first comparison sends that Mathlib pure tensor to
+        the corresponding balanced pure tensor.
+    - declaration: "ModuleCat.RightExtension.tensorProductLinearEquiv_naturality"
+      file: "ProjectiveModules/Module/RightExtensionTensorProduct.lean"
+      note: >-
+        For a morphism of right modules in a common carrier universe, the
+        comparison intertwines extension of the source map with its restricted
+        tensor map and the identity of the specified coefficient module.
+    - declaration: "ModuleCat.RightExtension.tensorProductLinearEquiv_functor'_map"
+      file: "ProjectiveModules/Module/RightExtensionTensorProduct.lean"
+      note: >-
+        The same module-first intertwining law uses the right-extension
+        functor' map, with independent source and output carrier universes.
+    - declaration: "ModuleCat.RightExtension.extendScalarsLinearEquiv"
+      file: "ProjectiveModules/Module/RightExtensionTensorProduct.lean"
+      note: >-
+        For CommRing R and CommRing S, right extension agrees pointwise with the
+        right-module view of Mathlib's scalar-first ModuleCat.extendScalars φ;
+        the output carrier is in max uM uS.
+    - declaration: "ModuleCat.RightExtension.extendScalarsLinearEquiv_tmul"
+      file: "ProjectiveModules/Module/RightExtensionTensorProduct.lean"
+      note: >-
+        The scalar-first comparison sends m tensor s to s tensor m using the
+        canonical homomorphism-induced coefficient module and opposite source
+        view.
+    - declaration: "ModuleCat.RightExtension.extendScalarsLinearEquiv_symm_tmul"
+      file: "ProjectiveModules/Module/RightExtensionTensorProduct.lean"
+      note: >-
+        The inverse scalar-first comparison sends s tensor m to the
+        corresponding module-first balanced pure tensor.
+    - declaration: "ModuleCat.RightExtension.extendScalarsLinearEquiv_eq_comm"
+      file: "ProjectiveModules/Module/RightExtensionTensorProduct.lean"
+      note: >-
+        On carriers, the scalar-first comparison is TensorProduct.comm after the
+        module-first comparison for the same specified module structures.
+    - declaration: "ModuleCat.RightExtension.extendScalarsLinearEquiv_naturality"
+      file: "ProjectiveModules/Module/RightExtensionTensorProduct.lean"
+      note: >-
+        Pointwise scalar-first naturality intertwines right extension of a
+        module morphism with the maps of Mathlib's extension and both opposite
+        scalar restriction functors.
     - declaration: "Module.rightFreeLinearMapScalarExtension"
       file: "ProjectiveModules/Module/RightEndomorphismMatrix.lean"
       note: >-
@@ -959,3 +1046,7 @@ acknowledgements: >-
   Direct Limits formalization without depending on that library. The K₀
   construction reuses Mathlib's skeleton, resizing, monoidal, additive
   Grothendieck group, localization and dimension APIs.
+  The commutative-base tensor comparisons contributed by Lens reuse
+  Mathlib's tensor universal property, commutation, tensor maps and module
+  transport; the scalar-first target follows Jujian Zhang's Mathlib
+  change-of-rings formalization.

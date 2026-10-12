@@ -261,6 +261,24 @@ the Formal Frontier source-maintainer team.
   apply all three laws and detect both incorrect multiplication orders.
   These are pointwise linear-map or linear-equivalence equalities, not
   categorical natural isomorphisms or triangle and pentagon laws.
+- **Commutative-base tensor comparison:** For a commutative ring `R`, an
+  arbitrary ring `S`, a unital map `φ : R →+* S` and any right `R`-module
+  `M`, the [module-first comparison](ProjectiveModules/Module/RightExtensionTensorProduct.lean)
+  `ModuleCat.RightExtension.tensorProductLinearEquiv` identifies right scalar
+  extension with Mathlib's `M ⊗[R] S`, using the opposite scalar view of `M`
+  and the coefficient action `r • s = φ r * s`. Its right target action is
+  `op t • (m ⊗ s) = m ⊗ (s * t)`, even when the image of `φ` is noncentral.
+  The comparison and its inverse preserve pure tensors and intertwine module
+  maps with Mathlib tensor maps, including the right-extension `functor'`.
+  If `S` is also commutative, `extendScalarsLinearEquiv` identifies the same
+  extension with the right-module view of Mathlib's scalar-first
+  `ModuleCat.extendScalars φ`, sending `m ⊗ s` to `s ⊗ m`. The two
+  comparisons agree via `TensorProduct.comm`; both directions and map
+  naturality are characterized. Scalar universes and the module carrier
+  universe are independent, with output carrier in `Type (max uM uS)`.
+  Neither finiteness, projectivity, injectivity, nontriviality nor an
+  `Algebra R S` structure is assumed. These are pointwise linear
+  equivalences, not a categorical natural isomorphism or a coherence package.
 - **Rank condition and invariant basis number:** Both properties pull back
   along any unital homomorphism of semirings, without injectivity or
   surjectivity. [The rank-condition pullback](ProjectiveModules/Free/InvariantBasisNumber.lean)
@@ -380,6 +398,7 @@ aggregate import.
 | [Balanced tensor](ProjectiveModules/Module/BalancedTensorProduct.lean), [right extension](ProjectiveModules/Module/RightExtension.lean) | Right-module scalar extension over arbitrary ring homomorphisms, quotients, finite free coordinates |
 | [Principal right ideals](ProjectiveModules/Module/RightExtensionIdeal.lean) | Arbitrary-ring image-one extension equivalence without idempotence and image-zero annihilation with idempotence; idempotent right ideals and their extensions as finite projectives over arbitrary rings |
 | [Right-extension comparisons](ProjectiveModules/Module/RightExtensionComparison.lean), [comparison coherence](ProjectiveModules/Module/RightExtensionComparisonCoherence.lean) | `ModuleCat.RightExtension.idLinearEquiv` and `compLinearEquiv`: identity/composition linear equivalences and both-direction pure-tensor API; `compLinearEquiv_id_left`, `compLinearEquiv_id_right` and `compLinearEquiv_assoc`: pointwise unit and triple-composition laws over arbitrary rings/right modules with independent universes |
+| [Commutative-base tensor comparison](ProjectiveModules/Module/RightExtensionTensorProduct.lean) | `tensorProductObj` and `tensorProductTmul` specify both scalar views; `tensorProductLinearEquiv` is module-first for `CommRing R` and arbitrary `Ring S`; `extendScalarsLinearEquiv` is scalar-first for `CommRing S`; both-direction pure tensors, tensor commutation and map naturality with independent universes |
 | [Right endomorphism matrices and coefficient transport](ProjectiveModules/Module/RightEndomorphismMatrix.lean) | Semiring coefficient transport with finite source and arbitrary target; supplied equivalences with both indices finite; column convention for square endomorphism matrices, finite-coordinate Ring tensor bridges and quasi-regular quotient unit reflection |
 | [Local projectives](ProjectiveModules/Module/LocalProjective.lean), [arbitrary local freeness](ProjectiveModules/Module/ArbitraryLocalProjectiveFree.lean), [local scalar interface](ProjectiveModules/Module/LocalRing.lean) | Finite, countable and arbitrary-rank right-module routes under proper-ideal/unit-complement hypotheses; `IsLocalRing` scalar formulation |
 | [Countably generated](ProjectiveModules/Module/CountablyGenerated.lean), [Noetherian submodules](ProjectiveModules/Module/CountablyGenerated/Noetherian.lean), [filtration](ProjectiveModules/Module/TransfiniteRangeBasis.lean) | Sequence-span predicate, submodule theorem, invariant countable supports and split-range assembly |
@@ -535,6 +554,23 @@ scalar extension along any unital `φ : D →+* S` between division rings preser
 natural and integer dimensions. These classifications do not identify stable
 K₀ equality with module isomorphism over arbitrary rings.
 
+For the commutative-base tensor comparison, the source left action is
+restriction of the given right module along `(RingEquiv.toOpposite R).toRingHom`;
+the coefficient is `(ModuleCat.restrictScalars φ).obj (ModuleCat.of S S)`.
+These actions are specified data, not an arbitrary `Module R S` on the same
+carrier: for `R = S` and a nonidentity `φ`, the coefficient action need not
+be the regular one. Its left `R`-action commutes with coefficient right
+multiplication by associativity, without requiring a central image.
+Module-first naturality uses the restricted source morphism tensored with the
+identity of this coefficient module. With commutative `S`, scalar-first
+naturality uses Mathlib's extension and restriction functor maps.
+The [tensor clients](tests/ProjectiveModulesTests/RightExtensionTensorProductClient.lean)
+include noncentral diagonal matrix coefficients, a swapped endomorphism of
+`ℤ × ℤ`, zero boundaries and independently raised carrier/scalar universes.
+Their public `modFive_tensor_unit_ne_zero` proves that the rank-one tensor
+with coefficient one survives the noninjective map `ℤ → ZMod 5`, using a
+balanced evaluation rather than the comparison equivalences.
+
 ## Build
 
 The project pins Lean `v4.34.0-rc2`; `lakefile.toml` and
@@ -562,18 +598,13 @@ Dependencies are not vendored.
 
 ## Documentation limits
 
-The [API index](docs/README.md) and [generated API](docs/API.md) describe a
-**historical** native output for 43 modules at source `5d1b1b2`: 469 displayed
-sites, 477 database names and 47 module-documentation ranges. Later
-source-inspected finite-binder, link and docstring-wording corrections are not
-a new native run.
-The Noetherian and infinite-coordinate modules added since that historical
-output are outside the generated API. Header-only edits likewise change source hashes
-without moving declaration line anchors. The historical API is not an
-exhaustive current catalogue; use the actual modules and the focused
+The [API index](docs/README.md) links the [generated API](docs/API.md),
+which covers a historical 43-module subset, not an exhaustive catalogue of the
+current library. The Noetherian and infinite-coordinate modules are outside
+that subset. Use the current modules, the focused
 [Noetherian guide](docs/NoetherianSubmodule.md) and the
-[infinite-coordinate module](ProjectiveModules/Free/InfiniteCoordinates.lean). No successful current API
-regeneration is represented here.
+[infinite-coordinate module](ProjectiveModules/Free/InfiniteCoordinates.lean)
+for those interfaces.
 
 The full exterior-algebra base-change interface is not fixed-degree scalar
 extension. Over arbitrary rings, rank does not classify all finite projectives.
@@ -622,3 +653,7 @@ The balanced-tensor and right-extension interfaces follow Prism's foundational
 formalization and its maintenance by Prism and Lens; Lens contributed the
 identity/composition comparisons and their pointwise unit and associativity
 laws, using Mathlib's ring-homomorphism and linear-map interfaces.
+The commutative-base comparisons additionally reuse Mathlib's tensor
+universal property, commutation, tensor maps and module transport; their
+scalar-first target follows Jujian Zhang's Mathlib change-of-rings
+formalization. These tensor comparison interfaces were contributed by Lens.
