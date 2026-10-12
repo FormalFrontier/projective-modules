@@ -17,12 +17,14 @@ public import Mathlib.RingTheory.Finiteness.Basic
 For a homomorphism of possibly noncommutative rings `f : R →+* S`, this file
 constructs extension of scalars from right `R`-modules to right `S`-modules.
 The canonical semilinear map into the extension is surjective whenever `f` is
-surjective.
+surjective. Additive and right-linear maps from an iterated extension are
+determined by their values on nested pure tensors, using the extensionality
+API of `BalancedTensorProduct`.
 -/
 
 @[expose] public section
 
-universe uR uS uM uN
+universe uR uS uT uM uN
 
 open CategoryTheory
 
@@ -125,6 +127,40 @@ theorem linearMap_ext {X : Type*} [AddCommGroup X] [Module Sᵐᵒᵖ X]
   exact DFunLike.congr_fun
     (BalancedTensorProduct.hom_ext (R := R) (M := M) (N := S)
       (g := g.toAddMonoidHom) (h := h.toAddMonoidHom) H) x
+
+/-- Two additive maps from an iterated right extension are equal if they agree
+on nested pure tensors. At a fixed outer coefficient, the inner maps are
+additive, but need not be linear over the intermediate ring. The target only
+needs an additive monoid structure. -/
+theorem addHom_ext_tmul_tmul {T : Type uT} [Ring T]
+    (φ : R →+* S) (ψ : S →+* T) {X : Type uN} [AddMonoid X]
+    {g h : Obj ψ (Obj φ M) →+ X}
+    (H : ∀ m s t, g (tmul ψ (tmul φ m s) t) = h (tmul ψ (tmul φ m s) t)) :
+    g = h := by
+  let _ : Module S T := ψ.toModule
+  let _ : Module R S := φ.toModule
+  apply BalancedTensorProduct.hom_ext (R := S) (M := Obj φ M) (N := T)
+  intro z t
+  let tmulAddHom : Obj φ M →+ Obj ψ (Obj φ M) :=
+    { toFun := fun x => tmul ψ x t
+      map_zero' := BalancedTensorProduct.zero_tmul t
+      map_add' := fun x y => BalancedTensorProduct.add_tmul x y t }
+  exact DFunLike.congr_fun
+    (BalancedTensorProduct.hom_ext (R := R) (M := M) (N := S)
+      (g := g.comp tmulAddHom) (h := h.comp tmulAddHom) fun m s => H m s t) z
+
+/-- Two right-linear maps from an iterated right extension are equal if they
+agree on nested pure tensors. -/
+theorem linearMap_ext_tmul_tmul {T : Type uT} [Ring T]
+    (φ : R →+* S) (ψ : S →+* T) {X : Type uN}
+    [AddCommGroup X] [Module Tᵐᵒᵖ X]
+    {g h : Obj ψ (Obj φ M) →ₗ[Tᵐᵒᵖ] X}
+    (H : ∀ m s t, g (tmul ψ (tmul φ m s) t) = h (tmul ψ (tmul φ m s) t)) :
+    g = h := by
+  apply LinearMap.ext
+  intro z
+  exact DFunLike.congr_fun
+    (addHom_ext_tmul_tmul φ ψ (g := g.toAddMonoidHom) (h := h.toAddMonoidHom) H) z
 
 @[simp]
 theorem map_id : map f (LinearMap.id (R := Rᵐᵒᵖ) (M := M)) = LinearMap.id := by

@@ -67,11 +67,6 @@ private theorem tmul_add_right (m : M) (s t : S) :
   let _ : Module R S := f.toModule
   exact BalancedTensorProduct.tmul_add m s t
 
-private def tmulAddHom (s : S) : M →+ Obj f M where
-  toFun m := tmul f m s
-  map_zero' := tmul_zero_left f s
-  map_add' m n := tmul_add_left f m n s
-
 end PureTensors
 
 section Identity
@@ -234,28 +229,19 @@ private theorem compTo_compFrom :
 
 private theorem compFrom_compTo :
     (compFrom (M := M) φ ψ).comp (compTo φ ψ) = LinearMap.id := by
-  apply linearMap_ext ψ
-  intro z t
-  let _ : Module R S := φ.toModule
-  -- At a fixed outer coefficient the inner maps are additive, not S-linear.
-  let lhs : Obj φ M →+ Obj ψ (Obj φ M) :=
-    ((compFrom φ ψ).toAddMonoidHom.comp (compTo φ ψ).toAddMonoidHom).comp
-      (tmulAddHom ψ t)
-  let rhs : Obj φ M →+ Obj ψ (Obj φ M) := tmulAddHom ψ t
-  exact DFunLike.congr_fun
-    (BalancedTensorProduct.hom_ext (R := R) (M := M) (N := S)
-      (g := lhs) (h := rhs) fun m s => by
-        change compFrom φ ψ (compTo φ ψ (tmul ψ (tmul φ m s) t)) =
-          tmul ψ (tmul φ m s) t
-        rw [compTo_tmul, compFrom_tmul]
-        calc
-          tmul ψ (tmul φ m 1) (ψ s * t) =
-              tmul ψ (MulOpposite.op s • tmul φ m 1) t :=
-            (smul_tmul ψ s (tmul φ m 1) t).symm
-          _ = tmul ψ (tmul φ m s) t := by
-            rw [tmul_smul]
-            change tmul ψ (tmul φ m (1 * s)) t = _
-            rw [one_mul]) z
+  apply linearMap_ext_tmul_tmul φ ψ
+  intro m s t
+  change compFrom φ ψ (compTo φ ψ (tmul ψ (tmul φ m s) t)) =
+    tmul ψ (tmul φ m s) t
+  rw [compTo_tmul, compFrom_tmul]
+  calc
+    tmul ψ (tmul φ m 1) (ψ s * t) =
+        tmul ψ (MulOpposite.op s • tmul φ m 1) t :=
+      (smul_tmul ψ s (tmul φ m 1) t).symm
+    _ = tmul ψ (tmul φ m s) t := by
+      rw [tmul_smul]
+      change tmul ψ (tmul φ m (1 * s)) t = _
+      rw [one_mul]
 
 /-- Iterated right scalar extension is canonically equivalent to extension
 along the composite. On nested pure tensors the coefficient is `ψ(s) * t` in

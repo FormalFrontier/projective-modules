@@ -3,9 +3,10 @@ SPDX-License-Identifier: Apache-2.0
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Formal Frontier Agents
 -/
--- Contributors: Prism
+-- Contributors: Prism, Lens
 module
 
+public import Mathlib.Algebra.Group.Units.Hom
 public import Mathlib.Algebra.Module.RingHom
 public import Mathlib.Algebra.Module.Opposite
 public import Mathlib.Algebra.Ring.Opposite
@@ -18,7 +19,8 @@ public import Mathlib.GroupTheory.QuotientGroup.Basic
 This file constructs the balanced tensor product of a right module and a left
 module over a possibly noncommutative ring.  Unlike `TensorProduct`, the base
 ring is not assumed commutative, and the two scalar actions have their literal
-opposite handedness.
+opposite handedness. Extensionality into additive commutative monoids uses
+Mathlib's inverse-uniqueness lemma for additive homomorphisms.
 -/
 
 @[expose] public section
@@ -192,21 +194,21 @@ theorem induction_on {C : BalancedTensorProduct R M N → Prop}
       | neg x hx => rw [QuotientAddGroup.mk_neg]; exact neg _ hx
       | add x y hx hy => rw [QuotientAddGroup.mk_add]; exact add _ _ hx hy
 
-/-- Additive maps from a balanced tensor product are determined by their
-values on pure tensors. -/
+/-- Additive maps from a balanced tensor product to an additive
+monoid are determined by their values on pure tensors. -/
 @[ext]
-theorem hom_ext {A : Type uA} [AddCommGroup A]
+theorem hom_ext {A : Type uA} [AddMonoid A]
     {g h : BalancedTensorProduct R M N →+ A}
     (H : ∀ m n, g (m ⊗ᵇ[R] n) = h (m ⊗ᵇ[R] n)) : g = h := by
   apply AddMonoidHom.ext
   intro z
-  induction z using QuotientAddGroup.induction_on with
-  | H z =>
-      induction z using FreeAbelianGroup.induction_on' with
-      | zero => rw [QuotientAddGroup.mk_zero, map_zero, map_zero]
-      | pure mn => exact H mn.1 mn.2
-      | neg z hz => rw [QuotientAddGroup.mk_neg, map_neg, map_neg, hz]
-      | add x y hx hy => rw [QuotientAddGroup.mk_add, map_add, map_add, hx, hy]
+  induction z using induction_on with
+  | zero => rw [map_zero, map_zero]
+  | pure m n => exact H m n
+  | neg z hz =>
+      -- Images of opposite elements are inverse even without negation on the target.
+      exact eq_on_neg g h hz
+  | add x y hx hy => rw [map_add, map_add, hx, hy]
 
 section RightAction
 
