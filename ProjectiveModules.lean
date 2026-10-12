@@ -19,6 +19,7 @@ public import ProjectiveModules.ExteriorPower.Top
 public import ProjectiveModules.Free.CountableAbsorption
 public import ProjectiveModules.Free.CountableCancellation
 public import ProjectiveModules.Free.CyclicTrace
+public import ProjectiveModules.Free.FreeWordAlgebra
 public import ProjectiveModules.Free.InfiniteCoordinates
 public import ProjectiveModules.Free.InvariantBasisNumber
 public import ProjectiveModules.Free.FiniteFreeSummand
@@ -28,6 +29,10 @@ public import ProjectiveModules.Free.StableKernel
 public import ProjectiveModules.Invertible.Endomorphism
 public import ProjectiveModules.Invertible.OfRankOne
 public import ProjectiveModules.Invertible.StableCancellation
+public import ProjectiveModules.KTheory.K0
+public import ProjectiveModules.KTheory.Rank
+public import ProjectiveModules.KTheory.Stabilization
+public import ProjectiveModules.KTheory.ZeroRing
 public import ProjectiveModules.Module.BalancedTensorProduct
 public import ProjectiveModules.Module.BalancedTensorExact
 public import ProjectiveModules.Module.ArbitraryLocalProjectiveFree

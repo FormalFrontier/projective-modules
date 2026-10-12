@@ -1,7 +1,8 @@
 # Projective Modules
 
 A reusable Lean library for projective and free modules, scalar extension,
-exterior algebra, cancellation, local freeness, stable categories and rank.
+exterior algebra, cancellation, local freeness, stable categories, right-module
+K₀ and rank.
 Its results have different commutativity, handedness and finiteness assumptions;
 the declarations and focused modules below specify each interface. Maintained by
 the Formal Frontier source-maintainer team.
@@ -100,6 +101,26 @@ the Formal Frontier source-maintainer team.
   canonical action `op a • x = x * a`; projectivity follows from freeness.
   The [regular-module instances](ProjectiveModules/Module/RightRegular.lean)
   transport Mathlib's left regular module through its opposite equivalence.
+- **Right-module classes and K₀:** Over any ring `R : Type u`, including the
+  zero ring, the [class monoid and its group completion](ProjectiveModules/KTheory/K0.lean)
+  inhabit `Type u`. Finite projective inputs may have independent carrier
+  universes: ring-universe representatives give the complete reference
+  category. Class equality means linear equivalence, whereas K₀ generator
+  equality means [common stabilization](ProjectiveModules/KTheory/Stabilization.lean).
+  Every K₀ element is a difference of generators. Generator equality and
+  equality of differences have both finite-projective and standard finite-free
+  stabilization criteria; differences use the cross-sums `P × Q'` and
+  `P' × Q`. The free rank is existential, without IBN, nonzero scalars or
+  module cancellation. Descent of isomorphism-invariant, zero-preserving,
+  direct-sum-additive functions and the group-completion universal property
+  come with evaluation and uniqueness laws.
+- **Dimension on K₀:** Over a division ring, [finite dimension](ProjectiveModules/KTheory/Rank.lean)
+  gives a natural-valued additive map on projective classes and an integer-valued
+  homomorphism on K₀, evaluating on modules in arbitrary carrier universes.
+  These maps do not assert classification by dimension. Over a
+  [zero ring](ProjectiveModules/KTheory/ZeroRing.lean), both the class monoid
+  and the entire K₀ group are subsingletons; module dimension is not used as an
+  additive invariant there.
 - **Stable categories and rank:** [Stable module morphisms](ProjectiveModules/Category/Stable.lean)
   modulo maps through projectives form a *preadditive* category over a ring;
   the Ext¹ criterion additionally requires `Small.{uM} R`. For commutative
@@ -234,6 +255,20 @@ the Formal Frontier source-maintainer team.
   assumes the target has rank condition; the invariant-basis-number pullback
   assumes only target invariant basis number, not rank condition. Source and
   target may inhabit independent universes.
+- **Free-word finite-free injection:** For any semiring `K`
+  and any alphabet `ι` with distinct letters `a` and `b`, the
+  [word-map interface](ProjectiveModules/Free/FreeWordAlgebra.lean) sends
+  `(p, q)` to `p * single (of a) 1 + q * single (of b) 1` over
+  `A = MonoidAlgebra K (FreeMonoid ι)`. It is **left A-linear** and appends
+  letters on the **right**. It is injective: coefficients at disjoint final
+  suffixes recover both inputs. Transporting its codomain to `Fin 1 → A` gives
+  failure of the strong rank condition. No commutativity, nontriviality or
+  finite-alphabet assumption is imposed; trivial coefficients give singleton
+  modules. The
+  [rational-Boolean client](tests/ProjectiveModulesTests/FreeWordAlgebraClient.lean)
+  separately obtains rank condition and invariant basis number from augmentation;
+  neither property is asserted for every coefficient semiring. The free-algebra
+  contrast follows Mathlib's discussion credited to T. Y. Lam.
 - **Cyclic additive traces and invariant basis number:** For an additive
   commutative monoid with multiplication, a cyclic additive map into any
   additive commutative monoid identifies the traces of opposite matrix
@@ -304,6 +339,7 @@ aggregate import.
 | [Dual](ProjectiveModules/Dual/BaseChange.lean), [Contraction](ProjectiveModules/Contraction/BaseChange.lean), [Invertible](ProjectiveModules/Invertible/OfRankOne.lean) | Dual/evaluation base change, rank-one iff, scalar endomorphisms and finite-summand cancellation |
 | [Exterior algebra](ProjectiveModules/ExteriorAlgebra/BaseChange.lean), [exterior powers](ProjectiveModules/ExteriorPower/DirectSum.lean) | Full algebra base change; projective powers, determinants/top powers and binary fixed-degree Sum Formula |
 | [Free modules](ProjectiveModules/Free/CountableCancellation.lean), [infinite coordinates](ProjectiveModules/Free/InfiniteCoordinates.lean), [rank conditions](ProjectiveModules/Free/InvariantBasisNumber.lean) | Countable cancellation/absorption; finite stably-free semisimple endpoint; infinite basis cardinality and free-coordinate classification without IBN; semiring-homomorphism pullbacks of rank condition and IBN |
+| [Free-word semirings](ProjectiveModules/Free/FreeWordAlgebra.lean) | Rank-two to rank-one left-linear injection by distinct right suffixes and strong-rank obstruction; arbitrary semiring coefficients and alphabet |
 | [Fixed-simple multiplicity](ProjectiveModules/Module/IsotypicMultiplicity.lean) | Hom-dimension cardinal of a semisimple isotypic module, direct-sum cardinal statements and invariance under compatible linear or chosen-ring semilinear equivalences, with universe lifts |
 | [Right matrix rows](ProjectiveModules/Module/MatrixRow.lean) | Canonical opposite-matrix row simplicity, fixed-row isotypy and arbitrary direct-sum decompositions |
 | [Scalar rank](ProjectiveModules/Module/ScalarRank.lean) | Compatible-scalar rank times fixed-simple multiplicity; canonical noncommutative right matrix-row dimension |
@@ -320,6 +356,8 @@ aggregate import.
 | [Finite dimension](ProjectiveModules/Category/FiniteModuleDimension.lean) | Finite-rank representative transport; finite-free categorical isomorphism criteria over strong-rank-condition rings |
 | [Finite stabilization](ProjectiveModules/Module/FiniteStabilization.lean) | Replace a finite projective common stabilizer by a common standard finite free one; no hypotheses on the two ambient modules |
 | [Right regular module](ProjectiveModules/Module/RightRegular.lean) | Canonical opposite-scalar free and finite instances on the ordinary semiring carrier, including zero semirings |
+| [Right-module K₀](ProjectiveModules/KTheory/K0.lean), [stabilization](ProjectiveModules/KTheory/Stabilization.lean) | Ring-sized projective class monoid and group completion; arbitrary-universe module generators, descent/universal properties, difference representatives and common finite-projective or finite-free stabilization |
+| [K₀ dimension](ProjectiveModules/KTheory/Rank.lean), [zero rings](ProjectiveModules/KTheory/ZeroRing.lean) | Natural class dimension and integer K₀ dimension over division rings; entire class/group collapse over subsingleton rings |
 | [Rank realization](ProjectiveModules/Module/LocallyConstantRank.lean), [fibers](ProjectiveModules/Module/RankFiberDecomposition.lean), [component models](ProjectiveModules/Module/ComponentwiseFree.lean) | Locally constant ranks and conditional componentwise-free classification |
 | [PID](ProjectiveModules/Module/PID.lean), [Laurent](ProjectiveModules/Module/LaurentPolynomial.lean) | Arbitrary-rank commutative PID freeness; one-variable Laurent finite-projective freeness |
 
@@ -406,6 +444,17 @@ of the latter ideal is not fixed by the idempotent action. These are
 scalar-extension computations of modules, not assertions that their K₀
 generators are distinct.
 
+The direct-sum monoid `KTheory.ProjectiveClass R` is a ring-universe resizing
+of isomorphism classes in the complete finite-projective right-module reference
+category. Its generators respect zero modules, products, linear equivalences,
+representatives and carrier lifts. `KTheory.K0 R` is Mathlib's additive
+Grothendieck group of that monoid, not a quotient that assumes projective-module
+cancellation. The [common-stabilization clients](tests/ProjectiveModulesTests/K0FiniteStabilizationClient.lean)
+include explicitly nonfree finite projective ideals over `ℚ × ℚ`, products and
+independent carrier lifts, and zero rings. Nonfreeness alone does not detect
+nonzero K₀ classes. Division-ring dimension descends by the monoid and group
+universal properties; no class or group classification by dimension is asserted.
+
 ## Build
 
 The project pins Lean `v4.34.0-rc2`; `lakefile.toml` and
@@ -448,8 +497,10 @@ regeneration is represented here.
 
 The full exterior-algebra base-change interface is not fixed-degree scalar
 extension. Rank classification does not extend to all finite projectives.
-The finite-projective size and isomorphism-class interfaces do not construct
-a K₀ group or group completion. Right-extension comparison coherence gives
+The finite-projective size and isomorphism-class interfaces alone do not
+construct a K₀ group. The separate K₀ modules form and use their direct-sum
+class monoid and group completion; they do not assert cancellation of
+projectives or classification by dimension. Right-extension comparison coherence gives
 pointwise unit and triple-composition equalities, not categorical triangle or
 pentagon laws, common-universe carrier lifts, or compatibility of scalar
 extension with such lifts.

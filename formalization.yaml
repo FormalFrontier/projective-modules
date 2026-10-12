@@ -41,6 +41,12 @@ project:
     preserved by ring-universe representatives; finitely generated free
     categorical objects are classified by finite rank over rings satisfying
     the strong rank condition, not all finite projectives over arbitrary rings.
+    Finite projective right-module classes form a ring-sized direct-sum monoid
+    and additive Grothendieck group, with arbitrary-carrier generators,
+    universal properties and common finite-projective or finite-free
+    stabilization criteria. Division-ring dimension gives natural-valued class
+    and integer-valued group homomorphisms; subsingleton rings give trivial
+    class monoids and groups. Classification by dimension is not asserted.
   authors:
     - "Formal Frontier Agents"
   responsible_maintainers:
@@ -57,7 +63,8 @@ sources:
       Complete-book build dated 2013-08-29, Chapter I module and projective-module
       material, including Definition I.1.2 on finite stable coordinates,
       Example I.2.1.2 and the exterior-power Sum Formula on displayed pages
-      18-19 (physical PDF pages 26-27).
+      18-19 (physical PDF pages 26-27), and Chapter II group completion,
+      projective-module K₀, stabilization and division-ring dimension.
     relationship: "adapts"
     author_endorsement: "not-contacted"
     note: >-
@@ -137,8 +144,19 @@ status:
     carrier in Type u and a linear equivalence to the input. Classes are compared
     only in the skeleton of the reference category with carrier universe u;
     their equality is equivalent to linear equivalence of the inputs, including
-    inputs from different carrier universes. These interfaces construct neither
-    a K₀ group nor a group completion.
+    inputs from different carrier universes. These size interfaces alone do
+    not construct a K₀ group. Separate KTheory modules resize the direct-sum
+    class monoid and form its additive Grothendieck group, both in Type u.
+    They provide descent, evaluation, extensionality and uniqueness laws,
+    difference representatives and common stabilization criteria. A common
+    finite projective stabilizer may be replaced by Fin n → Rᵐᵒᵖ, with
+    existential n and no IBN or projective-module cancellation premise.
+    Equality of differences stabilizes the cross-sums P × Q' and P' × Q.
+    Inputs may have independent carrier universes. Over division rings,
+    natural-valued class dimension extends uniquely to integer-valued K₀
+    dimension; these maps do not assert classification. Over subsingleton
+    rings both entire class monoids and groups are subsingletons, without
+    treating module finrank as an additive invariant.
     For arbitrary rings and an arbitrary additive commutative right module,
     identity and iterated right scalar extension are linearly equivalent to
     the original module and direct composite extension. Their two unit laws
@@ -225,6 +243,26 @@ status:
     - declaration: "RingHom.invariantBasisNumber"
       file: "ProjectiveModules/Free/InvariantBasisNumber.lean"
       note: "Invariant basis number descends along any unital semiring homomorphism from a target with invariant basis number; no rank-condition or injectivity premise is needed."
+    - declaration: "MonoidAlgebra.freeWordPairMap_injective"
+      file: "ProjectiveModules/Free/FreeWordAlgebra.lean"
+      note: >-
+        Over any Semiring K and any alphabet in an independent universe,
+        distinct letters give an injective left-A-linear map from Fin 2 coordinates
+        to A = MonoidAlgebra K (FreeMonoid alphabet). Right multiplication
+        appends letters, and disjoint final suffixes recover both input
+        coefficients. No Nontrivial, commutativity or finite-alphabet
+        hypothesis; trivial coefficients give singleton modules.
+    - declaration: "MonoidAlgebra.not_strongRankCondition_freeMonoid"
+      file: "ProjectiveModules/Free/FreeWordAlgebra.lean"
+      note: >-
+        For distinct letters over arbitrary semiring coefficients, the
+        free-word semiring fails the strong rank condition: transport the pair
+        injection to a Fin 1 codomain and contradict the strong-rank bound
+        2 ≤ 1. Mathlib's free-algebra contrast is credited there to T. Y. Lam.
+        The rational-Boolean private client separately obtains rank condition
+        and invariant basis number by augmentation; these positive properties
+        are not asserted for every coefficient semiring. This entry asserts
+        neither source correspondence nor whole-book coverage.
     - declaration: "Module.exists_fin_prod_linearEquiv_iff_finite_isStablyFree"
       file: "ProjectiveModules/Free/StablePresentation.lean"
       note: "Over arbitrary rings, existence of a finite-coordinate stable presentation is equivalent to finite generation and stable freeness, without IBN or a nontriviality assumption."
@@ -313,6 +351,85 @@ status:
         equivalent to Nonempty (P ≃ₗ[R] Q) for finite projective inputs whose
         carrier universes may differ, with no commutativity or nontriviality
         assumption on R.
+    - declaration: "KTheory.ProjectiveClass"
+      file: "ProjectiveModules/KTheory/K0.lean"
+      note: >-
+        Ring-universe additive commutative monoid of direct-sum isomorphism
+        classes of finite projective right modules over an arbitrary ring,
+        using the complete ring-universe reference category. Module generators
+        accept arbitrary independent carrier universes without a Small premise.
+    - declaration: "KTheory.ProjectiveClass.of_eq_iff"
+      file: "ProjectiveModules/KTheory/K0.lean"
+      note: >-
+        Equality of module classes is exactly nonempty linear equivalence,
+        including inputs in independent universes. Zero, product, representative
+        and carrier-lift equations give the characteristic generator API.
+    - declaration: "KTheory.ProjectiveClass.lift"
+      file: "ProjectiveModules/KTheory/K0.lean"
+      note: >-
+        Isomorphism-invariant object functions preserving zero and binary
+        direct sums descend to additive maps into any AddZero target, with
+        reference/module evaluation, extensionality and uniqueness laws.
+    - declaration: "KTheory.K0"
+      file: "ProjectiveModules/KTheory/K0.lean"
+      note: >-
+        Mathlib's additive Grothendieck group of the projective class monoid,
+        in the ring universe, for arbitrary rings including the zero ring.
+        Equality of generators is not identified with module isomorphism.
+    - declaration: "KTheory.K0.lift"
+      file: "ProjectiveModules/KTheory/K0.lean"
+      note: >-
+        Additive class maps to any additive commutative group extend uniquely
+        to K₀ homomorphisms. Restriction is inverse to extension, and module
+        generator evaluation and homomorphism extensionality are provided.
+    - declaration: "KTheory.K0.exists_sub"
+      file: "ProjectiveModules/KTheory/Stabilization.lean"
+      note: >-
+        Every K₀ element is a difference of two finite projective right-module
+        generators in the complete ring-universe reference category. The chosen
+        representative pair has a reconstruction law, not uniqueness or additivity.
+    - declaration: "KTheory.K0.of_eq_iff_exists_projective_stabilizer"
+      file: "ProjectiveModules/KTheory/Stabilization.lean"
+      note: >-
+        Two finite projective generators agree exactly when their modules become
+        linearly equivalent after adjoining one common finite projective module
+        in the ring universe. No module cancellation or nonzero-ring premise.
+    - declaration: "KTheory.K0.of_eq_iff_exists_free_stabilizer"
+      file: "ProjectiveModules/KTheory/Stabilization.lean"
+      note: >-
+        Generator equality is equivalent to linear equivalence after adjoining
+        the same Fin n → Rᵐᵒᵖ. The rank n is existential, without IBN or a
+        prescribed rank; input carrier universes may differ.
+    - declaration: "KTheory.K0.sub_eq_sub_iff_exists_projective_stabilizer"
+      file: "ProjectiveModules/KTheory/Stabilization.lean"
+      note: >-
+        Equality [P] - [Q] = [P'] - [Q'] is equivalent to linear equivalence of
+        the cross-sums P × Q' and P' × Q after one common finite projective
+        stabilizer. All four input carrier universes are independent.
+    - declaration: "KTheory.K0.sub_eq_sub_iff_exists_free_stabilizer"
+      file: "ProjectiveModules/KTheory/Stabilization.lean"
+      note: >-
+        The same difference equality is equivalent to stabilization of its
+        cross-sums by one common standard finite free module. Cancellation is
+        in the abelian group only, not among projective modules.
+    - declaration: "KTheory.ProjectiveClass.finrankHom"
+      file: "ProjectiveModules/KTheory/Rank.lean"
+      note: >-
+        Finite dimension descends to a natural-valued additive class map over
+        a division ring. Evaluation requires finite generation, with projectivity
+        supplied by division-ring scalars; no dimension classification is asserted.
+    - declaration: "KTheory.K0.finrankHom"
+      file: "ProjectiveModules/KTheory/Rank.lean"
+      note: >-
+        Integer-valued K₀ dimension uniquely extends natural class dimension,
+        evaluates on modules in arbitrary carrier universes, and sends the
+        regular generator to one. It is not asserted to be an equivalence.
+    - declaration: "KTheory.K0.subsingleton_of_subsingleton"
+      file: "ProjectiveModules/KTheory/ZeroRing.lean"
+      note: >-
+        The entire K₀ group of a subsingleton ring is a subsingleton, as is
+        the direct-sum class monoid. Generator normalization does not use the
+        nonadditive zero-ring convention for module finrank.
     - declaration: "ModuleCat.Stable.quotient_map_eq_iff"
       file: "ProjectiveModules/Category/Stable.lean"
       note: "Stable equality is factorization of the difference through a projective; the quotient is preadditive."
@@ -653,6 +770,12 @@ fidelity:
     Infinite-coordinate results do not assert Module.rank equality or
     finite-rank invariance; their chosen index equivalence need not preserve
     basis vectors.
+    K₀ is the group completion of all finite projective right-module classes,
+    not a quotient imposing module cancellation. Finite-free stabilization uses
+    an existential rank, without IBN. Division-ring dimension maps are not
+    classification equivalences. Allowing subsingleton rings generalizes the
+    source's nonzero-ring convention; module finrank is not an additive K₀
+    invariant in this case.
     None of this decides source-wide formalization.
 
 review:
@@ -679,4 +802,8 @@ acknowledgements: >-
   associativity laws use the balanced-tensor/right-extension formalization
   contributed by Prism and maintained by Prism and Lens, the comparison
   interfaces contributed by Lens, and Mathlib's ring-homomorphism and
-  linear-map interfaces.
+  linear-map interfaces. Projective-class descent and stabilization follow
+  the object-class and group-completion approach in Formal Frontier's Algebraic
+  Direct Limits formalization without depending on that library. The K₀
+  construction reuses Mathlib's skeleton, resizing, monoidal, additive
+  Grothendieck group, localization and dimension APIs.
