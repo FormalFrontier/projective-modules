@@ -21,6 +21,10 @@ project:
     arbitrary target indices; transporting a supplied equivalence needs both
     indices finite. These constructions use left coefficients and right
     scalars, without commutativity, injectivity, IBN or equal index cardinalities.
+    Finite projective categories over arbitrary rings are essentially small in
+    the ring universe at independent carrier universes. Ring-universe
+    representatives and linear equivalences give a common reference skeleton
+    for comparing arbitrary input classes.
   authors:
     - "Formal Frontier Agents"
   responsible_maintainers:
@@ -112,6 +116,14 @@ status:
     opposite-scalar matrix maps have finitely generated stably-free right-module
     kernels, with left matrix coefficients. No IBN, rank condition, commutativity
     or nonzero-ring hypothesis is needed, and kernel freeness is not asserted.
+    Finite projective modules over R : Type u with carriers in independent
+    Type v form an essentially small category in universe u, without an assumed
+    Small premise. Every finite projective input has a representative with
+    carrier in Type u and a linear equivalence to the input. Classes are compared
+    only in the skeleton of the reference category with carrier universe u;
+    their equality is equivalent to linear equivalence of the inputs, including
+    inputs from different carrier universes. These interfaces construct neither
+    a K₀ group nor a group completion.
 
   main_results:
     - declaration: "IsBaseChange.toDualBaseChangeOfProjective"
@@ -224,6 +236,40 @@ status:
     - declaration: "ModuleCat.FiniteProjective"
       file: "ProjectiveModules/Category/FiniteProjective.lean"
       note: "Finite projective modules as a full additive subcategory with finite biproducts over arbitrary rings."
+    - declaration: "ModuleCat.finiteProjectiveEssentiallySmall"
+      file: "ProjectiveModules/Category/FiniteProjectiveSmallness.lean"
+      note: >-
+        For an arbitrary Ring R : Type u and independent carrier universe v,
+        ModuleCat.FiniteProjective.{u,v} R is EssentiallySmall.{u}, derived from
+        the finitely generated module category without an assumed Small premise.
+        A smaller carrier universe need not represent every finite projective
+        isomorphism class.
+    - declaration: "ModuleCat.FiniteProjective.repr"
+      file: "ProjectiveModules/Category/FiniteProjectiveSmallness.lean"
+      note: >-
+        Bundle Module.Finite.repr R P as a finite projective object with carrier
+        in the ring universe, for any finitely generated projective module P
+        in an independent universe over an arbitrary ring.
+    - declaration: "ModuleCat.FiniteProjective.reprEquiv"
+      file: "ProjectiveModules/Category/FiniteProjectiveSmallness.lean"
+      note: >-
+        The ring-universe representative is linearly equivalent to the original
+        finite projective module by Mathlib's Module.Finite.reprEquiv; no carrier
+        or scalar Small hypothesis is assumed.
+    - declaration: "ModuleCat.FiniteProjective.isoClass"
+      file: "ProjectiveModules/Category/FiniteProjectiveSmallness.lean"
+      note: >-
+        Send arbitrary finite projective inputs to the existing skeleton of
+        ModuleCat.FiniteProjective.{u,u} R after taking a ring-universe
+        representative. Applying this to Rᵐᵒᵖ gives right-module classes.
+        This is not a K₀ group or a group-completion construction.
+    - declaration: "ModuleCat.FiniteProjective.isoClass_eq_iff"
+      file: "ProjectiveModules/Category/FiniteProjectiveSmallness.lean"
+      note: >-
+        Equality of classes in the same ring-universe reference skeleton is
+        equivalent to Nonempty (P ≃ₗ[R] Q) for finite projective inputs whose
+        carrier universes may differ, with no commutativity or nontriviality
+        assumption on R.
     - declaration: "ModuleCat.Stable.quotient_map_eq_iff"
       file: "ProjectiveModules/Category/Stable.lean"
       note: "Stable equality is factorization of the difference through a projective; the quotient is preadditive."

@@ -43,6 +43,19 @@ the Formal Frontier source-maintainer team.
   free under the local hypotheses. The [split-range assembly](ProjectiveModules/Module/TransfiniteRangeBasis.lean)
   itself requires explicitly free increments and idempotence, not just an
   arbitrary idempotent range. Properness excludes the zero ring.
+- **Finite-projective size and representatives:** For an arbitrary ring
+  `R : Type u` and independent carrier universe `v`,
+  `ModuleCat.FiniteProjective.{u, v} R` is essentially small in universe `u`,
+  without an assumed `Small` premise. The
+  [representative interface](ProjectiveModules/Category/FiniteProjectiveSmallness.lean)
+  places every finite projective input in `ModuleCat.FiniteProjective.{u, u} R`
+  and supplies a linear equivalence to the original module, whose carrier
+  universe is unrestricted. Its `isoClass` map uses the skeleton of that same
+  reference category: two input classes agree exactly when the inputs are
+  linearly equivalent, even across carrier universes. Applying the interface
+  to `Rᵐᵒᵖ` gives right modules. Essential smallness alone does not make a
+  category with a smaller carrier universe contain all finite projective
+  classes.
 - **Stable categories and rank:** [Stable module morphisms](ProjectiveModules/Category/Stable.lean)
   modulo maps through projectives form a *preadditive* category over a ring;
   the Ext¹ criterion additionally requires `Small.{uM} R`. For commutative
@@ -181,10 +194,28 @@ complete coverage of a motivating book.
 
 ## Use
 
+Add the library to your `lakefile.toml`:
+
+```toml
+[[require]]
+name = "projective-modules"
+git = "https://github.com/FormalFrontier/projective-modules.git"
+rev = "main"
+```
+
+GitHub `main` contains reviewed releases. Lake resolves the latest release when
+this dependency is first added or updated; `lake-manifest.json` locks the resolved
+commit until the next update. To pin a particular release, replace `main` with a
+full commit from that history.
+
+Lake resolves one Mathlib revision for an entire project. When combining
+libraries, choose compatible releases and retain the matching toolchain and
+dependency lock file. The [build section](#build) describes this checkout's
+resolved dependency graph.
+
 Use `import ProjectiveModules` for the production aggregate, or import a
 focused module from the [module map](#module-map). No source-research
-repository is needed to use the library. The official public GitHub repository
-is `https://github.com/FormalFrontier/projective-modules.git`.
+repository is needed to use the library.
 
 ```lean
 import ProjectiveModules
@@ -229,6 +260,7 @@ aggregate import.
 | [Countably generated](ProjectiveModules/Module/CountablyGenerated.lean), [Noetherian submodules](ProjectiveModules/Module/CountablyGenerated/Noetherian.lean), [filtration](ProjectiveModules/Module/TransfiniteRangeBasis.lean) | Sequence-span predicate, submodule theorem, invariant countable supports and split-range assembly |
 | [Complements](ProjectiveModules/Module/ProjectiveComplement.lean), [right inverse defects](ProjectiveModules/Module/RightRegularDefect.lean), [Hom exactness](ProjectiveModules/Module/HomExact.lean) | Splittings and additive Hom exactness over semirings; specified right regular decomposition and defect kernel over rings |
 | [Finite-projective category](ProjectiveModules/Category/FiniteProjective.lean), [stable category](ProjectiveModules/Category/Stable.lean) | Finite biproducts, preadditive stable quotient and small-ring Ext¹ detection |
+| [Finite-projective representatives](ProjectiveModules/Category/FiniteProjectiveSmallness.lean) | Derived ring-universe essential smallness at independent carrier universes; ring-sized representatives, linear equivalences and class equality in one reference skeleton |
 | [Rank realization](ProjectiveModules/Module/LocallyConstantRank.lean), [fibers](ProjectiveModules/Module/RankFiberDecomposition.lean), [component models](ProjectiveModules/Module/ComponentwiseFree.lean) | Locally constant ranks and conditional componentwise-free classification |
 | [PID](ProjectiveModules/Module/PID.lean), [Laurent](ProjectiveModules/Module/LaurentPolynomial.lean) | Arbitrary-rank commutative PID freeness; one-variable Laurent finite-projective freeness |
 
@@ -299,25 +331,6 @@ declare an older mathlib `e37d88a26f3791ed5a93daa1f949af1021b8d103`.
 The effective root resolution is the first mathlib revision; do not repin
 other projects to infer this graph. Dependencies are not vendored.
 
-### Expected build cost
-
-For this pinned dependency graph, a 2026-09-30 build of both roots with
-`lake --offline --no-cache build ProjectiveModules ProjectiveModulesTests`
-took about **66 seconds wall time** (2,804 Lake jobs, 44 Lean modules) after
-the matching mathlib cache was fetched and verified. This ordinary build did
-not use `--wfail`; it does not time cache retrieval, a cold toolchain or a full
-dependency rebuild. Its thread setting, CPU allocation, peak memory and cache
-disk footprint are not reported, so the timing is an example, not a portable
-resource minimum or bound.
-
-For comparison only, a separate 2026-09-25 clean-project baseline took about
-**64 seconds wall time** (2,803 Lake jobs, 43 tracked Lean files) with
-`LEAN_NUM_THREADS=2 lake --wfail build` after fetching a matching cache and
-running `lake clean projective-modules`; dependencies remained precompiled.
-That older run used different development dependency revisions: it neither
-establishes compatibility with this graph nor measures a cold-toolchain or
-full-dependency build. Neither run establishes a process or memory bound.
-
 ## Documentation limits
 
 The [API index](docs/README.md) and [generated API](docs/API.md) describe a
@@ -335,6 +348,8 @@ regeneration is represented here.
 
 The full exterior-algebra base-change interface is not fixed-degree scalar
 extension. Rank classification does not extend to all finite projectives.
+The finite-projective size and isomorphism-class interfaces do not construct
+a K₀ group or group completion.
 The stable category is preadditive, not abelian; its Ext¹ test needs
 `Small.{uM} R`. Countable and finite-summand cancellation are bounded, not
 arbitrary cancellation. Semisimple freeness still requires finite stably-free

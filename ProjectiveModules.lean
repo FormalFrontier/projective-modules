@@ -7,6 +7,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.Category.FiniteProjective
+public import ProjectiveModules.Category.FiniteProjectiveSmallness
 public import ProjectiveModules.Category.Stable
 public import ProjectiveModules.Contraction.BaseChange
 public import ProjectiveModules.ExteriorAlgebra.BaseChange
