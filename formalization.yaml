@@ -57,6 +57,12 @@ project:
     Every unital ring homomorphism induces additive scalar-extension maps on
     right-module classes and K₀, with arbitrary-carrier evaluation and entire-map
     identity and composition laws over noncommutative and zero rings.
+    The free-word zero-generator augmentation returns the coefficient of the
+    empty word, fixing constants and killing letter monomials. The full-letter
+    linear combination has range equal to its canonical semilinear kernel,
+    under the left regular word-semiring action. These results allow arbitrary,
+    possibly noncommutative or trivial coefficient semirings and empty or
+    infinite alphabets, with independent coefficient and alphabet universes.
   authors:
     - "Formal Frontier Agents"
   responsible_maintainers:
@@ -191,6 +197,17 @@ status:
     not commutativity. These statements do not construct categorical natural
     isomorphisms, triangle or pentagon laws, common-universe carrier lifts, or
     scalar-extension compatibility with such lifts.
+    The zero-generator free-word augmentation is a ring homomorphism defined
+    by the universal word map sending every letter to zero. It returns the
+    coefficient of the empty word. For A = MonoidAlgebra K (FreeMonoid alphabet),
+    the canonical A-linear combination of all letter monomials has range equal
+    to the kernel of the augmentation's RingHom.toSemilinearMap. Coordinates
+    use the left regular A-action and multiply their letters on the right;
+    the semilinear map uses the canonical self-actions on A and K, not a global
+    Module A K instance. Only Semiring K is required, with independent scalar
+    and alphabet universes; noncommutative or trivial coefficients and empty
+    or infinite alphabets are included. No basis or linear equivalence onto
+    this kernel is constructed.
 
   main_results:
     - declaration: "Module.Free.right_regular"
@@ -306,6 +323,41 @@ status:
         and invariant basis number by augmentation; these positive properties
         are not asserted for every coefficient semiring. This entry asserts
         neither source correspondence nor whole-book coverage.
+    - declaration: "MonoidAlgebra.freeMonoidAugmentation"
+      file: "ProjectiveModules/Free/FreeWordAugmentation.lean"
+      note: >-
+        Zero-generator ring homomorphism from the free-word semiring to its
+        coefficient semiring. Coefficients may be noncommutative or trivial,
+        and coefficient and alphabet universes are independent. Empty
+        alphabets are allowed; no module action on the coefficient carrier
+        is chosen by this construction.
+    - declaration: "MonoidAlgebra.freeMonoidAugmentation_single"
+      file: "ProjectiveModules/Free/FreeWordAugmentation.lean"
+      note: "A monomial maps to its coefficient multiplied by the value of its word under the zero-generator word map."
+    - declaration: "MonoidAlgebra.freeMonoidAugmentation_single_one"
+      file: "ProjectiveModules/Free/FreeWordAugmentation.lean"
+      note: "Constant monomials map to their coefficients."
+    - declaration: "MonoidAlgebra.freeMonoidAugmentation_single_of"
+      file: "ProjectiveModules/Free/FreeWordAugmentation.lean"
+      note: "Every letter monomial maps to zero, for any coefficient."
+    - declaration: "MonoidAlgebra.freeMonoidAugmentation_apply"
+      file: "ProjectiveModules/Free/FreeWordAugmentation.lean"
+      note: >-
+        The zero-generator augmentation returns x.coeff 1, the coefficient of
+        the empty word, for every free-word polynomial over any semiring.
+        Noncommutative and trivial coefficients and empty or infinite alphabets
+        are included, with independent coefficient and alphabet universes.
+    - declaration: "MonoidAlgebra.range_linearCombination_freeMonoid_of_eq_ker_freeMonoidAugmentation"
+      file: "ProjectiveModules/Free/FreeWordAugmentationKernel.lean"
+      note: >-
+        The range of Finsupp.linearCombination A of all letter monomials equals
+        LinearMap.ker of the zero-generator augmentation's toSemilinearMap,
+        with A = MonoidAlgebra K (FreeMonoid alphabet). Coordinates are A-valued
+        and letters multiply on the right under the canonical left regular
+        A-action. Only Semiring K is required; coefficient and alphabet
+        universes are independent, including noncommutative or trivial
+        coefficients and empty or infinite alphabets. No global Module A K
+        instance, basis or linear equivalence onto the kernel is constructed.
     - declaration: "Module.exists_fin_prod_linearEquiv_iff_finite_isStablyFree"
       file: "ProjectiveModules/Free/StablePresentation.lean"
       note: "Over arbitrary rings, existence of a finite-coordinate stable presentation is equivalent to finite generation and stable freeness, without IBN or a nontriviality assumption."

@@ -291,6 +291,16 @@ the Formal Frontier source-maintainer team.
   separately obtains rank condition and invariant basis number from augmentation;
   neither property is asserted for every coefficient semiring. The free-algebra
   contrast follows Mathlib's discussion credited to T. Y. Lam.
+- **Free-word augmentation kernel:** The
+  [zero-generator augmentation](ProjectiveModules/Free/FreeWordAugmentation.lean)
+  returns the coefficient of the empty word. Over any semiring `K` and any
+  alphabet `α` in an independent universe, the
+  [full-letter linear combination](ProjectiveModules/Free/FreeWordAugmentationKernel.lean)
+  has range equal to the kernel of the augmentation's canonical semilinear
+  map. Coordinates use the left regular action of the word semiring and
+  append letters on the right. Noncommutative and trivial coefficients and
+  empty or infinite alphabets are included; no basis or linear equivalence
+  onto the kernel is constructed.
 - **Cyclic additive traces and invariant basis number:** For an additive
   commutative monoid with multiplication, a cyclic additive map into any
   additive commutative monoid identifies the traces of opposite matrix
@@ -362,6 +372,7 @@ aggregate import.
 | [Exterior algebra](ProjectiveModules/ExteriorAlgebra/BaseChange.lean), [exterior powers](ProjectiveModules/ExteriorPower/DirectSum.lean) | Full algebra base change; projective powers, determinants/top powers and binary fixed-degree Sum Formula |
 | [Free modules](ProjectiveModules/Free/CountableCancellation.lean), [infinite coordinates](ProjectiveModules/Free/InfiniteCoordinates.lean), [rank conditions](ProjectiveModules/Free/InvariantBasisNumber.lean) | Countable cancellation/absorption; finite stably-free semisimple endpoint; infinite basis cardinality and free-coordinate classification without IBN; semiring-homomorphism pullbacks of rank condition and IBN |
 | [Free-word semirings](ProjectiveModules/Free/FreeWordAlgebra.lean) | Rank-two to rank-one left-linear injection by distinct right suffixes and strong-rank obstruction; arbitrary semiring coefficients and alphabet |
+| [Free-word augmentation](ProjectiveModules/Free/FreeWordAugmentation.lean), [augmentation kernel](ProjectiveModules/Free/FreeWordAugmentationKernel.lean) | Zero-generator homomorphism returns the empty-word coefficient; full-letter left-linear combination has range equal to its canonical semilinear kernel, for arbitrary semiring coefficients and independent alphabet universe |
 | [Fixed-simple multiplicity](ProjectiveModules/Module/IsotypicMultiplicity.lean) | Hom-dimension cardinal of a semisimple isotypic module, direct-sum cardinal statements and invariance under compatible linear or chosen-ring semilinear equivalences, with universe lifts |
 | [Right matrix rows](ProjectiveModules/Module/MatrixRow.lean) | Canonical opposite-matrix row simplicity, fixed-row isotypy and arbitrary direct-sum decompositions |
 | [Scalar rank](ProjectiveModules/Module/ScalarRank.lean) | Compatible-scalar rank times fixed-simple multiplicity; canonical noncommutative right matrix-row dimension |
@@ -393,6 +404,27 @@ links the historical generated [API](docs/API.md) and
 [Noetherian guide](docs/NoetherianSubmodule.md).
 
 ## Mathematical scope
+
+The [zero-generator augmentation](ProjectiveModules/Free/FreeWordAugmentation.lean)
+`ε₀ = MonoidAlgebra.freeMonoidAugmentation K α` maps the free-word semiring
+`A = MonoidAlgebra K (FreeMonoid α)` to `K`, fixes constant monomials and sends
+letter monomials to zero. Its monomial formula uses the universal word map
+sending every letter to zero, and `freeMonoidAugmentation_apply` gives
+`ε₀ x = x.coeff 1`, the coefficient of the empty word. The
+[kernel interface](ProjectiveModules/Free/FreeWordAugmentationKernel.lean) identifies
+`LinearMap.range (Finsupp.linearCombination A (fun a ↦ single (FreeMonoid.of a) 1))`
+with `LinearMap.ker ε₀.toSemilinearMap`. Both are submodules of the canonical
+left regular `A`-module: polynomial coordinates multiply letter monomials on
+the right. The semilinear map uses the canonical self-actions on `A` and `K`,
+not a global `A`-module instance on `K`.
+
+Coefficients may form any semiring, including noncommutative and trivial
+semirings; coefficient and alphabet universes are independent, and empty or
+infinite alphabets are allowed. This augmentation differs from the
+coefficient-sum augmentation when the coefficients are nontrivial and a letter
+is present; the two maps agree for empty alphabets or trivial coefficients.
+The kernel interface constructs neither a basis nor a linear equivalence
+onto the kernel.
 
 Right modules use opposite-ring actions where needed: the
 [balanced tensor](ProjectiveModules/Module/BalancedTensorProduct.lean) and
