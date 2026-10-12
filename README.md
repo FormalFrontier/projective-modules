@@ -166,7 +166,7 @@ the Formal Frontier source-maintainer team.
   maps, inverses and composition. The Ring tensor bridges require both index
   types finite; their `_of_decidableEq` variants use caller equality-decision
   data, not extra hypotheses on the primary constructions.
-- **Pointwise right scalar-extension comparisons:** For arbitrary rings
+- **Right scalar-extension comparisons and coherence:** For arbitrary rings
   `R`, `S`, `T`, a right `R`-module `M`, and unital homomorphisms
   `φ : R →+* S`, `ψ : S →+* T`,
   [`ModuleCat.RightExtension.idLinearEquiv` and `compLinearEquiv`](ProjectiveModules/Module/RightExtensionComparison.lean)
@@ -177,8 +177,19 @@ the Formal Frontier source-maintainer team.
   no finiteness or projectivity is required. Four characteristic `[simp]`
   equations describe both directions, with
   [noncommutative matrix, zero-boundary and independent-universe examples](tests/ProjectiveModulesTests/RightExtensionComparisonClient.lean).
-  These are pointwise linear equivalences, not categorical natural
-  isomorphisms or a full coherence package.
+  The [unit and associativity laws](ProjectiveModules/Module/RightExtensionComparisonCoherence.lean)
+  identify composition with an identity first with scalar extension of the
+  identity comparison, and composition with an identity last with the identity
+  comparison on the extended module. For a further ring map `θ : T →+* U`,
+  the two triple-comparison routes agree as linear maps. On
+  `((m ⊗ s) ⊗ t) ⊗ u`, this is the ordered coefficient identity
+  `θ (ψ s * t) * u = θ (ψ s) * (θ t * u)`, without commutativity.
+  All four scalar universes and the module universe are independent, and the
+  right module needs only an additive commutative group and its opposite-ring
+  action. [Matrix and raised-universe clients](tests/ProjectiveModulesTests/RightExtensionComparisonCoherenceClient.lean)
+  apply all three laws and detect both incorrect multiplication orders.
+  These are pointwise linear-map or linear-equivalence equalities, not
+  categorical natural isomorphisms or triangle and pentagon laws.
 - **Rank condition and invariant basis number:** Both properties pull back
   along any unital homomorphism of semirings, without injectivity or
   surjectivity. [The rank-condition pullback](ProjectiveModules/Free/InvariantBasisNumber.lean)
@@ -260,7 +271,7 @@ aggregate import.
 | [Scalar rank](ProjectiveModules/Module/ScalarRank.lean) | Compatible-scalar rank times fixed-simple multiplicity; canonical noncommutative right matrix-row dimension |
 | [Finite stable presentations](ProjectiveModules/Free/StablePresentation.lean) | Arbitrary-ring finite/stably-free existence equivalence; IBN-only cross-sum and integer-difference invariance for semirings |
 | [Balanced tensor](ProjectiveModules/Module/BalancedTensorProduct.lean), [right extension](ProjectiveModules/Module/RightExtension.lean) | Right-module scalar extension over arbitrary ring homomorphisms, quotients, finite free coordinates |
-| [Right-extension comparisons](ProjectiveModules/Module/RightExtensionComparison.lean) | `ModuleCat.RightExtension.idLinearEquiv` and `ModuleCat.RightExtension.compLinearEquiv`: pointwise identity/composition linear equivalences, both-direction pure-tensor API, arbitrary rings/right modules and independent universes |
+| [Right-extension comparisons](ProjectiveModules/Module/RightExtensionComparison.lean), [comparison coherence](ProjectiveModules/Module/RightExtensionComparisonCoherence.lean) | `ModuleCat.RightExtension.idLinearEquiv` and `compLinearEquiv`: identity/composition linear equivalences and both-direction pure-tensor API; `compLinearEquiv_id_left`, `compLinearEquiv_id_right` and `compLinearEquiv_assoc`: pointwise unit and triple-composition laws over arbitrary rings/right modules with independent universes |
 | [Right endomorphism matrices and coefficient transport](ProjectiveModules/Module/RightEndomorphismMatrix.lean) | Semiring coefficient transport with finite source and arbitrary target; supplied equivalences with both indices finite; column convention for square endomorphism matrices, finite-coordinate Ring tensor bridges and quasi-regular quotient unit reflection |
 | [Local projectives](ProjectiveModules/Module/LocalProjective.lean), [arbitrary local freeness](ProjectiveModules/Module/ArbitraryLocalProjectiveFree.lean) | Finite, countable and arbitrary-rank right-module routes under proper-ideal/unit-complement hypotheses |
 | [Countably generated](ProjectiveModules/Module/CountablyGenerated.lean), [Noetherian submodules](ProjectiveModules/Module/CountablyGenerated/Noetherian.lean), [filtration](ProjectiveModules/Module/TransfiniteRangeBasis.lean) | Sequence-span predicate, submodule theorem, invariant countable supports and split-range assembly |
@@ -339,9 +350,10 @@ lake build
 The default targets are `ProjectiveModules` and `ProjectiveModulesTests`;
 the latter compiles example and ordinary-import regression modules. A focused
 check after the cache fetch is `lake build ProjectiveModules` or
-`lake build ProjectiveModulesTests`. The test target includes an intentionally
-private finite-projective importing client, which can report a `privateModule`
-warning. These ordinary commands do not make warnings fatal. The root resolves
+`lake build ProjectiveModulesTests`. The test target includes intentionally
+private importing clients for finite-projective modules and right-extension
+comparison coherence, which can report a `privateModule` warning. These
+ordinary commands do not make warnings fatal. The root resolves
 mathlib `83abb3e776bdefcbc447a1e44d0debe4010039e5`, GLG
 `1f8fd3e39080be39586ea22fa56c157167eefd00` and Stable Range
 `9ac79cf93ac2d7f3e22c660100a65592df5ac976`; both latter libraries
@@ -367,7 +379,10 @@ regeneration is represented here.
 The full exterior-algebra base-change interface is not fixed-degree scalar
 extension. Rank classification does not extend to all finite projectives.
 The finite-projective size and isomorphism-class interfaces do not construct
-a K₀ group or group completion.
+a K₀ group or group completion. Right-extension comparison coherence gives
+pointwise unit and triple-composition equalities, not categorical triangle or
+pentagon laws, common-universe carrier lifts, or compatibility of scalar
+extension with such lifts.
 The stable category is preadditive, not abelian; its Ext¹ test needs
 `Small.{uM} R`. Countable and finite-summand cancellation are bounded, not
 arbitrary cancellation. Semisimple freeness still requires finite stably-free
@@ -389,3 +404,7 @@ See [credits](docs/CREDITS.md)
 for truthful roles and provenance. These credits do not assign copyright
 ownership, assert human mathematical review or source-author endorsement,
 or relicense dependency code or Weibel’s book; no book text or PDF is shipped.
+The balanced-tensor and right-extension interfaces follow Prism's foundational
+formalization and its maintenance by Prism and Lens; Lens contributed the
+identity/composition comparisons and their pointwise unit and associativity
+laws, using Mathlib's ring-homomorphism and linear-map interfaces.

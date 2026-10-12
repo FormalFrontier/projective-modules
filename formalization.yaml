@@ -27,6 +27,9 @@ project:
     for comparing arbitrary input classes.
     Over a commutative semiring, an idempotent-generated ideal is free exactly
     for the zero and unit idempotents, without a nontriviality assumption.
+    Right scalar-extension comparisons satisfy pointwise unit and
+    triple-composition associativity laws over arbitrary rings and right
+    modules, with five independent scalar and module universes.
   authors:
     - "Formal Frontier Agents"
   responsible_maintainers:
@@ -126,6 +129,16 @@ status:
     their equality is equivalent to linear equivalence of the inputs, including
     inputs from different carrier universes. These interfaces construct neither
     a K₀ group nor a group completion.
+    For arbitrary rings and an arbitrary additive commutative right module,
+    identity and iterated right scalar extension are linearly equivalent to
+    the original module and direct composite extension. Their two unit laws
+    and triple-composition associativity are pointwise equalities of linear
+    maps or linear equivalences, with all scalar and module universes
+    independent. The ordered triple coefficient is θ (ψ s * t) * u,
+    equal to θ (ψ s) * (θ t * u) by multiplicativity and associativity,
+    not commutativity. These statements do not construct categorical natural
+    isomorphisms, triangle or pentagon laws, common-universe carrier lifts, or
+    scalar-extension compatibility with such lifts.
 
   main_results:
     - declaration: "IsBaseChange.toDualBaseChangeOfProjective"
@@ -305,6 +318,47 @@ status:
     - declaration: "ModuleCat.RightExtension.rightFreeLinearEquiv"
       file: "ProjectiveModules/Module/RightExtensionFree.lean"
       note: "Explicit scalar extension of finite standard right-free modules, including empty coordinates."
+    - declaration: "ModuleCat.RightExtension.idLinearEquiv"
+      file: "ProjectiveModules/Module/RightExtensionComparison.lean"
+      note: >-
+        Identity extension of an arbitrary right module over a ring is linearly
+        equivalent to the original module: m ⊗ r maps to op r • m and the
+        inverse sends m to m ⊗ 1. Scalar and module universes are independent;
+        no finite-generation, projectivity or nontriviality premise is needed.
+    - declaration: "ModuleCat.RightExtension.compLinearEquiv"
+      file: "ProjectiveModules/Module/RightExtensionComparison.lean"
+      note: >-
+        For arbitrary ring homomorphisms φ : R →+* S and ψ : S →+* T,
+        iterated right extension is linearly equivalent to extension along
+        ψ.comp φ. The pure-tensor formula is (m ⊗ s) ⊗ t ↦ m ⊗ (ψ s * t),
+        with inverse m ⊗ t ↦ (m ⊗ 1) ⊗ t, preserving multiplication order.
+        Scalar and module universes are independent; no commutativity,
+        injectivity, surjectivity, finiteness or projectivity is assumed.
+    - declaration: "ModuleCat.RightExtension.compLinearEquiv_id_left"
+      file: "ProjectiveModules/Module/RightExtensionComparisonCoherence.lean"
+      note: >-
+        Composition comparison with an identity first equals scalar extension
+        of the identity comparison as a linear map. Both send (m ⊗ r) ⊗ s
+        to m ⊗ (φ r * s), for arbitrary rings and right modules with independent
+        scalar and module universes. This is a simp law.
+    - declaration: "ModuleCat.RightExtension.compLinearEquiv_id_right"
+      file: "ProjectiveModules/Module/RightExtensionComparisonCoherence.lean"
+      note: >-
+        Composition comparison with an identity last equals the identity
+        comparison on the extended module as a linear equivalence. Both
+        evaluate z ⊗ s by the right S-action on z, over arbitrary rings and
+        right modules with independent scalar and module universes.
+        This is a simp law.
+    - declaration: "ModuleCat.RightExtension.compLinearEquiv_assoc"
+      file: "ProjectiveModules/Module/RightExtensionComparisonCoherence.lean"
+      note: >-
+        Comparing the first two extensions and then the third equals comparing
+        the last two and then the first, as linear maps. For arbitrary rings
+        R, S, T, U, ring homomorphisms φ, ψ, θ and a module with only an
+        AddCommGroup and a Module Rᵐᵒᵖ action, all five universes are independent.
+        The pure-tensor identity is θ (ψ s * t) * u = θ (ψ s) * (θ t * u).
+        No commutativity, injectivity, surjectivity, freeness, finiteness or
+        projectivity is required, and no categorical coherence is asserted.
     - declaration: "Module.rightFreeLinearMapScalarExtension"
       file: "ProjectiveModules/Module/RightEndomorphismMatrix.lean"
       note: >-
@@ -572,4 +626,8 @@ acknowledgements: >-
   Weibel's Definition I.1.2 motivates finite-free kernel splitting; the more
   general kernel interfaces also use Mathlib's stably-free and matrix APIs and
   Prism's (Formal Frontier) finite stable presentation and projective splitting
-  formalization.
+  formalization. Right-extension comparisons and their pointwise unit and
+  associativity laws use the balanced-tensor/right-extension formalization
+  contributed by Prism and maintained by Prism and Lens, the comparison
+  interfaces contributed by Lens, and Mathlib's ring-homomorphism and
+  linear-map interfaces.
