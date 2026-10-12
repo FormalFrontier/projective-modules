@@ -31,6 +31,7 @@ public import ProjectiveModules.Invertible.OfRankOne
 public import ProjectiveModules.Invertible.StableCancellation
 public import ProjectiveModules.KTheory.K0
 public import ProjectiveModules.KTheory.Rank
+public import ProjectiveModules.KTheory.ScalarExtension
 public import ProjectiveModules.KTheory.Stabilization
 public import ProjectiveModules.KTheory.ZeroRing
 public import ProjectiveModules.Module.BalancedTensorProduct

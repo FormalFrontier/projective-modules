@@ -248,7 +248,7 @@ theorem tmulOne_ker_quotient_mk (I : Ideal R) [I.IsTwoSided] :
     have h := idealQuotientLinearEquiv_tmul (M := M) I m (1 : R ⧸ I)
     simp only [MulOpposite.op_one, one_smul] at h
     rw [← h]
-    rw [← tmulOne_apply, hm, map_zero]
+    rw [← tmulOne_apply, hm, _root_.map_zero]
   · exact idealSubmodule_le_tmulOne_ker (M := M) I
 
 end IdealQuotient

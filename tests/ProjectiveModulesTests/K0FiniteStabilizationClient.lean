@@ -5,6 +5,10 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.KTheory.Stabilization
+public import ProjectiveModules.KTheory.ScalarExtension
+import ProjectiveModules.KTheory.Rank
+import ProjectiveModules.Module.RightExtensionIdeal
+import ProjectiveModules.Module.RightExtensionFiniteResidue
 import ProjectiveModules.Module.LocallyConstantRank
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Ring.Prod
@@ -233,6 +237,119 @@ example :
     PUnit.{x + 1} (ULift.{y} SecondIdeal)).mp
   apply sub_eq_sub_iff_add_eq_add.mpr
   simpa only [K0.of_ulift, K0.of_zero, zero_add] using complementary_sum
+
+-- The two projections distinguish the nonfree summand from its complement
+-- through scalar extension, rather than through a freeness assumption.
+private theorem first_projection_classes :
+    ProjectiveClass.map (RingHom.fst ℚ ℚ) (ProjectiveClass.of RatProduct FirstIdeal) =
+        ProjectiveClass.of ℚ ℚᵐᵒᵖ ∧
+      ProjectiveClass.map (RingHom.snd ℚ ℚ) (ProjectiveClass.of RatProduct FirstIdeal) =
+        0 := by
+  constructor
+  · rw [ProjectiveClass.map_of]
+    exact ProjectiveClass.of_eq_of_equiv ℚ _
+      (RightExtension.spanLinearEquivOfMapEqOne (RingHom.fst ℚ ℚ) (1, 0) rfl)
+  · let _ : Subsingleton (RightExtension.Obj (RingHom.snd ℚ ℚ) FirstIdeal) :=
+      RightExtension.span_subsingleton_of_map_eq_zero (RingHom.snd ℚ ℚ)
+        (congrArg (MulOpposite.unop : RatProductᵐᵒᵖ → RatProduct)
+          first_isIdempotent.eq) rfl
+    rw [ProjectiveClass.map_of, ProjectiveClass.of_zero]
+
+private theorem second_projection_classes :
+    ProjectiveClass.map (RingHom.fst ℚ ℚ) (ProjectiveClass.of RatProduct SecondIdeal) =
+        0 ∧
+      ProjectiveClass.map (RingHom.snd ℚ ℚ) (ProjectiveClass.of RatProduct SecondIdeal) =
+        ProjectiveClass.of ℚ ℚᵐᵒᵖ := by
+  have he : IsIdempotentElem ((1 : RatProduct) - (1, 0)) :=
+    congrArg (MulOpposite.unop : RatProductᵐᵒᵖ → RatProduct)
+      first_isIdempotent.one_sub.eq
+  constructor
+  · -- Transport vanishing to the canonical complementary ideal.
+    let e : SecondIdeal ≃ₗ[RatProductᵐᵒᵖ]
+        Ideal.span {MulOpposite.op ((1 : RatProduct) - (1, 0))} :=
+      LinearEquiv.ofEq _ _ (by
+        simp only [SecondIdeal, firstIdempotent, MulOpposite.op_sub,
+          MulOpposite.op_one])
+    let e' : RightExtension.Obj (RingHom.fst ℚ ℚ) SecondIdeal ≃ₗ[ℚᵐᵒᵖ]
+        RightExtension.Obj (RingHom.fst ℚ ℚ)
+          (Ideal.span {MulOpposite.op ((1 : RatProduct) - (1, 0))}) :=
+      RightExtension.mapLinearEquiv (RingHom.fst ℚ ℚ) e
+    let _ : Subsingleton (RightExtension.Obj (RingHom.fst ℚ ℚ) SecondIdeal) :=
+      e'.toEquiv.subsingleton_congr.mpr
+        (RightExtension.span_subsingleton_of_map_eq_zero (RingHom.fst ℚ ℚ) he
+          (by simp))
+    rw [ProjectiveClass.map_of, ProjectiveClass.of_zero]
+  · rw [ProjectiveClass.map_of]
+    exact ProjectiveClass.of_eq_of_equiv ℚ _
+      (RightExtension.spanLinearEquivOfMapEqOne (RingHom.snd ℚ ℚ)
+        ((1 : RatProduct) - (1, 0)) (by simp))
+
+-- Restriction along the completion map transfers the computed class images
+-- without assuming that the completion map is injective.
+private theorem first_projection_k0 :
+    K0.map (RingHom.fst ℚ ℚ) (K0.of RatProduct FirstIdeal) = K0.of ℚ ℚᵐᵒᵖ ∧
+      K0.map (RingHom.snd ℚ ℚ) (K0.of RatProduct FirstIdeal) = 0 := by
+  constructor
+  · simpa only [← K0.map_ofClass, K0.ofClass_of] using
+      congrArg (K0.ofClass ℚ) first_projection_classes.1
+  · simpa only [← K0.map_ofClass, K0.ofClass_of, map_zero] using
+      congrArg (K0.ofClass ℚ) first_projection_classes.2
+
+private theorem second_projection_k0 :
+    K0.map (RingHom.fst ℚ ℚ) (K0.of RatProduct SecondIdeal) = 0 ∧
+      K0.map (RingHom.snd ℚ ℚ) (K0.of RatProduct SecondIdeal) = K0.of ℚ ℚᵐᵒᵖ := by
+  constructor
+  · simpa only [← K0.map_ofClass, K0.ofClass_of, map_zero] using
+      congrArg (K0.ofClass ℚ) second_projection_classes.1
+  · simpa only [← K0.map_ofClass, K0.ofClass_of] using
+      congrArg (K0.ofClass ℚ) second_projection_classes.2
+
+-- Apply the constructed homomorphisms to the proved source decomposition.
+-- The target relations are consequences, not hypotheses about target K₀.
+example :
+    K0.map (RingHom.fst ℚ ℚ) (K0.of RatProduct RatProductᵐᵒᵖ) = K0.of ℚ ℚᵐᵒᵖ ∧
+      K0.map (RingHom.snd ℚ ℚ) (K0.of RatProduct RatProductᵐᵒᵖ) = K0.of ℚ ℚᵐᵒᵖ := by
+  constructor
+  · have h := congrArg (K0.map (RingHom.fst ℚ ℚ)) complementary_sum
+    simpa only [map_add, first_projection_k0.1, second_projection_k0.1, add_zero]
+      using h.symm
+  · have h := congrArg (K0.map (RingHom.snd ℚ ℚ)) complementary_sum
+    simpa only [map_add, first_projection_k0.2, second_projection_k0.2, zero_add]
+      using h.symm
+
+-- The lifted input may live in any carrier universe. Its extension is compared
+-- by a heterogeneous linear equivalence, with the canonical lifted action.
+example :
+    K0.map (RingHom.fst ℚ ℚ) (K0.of RatProduct (ULift.{v} FirstIdeal)) =
+      K0.of ℚ ℚᵐᵒᵖ := by
+  rw [K0.map_of]
+  exact K0.of_eq_of_equiv ℚ _
+    ((RightExtension.mapLinearEquiv (RingHom.fst ℚ ℚ)
+      (ULift.moduleEquiv : ULift.{v} FirstIdeal ≃ₗ[RatProductᵐᵒᵖ] FirstIdeal)).trans
+      (RightExtension.spanLinearEquivOfMapEqOne (RingHom.fst ℚ ℚ) (1, 0) rfl))
+
+-- Integer dimension is used only after extension to the division-ring target.
+private theorem first_fst_integer_dimension :
+    ((K0.finrankHom ℚ).comp (K0.map (RingHom.fst ℚ ℚ)))
+      (K0.of RatProduct FirstIdeal) = 1 := by
+  rw [AddMonoidHom.comp_apply, first_projection_k0.1, K0.finrankHom_of_self]
+
+example :
+    ProjectiveClass.map (RingHom.fst ℚ ℚ) (ProjectiveClass.of RatProduct FirstIdeal) ≠
+        0 ∧
+      K0.of RatProduct FirstIdeal ≠ 0 := by
+  constructor
+  · intro h
+    have hd := congrArg (fun a : ProjectiveClass ℚ ↦
+      K0.finrankHom ℚ (K0.ofClass ℚ a)) h
+    have hone : (1 : ℤ) = 0 := by
+      simpa only [first_projection_classes.1, K0.ofClass_of,
+        K0.finrankHom_of_self, map_zero] using hd
+    exact one_ne_zero hone
+  · intro h
+    have hd := first_fst_integer_dimension
+    rw [h, map_zero] at hd
+    exact zero_ne_one hd
 
 end IdempotentIdeals
 

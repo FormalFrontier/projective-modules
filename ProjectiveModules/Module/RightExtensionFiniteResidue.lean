@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 -- Contributors: Prism
 module
 
+public import ProjectiveModules.Module.RightExtension
 public import ProjectiveModules.Module.RightExtensionQuotient
 public import Mathlib.Algebra.Field.Opposite
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
@@ -14,12 +15,11 @@ public import Mathlib.LinearAlgebra.Dimension.Constructions
 /-!
 # Finite residue modules for right-module extension
 
-This file packages two elementary compatibility properties of extension of
-scalars for right modules: it carries linear equivalences to linear
-equivalences and preserves binary products.  Combining these constructions
-with `ModuleCat.RightExtension.idealQuotientLinearEquiv` gives corresponding
-maps for quotients by the action of a two-sided ideal, as well as finite-
-generation and dimension consequences over a division-ring quotient.
+This file specializes the linear-equivalence and binary-product
+constructions from `ModuleCat.RightExtension` to quotients by the action of a
+two-sided ideal, using `ModuleCat.RightExtension.idealQuotientLinearEquiv`. It
+also gives finite-generation and dimension consequences over a division-ring
+quotient.
 -/
 
 @[expose] public section
@@ -33,86 +33,6 @@ variable (f : R →+* S)
 variable {M : Type uM} {N : Type uN}
 variable [AddCommGroup M] [Module Rᵐᵒᵖ M]
 variable [AddCommGroup N] [Module Rᵐᵒᵖ N]
-
-/-- Extension of scalars sends the zero right-linear map to zero. -/
-@[simp]
-theorem map_zero : map f (0 : M →ₗ[Rᵐᵒᵖ] N) = 0 := by
-  apply linearMap_ext f
-  intro m s
-  rw [map_tmul]
-  let _ : Module R S := f.toModule
-  change BalancedTensorProduct.tmul (R := R) (0 : N) s = 0
-  exact BalancedTensorProduct.zero_tmul s
-
-/-- Extension of scalars carries a right-linear equivalence to a
-right-linear equivalence. -/
-def mapLinearEquiv (e : M ≃ₗ[Rᵐᵒᵖ] N) :
-    Obj f M ≃ₗ[Sᵐᵒᵖ] Obj f N :=
-  LinearEquiv.ofLinearMap (map f e.toLinearMap) (map f e.symm.toLinearMap)
-    (by
-      apply linearMap_ext f
-      intro n s
-      simp)
-    (by
-      apply linearMap_ext f
-      intro m s
-      simp)
-
-@[simp]
-theorem mapLinearEquiv_tmul (e : M ≃ₗ[Rᵐᵒᵖ] N) (m : M) (s : S) :
-    mapLinearEquiv f e (tmul f m s) = tmul f (e m) s := by
-  exact map_tmul f e.toLinearMap m s
-
-/-- Extension of scalars commutes with a binary product of right modules. -/
-def prodLinearEquiv :
-    Obj f (M × N) ≃ₗ[Sᵐᵒᵖ] Obj f M × Obj f N := by
-  let toProd : Obj f (M × N) →ₗ[Sᵐᵒᵖ] Obj f M × Obj f N :=
-    (map f (LinearMap.fst Rᵐᵒᵖ M N)).prod
-      (map f (LinearMap.snd Rᵐᵒᵖ M N))
-  let fromProd : Obj f M × Obj f N →ₗ[Sᵐᵒᵖ] Obj f (M × N) :=
-    LinearMap.coprod
-      (map f (LinearMap.inl Rᵐᵒᵖ M N))
-      (map f (LinearMap.inr Rᵐᵒᵖ M N))
-  apply LinearEquiv.ofLinearMap toProd fromProd
-  · apply LinearMap.ext
-    rintro ⟨x, y⟩
-    apply Prod.ext
-    · change map f (LinearMap.fst Rᵐᵒᵖ M N)
-          (map f (LinearMap.inl Rᵐᵒᵖ M N) x +
-            map f (LinearMap.inr Rᵐᵒᵖ M N) y) = x
-      rw [(map f (LinearMap.fst Rᵐᵒᵖ M N)).map_add]
-      simp only [← LinearMap.comp_apply, ← map_comp,
-        LinearMap.fst_comp_inl, LinearMap.fst_comp_inr, map_id,
-        map_zero, LinearMap.id_apply, LinearMap.zero_apply, add_zero]
-    · change map f (LinearMap.snd Rᵐᵒᵖ M N)
-          (map f (LinearMap.inl Rᵐᵒᵖ M N) x +
-            map f (LinearMap.inr Rᵐᵒᵖ M N) y) = y
-      rw [(map f (LinearMap.snd Rᵐᵒᵖ M N)).map_add]
-      simp only [← LinearMap.comp_apply, ← map_comp,
-        LinearMap.snd_comp_inl, LinearMap.snd_comp_inr, map_id,
-        map_zero, LinearMap.id_apply, LinearMap.zero_apply, zero_add]
-  · apply linearMap_ext f
-    intro mn s
-    rcases mn with ⟨m, n⟩
-    change map f (LinearMap.inl Rᵐᵒᵖ M N)
-          (map f (LinearMap.fst Rᵐᵒᵖ M N) (tmul f (m, n) s)) +
-        map f (LinearMap.inr Rᵐᵒᵖ M N)
-          (map f (LinearMap.snd Rᵐᵒᵖ M N) (tmul f (m, n) s)) =
-      tmul f (m, n) s
-    simp only [map_tmul, LinearMap.fst_apply, LinearMap.snd_apply,
-      LinearMap.inl_apply, LinearMap.inr_apply]
-    let _ : Module R S := f.toModule
-    change BalancedTensorProduct.tmul (R := R) (m, 0) s +
-        BalancedTensorProduct.tmul (R := R) (0, n) s =
-      BalancedTensorProduct.tmul (R := R) (m, n) s
-    rw [← BalancedTensorProduct.add_tmul]
-    simp
-
-@[simp]
-theorem prodLinearEquiv_tmul (m : M) (n : N) (s : S) :
-    prodLinearEquiv (f := f) (M := M) (N := N) (tmul f (m, n) s) =
-      (tmul f m s, tmul f n s) := by
-  rfl
 
 section IdealQuotient
 

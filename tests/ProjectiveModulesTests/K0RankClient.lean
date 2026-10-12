@@ -5,6 +5,9 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.KTheory.Rank
+import ProjectiveModules.KTheory.ScalarExtension
+import Mathlib.Algebra.Ring.Rat
+import Mathlib.Algebra.Ring.ULift
 
 /-!
 # Clients of the dimension maps on right-module K₀
@@ -127,5 +130,44 @@ example :
     ProjectiveClass.finrankHom_of_module]
 
 end FiniteModules
+
+section
+
+-- Inverse ring maps between scalar Type 0 and Type (u + 1) act inversely on classes.
+example :
+    (ProjectiveClass.map (ULift.ringEquiv : ULift.{u + 1} ℚ ≃+* ℚ).toRingHom).comp
+      (ProjectiveClass.map (ULift.ringEquiv : ULift.{u + 1} ℚ ≃+* ℚ).symm.toRingHom) =
+        AddMonoidHom.id (ProjectiveClass ℚ) := by
+  rw [← ProjectiveClass.map_comp, RingEquiv.toRingHom_comp_symm_toRingHom,
+    ProjectiveClass.map_id]
+
+example (a : ProjectiveClass (ULift.{u + 1} ℚ)) :
+    ProjectiveClass.map (ULift.ringEquiv : ULift.{u + 1} ℚ ≃+* ℚ).symm.toRingHom
+      (ProjectiveClass.map (ULift.ringEquiv : ULift.{u + 1} ℚ ≃+* ℚ).toRingHom a) = a := by
+  simpa only [RingEquiv.symm_toRingHom_comp_toRingHom, ProjectiveClass.map_id,
+    AddMonoidHom.comp_apply, AddMonoidHom.id_apply] using
+    (DFunLike.congr_fun
+      (ProjectiveClass.map_comp
+        (ULift.ringEquiv : ULift.{u + 1} ℚ ≃+* ℚ).toRingHom
+        (ULift.ringEquiv : ULift.{u + 1} ℚ ≃+* ℚ).symm.toRingHom) a).symm
+
+-- The same round trips hold on the whole K₀ group, not only its positive generators.
+example :
+    (K0.map (ULift.ringEquiv : ULift.{u + 1} ℚ ≃+* ℚ).toRingHom).comp
+      (K0.map (ULift.ringEquiv : ULift.{u + 1} ℚ ≃+* ℚ).symm.toRingHom) =
+        AddMonoidHom.id (K0 ℚ) := by
+  rw [← K0.map_comp, RingEquiv.toRingHom_comp_symm_toRingHom, K0.map_id]
+
+example (z : K0 (ULift.{u + 1} ℚ)) :
+    K0.map (ULift.ringEquiv : ULift.{u + 1} ℚ ≃+* ℚ).symm.toRingHom
+      (K0.map (ULift.ringEquiv : ULift.{u + 1} ℚ ≃+* ℚ).toRingHom z) = z := by
+  simpa only [RingEquiv.symm_toRingHom_comp_toRingHom, K0.map_id,
+    AddMonoidHom.comp_apply, AddMonoidHom.id_apply] using
+    (DFunLike.congr_fun
+      (K0.map_comp
+        (ULift.ringEquiv : ULift.{u + 1} ℚ ≃+* ℚ).toRingHom
+        (ULift.ringEquiv : ULift.{u + 1} ℚ ≃+* ℚ).symm.toRingHom) z).symm
+
+end
 
 end ProjectiveModulesTests.K0RankClient

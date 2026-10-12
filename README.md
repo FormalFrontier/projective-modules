@@ -114,6 +114,13 @@ the Formal Frontier source-maintainer team.
   module cancellation. Descent of isomorphism-invariant, zero-preserving,
   direct-sum-additive functions and the group-completion universal property
   come with evaluation and uniqueness laws.
+- **Scalar extension on classes and K₀:** Every unital homomorphism between
+  arbitrary rings induces additive maps on finite-projective right-module
+  classes and K₀. The [change-of-rings interface](ProjectiveModules/KTheory/ScalarExtension.lean)
+  evaluates on modules in independent carrier universes and respects identity
+  homomorphisms and composition as equalities of entire additive maps.
+  Noncommutative and zero rings are included; the induced maps need not be
+  injective, and no projective-module cancellation is asserted.
 - **Dimension on K₀:** Over a division ring, [finite dimension](ProjectiveModules/KTheory/Rank.lean)
   gives a natural-valued additive map on projective classes and an integer-valued
   homomorphism on K₀, evaluating on modules in arbitrary carrier universes.
@@ -357,6 +364,7 @@ aggregate import.
 | [Finite stabilization](ProjectiveModules/Module/FiniteStabilization.lean) | Replace a finite projective common stabilizer by a common standard finite free one; no hypotheses on the two ambient modules |
 | [Right regular module](ProjectiveModules/Module/RightRegular.lean) | Canonical opposite-scalar free and finite instances on the ordinary semiring carrier, including zero semirings |
 | [Right-module K₀](ProjectiveModules/KTheory/K0.lean), [stabilization](ProjectiveModules/KTheory/Stabilization.lean) | Ring-sized projective class monoid and group completion; arbitrary-universe module generators, descent/universal properties, difference representatives and common finite-projective or finite-free stabilization |
+| [K₀ scalar extension](ProjectiveModules/KTheory/ScalarExtension.lean) | Additive change-of-rings maps on finite-projective right-module classes and K₀; arbitrary-carrier evaluation and whole-map identity/composition laws over arbitrary rings |
 | [K₀ dimension](ProjectiveModules/KTheory/Rank.lean), [zero rings](ProjectiveModules/KTheory/ZeroRing.lean) | Natural class dimension and integer K₀ dimension over division rings; entire class/group collapse over subsingleton rings |
 | [Rank realization](ProjectiveModules/Module/LocallyConstantRank.lean), [fibers](ProjectiveModules/Module/RankFiberDecomposition.lean), [component models](ProjectiveModules/Module/ComponentwiseFree.lean) | Locally constant ranks and conditional componentwise-free classification |
 | [PID](ProjectiveModules/Module/PID.lean), [Laurent](ProjectiveModules/Module/LaurentPolynomial.lean) | Arbitrary-rank commutative PID freeness; one-variable Laurent finite-projective freeness |

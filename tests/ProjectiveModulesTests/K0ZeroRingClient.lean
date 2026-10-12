@@ -5,6 +5,10 @@ Authors: Formal Frontier Agents
 module
 
 import ProjectiveModules.KTheory.ZeroRing
+import ProjectiveModules.KTheory.ScalarExtension
+import ProjectiveModules.Module.RightRegular
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Ring.Rat
 import Mathlib.LinearAlgebra.Dimension.Finrank
 
 /-!
@@ -73,5 +77,20 @@ example (n : ℕ) :
     K0.of PUnit.{u + 1} (Fin n → PUnit.{u + 1}ᵐᵒᵖ) = 0 ∧
       Module.finrank PUnit.{u + 1}ᵐᵒᵖ (Fin n → PUnit.{u + 1}ᵐᵒᵖ) = 1 := by
   simp
+
+-- Mathlib's PUnit.algebra supplies the constant-unit unital homomorphism
+-- from the nontrivial rational ring to the zero ring; no map is assumed.
+-- The ordinary carrier uses the existing right-regular module instances.
+example :
+    ProjectiveClass.map (algebraMap ℚ PUnit.{u + 1} : ℚ →+* PUnit.{u + 1})
+      (ProjectiveClass.of ℚ ℚ) = 0 := by
+  rw [ProjectiveClass.map_of]
+  exact ProjectiveClass.of_eq_zero_of_subsingleton _ _
+
+-- Evaluation on the finite-projective regular module gives a zero K₀ image.
+example :
+    K0.map (algebraMap ℚ PUnit.{u + 1} : ℚ →+* PUnit.{u + 1}) (K0.of ℚ ℚ) = 0 := by
+  rw [K0.map_of]
+  exact K0.of_eq_zero_of_subsingleton _ _
 
 end ProjectiveModulesTests.K0ZeroRingClient

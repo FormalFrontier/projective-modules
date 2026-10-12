@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.Module.RightExtensionIdeal
+public import ProjectiveModules.KTheory.ScalarExtension
 import ProjectiveModules.Module.RightExtensionFree
 import ProjectiveModules.Module.RightExtensionFiniteResidue
 public import Mathlib.Algebra.Field.Opposite
@@ -418,6 +419,67 @@ public theorem generator_action_not_fixed :
     change MulOpposite.op ((E01, 0) : A × A) = MulOpposite.op (0 : A × A) at hv
     exact (by decide : ((E01, 0) : A × A) ≠ 0) (congrArg MulOpposite.unop hv)
   exact ⟨m, rfl, hz, fun h ↦ hn (hz.symm.trans h).symm⟩
+
+section ScalarExtensionClasses
+
+-- Source finite generation and projectivity are proved independently of the
+-- image-zero and image-one computations. No centrality hypothesis is needed.
+private theorem zeroSpanFinite :
+    Module.Finite (A × A)ᵐᵒᵖ (Ideal.span {MulOpposite.op eZero}) :=
+  Module.Finite.span_singleton _ _
+
+private theorem zeroSpanProjective :
+    Module.Projective (A × A)ᵐᵒᵖ (Ideal.span {MulOpposite.op eZero}) := by
+  have he : IsIdempotentElem (MulOpposite.op eZero) :=
+    congrArg (MulOpposite.op : A × A → (A × A)ᵐᵒᵖ) imageZero_boundary.1.eq
+  exact he.projective_span
+
+private theorem complementSpanFinite :
+    Module.Finite (A × A)ᵐᵒᵖ (Ideal.span {MulOpposite.op (1 - eZero)}) :=
+  Module.Finite.span_singleton _ _
+
+private theorem complementSpanProjective :
+    Module.Projective (A × A)ᵐᵒᵖ (Ideal.span {MulOpposite.op (1 - eZero)}) := by
+  have he : IsIdempotentElem (MulOpposite.op (1 - eZero)) :=
+    congrArg (MulOpposite.op : A × A → (A × A)ᵐᵒᵖ) imageZero_boundary.1.one_sub.eq
+  exact he.projective_span
+
+attribute [local instance] zeroSpanFinite zeroSpanProjective
+  complementSpanFinite complementSpanProjective
+
+private theorem snd_idempotent_classes :
+    KTheory.ProjectiveClass.map matrixSnd
+        (KTheory.ProjectiveClass.of (A × A) (Ideal.span {MulOpposite.op eZero})) = 0 ∧
+      KTheory.ProjectiveClass.map matrixSnd
+        (KTheory.ProjectiveClass.of (A × A)
+          (Ideal.span {MulOpposite.op (1 - eZero)})) =
+        KTheory.ProjectiveClass.of A Aᵐᵒᵖ := by
+  constructor
+  · let _ : Subsingleton (RightExtension.Obj matrixSnd
+        (Ideal.span {MulOpposite.op eZero})) := snd_idempotentSpan_subsingleton
+    rw [KTheory.ProjectiveClass.map_of, KTheory.ProjectiveClass.of_zero]
+  · rw [KTheory.ProjectiveClass.map_of]
+    exact KTheory.ProjectiveClass.of_eq_of_equiv A _
+      (RightExtension.spanLinearEquivOfMapEqOne matrixSnd (1 - eZero)
+        (by
+          change (1 : A) - 0 = 1
+          exact sub_zero 1))
+
+-- The same noncommutative finite-projective inputs give K₀ evaluations through
+-- the completion restriction law; the non-idempotent eOne is not a witness.
+example :
+    KTheory.K0.map matrixSnd
+        (KTheory.K0.of (A × A) (Ideal.span {MulOpposite.op eZero})) = 0 ∧
+      KTheory.K0.map matrixSnd
+        (KTheory.K0.of (A × A) (Ideal.span {MulOpposite.op (1 - eZero)})) =
+        KTheory.K0.of A Aᵐᵒᵖ := by
+  constructor
+  · simpa only [← KTheory.K0.map_ofClass, KTheory.K0.ofClass_of, map_zero] using
+      congrArg (KTheory.K0.ofClass A) snd_idempotent_classes.1
+  · simpa only [← KTheory.K0.map_ofClass, KTheory.K0.ofClass_of] using
+      congrArg (KTheory.K0.ofClass A) snd_idempotent_classes.2
+
+end ScalarExtensionClasses
 
 end MatrixProduct
 

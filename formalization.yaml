@@ -50,6 +50,9 @@ project:
     stabilization criteria. Division-ring dimension gives natural-valued class
     and integer-valued group homomorphisms; subsingleton rings give trivial
     class monoids and groups. Classification by dimension is not asserted.
+    Every unital ring homomorphism induces additive scalar-extension maps on
+    right-module classes and K₀, with arbitrary-carrier evaluation and entire-map
+    identity and composition laws over noncommutative and zero rings.
   authors:
     - "Formal Frontier Agents"
   responsible_maintainers:
@@ -385,6 +388,20 @@ status:
         Additive class maps to any additive commutative group extend uniquely
         to K₀ homomorphisms. Restriction is inverse to extension, and module
         generator evaluation and homomorphism extensionality are provided.
+    - declaration: "KTheory.ProjectiveClass.map"
+      file: "ProjectiveModules/KTheory/ScalarExtension.lean"
+      note: >-
+        Scalar extension along an arbitrary unital ring homomorphism induces
+        an additive map on finite-projective right-module classes. Evaluation
+        accepts independent carrier universes; identity and composition agree
+        as whole homomorphisms, including noncommutative and zero rings.
+    - declaration: "KTheory.K0.map"
+      file: "ProjectiveModules/KTheory/ScalarExtension.lean"
+      note: >-
+        The induced K₀ map extends the class map through group completion,
+        agrees on every class and arbitrary-carrier module generator, and
+        respects identity and composition as whole homomorphisms. No injectivity,
+        dimension classification or cancellation of projective modules is asserted.
     - declaration: "KTheory.K0.exists_sub"
       file: "ProjectiveModules/KTheory/Stabilization.lean"
       note: >-

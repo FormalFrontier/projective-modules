@@ -9,6 +9,7 @@ module
 public import ProjectiveModules.Module.BalancedTensorProduct
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
@@ -19,7 +20,8 @@ constructs extension of scalars from right `R`-modules to right `S`-modules.
 The canonical semilinear map into the extension is surjective whenever `f` is
 surjective. Additive and right-linear maps from an iterated extension are
 determined by their values on nested pure tensors, using the extensionality
-API of `BalancedTensorProduct`.
+API of `BalancedTensorProduct`. Extension of scalars also transports linear
+equivalences and commutes with binary products.
 -/
 
 @[expose] public section
@@ -605,5 +607,85 @@ instance instFinite [Module.Finite Rᵐᵒᵖ M] : Module.Finite Sᵐᵒᵖ (Obj
   change Q.FG at hfg
   rw [hQ] at hfg
   exact hfg
+
+/-- Extension of scalars sends the zero right-linear map to zero. -/
+@[simp]
+theorem map_zero : map f (0 : M →ₗ[Rᵐᵒᵖ] N) = 0 := by
+  apply linearMap_ext f
+  intro m s
+  rw [map_tmul]
+  let _ : Module R S := f.toModule
+  change BalancedTensorProduct.tmul (R := R) (0 : N) s = 0
+  exact BalancedTensorProduct.zero_tmul s
+
+/-- Extension of scalars carries a right-linear equivalence to a
+right-linear equivalence. -/
+def mapLinearEquiv (e : M ≃ₗ[Rᵐᵒᵖ] N) :
+    Obj f M ≃ₗ[Sᵐᵒᵖ] Obj f N :=
+  LinearEquiv.ofLinearMap (map f e.toLinearMap) (map f e.symm.toLinearMap)
+    (by
+      apply linearMap_ext f
+      intro n s
+      simp)
+    (by
+      apply linearMap_ext f
+      intro m s
+      simp)
+
+@[simp]
+theorem mapLinearEquiv_tmul (e : M ≃ₗ[Rᵐᵒᵖ] N) (m : M) (s : S) :
+    mapLinearEquiv f e (tmul f m s) = tmul f (e m) s := by
+  exact map_tmul f e.toLinearMap m s
+
+/-- Extension of scalars commutes with a binary product of right modules. -/
+def prodLinearEquiv :
+    Obj f (M × N) ≃ₗ[Sᵐᵒᵖ] Obj f M × Obj f N := by
+  let toProd : Obj f (M × N) →ₗ[Sᵐᵒᵖ] Obj f M × Obj f N :=
+    (map f (LinearMap.fst Rᵐᵒᵖ M N)).prod
+      (map f (LinearMap.snd Rᵐᵒᵖ M N))
+  let fromProd : Obj f M × Obj f N →ₗ[Sᵐᵒᵖ] Obj f (M × N) :=
+    LinearMap.coprod
+      (map f (LinearMap.inl Rᵐᵒᵖ M N))
+      (map f (LinearMap.inr Rᵐᵒᵖ M N))
+  apply LinearEquiv.ofLinearMap toProd fromProd
+  · apply LinearMap.ext
+    rintro ⟨x, y⟩
+    apply Prod.ext
+    · change map f (LinearMap.fst Rᵐᵒᵖ M N)
+          (map f (LinearMap.inl Rᵐᵒᵖ M N) x +
+            map f (LinearMap.inr Rᵐᵒᵖ M N) y) = x
+      rw [(map f (LinearMap.fst Rᵐᵒᵖ M N)).map_add]
+      simp only [← LinearMap.comp_apply, ← map_comp,
+        LinearMap.fst_comp_inl, LinearMap.fst_comp_inr, map_id,
+        map_zero, LinearMap.id_apply, LinearMap.zero_apply, add_zero]
+    · change map f (LinearMap.snd Rᵐᵒᵖ M N)
+          (map f (LinearMap.inl Rᵐᵒᵖ M N) x +
+            map f (LinearMap.inr Rᵐᵒᵖ M N) y) = y
+      rw [(map f (LinearMap.snd Rᵐᵒᵖ M N)).map_add]
+      simp only [← LinearMap.comp_apply, ← map_comp,
+        LinearMap.snd_comp_inl, LinearMap.snd_comp_inr, map_id,
+        map_zero, LinearMap.id_apply, LinearMap.zero_apply, zero_add]
+  · apply linearMap_ext f
+    intro mn s
+    rcases mn with ⟨m, n⟩
+    change map f (LinearMap.inl Rᵐᵒᵖ M N)
+          (map f (LinearMap.fst Rᵐᵒᵖ M N) (tmul f (m, n) s)) +
+        map f (LinearMap.inr Rᵐᵒᵖ M N)
+          (map f (LinearMap.snd Rᵐᵒᵖ M N) (tmul f (m, n) s)) =
+      tmul f (m, n) s
+    simp only [map_tmul, LinearMap.fst_apply, LinearMap.snd_apply,
+      LinearMap.inl_apply, LinearMap.inr_apply]
+    let _ : Module R S := f.toModule
+    change BalancedTensorProduct.tmul (R := R) (m, 0) s +
+        BalancedTensorProduct.tmul (R := R) (0, n) s =
+      BalancedTensorProduct.tmul (R := R) (m, n) s
+    rw [← BalancedTensorProduct.add_tmul]
+    simp
+
+@[simp]
+theorem prodLinearEquiv_tmul (m : M) (n : N) (s : S) :
+    prodLinearEquiv (f := f) (M := M) (N := N) (tmul f (m, n) s) =
+      (tmul f m s, tmul f n s) := by
+  rfl
 
 end ModuleCat.RightExtension
