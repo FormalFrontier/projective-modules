@@ -55,6 +55,17 @@ the Formal Frontier source-maintainer team.
   includes zero rings; [endomorphisms](ProjectiveModules/Invertible/Endomorphism.lean)
   are scalars. Only a [common finite free summand](ProjectiveModules/Invertible/StableCancellation.lean)
   is cancelled from two invertibles.
+- **Quotient Hom and restriction kernels:** For a ring `A`, a semiring `S`
+  and additive-group `A`-modules `M` and `C`, suppose `C` also has an
+  `S`-module structure commuting with its `A`-action. The
+  [quotient-Hom equivalence](ProjectiveModules/Module/QuotientHom.lean)
+  identifies `A`-linear maps from `M/P` to `C` with the kernel of restriction
+  of forms to `P`, as an `S`-linear equivalence. No `S`-action on `M`,
+  finite generation or projectivity is assumed. When `A = S = C` is a
+  commutative ring, the [duality comparison](ProjectiveModules/Dual/Quotient.lean)
+  identifies the entire equivalence with Mathlib's quotient-dual/annihilator
+  equivalence; its forward and inverse linear maps are respectively the dual
+  of the quotient map and the dual copairing.
 - **Noncommutative local freeness:** For a proper two-sided ideal whose
   complement consists of units, every projective *right* module is free,
   without a rank or generation bound. This

@@ -12,6 +12,7 @@ public import ProjectiveModules.Category.FiniteProjectiveRestriction
 public import ProjectiveModules.Category.FiniteProjectiveSmallness
 public import ProjectiveModules.Category.Stable
 public import ProjectiveModules.Contraction.BaseChange
+public import ProjectiveModules.Dual.Quotient
 public import ProjectiveModules.ExteriorAlgebra.BaseChange
 public import ProjectiveModules.ExteriorPower.Determinant
 public import ProjectiveModules.ExteriorPower.DirectSum
@@ -60,6 +61,7 @@ public import ProjectiveModules.Module.LocallyConstantRank
 public import ProjectiveModules.Module.MinimalSupport
 public import ProjectiveModules.Module.PID
 public import ProjectiveModules.Module.ProjectiveComplement
+public import ProjectiveModules.Module.QuotientHom
 public import ProjectiveModules.Module.SummandCancellation
 public import ProjectiveModules.Module.RankFiberDecomposition
 public import ProjectiveModules.Module.RightEndomorphismMatrix
