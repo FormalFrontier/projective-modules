@@ -8,6 +8,11 @@ public import ProjectiveModules.KTheory.K0
 public import ProjectiveModules.Module.RightExtensionComparison
 public import ProjectiveModules.Module.RightExtension
 
+import ProjectiveModules.Module.RightExtensionFree
+import Mathlib.Algebra.Field.Opposite
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+
 /-!
 # Scalar extension on finite-projective classes and K₀
 
@@ -15,6 +20,12 @@ A unital homomorphism `φ : R →+* S` of arbitrary rings induces additive maps
 `KTheory.ProjectiveClass.map φ` and `KTheory.K0.map φ`. On a finite projective
 right `R`-module, they give the class and K₀ generator of its right scalar
 extension. Both maps respect identity homomorphisms and composition.
+
+If the source is a division ring, both entire additive maps are independent
+of the chosen ring homomorphism, even when the target is merely a ring.
+A finite source basis identifies both extensions with the same finite free
+target module. This is a statement about module classes and K₀, not equality
+of scalar-extension functors.
 
 The class map uses `ProjectiveClass.lift`: scalar extension preserves linear
 equivalences, zero modules and binary direct sums. Its finite-generation and
@@ -34,7 +45,8 @@ asserted.
 * Charles A. Weibel, *The K-book: An Introduction to Algebraic K-theory*,
   Chapter II, change of rings and the group-completion definition of K₀.
 * Mathlib's additive-functor zero preservation, finite-module representatives,
-  linear-equivalence interfaces and additive Grothendieck group.
+  division-ring bases, finite basis indices, linear-equivalence interfaces and
+  additive Grothendieck group.
 * Projective Modules' finite-projective representatives, class descent and
   group-completion APIs, and its right scalar extension and pointwise
   identity/composition comparisons, contributed by Prism and Lens.
@@ -123,6 +135,27 @@ theorem map_comp (φ : R →+* S) (ψ : S →+* T) :
   simp only [AddMonoidHom.comp_apply, map_of]
   exact (of_eq_of_equiv T _ (ModuleCat.RightExtension.compLinearEquiv φ ψ X)).symm
 
+/-- Homomorphisms from a fixed division ring to a fixed ring induce the same
+additive map on finite-projective right-module classes. A finite source basis
+identifies both scalar extensions with the same target coordinate module. -/
+theorem map_eq_map {D : Type uR} [DivisionRing D] (φ ψ : D →+* S) :
+    map φ = map ψ := by
+  classical
+  apply addHom_ext D
+  intro X
+  let ι := Module.Free.ChooseBasisIndex Dᵐᵒᵖ X
+  let : Fintype ι := Module.Free.ChooseBasisIndex.fintype Dᵐᵒᵖ X
+  let b : Module.Basis ι Dᵐᵒᵖ X := Module.Free.chooseBasis Dᵐᵒᵖ X
+  let e : X ≃ₗ[Dᵐᵒᵖ] (ι → D) :=
+    b.equivFun.trans (Module.rightFreeCoordEquiv D ι)
+  let eS (χ : D →+* S) : ModuleCat.RightExtension.Obj χ X ≃ₗ[Sᵐᵒᵖ]
+      (ι → Sᵐᵒᵖ) :=
+    (ModuleCat.RightExtension.mapLinearEquiv χ e).trans
+      ((ModuleCat.RightExtension.rightFreeLinearEquiv χ ι).trans
+        (Module.rightFreeCoordEquiv S ι).symm)
+  simp only [map_of]
+  exact of_eq_of_equiv S _ ((eS φ).trans (eS ψ).symm)
+
 end ProjectiveClass
 
 namespace K0
@@ -166,6 +199,14 @@ theorem map_comp (φ : R →+* S) (ψ : S →+* T) :
   apply hom_ext_ofClass R
   intro a
   simp only [AddMonoidHom.comp_apply, map_ofClass, ProjectiveClass.map_comp]
+
+/-- The K₀ scalar-extension homomorphism from a fixed division ring to a fixed
+ring is independent of the chosen ring homomorphism. -/
+theorem map_eq_map {D : Type uR} [DivisionRing D] (φ ψ : D →+* S) :
+    map φ = map ψ := by
+  apply hom_ext_ofClass D
+  intro a
+  simp only [map_ofClass, ProjectiveClass.map_eq_map φ ψ]
 
 end K0
 

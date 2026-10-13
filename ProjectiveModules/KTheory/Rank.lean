@@ -42,6 +42,10 @@ Right scalar extension along any unital homomorphism between division rings
 preserves both dimension homomorphisms. A finite basis and the right-free
 coordinate comparison identify the extension with a coordinate module of the
 same dimension; the integer-valued law follows through group completion.
+Consequently both induced additive maps are bijective. The scalar homomorphism
+itself need not be surjective. Independence from the choice of homomorphism
+holds even for an arbitrary ring target, as proved in
+`ProjectiveModules.KTheory.ScalarExtension`.
 
 ## References and credits
 
@@ -434,6 +438,22 @@ theorem ProjectiveClass.finrankHom_comp_map (φ : D →+* S) :
         (Module.rightFreeCoordEquiv S _).symm)
   exact eS.finrank_eq.trans (Module.finrank_fin_fun Sᵐᵒᵖ)
 
+/-- Right scalar extension along a homomorphism between division rings is
+bijective on finite-projective right-module classes. -/
+theorem ProjectiveClass.map_bijective (φ : D →+* S) :
+    Function.Bijective (ProjectiveClass.map φ) := by
+  have hD : Function.Bijective (ProjectiveClass.finrankHom D) := by
+    rw [← ProjectiveClass.finrankEquiv_toAddMonoidHom D]
+    exact (ProjectiveClass.finrankEquiv D).bijective
+  have hS : Function.Bijective (ProjectiveClass.finrankHom S) := by
+    rw [← ProjectiveClass.finrankEquiv_toAddMonoidHom S]
+    exact (ProjectiveClass.finrankEquiv S).bijective
+  apply (hS.of_comp_iff' (ProjectiveClass.map φ)).mp
+  change Function.Bijective
+    ((ProjectiveClass.finrankHom S).comp (ProjectiveClass.map φ))
+  rw [ProjectiveClass.finrankHom_comp_map]
+  exact hD
+
 /-- Right scalar extension between division rings preserves the integer-valued
 K₀ dimension homomorphism. This follows from class dimension and the
 universal property of group completion. -/
@@ -444,6 +464,18 @@ theorem K0.finrankHom_comp_map (φ : D →+* S) :
   simpa only [AddMonoidHom.comp_apply, K0.map_ofClass, K0.finrankHom_ofClass] using
     congrArg (fun n : ℕ ↦ (n : ℤ))
       (DFunLike.congr_fun (ProjectiveClass.finrankHom_comp_map φ) a)
+
+/-- Right scalar extension between division rings induces a bijection on K₀. -/
+theorem K0.map_bijective (φ : D →+* S) : Function.Bijective (K0.map φ) := by
+  have hD : Function.Bijective (K0.finrankHom D) := by
+    rw [← K0.finrankEquiv_toAddMonoidHom D]
+    exact (K0.finrankEquiv D).bijective
+  have hS : Function.Bijective (K0.finrankHom S) := by
+    rw [← K0.finrankEquiv_toAddMonoidHom S]
+    exact (K0.finrankEquiv S).bijective
+  apply (Function.Bijective.of_comp_iff' hS (K0.map φ)).mp
+  rw [← AddMonoidHom.coe_comp, K0.finrankHom_comp_map φ]
+  exact hD
 
 end ScalarExtensionNaturality
 

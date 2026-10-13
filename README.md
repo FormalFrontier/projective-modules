@@ -120,7 +120,9 @@ the Formal Frontier source-maintainer team.
   evaluates on modules in independent carrier universes and respects identity
   homomorphisms and composition as equalities of entire additive maps.
   Noncommutative and zero rings are included; the induced maps need not be
-  injective, and no projective-module cancellation is asserted.
+  injective, and no projective-module cancellation is asserted. For a division-ring
+  source and an arbitrary ring target, `ProjectiveClass.map_eq_map` and
+  `K0.map_eq_map` identify the entire maps induced by any two scalar homomorphisms.
 - **Dimension classification over division rings:** For `[DivisionRing D]`,
   [finite dimension](ProjectiveModules/KTheory/Rank.lean) gives additive equivalences
   `KTheory.ProjectiveClass.finrankEquiv D : ProjectiveClass D ≃+ ℕ` and
@@ -130,7 +132,9 @@ the Formal Frontier source-maintainer team.
   regular right-module generator. Evaluation accepts finitely generated modules
   in independent carrier universes. Scalar extension along any unital map
   between division rings preserves both dimensions as equalities of entire
-  additive homomorphisms. Over a [zero ring](ProjectiveModules/KTheory/ZeroRing.lean),
+  additive homomorphisms. The induced class and K₀ maps are bijective by
+  `ProjectiveClass.map_bijective` and `K0.map_bijective`, even if the scalar
+  homomorphism is not surjective. Over a [zero ring](ProjectiveModules/KTheory/ZeroRing.lean),
   which is not a division ring, both the class monoid and the entire K₀ group
   are subsingletons; module dimension is not used as an additive invariant there.
 - **Stable categories and rank:** [Stable module morphisms](ProjectiveModules/Category/Stable.lean)
@@ -409,8 +413,8 @@ aggregate import.
 | [Finite stabilization](ProjectiveModules/Module/FiniteStabilization.lean) | Replace a finite projective common stabilizer by a common standard finite free one; no hypotheses on the two ambient modules |
 | [Right regular module](ProjectiveModules/Module/RightRegular.lean) | Canonical opposite-scalar free and finite instances on the ordinary semiring carrier, including zero semirings |
 | [Right-module K₀](ProjectiveModules/KTheory/K0.lean), [stabilization](ProjectiveModules/KTheory/Stabilization.lean) | Ring-sized projective class monoid and group completion; arbitrary-universe module generators, descent/universal properties, difference representatives and common finite-projective or finite-free stabilization |
-| [K₀ scalar extension](ProjectiveModules/KTheory/ScalarExtension.lean) | Additive change-of-rings maps on finite-projective right-module classes and K₀; arbitrary-carrier evaluation and whole-map identity/composition laws over arbitrary rings |
-| [K₀ dimension](ProjectiveModules/KTheory/Rank.lean), [zero rings](ProjectiveModules/KTheory/ZeroRing.lean) | Additive dimension classifications of projective classes by ℕ and K₀ by ℤ over division rings, preserved by unital division-ring scalar extension; entire class/group collapse over subsingleton rings |
+| [K₀ scalar extension](ProjectiveModules/KTheory/ScalarExtension.lean) | Additive change-of-rings maps with arbitrary-carrier evaluation and whole-map identity/composition laws; independence of the homomorphism for division-ring sources and arbitrary ring targets |
+| [K₀ dimension](ProjectiveModules/KTheory/Rank.lean), [zero rings](ProjectiveModules/KTheory/ZeroRing.lean) | Dimension classifications of projective classes by ℕ and K₀ by ℤ over division rings, and bijectivity of division-ring scalar-extension maps; entire class/group collapse over subsingleton rings |
 | [Rank realization](ProjectiveModules/Module/LocallyConstantRank.lean), [fibers](ProjectiveModules/Module/RankFiberDecomposition.lean), [component models](ProjectiveModules/Module/ComponentwiseFree.lean) | Locally constant ranks and conditional componentwise-free classification |
 | [PID](ProjectiveModules/Module/PID.lean), [Laurent](ProjectiveModules/Module/LaurentPolynomial.lean) | Arbitrary-rank commutative PID freeness; one-variable Laurent finite-projective freeness |
 
@@ -553,6 +557,23 @@ even for independent carrier universes. The whole-homomorphism laws
 scalar extension along any unital `φ : D →+* S` between division rings preserves
 natural and integer dimensions. These classifications do not identify stable
 K₀ equality with module isomorphism over arbitrary rings.
+
+For a unital homomorphism between division rings, `ProjectiveClass.map_bijective`
+and `K0.map_bijective` allow the induced maps to be bundled using
+`AddEquiv.ofBijective`. This does not require the scalar homomorphism to be
+surjective: the inclusion ℚ → ℂ is a proper extension with bijective class and
+K₀ maps. With a division-ring source and any ring target, the whole-homomorphism
+laws `ProjectiveClass.map_eq_map` and `K0.map_eq_map` show independence of the
+scalar homomorphism. A finite source basis compares both extensions with the
+same finite free target module; no target dimension invariant is needed.
+The [scalar-map clients](tests/ProjectiveModulesTests/K0RankClient.lean) include
+identity versus conjugation on ℂ, rational-to-complex extension, lifted real
+quaternions, collapse to a zero ring, and the distinct scalar embedding and
+conjugate-composite embedding into the noncommutative ring `Matrix (Fin 2) (Fin 2) ℂ`.
+They compute every finite coordinate class and signed regular K₀ multiple,
+including −3. Neither bijectivity nor independence of the induced maps asserts
+full faithfulness, equivalence of the module categories, or equality of the
+scalar-extension functors.
 
 For the commutative-base tensor comparison, the source left action is
 restriction of the given right module along `(RingEquiv.toOpposite R).toRingHom`;

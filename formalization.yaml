@@ -52,8 +52,10 @@ project:
     natural-valued class and integer-valued group dimensions give additive
     equivalences with ℕ and ℤ, with finite-coordinate and all-integer
     regular-generator inverses. Scalar extension along arbitrary unital maps
-    between division rings preserves both dimensions. Subsingleton rings give
-    trivial class monoids and groups, not division-ring dimension invariants.
+    between division rings preserves both dimensions and induces bijective
+    class and K₀ maps. For a division-ring source and any ring target, the whole
+    induced maps are independent of the chosen scalar homomorphism. Subsingleton
+    rings give trivial class monoids and groups, not division-ring dimension invariants.
     Every unital ring homomorphism induces additive scalar-extension maps on
     right-module classes and K₀, with arbitrary-carrier evaluation and entire-map
     identity and composition laws over noncommutative and zero rings.
@@ -518,6 +520,19 @@ status:
         respects identity and composition as whole homomorphisms. This general-ring
         scalar-extension API alone asserts no injectivity, dimension classification
         or cancellation of projective modules.
+    - declaration: "KTheory.ProjectiveClass.map_eq_map"
+      file: "ProjectiveModules/KTheory/ScalarExtension.lean"
+      note: >-
+        Any two unital homomorphisms from a fixed division ring to a fixed ring
+        induce equal whole additive class maps. A finite source basis compares
+        both extensions with the same target coordinate module; the target may
+        be noncommutative or a zero ring, without a target dimension invariant.
+    - declaration: "KTheory.K0.map_eq_map"
+      file: "ProjectiveModules/KTheory/ScalarExtension.lean"
+      note: >-
+        The whole K₀ homomorphisms induced by two maps from a division ring to
+        an arbitrary ring agree, by the class equality and group-completion
+        extensionality. No injectivity of the class-to-K₀ map is assumed.
     - declaration: "KTheory.K0.exists_sub"
       file: "ProjectiveModules/KTheory/Stabilization.lean"
       note: >-
@@ -593,6 +608,20 @@ status:
         The induced K₀ scalar-extension map along the same arbitrary unital
         division-ring homomorphism preserves integer dimension as an equality
         of whole canonical homomorphisms, by group completion.
+    - declaration: "KTheory.ProjectiveClass.map_bijective"
+      file: "ProjectiveModules/KTheory/Rank.lean"
+      note: >-
+        Scalar extension along any unital homomorphism between division rings
+        induces a bijective additive class map, using the canonical natural
+        dimension equivalences and their whole-map compatibility. The scalar
+        homomorphism need not be surjective; its universes are independent.
+    - declaration: "KTheory.K0.map_bijective"
+      file: "ProjectiveModules/KTheory/Rank.lean"
+      note: >-
+        The induced K₀ map between division rings is bijective, using the
+        canonical integer dimension equivalences and naturality. This concerns
+        all group elements, including negative regular-generator multiples,
+        not only the positive class generators.
     - declaration: "KTheory.K0.subsingleton_of_subsingleton"
       file: "ProjectiveModules/KTheory/ZeroRing.lean"
       note: >-
@@ -1012,7 +1041,12 @@ fidelity:
     provide a dimension classification. Over division rings, canonical dimension
     does give additive equivalences of the class monoid with ℕ and K₀ with ℤ,
     preserved by unital division-ring scalar extension; these are not ring
-    equivalences. Allowing subsingleton rings generalizes the source's nonzero-ring
+    equivalences. Scalar-map bijectivity and homomorphism independence are
+    corollaries of the dimension and finite-free extension APIs, not assertions
+    that scalar homomorphisms are surjective or that module categories or
+    scalar-extension functors are identified. Independence requires only a ring
+    target, whereas bijectivity here requires both scalars to be division rings.
+    Allowing subsingleton rings generalizes the source's nonzero-ring
     convention; their entire class monoid and K₀ collapse, and module finrank
     is not an additive K₀ invariant in this case. Zero rings are not division rings.
     None of this decides source-wide formalization.

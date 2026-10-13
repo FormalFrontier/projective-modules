@@ -6,6 +6,11 @@ module
 
 public import ProjectiveModules.KTheory.Rank
 import ProjectiveModules.KTheory.ScalarExtension
+import ProjectiveModules.KTheory.ZeroRing
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Basic.Complex.Basic
+import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Data.Matrix.Basis
 import Mathlib.Algebra.Ring.Rat
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Field.ULift
@@ -471,5 +476,604 @@ private theorem lifted_quaternion_plane_inverse :
       K0.finrankEquiv_symm_natCast LiftedQuaternion 2
 
 end QuaternionModels
+
+section ScalarMapCoordinates
+
+variable {D : Type u} [DivisionRing D] {S : Type v} [DivisionRing S]
+
+-- Standard equivalence data can be built locally from the scalar-extension map.
+-- Its forward hom is that map, and both directions compute every coordinate.
+private theorem scalar_map_class_coordinates (φ : D →+* S) (n : ℕ) :
+    let e := AddEquiv.ofBijective (ProjectiveClass.map φ)
+      (ProjectiveClass.map_bijective φ)
+    e.toAddMonoidHom = ProjectiveClass.map φ ∧
+      e (ProjectiveClass.of D (Fin n → Dᵐᵒᵖ)) =
+        ProjectiveClass.of S (Fin n → Sᵐᵒᵖ) ∧
+      e.symm (ProjectiveClass.of S (Fin n → Sᵐᵒᵖ)) =
+        ProjectiveClass.of D (Fin n → Dᵐᵒᵖ) ∧
+      ProjectiveClass.finrankEquiv S
+        (e (ProjectiveClass.of D (Fin n → Dᵐᵒᵖ))) = n ∧
+      ProjectiveClass.finrankEquiv D
+        (e.symm (ProjectiveClass.of S (Fin n → Sᵐᵒᵖ))) = n := by
+  let e := AddEquiv.ofBijective (ProjectiveClass.map φ)
+    (ProjectiveClass.map_bijective φ)
+  have forward (a : ProjectiveClass D) : e a = ProjectiveClass.map φ a :=
+    AddEquiv.ofBijective_apply (ProjectiveClass.map φ)
+      (ProjectiveClass.map_bijective φ) a
+  have whole : e.toAddMonoidHom = ProjectiveClass.map φ := by
+    apply AddMonoidHom.ext
+    exact forward
+  have dimension : ProjectiveClass.finrankEquiv S
+      (e (ProjectiveClass.of D (Fin n → Dᵐᵒᵖ))) = n := by
+    rw [forward, ProjectiveClass.finrankEquiv_apply]
+    simpa only [AddMonoidHom.comp_apply, ProjectiveClass.finrankHom_of_module,
+      Module.finrank_fin_fun] using
+      DFunLike.congr_fun (ProjectiveClass.finrankHom_comp_map φ)
+        (ProjectiveClass.of D (Fin n → Dᵐᵒᵖ))
+  have image : e (ProjectiveClass.of D (Fin n → Dᵐᵒᵖ)) =
+      ProjectiveClass.of S (Fin n → Sᵐᵒᵖ) := by
+    apply (ProjectiveClass.finrankEquiv S).injective
+    exact dimension.trans (coordinate_dimension_and_inverse S n).1.symm
+  have preimage : e.symm (ProjectiveClass.of S (Fin n → Sᵐᵒᵖ)) =
+      ProjectiveClass.of D (Fin n → Dᵐᵒᵖ) := by
+    apply e.injective
+    rw [e.apply_symm_apply, image]
+  refine ⟨whole, image, preimage, dimension, ?_⟩
+  rw [preimage]
+  exact (coordinate_dimension_and_inverse D n).1
+
+private theorem scalar_map_integer_coordinates (φ : D →+* S) (z : ℤ) :
+    let e := AddEquiv.ofBijective (K0.map φ) (K0.map_bijective φ)
+    e.toAddMonoidHom = K0.map φ ∧
+      e (z • K0.of D Dᵐᵒᵖ) = z • K0.of S Sᵐᵒᵖ ∧
+      e.symm (z • K0.of S Sᵐᵒᵖ) = z • K0.of D Dᵐᵒᵖ ∧
+      K0.finrankEquiv S (e (z • K0.of D Dᵐᵒᵖ)) = z ∧
+      K0.finrankEquiv D (e.symm (z • K0.of S Sᵐᵒᵖ)) = z := by
+  let e := AddEquiv.ofBijective (K0.map φ) (K0.map_bijective φ)
+  have forward (x : K0 D) : e x = K0.map φ x :=
+    AddEquiv.ofBijective_apply (K0.map φ) (K0.map_bijective φ) x
+  have whole : e.toAddMonoidHom = K0.map φ := by
+    apply AddMonoidHom.ext
+    exact forward
+  have dimension : K0.finrankEquiv S (e (z • K0.of D Dᵐᵒᵖ)) = z := by
+    rw [forward, K0.finrankEquiv_apply]
+    have naturality := DFunLike.congr_fun (K0.finrankHom_comp_map φ)
+      (z • K0.of D Dᵐᵒᵖ)
+    exact naturality.trans (by
+      simpa only [K0.finrankEquiv_symm_apply] using
+        (integer_inverse_and_dimension D z).2.2)
+  have image : e (z • K0.of D Dᵐᵒᵖ) = z • K0.of S Sᵐᵒᵖ := by
+    apply (K0.finrankEquiv S).injective
+    exact dimension.trans (by
+      simpa only [K0.finrankEquiv_symm_apply] using
+        (integer_inverse_and_dimension S z).2.1.symm)
+  have preimage : e.symm (z • K0.of S Sᵐᵒᵖ) = z • K0.of D Dᵐᵒᵖ := by
+    apply e.injective
+    rw [e.apply_symm_apply, image]
+  refine ⟨whole, image, preimage, dimension, ?_⟩
+  rw [preimage]
+  simpa only [K0.finrankEquiv_symm_apply] using
+    (integer_inverse_and_dimension D z).2.1
+
+end ScalarMapCoordinates
+
+section ComplexScalarMaps
+
+-- The two scalar maps differ on I, although their induced bundled maps agree.
+private theorem complex_scalar_homs_distinct : RingHom.id ℂ ≠ starRingEnd ℂ := by
+  intro equality
+  have imaginary : Complex.I = -Complex.I := by
+    simpa only [RingHom.id_apply, Complex.conj_I] using
+      DFunLike.congr_fun equality Complex.I
+  have coordinate : (1 : ℝ) = -1 := by
+    simpa only [Complex.I_im, Complex.neg_im] using congrArg Complex.im imaginary
+  exact one_ne_zero (CharZero.eq_neg_self_iff.mp coordinate)
+
+private theorem complex_scalar_maps_eq_id :
+    ProjectiveClass.map (RingHom.id ℂ) = AddMonoidHom.id (ProjectiveClass ℂ) ∧
+      ProjectiveClass.map (starRingEnd ℂ) = AddMonoidHom.id (ProjectiveClass ℂ) ∧
+      K0.map (RingHom.id ℂ) = AddMonoidHom.id (K0 ℂ) ∧
+      K0.map (starRingEnd ℂ) = AddMonoidHom.id (K0 ℂ) := by
+  exact ⟨ProjectiveClass.map_id ℂ,
+    (ProjectiveClass.map_eq_map (starRingEnd ℂ) (RingHom.id ℂ)).trans
+      (ProjectiveClass.map_id ℂ),
+    K0.map_id ℂ,
+    (K0.map_eq_map (starRingEnd ℂ) (RingHom.id ℂ)).trans (K0.map_id ℂ)⟩
+
+private theorem complex_conjugate_plane :
+    ProjectiveClass.map (starRingEnd ℂ) (ProjectiveClass.of ℂ (Fin 2 → ℂᵐᵒᵖ)) =
+        ProjectiveClass.of ℂ (Fin 2 → ℂᵐᵒᵖ) ∧
+      K0.map (starRingEnd ℂ) (K0.of ℂ (Fin 2 → ℂᵐᵒᵖ)) =
+        K0.of ℂ (Fin 2 → ℂᵐᵒᵖ) ∧
+      ProjectiveClass.finrankEquiv ℂ
+        (ProjectiveClass.map (starRingEnd ℂ)
+          (ProjectiveClass.of ℂ (Fin 2 → ℂᵐᵒᵖ))) = 2 ∧
+      K0.finrankEquiv ℂ
+        (K0.map (starRingEnd ℂ) (K0.of ℂ (Fin 2 → ℂᵐᵒᵖ))) = 2 := by
+  simp only [complex_scalar_maps_eq_id.2.1, complex_scalar_maps_eq_id.2.2.2,
+    AddMonoidHom.id_apply, ProjectiveClass.finrankEquiv_of_module,
+    K0.finrankEquiv_of_module, Module.finrank_fin_fun, Nat.cast_ofNat]
+  exact ⟨True.intro, True.intro, True.intro, True.intro⟩
+
+private theorem complex_conjugate_integer_coordinates (z : ℤ) :
+    K0.map (starRingEnd ℂ) (z • K0.of ℂ ℂᵐᵒᵖ) = z • K0.of ℂ ℂᵐᵒᵖ ∧
+      K0.finrankEquiv ℂ (K0.map (starRingEnd ℂ) (z • K0.of ℂ ℂᵐᵒᵖ)) = z := by
+  rw [complex_scalar_maps_eq_id.2.2.2, AddMonoidHom.id_apply]
+  refine ⟨rfl, ?_⟩
+  simpa only [K0.finrankEquiv_symm_apply] using
+    (integer_inverse_and_dimension ℂ z).2.1
+
+private theorem complex_conjugate_negative_three :
+    K0.map (starRingEnd ℂ) ((-3 : ℤ) • K0.of ℂ ℂᵐᵒᵖ) =
+        (-3 : ℤ) • K0.of ℂ ℂᵐᵒᵖ ∧
+      K0.finrankEquiv ℂ
+        (K0.map (starRingEnd ℂ) ((-3 : ℤ) • K0.of ℂ ℂᵐᵒᵖ)) = -3 := by
+  exact complex_conjugate_integer_coordinates (-3)
+
+end ComplexScalarMaps
+
+section RationalComplexExtension
+
+-- Every rational cast has imaginary part zero, so I has no scalar preimage.
+private theorem rational_complex_not_surjective :
+    ¬ Function.Surjective (Rat.castHom ℂ) := by
+  intro surjective
+  obtain ⟨q, equality⟩ := surjective Complex.I
+  have coordinate : (0 : ℝ) = 1 := by
+    simpa only [Rat.coe_castHom, Complex.ratCast_im, Complex.I_im] using
+      congrArg Complex.im equality
+  exact zero_ne_one coordinate
+
+private theorem rational_complex_maps_bijective :
+    ¬ Function.Surjective (Rat.castHom ℂ) ∧
+      Function.Bijective (ProjectiveClass.map (Rat.castHom ℂ)) ∧
+      Function.Bijective (K0.map (Rat.castHom ℂ)) := by
+  exact ⟨rational_complex_not_surjective, ProjectiveClass.map_bijective (Rat.castHom ℂ),
+    K0.map_bijective (Rat.castHom ℂ)⟩
+
+-- Neither inverse uses a complex-to-rational ring homomorphism.
+private theorem rational_complex_plane_coordinates :
+    let e := AddEquiv.ofBijective (ProjectiveClass.map (Rat.castHom ℂ))
+      (ProjectiveClass.map_bijective (Rat.castHom ℂ))
+    ProjectiveClass.map (Rat.castHom ℂ) (ProjectiveClass.of ℚ (Fin 2 → ℚᵐᵒᵖ)) =
+        ProjectiveClass.of ℂ (Fin 2 → ℂᵐᵒᵖ) ∧
+      e.symm (ProjectiveClass.of ℂ (Fin 2 → ℂᵐᵒᵖ)) =
+        ProjectiveClass.of ℚ (Fin 2 → ℚᵐᵒᵖ) ∧
+      ProjectiveClass.finrankEquiv ℂ
+        (ProjectiveClass.map (Rat.castHom ℂ)
+          (ProjectiveClass.of ℚ (Fin 2 → ℚᵐᵒᵖ))) = 2 ∧
+      ProjectiveClass.finrankEquiv ℚ
+        (e.symm (ProjectiveClass.of ℂ (Fin 2 → ℂᵐᵒᵖ))) = 2 := by
+  simpa only [AddEquiv.ofBijective_apply] using
+    (scalar_map_class_coordinates (Rat.castHom ℂ) 2).2
+
+private theorem rational_complex_integer_coordinates (z : ℤ) :
+    let e := AddEquiv.ofBijective (K0.map (Rat.castHom ℂ))
+      (K0.map_bijective (Rat.castHom ℂ))
+    K0.map (Rat.castHom ℂ) (z • K0.of ℚ ℚᵐᵒᵖ) = z • K0.of ℂ ℂᵐᵒᵖ ∧
+      e.symm (z • K0.of ℂ ℂᵐᵒᵖ) = z • K0.of ℚ ℚᵐᵒᵖ ∧
+      K0.finrankEquiv ℂ (K0.map (Rat.castHom ℂ) (z • K0.of ℚ ℚᵐᵒᵖ)) = z ∧
+      K0.finrankEquiv ℚ (e.symm (z • K0.of ℂ ℂᵐᵒᵖ)) = z := by
+  simpa only [AddEquiv.ofBijective_apply] using
+    (scalar_map_integer_coordinates (Rat.castHom ℂ) z).2
+
+private theorem rational_complex_negative_three :
+    K0.map (Rat.castHom ℂ) ((-3 : ℤ) • K0.of ℚ ℚᵐᵒᵖ) =
+        (-3 : ℤ) • K0.of ℂ ℂᵐᵒᵖ ∧
+      K0.finrankEquiv ℂ
+        (K0.map (Rat.castHom ℂ) ((-3 : ℤ) • K0.of ℚ ℚᵐᵒᵖ)) = -3 ∧
+      (AddEquiv.ofBijective (K0.map (Rat.castHom ℂ))
+        (K0.map_bijective (Rat.castHom ℂ))).symm
+          ((-3 : ℤ) • K0.of ℂ ℂᵐᵒᵖ) = (-3 : ℤ) • K0.of ℚ ℚᵐᵒᵖ := by
+  have coordinates := rational_complex_integer_coordinates (-3)
+  exact ⟨coordinates.1, coordinates.2.2.1, coordinates.2.1⟩
+
+end RationalComplexExtension
+
+section QuaternionScalarLift
+
+-- Scalar, lifted scalar, and lifted plane live in Type 0, Type 1, and Type 2.
+-- Noncommutativity is witnessed by the existing real quaternion constructors.
+private theorem quaternion_scalar_lift_maps_bijective :
+    quaternionI * quaternionJ ≠ quaternionJ * quaternionI ∧
+      Function.Bijective
+        (ProjectiveClass.map
+          (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom) ∧
+      Function.Bijective
+        (K0.map
+          (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom) := by
+  exact ⟨quaternion_noncommutative, ProjectiveClass.map_bijective _, K0.map_bijective _⟩
+
+private theorem quaternion_scalar_lift_plane :
+    ProjectiveClass.map
+        (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom
+        (ProjectiveClass.of (Quaternion ℝ) (Fin 2 → (Quaternion ℝ)ᵐᵒᵖ)) =
+      ProjectiveClass.of LiftedQuaternion LiftedQuaternionPlane ∧
+      K0.map
+          (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom
+          (K0.of (Quaternion ℝ) (Fin 2 → (Quaternion ℝ)ᵐᵒᵖ)) =
+        K0.of LiftedQuaternion LiftedQuaternionPlane ∧
+      ProjectiveClass.finrankEquiv LiftedQuaternion
+        (ProjectiveClass.map
+          (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom
+          (ProjectiveClass.of (Quaternion ℝ) (Fin 2 → (Quaternion ℝ)ᵐᵒᵖ))) = 2 ∧
+      K0.finrankEquiv LiftedQuaternion
+        (K0.map
+          (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom
+          (K0.of (Quaternion ℝ) (Fin 2 → (Quaternion ℝ)ᵐᵒᵖ))) = 2 := by
+  have classes : ProjectiveClass.map
+      (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom
+      (ProjectiveClass.of (Quaternion ℝ) (Fin 2 → (Quaternion ℝ)ᵐᵒᵖ)) =
+      ProjectiveClass.of LiftedQuaternion LiftedQuaternionPlane := by
+    simpa only [AddEquiv.ofBijective_apply, LiftedQuaternionPlane,
+      ProjectiveClass.of_ulift] using
+      (scalar_map_class_coordinates
+        (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom 2).2.1
+  have groups : K0.map
+      (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom
+      (K0.of (Quaternion ℝ) (Fin 2 → (Quaternion ℝ)ᵐᵒᵖ)) =
+      K0.of LiftedQuaternion LiftedQuaternionPlane := by
+    rw [← K0.ofClass_of (Quaternion ℝ) (Fin 2 → (Quaternion ℝ)ᵐᵒᵖ),
+      K0.map_ofClass, classes, K0.ofClass_of]
+  refine ⟨classes, groups, ?_, ?_⟩
+  · rw [classes]
+    exact lifted_quaternion_plane_dimension.1
+  · rw [groups]
+    exact lifted_quaternion_plane_dimension.2
+
+private theorem quaternion_scalar_lift_plane_preimages :
+    let e := AddEquiv.ofBijective
+      (ProjectiveClass.map
+        (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom)
+      (ProjectiveClass.map_bijective
+        (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom)
+    let f := AddEquiv.ofBijective
+      (K0.map (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom)
+      (K0.map_bijective
+        (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom)
+    e.symm (ProjectiveClass.of LiftedQuaternion LiftedQuaternionPlane) =
+        ProjectiveClass.of (Quaternion ℝ) (Fin 2 → (Quaternion ℝ)ᵐᵒᵖ) ∧
+      f.symm (K0.of LiftedQuaternion LiftedQuaternionPlane) =
+        K0.of (Quaternion ℝ) (Fin 2 → (Quaternion ℝ)ᵐᵒᵖ) ∧
+      ProjectiveClass.finrankEquiv (Quaternion ℝ)
+        (e.symm (ProjectiveClass.of LiftedQuaternion LiftedQuaternionPlane)) = 2 ∧
+      K0.finrankEquiv (Quaternion ℝ)
+        (f.symm (K0.of LiftedQuaternion LiftedQuaternionPlane)) = 2 := by
+  have classes := (scalar_map_class_coordinates
+    (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom 2).2.2.1
+  have groups :
+      (AddEquiv.ofBijective
+        (K0.map (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom)
+        (K0.map_bijective
+          (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom)).symm
+          (K0.of LiftedQuaternion LiftedQuaternionPlane) =
+        K0.of (Quaternion ℝ) (Fin 2 → (Quaternion ℝ)ᵐᵒᵖ) := by
+    let f := AddEquiv.ofBijective
+      (K0.map (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom)
+      (K0.map_bijective
+        (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom)
+    have forward (x : K0 (Quaternion ℝ)) :
+        f x = K0.map
+          (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom x :=
+      AddEquiv.ofBijective_apply
+        (K0.map (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom)
+        (K0.map_bijective
+          (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom) x
+    apply f.injective
+    rw [f.apply_symm_apply, forward, quaternion_scalar_lift_plane.2.1]
+  have classes' :
+      (AddEquiv.ofBijective
+        (ProjectiveClass.map
+          (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom)
+        (ProjectiveClass.map_bijective
+          (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom)).symm
+          (ProjectiveClass.of LiftedQuaternion LiftedQuaternionPlane) =
+        ProjectiveClass.of (Quaternion ℝ) (Fin 2 → (Quaternion ℝ)ᵐᵒᵖ) := by
+    rw [← lifted_quaternion_plane_inverse.1, ProjectiveClass.finrankEquiv_symm_apply]
+    exact classes
+  refine ⟨classes', groups, ?_, ?_⟩
+  · rw [classes']
+    exact quaternion_plane_dimension.1
+  · rw [groups]
+    exact quaternion_plane_dimension.2
+
+private theorem quaternion_scalar_lift_integer_coordinates (z : ℤ) :
+    let e := AddEquiv.ofBijective
+      (K0.map (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom)
+      (K0.map_bijective
+        (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom)
+    K0.map (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom
+        (z • K0.of (Quaternion ℝ) (Quaternion ℝ)ᵐᵒᵖ) =
+      z • K0.of LiftedQuaternion LiftedQuaternionᵐᵒᵖ ∧
+      e.symm (z • K0.of LiftedQuaternion LiftedQuaternionᵐᵒᵖ) =
+        z • K0.of (Quaternion ℝ) (Quaternion ℝ)ᵐᵒᵖ ∧
+      K0.finrankEquiv LiftedQuaternion
+        (K0.map (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom
+          (z • K0.of (Quaternion ℝ) (Quaternion ℝ)ᵐᵒᵖ)) = z ∧
+      K0.finrankEquiv (Quaternion ℝ)
+        (e.symm (z • K0.of LiftedQuaternion LiftedQuaternionᵐᵒᵖ)) = z := by
+  simpa only [AddEquiv.ofBijective_apply] using
+    (scalar_map_integer_coordinates
+      (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom z).2
+
+private theorem quaternion_scalar_lift_negative_three :
+    K0.map (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom
+        ((-3 : ℤ) • K0.of (Quaternion ℝ) (Quaternion ℝ)ᵐᵒᵖ) =
+      (-3 : ℤ) • K0.of LiftedQuaternion LiftedQuaternionᵐᵒᵖ ∧
+      K0.finrankEquiv LiftedQuaternion
+        (K0.map (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom
+          ((-3 : ℤ) • K0.of (Quaternion ℝ) (Quaternion ℝ)ᵐᵒᵖ)) = -3 ∧
+      (AddEquiv.ofBijective
+        (K0.map (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom)
+        (K0.map_bijective
+          (ULift.ringEquiv : LiftedQuaternion ≃+* Quaternion ℝ).symm.toRingHom)).symm
+          ((-3 : ℤ) • K0.of LiftedQuaternion LiftedQuaternionᵐᵒᵖ) =
+        (-3 : ℤ) • K0.of (Quaternion ℝ) (Quaternion ℝ)ᵐᵒᵖ := by
+  have coordinates := quaternion_scalar_lift_integer_coordinates (-3)
+  exact ⟨coordinates.1, coordinates.2.2.1, coordinates.2.1⟩
+
+end QuaternionScalarLift
+
+section ZeroRingScalarBoundary
+
+-- These target maps are Ring-general, not division-ring maps.
+private theorem rational_zero_ring_maps_collapse (a : ProjectiveClass ℚ) (x : K0 ℚ) :
+    ProjectiveClass.map (algebraMap ℚ PUnit.{u + 1} : ℚ →+* PUnit.{u + 1}) a = 0 ∧
+      K0.map (algebraMap ℚ PUnit.{u + 1} : ℚ →+* PUnit.{u + 1}) x = 0 := by
+  exact ⟨Subsingleton.elim _ _, Subsingleton.elim _ _⟩
+
+-- All source coordinates retain their usual dimensions but have zero images.
+private theorem rational_zero_ring_coordinate_collapse (n : ℕ) (z : ℤ) :
+    ProjectiveClass.map (algebraMap ℚ PUnit.{u + 1} : ℚ →+* PUnit.{u + 1})
+        (ProjectiveClass.of ℚ (Fin n → ℚᵐᵒᵖ)) = 0 ∧
+      K0.map (algebraMap ℚ PUnit.{u + 1} : ℚ →+* PUnit.{u + 1})
+        (z • K0.of ℚ ℚᵐᵒᵖ) = 0 ∧
+      ProjectiveClass.finrankEquiv ℚ (ProjectiveClass.of ℚ (Fin n → ℚᵐᵒᵖ)) = n ∧
+      K0.finrankEquiv ℚ (z • K0.of ℚ ℚᵐᵒᵖ) = z := by
+  refine ⟨Subsingleton.elim _ _, Subsingleton.elim _ _,
+    (coordinate_dimension_and_inverse ℚ n).1, ?_⟩
+  simpa only [K0.finrankEquiv_symm_apply] using
+    (integer_inverse_and_dimension ℚ z).2.1
+
+private theorem rational_zero_ring_maps_not_injective :
+    ¬ Function.Injective
+        (ProjectiveClass.map (algebraMap ℚ PUnit.{u + 1} : ℚ →+* PUnit.{u + 1})) ∧
+      ¬ Function.Injective
+        (K0.map (algebraMap ℚ PUnit.{u + 1} : ℚ →+* PUnit.{u + 1})) := by
+  constructor
+  · intro injective
+    have collision :
+        ProjectiveClass.map (algebraMap ℚ PUnit.{u + 1} : ℚ →+* PUnit.{u + 1})
+            (ProjectiveClass.of ℚ ℚᵐᵒᵖ) =
+          ProjectiveClass.map (algebraMap ℚ PUnit.{u + 1} : ℚ →+* PUnit.{u + 1}) 0 :=
+      Subsingleton.elim _ _
+    have dimensions := congrArg (ProjectiveClass.finrankEquiv ℚ) (injective collision)
+    have impossible : (1 : ℕ) = 0 := by
+      simpa only [ProjectiveClass.finrankEquiv_of_self, map_zero] using dimensions
+    exact one_ne_zero impossible
+  · intro injective
+    have collision :
+        K0.map (algebraMap ℚ PUnit.{u + 1} : ℚ →+* PUnit.{u + 1})
+            (K0.of ℚ ℚᵐᵒᵖ) =
+          K0.map (algebraMap ℚ PUnit.{u + 1} : ℚ →+* PUnit.{u + 1}) 0 :=
+      Subsingleton.elim _ _
+    have dimensions := congrArg (K0.finrankEquiv ℚ) (injective collision)
+    have impossible : (1 : ℤ) = 0 := by
+      simpa only [K0.finrankEquiv_of_self, map_zero] using dimensions
+    exact one_ne_zero impossible
+
+private theorem rational_zero_ring_negative_three :
+    K0.map (algebraMap ℚ PUnit.{u + 1} : ℚ →+* PUnit.{u + 1})
+        ((-3 : ℤ) • K0.of ℚ ℚᵐᵒᵖ) = 0 ∧
+      K0.finrankEquiv ℚ ((-3 : ℤ) • K0.of ℚ ℚᵐᵒᵖ) = -3 ∧
+      (-3 : ℤ) • K0.of ℚ ℚᵐᵒᵖ ≠ 0 := by
+  refine ⟨Subsingleton.elim _ _, rational_negative_three.2, ?_⟩
+  intro equality
+  have dimensions : (-3 : ℤ) = 0 := by
+    simpa only [rational_negative_three.2, map_zero] using
+      congrArg (K0.finrankEquiv ℚ) equality
+  exact (by decide : (-3 : ℤ) ≠ 0) dimensions
+
+end ZeroRingScalarBoundary
+
+section MatrixScalarMaps
+
+-- Nonzero diagonal matrix units have zero product in this ring.
+private theorem matrix_diagonal_units_zero_product :
+    Matrix.single (0 : Fin 2) (0 : Fin 2) (1 : ℂ) ≠ 0 ∧
+      Matrix.single (1 : Fin 2) (1 : Fin 2) (1 : ℂ) ≠ 0 ∧
+      Matrix.single (0 : Fin 2) (0 : Fin 2) (1 : ℂ) *
+        Matrix.single (1 : Fin 2) (1 : Fin 2) (1 : ℂ) = 0 := by
+  refine ⟨?_, ?_, ?_⟩
+  · intro equality
+    have coordinate : (1 : ℂ) = 0 := by
+      simpa only [Matrix.single_apply_same, Matrix.zero_apply] using
+        congrArg (fun A : Matrix (Fin 2) (Fin 2) ℂ => A 0 0) equality
+    exact one_ne_zero coordinate
+  · intro equality
+    have coordinate : (1 : ℂ) = 0 := by
+      simpa only [Matrix.single_apply_same, Matrix.zero_apply] using
+        congrArg (fun A : Matrix (Fin 2) (Fin 2) ℂ => A 1 1) equality
+    exact one_ne_zero coordinate
+  · apply Matrix.single_mul_single_of_ne
+    decide
+
+-- The two orders of the off-diagonal product give unequal diagonal units.
+private theorem matrix_off_diagonal_units_noncommutative :
+    Matrix.single (0 : Fin 2) (1 : Fin 2) (1 : ℂ) *
+        Matrix.single (1 : Fin 2) (0 : Fin 2) (1 : ℂ) =
+      Matrix.single (0 : Fin 2) (0 : Fin 2) (1 : ℂ) ∧
+      Matrix.single (1 : Fin 2) (0 : Fin 2) (1 : ℂ) *
+          Matrix.single (0 : Fin 2) (1 : Fin 2) (1 : ℂ) =
+        Matrix.single (1 : Fin 2) (1 : Fin 2) (1 : ℂ) ∧
+      Matrix.single (0 : Fin 2) (0 : Fin 2) (1 : ℂ) ≠
+        Matrix.single (1 : Fin 2) (1 : Fin 2) (1 : ℂ) ∧
+      Matrix.single (0 : Fin 2) (1 : Fin 2) (1 : ℂ) *
+          Matrix.single (1 : Fin 2) (0 : Fin 2) (1 : ℂ) ≠
+        Matrix.single (1 : Fin 2) (0 : Fin 2) (1 : ℂ) *
+          Matrix.single (0 : Fin 2) (1 : Fin 2) (1 : ℂ) := by
+  have forward : Matrix.single (0 : Fin 2) (1 : Fin 2) (1 : ℂ) *
+      Matrix.single (1 : Fin 2) (0 : Fin 2) (1 : ℂ) =
+      Matrix.single (0 : Fin 2) (0 : Fin 2) (1 : ℂ) := by
+    simp only [Matrix.single_mul_single_same, one_mul]
+  have backward : Matrix.single (1 : Fin 2) (0 : Fin 2) (1 : ℂ) *
+      Matrix.single (0 : Fin 2) (1 : Fin 2) (1 : ℂ) =
+      Matrix.single (1 : Fin 2) (1 : Fin 2) (1 : ℂ) := by
+    simp only [Matrix.single_mul_single_same, one_mul]
+  have diagonal_ne : Matrix.single (0 : Fin 2) (0 : Fin 2) (1 : ℂ) ≠
+      Matrix.single (1 : Fin 2) (1 : Fin 2) (1 : ℂ) := by
+    intro equality
+    have coordinate : (1 : ℂ) = 0 := by
+      simpa only [Matrix.single_apply_same,
+        Matrix.single_apply_of_row_ne (by decide : (1 : Fin 2) ≠ 0)] using
+        congrArg (fun A : Matrix (Fin 2) (Fin 2) ℂ => A 0 0) equality
+    exact one_ne_zero coordinate
+  refine ⟨forward, backward, diagonal_ne, ?_⟩
+  intro equality
+  exact diagonal_ne (forward.symm.trans (equality.trans backward))
+
+-- Scalar diagonals distinguish the embedding from its conjugate composite.
+private theorem matrix_scalar_homs_distinct :
+    let S := Matrix (Fin 2) (Fin 2) ℂ
+    let φ : ℂ →+* S := algebraMap ℂ S
+    let ψ : ℂ →+* S := φ.comp (starRingEnd ℂ)
+    φ Complex.I 0 0 = Complex.I ∧
+      ψ Complex.I 0 0 = -Complex.I ∧ φ ≠ ψ := by
+  let S := Matrix (Fin 2) (Fin 2) ℂ
+  let φ : ℂ →+* S := algebraMap ℂ S
+  let ψ : ℂ →+* S := φ.comp (starRingEnd ℂ)
+  have standard : φ Complex.I 0 0 = Complex.I := by
+    dsimp only [φ, S]
+    rw [Matrix.algebraMap_matrix_apply, ite_eq_left rfl, Algebra.algebraMap_self_apply]
+  have conjugate : ψ Complex.I 0 0 = -Complex.I := by
+    dsimp only [ψ, φ, S]
+    rw [RingHom.comp_apply, Complex.conj_I, Matrix.algebraMap_matrix_apply,
+      ite_eq_left rfl, Algebra.algebraMap_self_apply]
+  refine ⟨standard, conjugate, ?_⟩
+  intro equality
+  have imaginary : Complex.I = -Complex.I := by
+    exact standard.symm.trans
+      ((congrArg (fun f : ℂ →+* S => f Complex.I 0 0) equality).trans conjugate)
+  have coordinate : (1 : ℝ) = -1 := by
+    simpa only [Complex.I_im, Complex.neg_im] using congrArg Complex.im imaginary
+  exact one_ne_zero (CharZero.eq_neg_self_iff.mp coordinate)
+
+-- Whole induced maps agree despite distinct scalar maps and ring boundaries.
+private theorem matrix_scalar_maps_eq :
+    let S := Matrix (Fin 2) (Fin 2) ℂ
+    let φ : ℂ →+* S := algebraMap ℂ S
+    let ψ : ℂ →+* S := φ.comp (starRingEnd ℂ)
+    φ ≠ ψ ∧
+      ProjectiveClass.map φ = ProjectiveClass.map ψ ∧
+      K0.map φ = K0.map ψ ∧
+      Matrix.single (0 : Fin 2) (0 : Fin 2) (1 : ℂ) ≠ 0 ∧
+      Matrix.single (1 : Fin 2) (1 : Fin 2) (1 : ℂ) ≠ 0 ∧
+      Matrix.single (0 : Fin 2) (0 : Fin 2) (1 : ℂ) *
+        Matrix.single (1 : Fin 2) (1 : Fin 2) (1 : ℂ) = 0 ∧
+      Matrix.single (0 : Fin 2) (1 : Fin 2) (1 : ℂ) *
+          Matrix.single (1 : Fin 2) (0 : Fin 2) (1 : ℂ) ≠
+        Matrix.single (1 : Fin 2) (0 : Fin 2) (1 : ℂ) *
+          Matrix.single (0 : Fin 2) (1 : Fin 2) (1 : ℂ) := by
+  let S := Matrix (Fin 2) (Fin 2) ℂ
+  let φ : ℂ →+* S := algebraMap ℂ S
+  let ψ : ℂ →+* S := φ.comp (starRingEnd ℂ)
+  exact ⟨matrix_scalar_homs_distinct.2.2,
+    ProjectiveClass.map_eq_map φ ψ, K0.map_eq_map φ ψ,
+    matrix_diagonal_units_zero_product.1, matrix_diagonal_units_zero_product.2.1,
+    matrix_diagonal_units_zero_product.2.2,
+    matrix_off_diagonal_units_noncommutative.2.2.2⟩
+
+-- Coordinate extension computes free classes without a target dimension map.
+private theorem matrix_scalar_class_image (n : ℕ) :
+    let S := Matrix (Fin 2) (Fin 2) ℂ
+    ProjectiveClass.map (algebraMap ℂ S)
+        (ProjectiveClass.of ℂ (Fin n → ℂᵐᵒᵖ)) =
+      ProjectiveClass.of S (Fin n → Sᵐᵒᵖ) := by
+  let S := Matrix (Fin 2) (Fin 2) ℂ
+  let φ : ℂ →+* S := algebraMap ℂ S
+  dsimp only
+  rw [ProjectiveClass.map_of]
+  exact ProjectiveClass.of_eq_of_equiv S _
+    ((ModuleCat.RightExtension.mapLinearEquiv φ
+      (Module.rightFreeCoordEquiv ℂ (Fin n))).trans
+      ((ModuleCat.RightExtension.rightFreeLinearEquiv φ (Fin n)).trans
+        (Module.rightFreeCoordEquiv S (Fin n)).symm))
+
+private theorem matrix_scalar_class_coordinates (n : ℕ) :
+    let S := Matrix (Fin 2) (Fin 2) ℂ
+    let φ : ℂ →+* S := algebraMap ℂ S
+    let ψ : ℂ →+* S := φ.comp (starRingEnd ℂ)
+    ProjectiveClass.map φ (ProjectiveClass.of ℂ (Fin n → ℂᵐᵒᵖ)) =
+        ProjectiveClass.of S (Fin n → Sᵐᵒᵖ) ∧
+      ProjectiveClass.map ψ (ProjectiveClass.of ℂ (Fin n → ℂᵐᵒᵖ)) =
+        ProjectiveClass.of S (Fin n → Sᵐᵒᵖ) ∧
+      ProjectiveClass.finrankEquiv ℂ (ProjectiveClass.of ℂ (Fin n → ℂᵐᵒᵖ)) = n := by
+  let S := Matrix (Fin 2) (Fin 2) ℂ
+  let φ : ℂ →+* S := algebraMap ℂ S
+  let ψ : ℂ →+* S := φ.comp (starRingEnd ℂ)
+  have image : ProjectiveClass.map φ (ProjectiveClass.of ℂ (Fin n → ℂᵐᵒᵖ)) =
+      ProjectiveClass.of S (Fin n → Sᵐᵒᵖ) := matrix_scalar_class_image n
+  refine ⟨image, ?_, (coordinate_dimension_and_inverse ℂ n).1⟩
+  rw [← matrix_scalar_maps_eq.2.1]
+  exact image
+
+private theorem matrix_scalar_plane :
+    let S := Matrix (Fin 2) (Fin 2) ℂ
+    let φ : ℂ →+* S := algebraMap ℂ S
+    let ψ : ℂ →+* S := φ.comp (starRingEnd ℂ)
+    ProjectiveClass.map φ (ProjectiveClass.of ℂ (Fin 2 → ℂᵐᵒᵖ)) =
+        ProjectiveClass.of S (Fin 2 → Sᵐᵒᵖ) ∧
+      ProjectiveClass.map ψ (ProjectiveClass.of ℂ (Fin 2 → ℂᵐᵒᵖ)) =
+        ProjectiveClass.of S (Fin 2 → Sᵐᵒᵖ) ∧
+      ProjectiveClass.finrankEquiv ℂ (ProjectiveClass.of ℂ (Fin 2 → ℂᵐᵒᵖ)) = 2 := by
+  exact matrix_scalar_class_coordinates 2
+
+-- The regular image follows from the one-coordinate class calculation.
+-- Additivity then computes every signed multiple, with dimension only at source.
+private theorem matrix_scalar_integer_coordinates (z : ℤ) :
+    let S := Matrix (Fin 2) (Fin 2) ℂ
+    let φ : ℂ →+* S := algebraMap ℂ S
+    let ψ : ℂ →+* S := φ.comp (starRingEnd ℂ)
+    K0.map φ (z • K0.of ℂ ℂᵐᵒᵖ) = z • K0.of S Sᵐᵒᵖ ∧
+      K0.map ψ (z • K0.of ℂ ℂᵐᵒᵖ) = z • K0.of S Sᵐᵒᵖ ∧
+      K0.finrankEquiv ℂ (z • K0.of ℂ ℂᵐᵒᵖ) = z := by
+  let S := Matrix (Fin 2) (Fin 2) ℂ
+  let φ : ℂ →+* S := algebraMap ℂ S
+  let ψ : ℂ →+* S := φ.comp (starRingEnd ℂ)
+  have classes : ProjectiveClass.map φ (ProjectiveClass.of ℂ ℂᵐᵒᵖ) =
+      ProjectiveClass.of S Sᵐᵒᵖ := by
+    simpa only [ProjectiveClass.of_fin_fun_eq_nsmul, one_nsmul] using
+      matrix_scalar_class_image 1
+  have regular : K0.map φ (K0.of ℂ ℂᵐᵒᵖ) = K0.of S Sᵐᵒᵖ := by
+    rw [← K0.ofClass_of ℂ ℂᵐᵒᵖ, K0.map_ofClass, classes, K0.ofClass_of]
+  have image : K0.map φ (z • K0.of ℂ ℂᵐᵒᵖ) = z • K0.of S Sᵐᵒᵖ := by
+    rw [map_zsmul, regular]
+  refine ⟨image, ?_, ?_⟩
+  · rw [← matrix_scalar_maps_eq.2.2.1]
+    exact image
+  · simpa only [K0.finrankEquiv_symm_apply] using
+      (integer_inverse_and_dimension ℂ z).2.1
+
+private theorem matrix_scalar_negative_three :
+    let S := Matrix (Fin 2) (Fin 2) ℂ
+    let φ : ℂ →+* S := algebraMap ℂ S
+    let ψ : ℂ →+* S := φ.comp (starRingEnd ℂ)
+    K0.map φ ((-3 : ℤ) • K0.of ℂ ℂᵐᵒᵖ) =
+        (-3 : ℤ) • K0.of S Sᵐᵒᵖ ∧
+      K0.map ψ ((-3 : ℤ) • K0.of ℂ ℂᵐᵒᵖ) =
+        (-3 : ℤ) • K0.of S Sᵐᵒᵖ ∧
+      (K0.finrankEquiv ℂ).symm (-3 : ℤ) = (-3 : ℤ) • K0.of ℂ ℂᵐᵒᵖ ∧
+      K0.finrankEquiv ℂ ((-3 : ℤ) • K0.of ℂ ℂᵐᵒᵖ) = -3 ∧
+      (-3 : ℤ) • K0.of ℂ ℂᵐᵒᵖ ≠ 0 := by
+  have coordinates := matrix_scalar_integer_coordinates (-3)
+  refine ⟨coordinates.1, coordinates.2.1,
+    (integer_inverse_and_dimension ℂ (-3)).1, coordinates.2.2, ?_⟩
+  intro equality
+  have dimensions : (-3 : ℤ) = 0 := by
+    simpa only [coordinates.2.2, map_zero] using
+      congrArg (K0.finrankEquiv ℂ) equality
+  exact (by decide : (-3 : ℤ) ≠ 0) dimensions
+
+end MatrixScalarMaps
 
 end ProjectiveModulesTests.K0RankClient
