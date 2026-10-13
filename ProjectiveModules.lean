@@ -42,6 +42,7 @@ public import ProjectiveModules.KTheory.Stabilization
 public import ProjectiveModules.KTheory.ZeroRing
 public import ProjectiveModules.Module.BalancedTensorProduct
 public import ProjectiveModules.Module.BalancedTensorExact
+public import ProjectiveModules.Module.Bidual
 public import ProjectiveModules.Module.ArbitraryLocalProjectiveFree
 public import ProjectiveModules.Module.CountableCoordinateClosure
 public import ProjectiveModules.Module.CountableLocalProjective

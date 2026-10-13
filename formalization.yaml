@@ -15,6 +15,16 @@ project:
     classification. Noncommutative and commutative results retain their distinct
     hypotheses; rank classification is not asserted for all finite projectives
     over arbitrary rings.
+    Ordinary-coefficient evaluation gives an R-linear equivalence
+    M ≃ₗ[R] ((M →ₗ[R] R) →ₗ[Rᵐᵒᵖ] R) for any semiring R and finitely
+    generated projective left R-module M with additive commutative monoid
+    structure. The first Hom uses the canonical right-regular Rᵐᵒᵖ-action
+    on coefficient R and the second its left-regular R-action. Scalar and
+    source universes are independent; no right action on M, additive inverses
+    or freeness is assumed. Evaluation, inverse and naturality laws accompany
+    the equivalence. Over commutative semirings, two inverse inner-scalar
+    restrictions compare it with Mathlib's Module.evalEquiv, preserving
+    coefficient R and outer scalars R.
     Over arbitrary rings, the library also describes stably-free kernels of
     surjections onto finitely generated stably-free targets, finite-coordinate
     kernel presentations and surjective right-linear matrix kernels.

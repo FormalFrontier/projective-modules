@@ -75,6 +75,20 @@ the Formal Frontier source-maintainer team.
   includes zero rings; [endomorphisms](ProjectiveModules/Invertible/Endomorphism.lean)
   are scalars. Only a [common finite free summand](ProjectiveModules/Invertible/StableCancellation.lean)
   is cancelled from two invertibles.
+- **Ordinary-coefficient bidual evaluation:** For a possibly noncommutative
+  semiring `R` and a finitely generated projective left `R`-module `M` whose
+  addition is a commutative monoid,
+  [`LinearMap.bidualEvalEquiv R M`](ProjectiveModules/Module/Bidual.lean) gives
+  `M ≃ₗ[R] ((M →ₗ[R] R) →ₗ[Rᵐᵒᵖ] R)`. Its forward map is `LinearMap.flip`
+  of the identity, sending `m` to `f ↦ f m`. The ordinary coefficient `R`
+  has its canonical regular actions: the first Hom is an `Rᵐᵒᵖ`-module by
+  `(op a • f)(m) = f(m) * a`, and the second a left `R`-module by
+  `(a • Φ)(f) = a * Φ(f)`. Scalar and module universes are independent;
+  no right action on `M`, additive inverses or freeness is assumed. The API
+  supplies application, underlying-map, inverse evaluation and naturality laws.
+  Over commutative semirings, two inverse inner-scalar restrictions compare
+  it with Mathlib's `Module.evalEquiv`, preserving coefficient `R` and outer
+  scalars `R`.
 - **Right-module categorical dual:** For a fixed arbitrary ring `R`,
   [`ModuleCat.rightDual`](ProjectiveModules/Dual/ModuleCat.lean) is the
   contravariant functor from right `R`-modules to left `R`-modules, with ordinary
@@ -463,6 +477,7 @@ aggregate import.
 | Area | Interfaces and scope |
 | --- | --- |
 | [Dual](ProjectiveModules/Dual/BaseChange.lean), [Contraction](ProjectiveModules/Contraction/BaseChange.lean), [Invertible](ProjectiveModules/Invertible/OfRankOne.lean) | Dual/evaluation base change, rank-one iff, scalar endomorphisms and finite-summand cancellation |
+| [Bidual evaluation](ProjectiveModules/Module/Bidual.lean) | Ordinary-coefficient bidual equivalence for finite projective semiring modules; forward/inverse evaluation, naturality and coefficient-preserving commutative comparison |
 | [Exterior algebra](ProjectiveModules/ExteriorAlgebra/BaseChange.lean), [exterior powers](ProjectiveModules/ExteriorPower/DirectSum.lean) | Full algebra base change; projective powers, determinants/top powers and binary fixed-degree Sum Formula |
 | [Free modules](ProjectiveModules/Free/CountableCancellation.lean), [infinite coordinates](ProjectiveModules/Free/InfiniteCoordinates.lean), [rank conditions](ProjectiveModules/Free/InvariantBasisNumber.lean) | Countable cancellation/absorption; finite stably-free semisimple endpoint; infinite basis cardinality and free-coordinate classification without IBN; semiring-homomorphism pullbacks of rank condition and IBN |
 | [Free-word semirings](ProjectiveModules/Free/FreeWordAlgebra.lean) | Rank-two to rank-one left-linear injection by distinct right suffixes and strong-rank obstruction; arbitrary semiring coefficients and alphabet |
