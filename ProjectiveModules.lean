@@ -35,6 +35,7 @@ public import ProjectiveModules.Invertible.Endomorphism
 public import ProjectiveModules.Invertible.OfRankOne
 public import ProjectiveModules.Invertible.StableCancellation
 public import ProjectiveModules.KTheory.K0
+public import ProjectiveModules.KTheory.Product
 public import ProjectiveModules.KTheory.Rank
 public import ProjectiveModules.KTheory.ScalarExtension
 public import ProjectiveModules.KTheory.Stabilization
@@ -66,6 +67,7 @@ public import ProjectiveModules.Module.QuotientHom
 public import ProjectiveModules.Module.SummandCancellation
 public import ProjectiveModules.Module.RankFiberDecomposition
 public import ProjectiveModules.Module.RightEndomorphismMatrix
+public import ProjectiveModules.Module.RightProduct
 public import ProjectiveModules.Module.RightRegular
 public import ProjectiveModules.Module.RightRegularDefect
 public import ProjectiveModules.Module.RightExtension

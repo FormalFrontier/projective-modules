@@ -164,3 +164,5 @@ private theorem liftedCarrier : Module.ComponentwiseFree ℤ
     intOneIdempotent_complete ⟨LinearEquiv.refl _ _⟩).equiv ULift.moduleEquiv
 
 end
+
+end

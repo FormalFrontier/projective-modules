@@ -646,6 +646,80 @@ status:
     - declaration: "Module.Projective.hom_short_exact"
       file: "ProjectiveModules/Module/HomExact.lean"
       note: "Additive Hom exactness for a projective source over an arbitrary semiring."
+    - declaration: "Module.piRightModule"
+      file: "ProjectiveModules/Module/RightProduct.lean"
+      note: >-
+        Named coordinatewise opposite-scalar action on a family of semimodules
+        over a family of semirings. Index, coefficient and carrier universes
+        are independent; the family need not be finite. No global action
+        instance or unital coordinate-inclusion homomorphism is introduced.
+    - declaration: "Module.projective_piRight"
+      file: "ProjectiveModules/Module/RightProduct.lean"
+      note: >-
+        For a finite index, coefficient-product assembly preserves arbitrary
+        projectivity over semirings, without finite-generation assumptions.
+        Independently sized binary semiring factors have the corresponding
+        projective closure theorem.
+    - declaration: "ModuleCat.FiniteProjective.pi"
+      file: "ProjectiveModules/Module/RightProduct.lean"
+      note: >-
+        Canonical coefficient-product bundle of a finite family of
+        finite-projective right modules over arbitrary rings. Finite
+        generation and projectivity of the output are proved, with carrier,
+        coordinate, action, extensionality and finite reconstruction APIs.
+    - declaration: "ModuleCat.FiniteProjective.prodRight"
+      file: "ProjectiveModules/Module/RightProduct.lean"
+      note: >-
+        Binary finite-projective coefficient-product assembly with separately
+        quantified scalar and carrier universes. Zero module factors and
+        zero coefficient rings are not excluded.
+    - declaration: "ModuleCat.RightExtension.piRecoverLinearEquiv"
+      file: "ProjectiveModules/Module/RightProduct.lean"
+      note: >-
+        Extension of an assembled right-module family along a coordinate
+        projection recovers that factor, with forward and inverse pure-tensor
+        formulas. The index need not be finite; no finite-generation or
+        projectivity premise is required.
+    - declaration: "ModuleCat.RightExtension.piLinearEquiv"
+      file: "ProjectiveModules/Module/RightProduct.lean"
+      note: >-
+        An arbitrary right module over a finite product of arbitrary rings
+        is linearly equivalent to the product of its coordinate projection
+        extensions. Both directions use the balanced tensor construction and
+        supported coordinate idempotents; scalar, index and carrier universes
+        are independent, including empty families and zero rings.
+    - declaration: "KTheory.ProjectiveClass.piEquiv"
+      file: "ProjectiveModules/KTheory/Product.lean"
+      note: >-
+        Additive monoid equivalence from finite-projective classes over a
+        finite coefficient product of arbitrary rings to the family of
+        factor classes, with the existing projection scalar-extension maps
+        as its forward homomorphism. The inverse assembles canonical
+        coefficient-product modules; whole-hom, coordinate, module-generator
+        and equality-detection laws include empty families and zero rings.
+    - declaration: "KTheory.ProjectiveClass.prodEquiv"
+      file: "ProjectiveModules/KTheory/Product.lean"
+      note: >-
+        Binary projective-class additive equivalence along the two projection
+        scalar extensions, with separately quantified scalar and module
+        carrier universes. Factors need not be commutative or nontrivial;
+        no cancellation of classes is required.
+    - declaration: "KTheory.K0.piEquiv"
+      file: "ProjectiveModules/KTheory/Product.lean"
+      note: >-
+        Additive group equivalence between K0 of a finite product of arbitrary
+        rings and the family of factor K0 groups. Forward whole-hom and
+        coordinate formulas agree with projection scalar extension; inverse
+        module-generator, group-completion and signed-presentation formulas
+        compute general differences of finite-projective classes, without
+        assuming injectivity of the class-to-K0 map.
+    - declaration: "KTheory.K0.prodEquiv"
+      file: "ProjectiveModules/KTheory/Product.lean"
+      note: >-
+        Binary K0 additive equivalence with independent scalar and carrier
+        universes, inverse generator and signed formulas, and coordinate
+        equality detection. Zero rings and noncommutative factors are
+        included; signed classes do not require cancellation.
     - declaration: "ModuleCat.RightExtension.adjunction"
       file: "ProjectiveModules/Module/RightExtension.lean"
       note: "Right-module scalar extension/restriction adjunction for arbitrary ring maps, with finite/projective preservation."

@@ -9,6 +9,26 @@ the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **Right modules over coefficient products:** For any finite family of possibly
+  noncommutative rings, a right module over their product is reconstructed from
+  its scalar extensions along the coordinate projections. Coordinate extension
+  of an assembled family recovers its factor even for an infinite index type.
+  [The coefficient-product interfaces](ProjectiveModules/Module/RightProduct.lean)
+  specify named coordinatewise actions over semirings and preserve projectivity
+  under finite products without finite-generation assumptions. Over rings they
+  assemble finite-projective factors as canonical bundled modules. Binary scalar
+  and carrier universes are independent; empty families and zero rings are
+  included. Supported coordinate inclusions are linear data, not unital maps.
+- **Projective classes and K₀ of product rings:** For any finite family of
+  possibly noncommutative rings, projection scalar extension gives an additive
+  monoid equivalence of finite-projective classes and an additive group
+  equivalence of K₀ with the respective products of the factor objects.
+  [The product equivalences](ProjectiveModules/KTheory/Product.lean) specify their
+  whole forward homomorphisms and inverse module generators, compatibility with
+  group completion, signed inverse formulas and coordinate equality detection.
+  Binary factors and module carriers have independent universes; empty families
+  and zero rings are included. No cancellation of classes or injectivity of the
+  class-to-K₀ map is assumed.
 - **Noetherian submodules:** Over a possibly noncommutative left-Noetherian
   ring, any submodule of a module spanned by a sequence is itself spanned by a
   sequence, without assuming that the ambient module is Noetherian, free,
@@ -433,6 +453,8 @@ aggregate import.
 | [Scalar rank](ProjectiveModules/Module/ScalarRank.lean) | Compatible-scalar rank times fixed-simple multiplicity; canonical noncommutative right matrix-row dimension |
 | [Finite stable presentations](ProjectiveModules/Free/StablePresentation.lean) | Arbitrary-ring finite/stably-free existence equivalence; IBN-only cross-sum and integer-difference invariance for semirings |
 | [Balanced tensor](ProjectiveModules/Module/BalancedTensorProduct.lean), [right extension](ProjectiveModules/Module/RightExtension.lean) | Right-module scalar extension over arbitrary ring homomorphisms, quotients, finite free coordinates |
+| [Right coefficient products](ProjectiveModules/Module/RightProduct.lean) | Named Pi/binary opposite-scalar actions; finite arbitrary-projective closure; canonical finite-projective bundles; coordinate recovery and finite reconstruction along projection scalar extension, with independent universes |
+| [Product classes and K₀](ProjectiveModules/KTheory/Product.lean) | Finite Pi/binary additive equivalences along projection right extensions; module generators, group-completion and signed inverse laws; independent scalar/carrier universes, without commutativity or cancellation |
 | [Principal right ideals](ProjectiveModules/Module/RightExtensionIdeal.lean) | Arbitrary-ring image-one extension equivalence without idempotence and image-zero annihilation with idempotence; idempotent right ideals and their extensions as finite projectives over arbitrary rings |
 | [Right-extension comparisons](ProjectiveModules/Module/RightExtensionComparison.lean), [comparison coherence](ProjectiveModules/Module/RightExtensionComparisonCoherence.lean) | `ModuleCat.RightExtension.idLinearEquiv` and `compLinearEquiv`: identity/composition linear equivalences and both-direction pure-tensor API; `compLinearEquiv_id_left`, `compLinearEquiv_id_right` and `compLinearEquiv_assoc`: pointwise unit and triple-composition laws over arbitrary rings/right modules with independent universes |
 | [Commutative-base tensor comparison](ProjectiveModules/Module/RightExtensionTensorProduct.lean) | `tensorProductObj` and `tensorProductTmul` specify both scalar views; `tensorProductLinearEquiv` is module-first for `CommRing R` and arbitrary `Ring S`; `extendScalarsLinearEquiv` is scalar-first for `CommRing S`; both-direction pure tensors, tensor commutation and map naturality with independent universes |
