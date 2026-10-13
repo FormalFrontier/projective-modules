@@ -68,6 +68,22 @@ the Formal Frontier source-maintainer team.
   and `[IsLocalRing R]`, with independent scalar and module universes and
   no finite or countable generation hypothesis. Commutativity is not required;
   right modules are recovered by specializing the scalars to `Rᵐᵒᵖ`.
+- **Projectivity under scalar restriction:** Over semirings `R` and `S`,
+  [`Module.Projective.trans`](ProjectiveModules/Module/ScalarRestriction.lean)
+  makes any projective `S`-module `M` projective over `R` when `S` is
+  projective over `R` and both scalar towers `R`–`S`–`S` and `R`–`S`–`M`
+  hold for the given actions. No finite-generation assumption on `M` is needed.
+  For arbitrary rings and a unital map `φ : R →+* S`,
+  [`ModuleCat.FiniteProjective.restrictScalars`](ProjectiveModules/Category/FiniteProjectiveRestriction.lean)
+  preserves finite projectives provided the canonical restricted left regular
+  coefficient `(ModuleCat.restrictScalars φ).obj (ModuleCat.of S S)` is
+  finite projective over `R`, with action `r • s = φ r * s`. Right modules
+  use the same constructor at `φ.op`, requiring its own restricted opposite
+  regular coefficient to be finite projective, with ordinary-element action
+  `s * φ r`; the left coefficient hypothesis alone does not imply the right
+  one. Neither commutativity nor a central image is assumed. The two scalar
+  universes and the module carrier universe are independent, and restriction
+  leaves the carrier universe unchanged.
 - **Finite-projective size and representatives:** For an arbitrary ring
   `R : Type u` and independent carrier universe `v`,
   `ModuleCat.FiniteProjective.{u, v} R` is essentially small in universe `u`,
@@ -408,6 +424,7 @@ aggregate import.
 | [Countably generated](ProjectiveModules/Module/CountablyGenerated.lean), [Noetherian submodules](ProjectiveModules/Module/CountablyGenerated/Noetherian.lean), [filtration](ProjectiveModules/Module/TransfiniteRangeBasis.lean) | Sequence-span predicate, submodule theorem, invariant countable supports and split-range assembly |
 | [Complements](ProjectiveModules/Module/ProjectiveComplement.lean), [right inverse defects](ProjectiveModules/Module/RightRegularDefect.lean), [Hom exactness](ProjectiveModules/Module/HomExact.lean) | Splittings and additive Hom exactness over semirings; specified right regular decomposition and defect kernel over rings |
 | [Finite-projective category](ProjectiveModules/Category/FiniteProjective.lean), [stable category](ProjectiveModules/Category/Stable.lean) | Finite biproducts, preadditive stable quotient and small-ring Ext¹ detection |
+| [Projective scalar towers](ProjectiveModules/Module/ScalarRestriction.lean), [finite-projective restriction](ProjectiveModules/Category/FiniteProjectiveRestriction.lean) | Projectivity through semiring towers with projective coefficients; finite-projective ring-homomorphism restriction under its canonical coefficient hypothesis, with carrier, stored-action and map-application laws, both directions of the underlying-functor comparison, and identity/composition functor laws |
 | [Finite-projective representatives](ProjectiveModules/Category/FiniteProjectiveSmallness.lean) | Derived ring-universe essential smallness at independent carrier universes; ring-sized representatives, linear equivalences and class equality in one reference skeleton |
 | [Finite dimension](ProjectiveModules/Category/FiniteModuleDimension.lean) | Finite-rank representative transport; finite-free categorical isomorphism criteria over strong-rank-condition rings |
 | [Finite stabilization](ProjectiveModules/Module/FiniteStabilization.lean) | Replace a finite projective common stabilizer by a common standard finite free one; no hypotheses on the two ambient modules |
@@ -459,6 +476,16 @@ sequence of left modules; [Hom exactness](ProjectiveModules/Module/HomExact.lean
 over semirings is additive rather than an unwarranted scalar-linear statement.
 [Projective complements](ProjectiveModules/Module/ProjectiveComplement.lean)
 split surjections and relate finite spanning families to free summands.
+
+The [finite-projective restriction examples](tests/ProjectiveModulesTests/FiniteProjectiveRestrictionFunctorClient.lean)
+use the nonzero, nonfree principal right ideal of a noncentral diagonal
+idempotent in `M₂(ℤ)`, with independently lifted scalar rings and ideal carrier.
+The restricted doubling map moves a nonzero generator to a nonzero value;
+right multiplication by the idempotent kills a nonzero upper-right member,
+whereas the reversed coefficient product is nonzero. The regular coefficient
+in these examples is finite and free, not a nonfree coefficient example.
+These restriction interfaces do not supply a direct-sum-additivity interface
+or restriction maps on projective classes or K₀.
 
 Over a proper two-sided ideal with unit complement, the finite and countable
 right-module freeness steps reduce to a quotient division ring; the
