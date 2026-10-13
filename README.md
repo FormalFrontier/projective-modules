@@ -55,6 +55,12 @@ the Formal Frontier source-maintainer team.
   includes zero rings; [endomorphisms](ProjectiveModules/Invertible/Endomorphism.lean)
   are scalars. Only a [common finite free summand](ProjectiveModules/Invertible/StableCancellation.lean)
   is cancelled from two invertibles.
+- **Right-module categorical dual:** For a fixed arbitrary ring `R`,
+  [`ModuleCat.rightDual`](ProjectiveModules/Dual/ModuleCat.lean) is the
+  contravariant functor from right `R`-modules to left `R`-modules, with ordinary
+  carrier `M →ₗ[Rᵐᵒᵖ] R`, left action `(r • f)(m) = r * f(m)` and maps given by
+  precomposition. Scalar and module universes are independent; the output
+  universe is their maximum.
 - **Quotient Hom and restriction kernels:** For a ring `A`, a semiring `S`
   and additive-group `A`-modules `M` and `C`, suppose `C` also has an
   `S`-module structure commuting with its `A`-action. The

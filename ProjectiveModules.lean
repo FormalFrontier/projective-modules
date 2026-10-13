@@ -12,6 +12,7 @@ public import ProjectiveModules.Category.FiniteProjectiveRestriction
 public import ProjectiveModules.Category.FiniteProjectiveSmallness
 public import ProjectiveModules.Category.Stable
 public import ProjectiveModules.Contraction.BaseChange
+public import ProjectiveModules.Dual.ModuleCat
 public import ProjectiveModules.Dual.Quotient
 public import ProjectiveModules.ExteriorAlgebra.BaseChange
 public import ProjectiveModules.ExteriorPower.Determinant

@@ -19,15 +19,20 @@ import Mathlib.LinearAlgebra.LinearIndependent.Defs
 # Zero-generator augmentation clients
 
 These private clients compute with the canonical augmentation and with Mathlib's
-linear-combination map. The initial calculations check the empty and trivial boundaries,
-right-appending word order, left multiplication of matrix coefficients, and two indexing
-obstructions without coefficient-recovery or generator-independence theorems.
+linear-combination map. Direct finite-support and matrix-order calculations check trivial
+coefficients, right-appending word order, left multiplication of matrix coefficients, and
+omitted or repeated indexing. Separate consumers use the terminal-coefficient rules and
+output characterization, including the empty-alphabet case and reconstruction of a
+matrix-word output from independently computed coefficients.
 
 Further computations use the augmentation's coefficient API and full-letter range
 criterion: matrix products retain their ordered constant coefficient, a nonzero matrix
 polynomial has uniquely determined letter coordinates, and an infinite alphabet has a
 full-range element excluded by a restricted indexing. The coordinate uniqueness uses
-linear independence over the left regular word algebra.
+linear independence over the left regular word algebra. The terminal-coefficient API
+also computes outputs with a moving terminal letter in an infinite alphabet and a
+nonconstant word-algebra scalar with ordered matrix coefficients. Independently lifted
+coefficient and alphabet carriers retain nonzero outputs in the augmentation kernel.
 
 The private proposition definitions specify the coefficient, range, independence and
 linear-equivalence questions. They are statement data, not proofs of those questions.
@@ -192,8 +197,11 @@ example {K : Type u} [Semiring K] (x : WordAlgebra K Empty)
 
 example {K : Type u} [Semiring K] (a : Empty →₀ WordAlgebra K Empty) :
     letterCombination (id : Empty → Empty) a = 0 := by
-  have ha : a = 0 := Subsingleton.elim _ _
-  rw [ha, map_zero]
+  simp only [letterCombination, id_eq]
+  apply (MonoidAlgebra.linearCombination_freeMonoid_of_eq_iff a 0).mpr
+  refine ⟨by simp, ?_⟩
+  intro i
+  exact Empty.elim i
 
 private def constantOne (K : Type u) (α : Type v) [Semiring K] :
     WordAlgebra K α →+* K :=
@@ -274,8 +282,26 @@ example : (letterCombination (K := Mat) (id : Bool → Bool)
     ((MonoidAlgebra.single 1 (matrixUnit 0 1) : WordAlgebra Mat Bool) •
       Finsupp.single true (MonoidAlgebra.single (FreeMonoid.of false) (matrixUnit 1 0)))).coeff
       (FreeMonoid.of false * FreeMonoid.of true) = matrixUnit 0 0 := by
-  rw [matrix_left_order]
-  simp
+  simp only [letterCombination, id_eq,
+    MonoidAlgebra.coeff_linearCombination_freeMonoid_of]
+  simp [smul_eq_mul, MonoidAlgebra.single_mul_single, matrixUnit]
+
+-- Reconstruct a matrix-word output from its independently computed coefficients.
+example : letterCombination (K := Mat) (id : Bool → Bool)
+    ((MonoidAlgebra.single 1 (matrixUnit 0 1) : WordAlgebra Mat Bool) •
+      Finsupp.single true (MonoidAlgebra.single (FreeMonoid.of false) (matrixUnit 1 0))) =
+    MonoidAlgebra.single (FreeMonoid.of false * FreeMonoid.of true) (matrixUnit 0 0) := by
+  simp only [letterCombination, id_eq]
+  apply (MonoidAlgebra.linearCombination_freeMonoid_of_eq_iff _ _).mpr
+  constructor
+  · simpa only [letterCombination, id_eq,
+      MonoidAlgebra.coeff_linearCombination_freeMonoid_of_one] using
+      (congrArg (fun y : WordAlgebra Mat Bool ↦ y.coeff 1) matrix_left_order).symm
+  · intro a w
+    simpa only [letterCombination, id_eq,
+      MonoidAlgebra.coeff_linearCombination_freeMonoid_of] using
+      (congrArg (fun y : WordAlgebra Mat Bool ↦ y.coeff (w * FreeMonoid.of a))
+        matrix_left_order).symm
 
 example : (letterCombination (K := Mat) (id : Bool → Bool)
     ((MonoidAlgebra.single 1 (matrixUnit 1 0) : WordAlgebra Mat Bool) •
@@ -441,3 +467,61 @@ example :
     rw [one_mul, ha] at h0
     have h10 : (1 : ULift.{u'} ℕ) = 0 := by simp at h0
     exact one_ne_zero h10
+
+-- The terminal letter moves through an infinite alphabet; the scalar is a word polynomial.
+example (j : ℕ) :
+    let f : ℕ →₀ WordAlgebra Mat ℕ :=
+      (MonoidAlgebra.single (FreeMonoid.of 13) (matrixUnit 0 1) : WordAlgebra Mat ℕ) •
+        Finsupp.single j
+          (MonoidAlgebra.single (FreeMonoid.of 3 * FreeMonoid.of 5) (matrixUnit 1 0))
+    let x := letterCombination id f
+    x.coeff ((FreeMonoid.of 13 * (FreeMonoid.of 3 * FreeMonoid.of 5)) * FreeMonoid.of j) =
+        matrixUnit 0 0 ∧ x ≠ 0 ∧
+      x ∈ LinearMap.ker (MonoidAlgebra.freeMonoidAugmentation Mat ℕ).toSemilinearMap := by
+  let f : ℕ →₀ WordAlgebra Mat ℕ :=
+    (MonoidAlgebra.single (FreeMonoid.of 13) (matrixUnit 0 1) : WordAlgebra Mat ℕ) •
+      Finsupp.single j
+        (MonoidAlgebra.single (FreeMonoid.of 3 * FreeMonoid.of 5) (matrixUnit 1 0))
+  let x := letterCombination id f
+  have hchar := (MonoidAlgebra.linearCombination_freeMonoid_of_eq_iff f x).mp rfl
+  have hc : x.coeff
+      ((FreeMonoid.of 13 * (FreeMonoid.of 3 * FreeMonoid.of 5)) * FreeMonoid.of j) =
+        matrixUnit 0 0 := by
+    rw [hchar.2 j (FreeMonoid.of 13 * (FreeMonoid.of 3 * FreeMonoid.of 5))]
+    simp [f, smul_eq_mul, MonoidAlgebra.single_mul_single, matrixUnit]
+  refine ⟨hc, ?_, ?_⟩
+  · intro hx
+    have hxcoeff : x.coeff
+        ((FreeMonoid.of 13 * (FreeMonoid.of 3 * FreeMonoid.of 5)) * FreeMonoid.of j) = 0 := by
+      simpa only [MonoidAlgebra.coeff_zero, Finsupp.zero_apply] using
+        congrArg (fun y : WordAlgebra Mat ℕ ↦ y.coeff
+          ((FreeMonoid.of 13 * (FreeMonoid.of 3 * FreeMonoid.of 5)) * FreeMonoid.of j)) hx
+    have hz : matrixUnit 0 0 = 0 := hc.symm.trans hxcoeff
+    have h00 := congrArg (fun m : Mat ↦ m 0 0) hz
+    simp [matrixUnit, Matrix.single] at h00
+  · simpa only [LinearMap.mem_ker, RingHom.coe_toSemilinearMap,
+      MonoidAlgebra.freeMonoidAugmentation_apply] using hchar.1
+
+-- These are independent carrier lifts, not a reindexing of the letter family.
+example (a : ULift.{v'} ℕ) (w : FreeMonoid (ULift.{v'} ℕ)) :
+    let x : WordAlgebra (ULift.{u'} ℕ) (ULift.{v'} ℕ) :=
+      letterCombination id (Finsupp.single a (MonoidAlgebra.single w 1))
+    x.coeff (w * FreeMonoid.of a) = 1 ∧ x ≠ 0 ∧
+      x ∈ LinearMap.ker
+        (MonoidAlgebra.freeMonoidAugmentation (ULift.{u'} ℕ) (ULift.{v'} ℕ)).toSemilinearMap := by
+  let x : WordAlgebra (ULift.{u'} ℕ) (ULift.{v'} ℕ) :=
+    letterCombination id (Finsupp.single a (MonoidAlgebra.single w 1))
+  have hc : x.coeff (w * FreeMonoid.of a) = 1 := by
+    simp only [x, letterCombination, id_eq,
+      MonoidAlgebra.coeff_linearCombination_freeMonoid_of,
+      Finsupp.single_eq_same, MonoidAlgebra.coeff_single]
+  refine ⟨hc, ?_, ?_⟩
+  · intro hx
+    have hxcoeff : x.coeff (w * FreeMonoid.of a) = 0 := by
+      simpa only [MonoidAlgebra.coeff_zero, Finsupp.zero_apply] using
+        congrArg (fun y : WordAlgebra (ULift.{u'} ℕ) (ULift.{v'} ℕ) ↦
+          y.coeff (w * FreeMonoid.of a)) hx
+    exact one_ne_zero (hc.symm.trans hxcoeff)
+  · simp only [LinearMap.mem_ker, RingHom.coe_toSemilinearMap,
+      MonoidAlgebra.freeMonoidAugmentation_apply, letterCombination, id_eq,
+      MonoidAlgebra.coeff_linearCombination_freeMonoid_of_one]

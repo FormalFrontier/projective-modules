@@ -18,6 +18,8 @@ independent over the left regular A-module. Mathlib's finitely supported linear
 combination multiplies each polynomial coordinate by its letter on the right. The
 coefficient at `w * FreeMonoid.of a` recovers the coefficient at `w` of the a-coordinate,
 so distinct terminal letters separate all the inputs, including an infinite alphabet.
+The public coefficient rules describe every nonempty word and the empty word;
+`linearCombination_freeMonoid_of_eq_iff` characterizes the output by these coefficients.
 
 Reindexing along an injective letter map gives independent subfamilies. The two-letter
 map agrees with the canonical linear combination through the finite coordinate
@@ -64,8 +66,12 @@ private theorem freeMonoid_mul_of_ne_mul_of {a b : ι} (hab : a ≠ b)
     List.getLast?_append_cons] at hlast
   exact Option.some.inj hlast
 
-/-- The coefficient at a word ending in `a` recovers the corresponding coordinate. -/
-private theorem coeff_linearCombination_freeMonoid_of
+/-- The coefficient at a word ending in `a` recovers the corresponding coordinate.
+
+The coordinate polynomials act on the left, so the letter is appended on the right.
+This applies to arbitrary coefficient semirings and alphabets. -/
+@[simp]
+theorem coeff_linearCombination_freeMonoid_of
     (f : ι →₀ MonoidAlgebra K (FreeMonoid ι)) (a : ι) (w : FreeMonoid ι) :
     (Finsupp.linearCombination (MonoidAlgebra K (FreeMonoid ι))
       (fun b : ι ↦ single (FreeMonoid.of b) (1 : K)) f).coeff
@@ -80,6 +86,54 @@ private theorem coeff_linearCombination_freeMonoid_of
       (fun p ↦ freeMonoid_mul_of_ne_mul_of hba p w)
   · intro _
     simp only [zero_mul, coeff_zero, Finsupp.zero_apply]
+
+/-- The letter-monomial linear combination has zero coefficient at the empty word. -/
+@[simp]
+theorem coeff_linearCombination_freeMonoid_of_one
+    (f : ι →₀ MonoidAlgebra K (FreeMonoid ι)) :
+    (Finsupp.linearCombination (MonoidAlgebra K (FreeMonoid ι))
+      (fun a : ι ↦ single (FreeMonoid.of a) (1 : K)) f).coeff 1 = 0 := by
+  classical
+  simp only [Finsupp.linearCombination_apply, smul_eq_mul, coeff_finsuppSum,
+    Finsupp.sum_apply]
+  refine Finset.sum_eq_zero fun a _ ↦
+    coeff_mul_single_of_forall_mul_ne 1 (f a) ?_
+  intro p hp
+  have hlength := congrArg FreeMonoid.length hp
+  simp only [FreeMonoid.length_mul, FreeMonoid.length_of, FreeMonoid.length_one,
+    Nat.add_one_ne_zero] at hlength
+
+/-- A polynomial is the letter-monomial linear combination of `f` exactly when
+its empty-word coefficient vanishes and its terminal-letter coefficients match `f`.
+
+These conditions characterize the output, including for an empty alphabet or a trivial
+coefficient semiring. No commutativity or finiteness assumption is needed. -/
+theorem linearCombination_freeMonoid_of_eq_iff
+    (f : ι →₀ MonoidAlgebra K (FreeMonoid ι)) (x : MonoidAlgebra K (FreeMonoid ι)) :
+    Finsupp.linearCombination (MonoidAlgebra K (FreeMonoid ι))
+      (fun a : ι ↦ single (FreeMonoid.of a) (1 : K)) f = x ↔
+      x.coeff 1 = 0 ∧ ∀ (a : ι) (w : FreeMonoid ι),
+        x.coeff (w * FreeMonoid.of a) = (f a).coeff w := by
+  constructor
+  · rintro rfl
+    exact ⟨coeff_linearCombination_freeMonoid_of_one f,
+      coeff_linearCombination_freeMonoid_of f⟩
+  · rintro ⟨h1, ht⟩
+    apply coeff_injective
+    apply Finsupp.ext
+    intro w
+    have h (z : FreeMonoid ι) :
+        (Finsupp.linearCombination (MonoidAlgebra K (FreeMonoid ι))
+          (fun a : ι ↦ single (FreeMonoid.of a) (1 : K)) f).coeff z.reverse =
+            x.coeff z.reverse := by
+      cases z using FreeMonoid.casesOn with
+      | one =>
+        have hreverse : FreeMonoid.reverse (1 : FreeMonoid ι) = 1 := rfl
+        simpa only [hreverse, coeff_linearCombination_freeMonoid_of_one] using h1.symm
+      | of_mul a z =>
+        simpa only [FreeMonoid.reverse_mul, FreeMonoid.reverse_of,
+          coeff_linearCombination_freeMonoid_of] using (ht a z.reverse).symm
+    simpa only [FreeMonoid.reverse_reverse] using h w.reverse
 
 /-- Letter monomials are linearly independent over the free-word semiring acting on the left.
 
