@@ -74,6 +74,7 @@ public import ProjectiveModules.Module.RightRegularDefect
 public import ProjectiveModules.Module.RightExtension
 public import ProjectiveModules.Module.RightExtensionComparison
 public import ProjectiveModules.Module.RightExtensionComparisonCoherence
+public import ProjectiveModules.Module.RightExtensionConjugacy
 public import ProjectiveModules.Module.RightExtensionFiniteResidue
 public import ProjectiveModules.Module.RightExtensionFree
 public import ProjectiveModules.Module.RightExtensionIdeal

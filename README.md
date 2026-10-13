@@ -302,6 +302,17 @@ the Formal Frontier source-maintainer team.
   maps, inverses and composition. The Ring tensor bridges require both index
   types finite; their `_of_decidableEq` variants use caller equality-decision
   data, not extra hypotheses on the primary constructions.
+- **Inner-conjugate right scalar extensions:** For arbitrary rings `R` and `S`,
+  homomorphisms `φ ψ : R →+* S`, and a unit `u : Sˣ` satisfying
+  `u * φ(r) = ψ(r) * u` for every `r`,
+  [`ModuleCat.RightExtension.innerLinearEquiv`](ProjectiveModules/Module/RightExtensionConjugacy.lean)
+  compares the two extensions of any right `R`-module by a right-`S`-linear
+  equivalence. It sends `m ⊗_φ s` to `m ⊗_ψ (u * s)`; its inverse uses
+  `u⁻¹`. The right target action stays fixed, including for noncentral units.
+  One-generator values characterize the entire map, and the unit `1` gives
+  the identity. Scalar and carrier universes are independent, with no
+  commutativity, finiteness or projectivity hypothesis. Matrix, zero, empty
+  and independently lifted examples distinguish the coefficient order.
 - **Right scalar-extension comparisons and coherence:** For arbitrary rings
   `R`, `S`, `T`, a right `R`-module `M`, and unital homomorphisms
   `φ : R →+* S`, `ψ : S →+* T`,
@@ -465,6 +476,7 @@ aggregate import.
 | [Product classes and K₀](ProjectiveModules/KTheory/Product.lean) | Finite Pi/binary additive equivalences along projection right extensions; module generators, group-completion and signed inverse laws; independent scalar/carrier universes, without commutativity or cancellation |
 | [Principal right ideals](ProjectiveModules/Module/RightExtensionIdeal.lean) | Arbitrary-ring image-one extension equivalence without idempotence and image-zero annihilation with idempotence; idempotent right ideals and their extensions as finite projectives over arbitrary rings |
 | [Right-extension comparisons](ProjectiveModules/Module/RightExtensionComparison.lean), [comparison coherence](ProjectiveModules/Module/RightExtensionComparisonCoherence.lean) | `ModuleCat.RightExtension.idLinearEquiv` and `compLinearEquiv`: identity/composition linear equivalences and both-direction pure-tensor API; `compLinearEquiv_id_left`, `compLinearEquiv_id_right` and `compLinearEquiv_assoc`: pointwise unit and triple-composition laws over arbitrary rings/right modules with independent universes |
+| [Inner-conjugate extensions](ProjectiveModules/Module/RightExtensionConjugacy.lean) | Fixed-right-target linear equivalence for unit-semiconjugate ring homomorphisms; ordered forward/inverse tensors, one-generator uniqueness and independent scalar/carrier universes |
 | [Commutative-base tensor comparison](ProjectiveModules/Module/RightExtensionTensorProduct.lean) | `tensorProductObj` and `tensorProductTmul` specify both scalar views; `tensorProductLinearEquiv` is module-first for `CommRing R` and arbitrary `Ring S`; `extendScalarsLinearEquiv` is scalar-first for `CommRing S`; both-direction pure tensors, tensor commutation and map naturality with independent universes |
 | [Right endomorphism matrices and coefficient transport](ProjectiveModules/Module/RightEndomorphismMatrix.lean) | Semiring coefficient transport with finite source and arbitrary target; supplied equivalences with both indices finite; column convention for square endomorphism matrices, finite-coordinate Ring tensor bridges and quasi-regular quotient unit reflection |
 | [Local projectives](ProjectiveModules/Module/LocalProjective.lean), [arbitrary local freeness](ProjectiveModules/Module/ArbitraryLocalProjectiveFree.lean), [local scalar interface](ProjectiveModules/Module/LocalRing.lean) | Finite, countable and arbitrary-rank right-module routes under proper-ideal/unit-complement hypotheses; `IsLocalRing` scalar formulation |

@@ -31,6 +31,9 @@ project:
     Right scalar-extension comparisons satisfy pointwise unit and
     triple-composition associativity laws over arbitrary rings and right
     modules, with five independent scalar and module universes.
+    A unit semiconjugating two homomorphisms of arbitrary rings induces a
+    fixed-right-target linear equivalence on their scalar extensions, with
+    left multiplication by the unit and its inverse on tensor coefficients.
     Principal right ideals over arbitrary source and target rings have an
     image-one scalar-extension equivalence without idempotence, and an
     image-zero annihilation theorem with idempotence. An idempotent right
@@ -759,6 +762,23 @@ status:
     - declaration: "ModuleCat.RightExtension.rightFreeLinearEquiv"
       file: "ProjectiveModules/Module/RightExtensionFree.lean"
       note: "Explicit scalar extension of finite standard right-free modules, including empty coordinates."
+    - declaration: "ModuleCat.RightExtension.innerLinearEquiv"
+      file: "ProjectiveModules/Module/RightExtensionConjugacy.lean"
+      note: >-
+        For arbitrary rings R and S, homomorphisms φ ψ : R →+* S, and a unit
+        u with u * φ r = ψ r * u for every r, the two extensions of any
+        right R-module are right-S-linearly equivalent. A pure tensor
+        m ⊗_φ s maps to m ⊗_ψ (u * s), with inverse coefficient u⁻¹ * s;
+        the right target action is unchanged. Scalar and carrier universes
+        are independent, without commutativity, finite generation,
+        projectivity or centrality assumptions.
+    - declaration: "ModuleCat.RightExtension.innerLinearEquiv_toLinearMap_eq_iff"
+      file: "ProjectiveModules/Module/RightExtensionConjugacy.lean"
+      note: >-
+        One-generator values characterize the entire right-linear
+        comparison. The characteristic API also gives both ordered tensor
+        formulas, source balancing, fixed right scalar action, the whole
+        inverse equivalence and the identity for the unit 1.
     - declaration: "ModuleCat.RightExtension.idLinearEquiv"
       file: "ProjectiveModules/Module/RightExtensionComparison.lean"
       note: >-
