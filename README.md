@@ -81,6 +81,14 @@ the Formal Frontier source-maintainer team.
   carrier `M →ₗ[Rᵐᵒᵖ] R`, left action `(r • f)(m) = r * f(m)` and maps given by
   precomposition. Scalar and module universes are independent; the output
   universe is their maximum.
+- **Linear maps from finite projective modules:** For semirings `A` and `S`,
+  let `M` be a finite projective `A`-module and let `N` carry commuting
+  `A`- and `S`-module structures. The
+  [linear-map closure theorems](ProjectiveModules/Module/FiniteProjectiveHom.lean)
+  give two separate conclusions: `M →ₗ[A] N` is projective over `S` when
+  `N` is projective over `S`, and finite over `S` when `N` is finite over `S`.
+  Neither conclusion requires the other target property, an `S`-action on `M`,
+  or additive groups. All scalar and carrier universes are independent.
 - **Quotient Hom and restriction kernels:** For a ring `A`, a semiring `S`
   and additive-group `A`-modules `M` and `C`, suppose `C` also has an
   `S`-module structure commuting with its `A`-action. The
