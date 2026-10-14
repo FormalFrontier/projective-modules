@@ -25,6 +25,12 @@ project:
     the equivalence. Over commutative semirings, two inverse inner-scalar
     restrictions compare it with Mathlib's Module.evalEquiv, preserving
     coefficient R and outer scalars R.
+    For commutative semirings and finitely generated projective modules with
+    additive commutative monoid structure, contraction gives a linear
+    endomorphism trace without choosing a basis. Its rank-one evaluation,
+    conjugation invariance and finite-free comparison with the finite-basis
+    trace retain independent scalar and carrier universes. On nonfree
+    projectives it need not be a natural multiple of the scalar unit.
     Over arbitrary rings, the library also describes stably-free kernels of
     surjections onto finitely generated stably-free targets, finite-coordinate
     kernel presentations and surjective right-linear matrix kernels.
@@ -250,6 +256,18 @@ status:
     identity/composition coherence or compatibility with carrier lifts.
 
   main_results:
+    - declaration: "LinearMap.traceOfFiniteProjective"
+      file: "ProjectiveModules/Module/Trace/Basic.lean"
+      note: "Linear contraction trace over a commutative semiring, for finite projective additive-commutative-monoid modules; no freeness or additive inverses."
+    - declaration: "LinearMap.traceOfFiniteProjective_smulRight"
+      file: "ProjectiveModules/Module/Trace/Basic.lean"
+      note: "Rank-one evaluation sends the endomorphism m ↦ φ m • x to φ x."
+    - declaration: "LinearMap.traceOfFiniteProjective_conj"
+      file: "ProjectiveModules/Module/Trace/Conjugation.lean"
+      note: "Invariance under linear equivalence between finite projective carriers in independent universes."
+    - declaration: "LinearMap.traceOfFiniteProjective_eq_trace"
+      file: "ProjectiveModules/Module/Trace/Comparison.lean"
+      note: "Finite-free semiring comparison with Mathlib's finite-basis trace; not a universal assertion for nonfree projectives."
     - declaration: "Module.Free.right_regular"
       file: "ProjectiveModules/Module/RightRegular.lean"
       note: "The ordinary semiring carrier is free under the canonical opposite-scalar right action; zero semirings are included."

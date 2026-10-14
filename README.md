@@ -89,6 +89,17 @@ the Formal Frontier source-maintainer team.
   Over commutative semirings, two inverse inner-scalar restrictions compare
   it with Mathlib's `Module.evalEquiv`, preserving coefficient `R` and outer
   scalars `R`.
+- **Finite-projective endomorphism trace:** For a commutative semiring `R` and
+  a finitely generated projective `R`-module `M` with additive commutative
+  monoid structure,
+  [`LinearMap.traceOfFiniteProjective R M`](ProjectiveModules/Module/Trace.lean)
+  is the linear contraction trace, without a basis or additive inverses.
+  It evaluates a rank-one map `φ.smulRight x` to `φ x`, is invariant under
+  linear equivalences across independent carrier universes, and agrees with
+  Mathlib's finite-basis trace on finite free modules. This agreement is not
+  asserted on every nonfree projective: the identity of the ideal generated
+  by `(1, 0)` over `ℕ × ℕ` has contraction trace `(1, 0)`, which is nonzero
+  and is not a natural multiple of the scalar unit.
 - **Right-module categorical dual:** For a fixed arbitrary ring `R`,
   [`ModuleCat.rightDual`](ProjectiveModules/Dual/ModuleCat.lean) is the
   contravariant functor from right `R`-modules to left `R`-modules, with ordinary
