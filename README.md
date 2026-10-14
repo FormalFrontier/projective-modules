@@ -96,7 +96,13 @@ the Formal Frontier source-maintainer team.
   is the linear contraction trace, without a basis or additive inverses.
   It evaluates a rank-one map `φ.smulRight x` to `φ x`, is invariant under
   linear equivalences across independent carrier universes, and agrees with
-  Mathlib's finite-basis trace on finite free modules. This agreement is not
+  Mathlib's finite-basis trace on finite free modules. The
+  [product and block formulas](ProjectiveModules/Module/Trace/Prod.lean) give
+  the sum of factor traces on a product, the factor traces on diagonal blocks,
+  and zero on off-diagonal blocks. An arbitrary block endomorphism of a product
+  of finite-projective factors has the sum of its diagonal traces. The
+  off-diagonal statements require finite projectivity only of the product.
+  The finite-basis agreement is not
   asserted on every nonfree projective: the identity of the ideal generated
   by `(1, 0)` over `ℕ × ℕ` has contraction trace `(1, 0)`, which is nonzero
   and is not a natural multiple of the scalar unit.

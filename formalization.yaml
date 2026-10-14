@@ -31,6 +31,12 @@ project:
     conjugation invariance and finite-free comparison with the finite-basis
     trace retain independent scalar and carrier universes. On nonfree
     projectives it need not be a natural multiple of the scalar unit.
+    Product endomorphisms have the sum of their factor traces; diagonal
+    inclusion-projection blocks have the factor traces and off-diagonal blocks
+    have trace zero. An arbitrary block endomorphism of a product of finite
+    projective factors has the sum of its diagonal traces. The off-diagonal
+    formulas assume finite projectivity only of the product, without bases,
+    additive inverses or coupled carrier universes.
     Over arbitrary rings, the library also describes stably-free kernels of
     surjections onto finitely generated stably-free targets, finite-coordinate
     kernel presentations and surjective right-linear matrix kernels.
@@ -268,6 +274,24 @@ status:
     - declaration: "LinearMap.traceOfFiniteProjective_eq_trace"
       file: "ProjectiveModules/Module/Trace/Comparison.lean"
       note: "Finite-free semiring comparison with Mathlib's finite-basis trace; not a universal assertion for nonfree projectives."
+    - declaration: "LinearMap.traceOfFiniteProjective_prodMap"
+      file: "ProjectiveModules/Module/Trace/Prod.lean"
+      note: "Product endomorphisms have the sum of the factor traces over a commutative semiring, with independent scalar and factor universes."
+    - declaration: "LinearMap.traceOfFiniteProjective_inl_fst"
+      file: "ProjectiveModules/Module/Trace/Prod.lean"
+      note: "The first diagonal inclusion-projection block has the trace of its factor endomorphism."
+    - declaration: "LinearMap.traceOfFiniteProjective_inr_snd"
+      file: "ProjectiveModules/Module/Trace/Prod.lean"
+      note: "The second diagonal inclusion-projection block has the trace of its factor endomorphism."
+    - declaration: "LinearMap.traceOfFiniteProjective_inl_snd"
+      file: "ProjectiveModules/Module/Trace/Prod.lean"
+      note: "The upper off-diagonal block has trace zero, assuming finite projectivity only of the product."
+    - declaration: "LinearMap.traceOfFiniteProjective_inr_fst"
+      file: "ProjectiveModules/Module/Trace/Prod.lean"
+      note: "The lower off-diagonal block has trace zero, assuming finite projectivity only of the product."
+    - declaration: "LinearMap.traceOfFiniteProjective_coprod_prod"
+      file: "ProjectiveModules/Module/Trace/Prod.lean"
+      note: "An arbitrary block endomorphism of a product of finite projective factors has the sum of its diagonal traces over a commutative semiring, with independent scalar and factor universes."
     - declaration: "Module.Free.right_regular"
       file: "ProjectiveModules/Module/RightRegular.lean"
       note: "The ordinary semiring carrier is free under the canonical opposite-scalar right action; zero semirings are included."
