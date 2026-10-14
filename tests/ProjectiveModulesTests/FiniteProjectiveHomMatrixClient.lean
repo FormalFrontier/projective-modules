@@ -153,6 +153,11 @@ theorem matrixInclusion_right_product_not_linear :
   rw [intE11_isIdempotent.eq, intE11_mul_e01]
   exact Ne.symm intE01_ne_zero
 
+-- Test registration directly on the existing genuinely nonfree source;
+-- the named-producer compatibility control below remains separate.
+example : Module.Finite IntMatrix
+    (matrixRightIdeal →ₗ[IntMatrixᵐᵒᵖ] IntMatrix) := inferInstance
+
 /-- The right-linear Hom is finite projective and nonzero under its canonical
 left matrix action, while its finite-projective source is nonzero and nonfree.
 The two Hom closure properties use the projectivity and finiteness theorems

@@ -28,6 +28,7 @@ public import ProjectiveModules.Free.FreeWordAugmentationKernel
 public import ProjectiveModules.Free.InfiniteCoordinates
 public import ProjectiveModules.Free.InvariantBasisNumber
 public import ProjectiveModules.Free.FiniteFreeSummand
+public import ProjectiveModules.Free.LinearMap
 public import ProjectiveModules.Free.Semisimple
 public import ProjectiveModules.Free.StablePresentation
 public import ProjectiveModules.Free.StableKernel

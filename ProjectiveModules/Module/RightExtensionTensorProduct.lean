@@ -22,8 +22,10 @@ and `φ` is not the identity.
 `S`-action is transported through `TensorProduct.comm` from right
 multiplication on the coefficient factor. Thus `op t • (m ⊗ s) = m ⊗ (s * t)`.
 `tensorProductTmul` specifies these pure tensors using the two bundled module
-structures. No right action on `M` by `S`, finite generation or projectivity is
-required. The coefficient actions commute by associativity, using
+structures. `tensorFunctor` maps morphisms by Mathlib's tensor map on the
+source factor and the identity on the coefficient factor, bundled as a
+right-linear map using this action. No right action on `M` by `S`, finite
+generation or projectivity is required. The coefficient actions commute by associativity, using
 `ModuleCat.RightExtension.smulCommClass`; no additional commuting-action
 hypothesis or `Algebra R S` structure is imposed.
 
@@ -39,8 +41,10 @@ Both one-step extension carriers live in `max uM uS`, independently of `uR`;
 these pointwise linear equivalences require no `ULift`. Morphism naturality
 uses the common carrier universe of `ModuleCat` morphisms. Packaging at a
 separately prescribed larger universe requires carrier lifts, for example
-`ModuleCat.uliftFunctor`. No natural isomorphism, identity/composition coherence
-or statement about algebraic K-theory is supplied here.
+`ModuleCat.uliftFunctor`. The tensor functor satisfies the categorical
+identity and composition laws. No natural isomorphism, ring-homomorphism
+coherence or statement about
+algebraic K-theory is supplied here.
 
 ## Formalization references
 
@@ -200,6 +204,241 @@ theorem tensorProductObj_smul_tmul (M : ModuleCat.{uM} Rᵐᵒᵖ)
     _ = @TensorProduct.tmul R _ M S _ _ sourceModule coefficientModule m (s * t) := by
       rw [TensorProduct.comm_tmul, TensorProduct.smul_tmul', TensorProduct.comm_symm_tmul]
       rfl
+
+/-- Right-linear maps out of the tensor object are determined by pure tensors.
+The target need not carry an action of the base ring. -/
+theorem tensorProduct_hom_ext (M : ModuleCat.{uM} Rᵐᵒᵖ)
+    {P : Type*} [AddCommMonoid P] [Module Sᵐᵒᵖ P]
+    {f g : tensorProductObj φ M →ₗ[Sᵐᵒᵖ] P}
+    (h : ∀ m s, f (tensorProductTmul φ M m s) = g (tensorProductTmul φ M m s)) :
+    f = g := by
+  let sourceRCat :=
+    (ModuleCat.restrictScalars (RingEquiv.toOpposite R).toRingHom).obj M
+  let coefficientRCat := (ModuleCat.restrictScalars φ).obj (ModuleCat.of S S)
+  apply LinearMap.ext
+  intro x
+  refine @TensorProduct.inductionOn R _ sourceRCat coefficientRCat
+    sourceRCat.isAddCommGroup.toAddCommMonoid
+    coefficientRCat.isAddCommGroup.toAddCommMonoid
+    sourceRCat.isModule coefficientRCat.isModule (fun y ↦ f y = g y) x ?_ ?_
+  · exact h
+  · intro y z hy hz
+    exact (f.map_add y z).trans
+      ((congrArg₂ (fun a b : P ↦ a + b) hy hz).trans (g.map_add y z).symm)
+
+/-- Tensor extension of a source morphism, linear for the right action on the
+coefficient factor. Its underlying function is Mathlib's tensor map, with the
+identity on the coefficient module restricted along `φ`. -/
+noncomputable def tensorProductMap {M N : ModuleCat.{uM} Rᵐᵒᵖ} (g : M ⟶ N) :
+    tensorProductObj φ M →ₗ[Sᵐᵒᵖ] tensorProductObj φ N := by
+  let sourceRCat :=
+    (ModuleCat.restrictScalars (RingEquiv.toOpposite R).toRingHom).obj M
+  let targetRCat :=
+    (ModuleCat.restrictScalars (RingEquiv.toOpposite R).toRingHom).obj N
+  let coefficientRCat := (ModuleCat.restrictScalars φ).obj (ModuleCat.of S S)
+  let sourceMap : sourceRCat →ₗ[R] targetRCat :=
+    ((ModuleCat.restrictScalars (RingEquiv.toOpposite R).toRingHom).map g).hom
+  let coefficientId := @LinearMap.id R coefficientRCat _ _ coefficientRCat.isModule
+  let tensorMap := @TensorProduct.map R R _ _ (RingHom.id R)
+    sourceRCat coefficientRCat targetRCat coefficientRCat
+    sourceRCat.isAddCommGroup.toAddCommMonoid
+    coefficientRCat.isAddCommGroup.toAddCommMonoid
+    targetRCat.isAddCommGroup.toAddCommMonoid
+    coefficientRCat.isAddCommGroup.toAddCommMonoid
+    sourceRCat.isModule coefficientRCat.isModule
+    targetRCat.isModule coefficientRCat.isModule sourceMap coefficientId
+  have pure (m : M) (s : S) :
+      tensorMap (tensorProductTmul φ M m s) = tensorProductTmul φ N (g m) s :=
+    @TensorProduct.map_tmul R R _ _ (RingHom.id R)
+      sourceRCat coefficientRCat targetRCat coefficientRCat
+      sourceRCat.isAddCommGroup.toAddCommMonoid
+      coefficientRCat.isAddCommGroup.toAddCommMonoid
+      targetRCat.isAddCommGroup.toAddCommMonoid
+      coefficientRCat.isAddCommGroup.toAddCommMonoid
+      sourceRCat.isModule coefficientRCat.isModule
+      targetRCat.isModule coefficientRCat.isModule sourceMap coefficientId m s
+  refine { toFun := tensorMap, map_add' := tensorMap.map_add, map_smul' := ?_ }
+  intro t x
+  refine @TensorProduct.inductionOn R _ M S
+    sourceRCat.isAddCommGroup.toAddCommMonoid
+    coefficientRCat.isAddCommGroup.toAddCommMonoid
+    sourceRCat.isModule coefficientRCat.isModule
+    (fun y ↦ tensorMap
+        (@SMul.smul Sᵐᵒᵖ (tensorProductObj φ M)
+          (tensorProductObj φ M).isModule.toSMul t y) =
+      @SMul.smul Sᵐᵒᵖ (tensorProductObj φ N)
+        (tensorProductObj φ N).isModule.toSMul t (tensorMap y)) x ?_ ?_
+  · intro m s
+    have sourceAction :
+        @SMul.smul Sᵐᵒᵖ (tensorProductObj φ M)
+          (tensorProductObj φ M).isModule.toSMul t (tensorProductTmul φ M m s) =
+        tensorProductTmul φ M m (s * MulOpposite.unop t) := by
+      simpa only [MulOpposite.op_unop] using
+        tensorProductObj_smul_tmul φ M m s (MulOpposite.unop t)
+    have targetAction :
+        @SMul.smul Sᵐᵒᵖ (tensorProductObj φ N)
+          (tensorProductObj φ N).isModule.toSMul t (tensorProductTmul φ N (g m) s) =
+        tensorProductTmul φ N (g m) (s * MulOpposite.unop t) := by
+      simpa only [MulOpposite.op_unop] using
+        tensorProductObj_smul_tmul φ N (g m) s (MulOpposite.unop t)
+    exact (congrArg tensorMap sourceAction).trans
+      ((pure m (s * MulOpposite.unop t)).trans
+        (targetAction.symm.trans
+          (congrArg (@SMul.smul Sᵐᵒᵖ (tensorProductObj φ N)
+            (tensorProductObj φ N).isModule.toSMul t) (pure m s).symm)))
+  · intro y z hy hz
+    exact (congrArg tensorMap
+      (@DistribMulAction.smul_add Sᵐᵒᵖ (tensorProductObj φ M) _
+        (tensorProductObj φ M).isAddCommGroup.toAddCommMonoid.toAddMonoid
+        (tensorProductObj φ M).isModule.toDistribMulAction t y z)).trans
+      ((tensorMap.map_add _ _).trans
+        ((congrArg₂ (fun a b : tensorProductObj φ N ↦ a + b) hy hz).trans
+          ((@DistribMulAction.smul_add Sᵐᵒᵖ (tensorProductObj φ N) _
+            (tensorProductObj φ N).isAddCommGroup.toAddCommMonoid.toAddMonoid
+            (tensorProductObj φ N).isModule.toDistribMulAction t
+            (tensorMap y) (tensorMap z)).symm.trans
+            (congrArg (@SMul.smul Sᵐᵒᵖ (tensorProductObj φ N)
+              (tensorProductObj φ N).isModule.toSMul t) (tensorMap.map_add y z).symm))))
+
+/-- Tensor extension of a morphism is Mathlib's tensor map for the specified
+source and coefficient actors. -/
+theorem tensorProductMap_apply {M N : ModuleCat.{uM} Rᵐᵒᵖ} (g : M ⟶ N)
+    (x : tensorProductObj φ M) :
+    tensorProductMap φ g x =
+      @TensorProduct.map R R _ _ (RingHom.id R)
+        ((ModuleCat.restrictScalars (RingEquiv.toOpposite R).toRingHom).obj M)
+        ((ModuleCat.restrictScalars φ).obj (ModuleCat.of S S))
+        ((ModuleCat.restrictScalars (RingEquiv.toOpposite R).toRingHom).obj N)
+        ((ModuleCat.restrictScalars φ).obj (ModuleCat.of S S)) _ _ _ _
+        ((ModuleCat.restrictScalars (RingEquiv.toOpposite R).toRingHom).obj M).isModule
+        ((ModuleCat.restrictScalars φ).obj (ModuleCat.of S S)).isModule
+        ((ModuleCat.restrictScalars (RingEquiv.toOpposite R).toRingHom).obj N).isModule
+        ((ModuleCat.restrictScalars φ).obj (ModuleCat.of S S)).isModule
+        ((ModuleCat.restrictScalars (RingEquiv.toOpposite R).toRingHom).map g).hom
+        (@LinearMap.id R ((ModuleCat.restrictScalars φ).obj (ModuleCat.of S S)) _ _
+          ((ModuleCat.restrictScalars φ).obj (ModuleCat.of S S)).isModule) x := rfl
+
+/-- Tensor extension applies the source morphism to the first factor. -/
+@[simp]
+theorem tensorProductMap_tmul {M N : ModuleCat.{uM} Rᵐᵒᵖ}
+    (g : M ⟶ N) (m : M) (s : S) :
+    tensorProductMap φ g (tensorProductTmul φ M m s) =
+      tensorProductTmul φ N (g m) s := by
+  let sourceRCat :=
+    (ModuleCat.restrictScalars (RingEquiv.toOpposite R).toRingHom).obj M
+  let targetRCat :=
+    (ModuleCat.restrictScalars (RingEquiv.toOpposite R).toRingHom).obj N
+  let coefficientRCat := (ModuleCat.restrictScalars φ).obj (ModuleCat.of S S)
+  rw [tensorProductMap_apply]
+  exact @TensorProduct.map_tmul R R _ _ (RingHom.id R)
+    sourceRCat coefficientRCat targetRCat coefficientRCat
+    sourceRCat.isAddCommGroup.toAddCommMonoid
+    coefficientRCat.isAddCommGroup.toAddCommMonoid
+    targetRCat.isAddCommGroup.toAddCommMonoid
+    coefficientRCat.isAddCommGroup.toAddCommMonoid
+    sourceRCat.isModule coefficientRCat.isModule
+    targetRCat.isModule coefficientRCat.isModule
+    ((ModuleCat.restrictScalars (RingEquiv.toOpposite R).toRingHom).map g).hom
+    (@LinearMap.id R coefficientRCat _ _ coefficientRCat.isModule) m s
+
+/-- Tensor extension of the identity is the identity right-linear map. -/
+@[simp]
+theorem tensorProductMap_id (M : ModuleCat.{uM} Rᵐᵒᵖ) :
+    tensorProductMap φ (𝟙 M) = LinearMap.id := by
+  apply tensorProduct_hom_ext φ M
+  intro m s
+  simp only [tensorProductMap_tmul, ModuleCat.id_apply, LinearMap.id_apply]
+
+/-- Tensor extension respects composition of source morphisms. -/
+theorem tensorProductMap_comp {M N P : ModuleCat.{uM} Rᵐᵒᵖ}
+    (g : M ⟶ N) (h : N ⟶ P) :
+    tensorProductMap φ (g ≫ h) = (tensorProductMap φ h).comp (tensorProductMap φ g) := by
+  apply tensorProduct_hom_ext φ M
+  intro m s
+  simp only [tensorProductMap_tmul, LinearMap.comp_apply, ModuleCat.comp_apply]
+
+/-- Tensor extension of right modules over a commutative base ring.
+The morphism map is the tensor product of the opposite-restricted source map
+and the identity of the coefficient module restricted along `φ`. -/
+noncomputable def tensorFunctor : ModuleCat.{uM} Rᵐᵒᵖ ⥤
+    ModuleCat.{max uM uS} Sᵐᵒᵖ where
+  obj := tensorProductObj φ
+  map {M N} g := ModuleCat.ofHom
+    (X := tensorProductObj φ M) (Y := tensorProductObj φ N) (tensorProductMap φ g)
+  map_id M := by
+    apply ModuleCat.hom_ext
+    change tensorProductMap φ (𝟙 M) = LinearMap.id
+    apply tensorProduct_hom_ext φ M
+    intro m s
+    simp only [tensorProductMap_tmul, ModuleCat.id_apply, LinearMap.id_apply]
+  map_comp {M N P} g h := by
+    apply ModuleCat.hom_ext
+    change tensorProductMap φ (g ≫ h) =
+      (tensorProductMap φ h).comp (tensorProductMap φ g)
+    apply tensorProduct_hom_ext φ M
+    intro m s
+    simp only [tensorProductMap_tmul, LinearMap.comp_apply, ModuleCat.comp_apply]
+
+/-- Tensor extension uses the module-first tensor object. -/
+@[simp]
+theorem tensorFunctor_obj (M : ModuleCat.{uM} Rᵐᵒᵖ) :
+    (tensorFunctor φ).obj M = tensorProductObj φ M := rfl
+
+/-- The right-linear map underlying a tensor-functor morphism is tensor
+extension of the source morphism. -/
+@[simp]
+theorem tensorFunctor_map_hom {M N : ModuleCat.{uM} Rᵐᵒᵖ} (g : M ⟶ N) :
+    ((tensorFunctor φ).map g).hom = tensorProductMap φ g := rfl
+
+/-- Tensor extension of a morphism is Mathlib's tensor map for the specified
+source and coefficient actors. -/
+theorem tensorFunctor_map_apply {M N : ModuleCat.{uM} Rᵐᵒᵖ} (g : M ⟶ N)
+    (x : (tensorFunctor φ).obj M) :
+    (tensorFunctor φ).map g x =
+      @TensorProduct.map R R _ _ (RingHom.id R)
+        ((ModuleCat.restrictScalars (RingEquiv.toOpposite R).toRingHom).obj M)
+        ((ModuleCat.restrictScalars φ).obj (ModuleCat.of S S))
+        ((ModuleCat.restrictScalars (RingEquiv.toOpposite R).toRingHom).obj N)
+        ((ModuleCat.restrictScalars φ).obj (ModuleCat.of S S)) _ _ _ _
+        ((ModuleCat.restrictScalars (RingEquiv.toOpposite R).toRingHom).obj M).isModule
+        ((ModuleCat.restrictScalars φ).obj (ModuleCat.of S S)).isModule
+        ((ModuleCat.restrictScalars (RingEquiv.toOpposite R).toRingHom).obj N).isModule
+        ((ModuleCat.restrictScalars φ).obj (ModuleCat.of S S)).isModule
+        ((ModuleCat.restrictScalars (RingEquiv.toOpposite R).toRingHom).map g).hom
+        (@LinearMap.id R ((ModuleCat.restrictScalars φ).obj (ModuleCat.of S S)) _ _
+          ((ModuleCat.restrictScalars φ).obj (ModuleCat.of S S)).isModule) x := by
+  change ((tensorFunctor φ).map g).hom x = _
+  rw [tensorFunctor_map_hom]
+  exact tensorProductMap_apply φ g x
+
+/-- Tensor extension applies the source morphism to the first factor. -/
+@[simp]
+theorem tensorFunctor_map_tmul {M N : ModuleCat.{uM} Rᵐᵒᵖ}
+    (g : M ⟶ N) (m : M) (s : S) :
+    (tensorFunctor φ).map g (tensorProductTmul φ M m s) =
+      tensorProductTmul φ N (g m) s := by
+  change ((tensorFunctor φ).map g).hom (tensorProductTmul φ M m s) = _
+  rw [tensorFunctor_map_hom]
+  exact tensorProductMap_tmul φ g m s
+
+/-- Tensor extension of the identity fixes every element of the tensor object. -/
+@[simp]
+theorem tensorFunctor_map_id_apply (M : ModuleCat.{uM} Rᵐᵒᵖ)
+    (x : tensorProductObj φ M) :
+    (tensorFunctor φ).map (𝟙 M) x = x := by
+  exact (congrArg (fun f : (tensorFunctor φ).obj M ⟶ (tensorFunctor φ).obj M ↦ f x)
+    ((tensorFunctor φ).map_id M)).trans
+      (ModuleCat.id_apply ((tensorFunctor φ).obj M) x)
+
+/-- Composition of tensor-functor morphisms acts by successive application
+on the module-first tensor carrier. -/
+theorem tensorFunctor_map_comp_apply {M N P : ModuleCat.{uM} Rᵐᵒᵖ}
+    (g : M ⟶ N) (h : N ⟶ P) (x : tensorProductObj φ M) :
+    (tensorFunctor φ).map (g ≫ h) x =
+      (tensorFunctor φ).map h ((tensorFunctor φ).map g x) := by
+  exact (congrArg (fun f : (tensorFunctor φ).obj M ⟶ (tensorFunctor φ).obj P ↦ f x)
+    ((tensorFunctor φ).map_comp g h)).trans
+      (ModuleCat.comp_apply ((tensorFunctor φ).map g) ((tensorFunctor φ).map h) x)
 
 /-- Right scalar extension agrees with the module-first Mathlib tensor product
 over a commutative base, with the canonical right action on the coefficient. -/

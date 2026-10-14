@@ -221,6 +221,17 @@ the Formal Frontier source-maintainer team.
   them. Classification by rank concerns the explicit
   [componentwise-free finite-projective class](ProjectiveModules/Module/ComponentwiseFree.lean),
   not every finite projective.
+- **Free and finite linear-map modules:** Let `A` and `S` be semirings and
+  `M` and `N` additive commutative monoids. Assume `M` is a finite free
+  `A`-module and `N` has commuting `A`- and `S`-module actions
+  (`SMulCommClass A S N`).
+  [`Module.Free.linearMap_of_finite`](ProjectiveModules/Free/LinearMap.lean)
+  makes `M →ₗ[A] N` free over `S` when `N` is free over `S`, without
+  requiring `N` to be finite. Independently,
+  [`Module.Finite.linearMap_of_projective`](ProjectiveModules/Module/FiniteProjectiveHom.lean)
+  makes it finite over `S` when `N` is finite over `S`, without requiring
+  `N` to be free. No `S`-action on `M`, scalar commutativity, nontriviality
+  or rank condition is assumed; all four types may inhabit independent universes.
 - **Bounded free-module endpoints:** A finite coordinate summand can be
   cancelled from a [countably free product](ProjectiveModules/Free/CountableCancellation.lean),
   and the countably free module
@@ -480,6 +491,7 @@ aggregate import.
 | [Bidual evaluation](ProjectiveModules/Module/Bidual.lean) | Ordinary-coefficient bidual equivalence for finite projective semiring modules; forward/inverse evaluation, naturality and coefficient-preserving commutative comparison |
 | [Exterior algebra](ProjectiveModules/ExteriorAlgebra/BaseChange.lean), [exterior powers](ProjectiveModules/ExteriorPower/DirectSum.lean) | Full algebra base change; projective powers, determinants/top powers and binary fixed-degree Sum Formula |
 | [Free modules](ProjectiveModules/Free/CountableCancellation.lean), [infinite coordinates](ProjectiveModules/Free/InfiniteCoordinates.lean), [rank conditions](ProjectiveModules/Free/InvariantBasisNumber.lean) | Countable cancellation/absorption; finite stably-free semisimple endpoint; infinite basis cardinality and free-coordinate classification without IBN; semiring-homomorphism pullbacks of rank condition and IBN |
+| [Linear-map modules](ProjectiveModules/Free/LinearMap.lean) | Finite free semiring source and commuting target actions; independent freeness and finiteness conclusions for Hom over the outer semiring, with independent universes and chosen-basis inverse factorization |
 | [Free-word semirings](ProjectiveModules/Free/FreeWordAlgebra.lean) | Rank-two to rank-one left-linear injection by distinct right suffixes and strong-rank obstruction; arbitrary semiring coefficients and alphabet |
 | [Free-word augmentation](ProjectiveModules/Free/FreeWordAugmentation.lean), [augmentation kernel](ProjectiveModules/Free/FreeWordAugmentationKernel.lean) | Zero-generator homomorphism returns the empty-word coefficient; full-letter left-linear combination has range equal to its canonical semilinear kernel, for arbitrary semiring coefficients and independent alphabet universe |
 | [Fixed-simple multiplicity](ProjectiveModules/Module/IsotypicMultiplicity.lean) | Hom-dimension cardinal of a semisimple isotypic module, direct-sum cardinal statements and invariance under compatible linear or chosen-ring semilinear equivalences, with universe lifts |
@@ -518,6 +530,17 @@ links the historical generated [API](docs/API.md) and
 [Noetherian guide](docs/NoetherianSubmodule.md).
 
 ## Mathematical scope
+
+The [linear-map interface](ProjectiveModules/Free/LinearMap.lean) uses Mathlib's
+existing `(Module.Free.chooseBasis A M).constr S` universal-property
+equivalence, allowing independent scalar and module universes.
+`Module.Free.constr_symm_eq_repr_congrLeft_lsum` identifies its inverse with
+the composition of the chosen basis's `repr.congrLeft N S`,
+`(Finsupp.lsum S).symm` and the pointwise equivalences
+`LinearMap.ringLmapEquivSelf A S N`. This equality needs `M` free over `A`
+but not finite, and does not require `N` to be free or finite. The existing
+`Module.Free.constr` is definitionally the same producer when its outer-scalar
+and target-module universe constraints fit.
 
 The [zero-generator augmentation](ProjectiveModules/Free/FreeWordAugmentation.lean)
 `ε₀ = MonoidAlgebra.freeMonoidAugmentation K α` maps the free-word semiring

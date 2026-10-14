@@ -184,6 +184,18 @@ theorem coefficient_finite_projective :
       (ULift.moduleEquiv : ULift.{uN} IntMatrix ≃ₗ[ULift.{uS} IntMatrix] IntMatrix).symm
   exact ⟨Module.Finite.equiv e, Module.Projective.of_equiv' e⟩
 
+-- Direct registration probe with the existing inner/outer/commuting actors.
+-- Only the three prerequisite properties are installed, not Hom finiteness.
+example : Module.Finite (ULift.{uS} IntMatrix)
+    (matrixIdealSource.{uA, uM} →ₗ[(ULift.{uA} IntMatrix)ᵐᵒᵖ] ULift.{uN} IntMatrix) := by
+  letI : Module.Finite (ULift.{uA} IntMatrix)ᵐᵒᵖ matrixIdealSource.{uA, uM} :=
+    matrixIdealSource_finite_projective.{uA, uM}.1
+  letI : Module.Projective (ULift.{uA} IntMatrix)ᵐᵒᵖ matrixIdealSource.{uA, uM} :=
+    matrixIdealSource_finite_projective.{uA, uM}.2
+  letI : Module.Finite (ULift.{uS} IntMatrix) (ULift.{uN} IntMatrix) :=
+    coefficient_finite_projective.{uS, uN}.1
+  exact inferInstance
+
 private theorem hom_finite_projective :
     Module.Projective (ULift.{uS} IntMatrix)
         (matrixIdealSource.{uA, uM} →ₗ[(ULift.{uA} IntMatrix)ᵐᵒᵖ] ULift.{uN} IntMatrix) ∧
@@ -297,6 +309,18 @@ theorem idealInclusion_movement :
         idealInclusion_generator.{uA, uM, uN})
   exact intE11_proper_generator.1 (congrArg ULift.down hv.symm)
 
+-- A direct inference test at (uA, uS, uM, uN) = (1, 2, 0, 3),
+-- independent of the named-producer controls below.
+example : Module.Finite (ULift.{2} IntMatrix)
+    (matrixIdealSource.{1, 0} →ₗ[(ULift.{1} IntMatrix)ᵐᵒᵖ] ULift.{3} IntMatrix) := by
+  letI : Module.Finite (ULift.{1} IntMatrix)ᵐᵒᵖ matrixIdealSource.{1, 0} :=
+    matrixIdealSource_finite_projective.{1, 0}.1
+  letI : Module.Projective (ULift.{1} IntMatrix)ᵐᵒᵖ matrixIdealSource.{1, 0} :=
+    matrixIdealSource_finite_projective.{1, 0}.2
+  letI : Module.Finite (ULift.{2} IntMatrix) (ULift.{3} IntMatrix) :=
+    coefficient_finite_projective.{2, 3}.1
+  exact inferInstance
+
 /-- Inner scalars in universe one act on a universe-zero nonfree source;
 outer scalars and coefficients occupy universes two and three. -/
 theorem higher_inner_scalar_control :
@@ -323,6 +347,18 @@ theorem higher_inner_scalar_control :
     idealInclusion_nonzero_nonfree.{1, 0, 3}.2.1, idealInclusion_left_order.{1, 2, 0, 3}.1,
     idealInclusion_left_order.{1, 2, 0, 3}.2.1, idealInclusion_left_order.{1, 2, 0, 3}.2.2.1,
     idealInclusion_movement.{1, 2, 0, 3}.1, idealInclusion_movement.{1, 2, 0, 3}.2⟩
+
+-- Reverse the independent heights to (uA, uS, uM, uN) = (0, 1, 3, 2)
+-- and ask inference directly again, without a Hom-finite witness.
+example : Module.Finite (ULift.{1} IntMatrix)
+    (matrixIdealSource.{0, 3} →ₗ[(ULift.{0} IntMatrix)ᵐᵒᵖ] ULift.{2} IntMatrix) := by
+  letI : Module.Finite (ULift.{0} IntMatrix)ᵐᵒᵖ matrixIdealSource.{0, 3} :=
+    matrixIdealSource_finite_projective.{0, 3}.1
+  letI : Module.Projective (ULift.{0} IntMatrix)ᵐᵒᵖ matrixIdealSource.{0, 3} :=
+    matrixIdealSource_finite_projective.{0, 3}.2
+  letI : Module.Finite (ULift.{1} IntMatrix) (ULift.{2} IntMatrix) :=
+    coefficient_finite_projective.{1, 2}.1
+  exact inferInstance
 
 /-- A universe-three nonfree source maps to a universe-two coefficient;
 its inner and outer scalar rings occupy universes zero and one. -/

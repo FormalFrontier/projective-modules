@@ -159,7 +159,7 @@ finite row and column index types in place of the source's finite coordinate
 sets, and expresses its right-module map using the opposite ring. -/
 theorem finite_isStablyFree_ker_mulVecBilin_of_surjective
     {R : Type uR} [Ring R]
-    {ι : Type uι} {κ : Type uκ} [Fintype ι] [Fintype κ]
+    {ι : Type uι} {κ : Type uκ} [Finite ι] [Fintype κ]
     (A : Matrix ι κ R)
     (hA : Function.Surjective (Matrix.mulVecBilin R Rᵐᵒᵖ A)) :
     Module.Finite Rᵐᵒᵖ (LinearMap.ker (Matrix.mulVecBilin R Rᵐᵒᵖ A)) ∧

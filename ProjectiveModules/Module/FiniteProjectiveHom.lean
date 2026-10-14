@@ -83,7 +83,7 @@ form a finite `S`-module, when the two actions on the target commute.
 The `S`-action is pointwise; no projectivity over `S` is required of the target.
 The finite-free splitting, finite-product Hom identification and finite
 retract argument follow Mathlib's finitely generated module formalization. -/
-theorem Module.Finite.linearMap_of_projective
+instance (priority := 100) Module.Finite.linearMap_of_projective
     (A : Type uA) (S : Type uS) (M : Type uM) (N : Type uN)
     [Semiring A] [Semiring S]
     [AddCommMonoid M] [AddCommMonoid N]

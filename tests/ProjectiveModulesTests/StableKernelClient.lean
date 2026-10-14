@@ -13,9 +13,10 @@ import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 # Stably free kernel clients
 
 Coordinate projections, a rectangular integer matrix, empty targets, and a
-noncommutative matrix ring exercise the finite-kernel statements. Infinite free
-coordinates distinguish the general surjection theorem from its finite-domain
-specialization.
+noncommutative matrix ring exercise the finite-kernel statements. An abstract
+row reindexing of the integer matrix consumes the propositional `Finite`
+interface and retains a nonzero kernel vector. Infinite free coordinates
+distinguish the general surjection theorem from its finite-domain specialization.
 -/
 
 namespace ProjectiveModulesTests
@@ -101,6 +102,37 @@ private theorem integer_rectangular_kernel_nonzero :
   fin_cases row <;>
     simp [integerRectangularMatrix, Matrix.mulVecBilin_apply,
       Matrix.mulVec, dotProduct, Fin.sum_univ_succ]
+
+private theorem finite_row_reindex_integer_rectangular_kernel
+    {ι : Type*} [Finite ι] (e : ι ≃ Fin 2) :
+    Module.Finite ℤᵐᵒᵖ
+      (LinearMap.ker (Matrix.mulVecBilin ℤ ℤᵐᵒᵖ
+        (integerRectangularMatrix.submatrix e (Equiv.refl (Fin 3))))) ∧
+    Module.IsStablyFree ℤᵐᵒᵖ
+      (LinearMap.ker (Matrix.mulVecBilin ℤ ℤᵐᵒᵖ
+        (integerRectangularMatrix.submatrix e (Equiv.refl (Fin 3))))) ∧
+    ∃ x : LinearMap.ker (Matrix.mulVecBilin ℤ ℤᵐᵒᵖ
+        (integerRectangularMatrix.submatrix e (Equiv.refl (Fin 3)))),
+      (x : Fin 3 → ℤ) 2 = 1 := by
+  have hsurj : Function.Surjective
+      (Matrix.mulVecBilin ℤ ℤᵐᵒᵖ
+        (integerRectangularMatrix.submatrix e (Equiv.refl (Fin 3)))) := by
+    intro y
+    obtain ⟨v, hv⟩ := integerRectangularMatrix_surjective (y ∘ e.symm)
+    refine ⟨v, ?_⟩
+    funext row
+    rw [Matrix.mulVecBilin_apply, Matrix.submatrix_mulVec_equiv]
+    simpa [Matrix.mulVecBilin_apply] using congrFun hv (e row)
+  obtain ⟨hfinite, hstable⟩ :=
+    Matrix.finite_isStablyFree_ker_mulVecBilin_of_surjective
+      (integerRectangularMatrix.submatrix e (Equiv.refl (Fin 3))) hsurj
+  refine ⟨hfinite, hstable, ?_⟩
+  obtain ⟨v, hv⟩ := integer_rectangular_kernel_nonzero
+  refine ⟨⟨(v : Fin 3 → ℤ), ?_⟩, hv⟩
+  have hker := LinearMap.mem_ker.mp v.property
+  funext row
+  rw [Matrix.mulVecBilin_apply, Matrix.submatrix_mulVec_equiv]
+  exact congrFun hker (e row)
 
 private theorem integer_product_splitter_kernel_axis :
     ∃ k : LinearMap.ker (LinearMap.fst ℤ ℤ ℤ),

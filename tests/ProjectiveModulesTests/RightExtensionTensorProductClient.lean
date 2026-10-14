@@ -27,8 +27,12 @@ underlying carrier.
 
 Zero modules, zero coefficients and an all-zero example use unital ring
 homomorphisms. Source scalars, coefficient scalars and module carriers are lifted
-independently. The categorical examples use the specified Mathlib object and
-maps, not a second change-of-rings construction.
+independently. The categorical examples use the module-first tensor functor,
+including its identity and composition laws, and the specified Mathlib object
+and maps.
+The direct tensor morphism moves the modulo-five unit from coefficient one
+to coefficient two. The existing pointwise comparison independently identifies
+it with right extension of the doubling morphism.
 
 The integer matrix type is the public provider in
 `RightFreeScalarExtensionClient`. Nonzero extended coordinates use this
@@ -48,6 +52,52 @@ namespace ProjectiveModulesTests.RightExtensionTensorProduct
 
 open CategoryTheory ModuleCat.RightExtension
 open scoped TensorProduct
+
+private theorem tensorFunctor_map_right_action
+    {R : Type uR} {S : Type uS} [CommRing R] [Ring S]
+    (φ : R →+* S) {M N : ModuleCat.{uM} Rᵐᵒᵖ}
+    (g : M ⟶ N) (m : M) (s t : S) :
+    (tensorFunctor φ).map g
+        (@SMul.smul Sᵐᵒᵖ (tensorProductObj φ M)
+          (tensorProductObj φ M).isModule.toSMul
+          (MulOpposite.op t) (tensorProductTmul φ M m s)) =
+      tensorProductTmul φ N (g m) (s * t) := by
+  calc
+    _ = @SMul.smul Sᵐᵒᵖ (tensorProductObj φ N)
+        (tensorProductObj φ N).isModule.toSMul (MulOpposite.op t)
+        ((tensorFunctor φ).map g (tensorProductTmul φ M m s)) :=
+      ((tensorFunctor φ).map g).hom.map_smul _ _
+    _ = tensorProductTmul φ N (g m) (s * t) := by
+      rw [tensorFunctor_map_tmul, tensorProductObj_smul_tmul]
+
+private theorem tensorFunctor_composition_right_action
+    {R : Type uR} {S : Type uS} [CommRing R] [Ring S]
+    (φ : R →+* S) {M N P : ModuleCat.{uM} Rᵐᵒᵖ}
+    (g : M ⟶ N) (h : N ⟶ P) (m : M) (s t : S) :
+    (tensorFunctor φ).map (g ≫ h)
+        (@SMul.smul Sᵐᵒᵖ (tensorProductObj φ M)
+          (tensorProductObj φ M).isModule.toSMul
+          (MulOpposite.op t) (tensorProductTmul φ M m s)) =
+      tensorProductTmul φ P (h (g m)) (s * t) := by
+  exact (tensorFunctor_map_comp_apply φ g h _).trans
+    ((congrArg (fun x : tensorProductObj φ N ↦ (tensorFunctor φ).map h x)
+      (tensorFunctor_map_right_action φ g m s t)).trans
+        (tensorFunctor_map_tmul φ h (g m) (s * t)))
+
+private theorem tensorProductMap_composition_right_action
+    {R : Type uR} {S : Type uS} [CommRing R] [Ring S]
+    (φ : R →+* S) {M N P : ModuleCat.{uM} Rᵐᵒᵖ}
+    (g : M ⟶ N) (h : N ⟶ P) (m : M) (s t : S) :
+    tensorProductMap φ (g ≫ h)
+        (@SMul.smul Sᵐᵒᵖ (tensorProductObj φ M)
+          (tensorProductObj φ M).isModule.toSMul
+          (MulOpposite.op t) (tensorProductTmul φ M m s)) =
+      tensorProductTmul φ P (h (g m)) (s * t) := by
+  exact (DFunLike.congr_fun (tensorProductMap_comp φ g h) _).trans
+    ((congrArg (tensorProductMap φ h)
+      ((congrArg (tensorProductMap φ g) (tensorProductObj_smul_tmul φ M m s t)).trans
+        (tensorProductMap_tmul φ g m (s * t)))).trans
+          (tensorProductMap_tmul φ h (g m) (s * t)))
 
 private abbrev Z := ModuleCat.of ℤᵐᵒᵖ (Fin 1 → ℤ)
 private abbrev leftZ :=
@@ -217,6 +267,76 @@ private theorem doubling_functor_agreement :
       (TensorProduct.map (M := leftZ) (N := coefficientFive) (M₂ := leftZ) (N₂ := coefficientFive)
         ((ModuleCat.restrictScalars (RingEquiv.toOpposite ℤ).toRingHom).map doubling).hom
         (@LinearMap.id ℤ coefficientFive _ _ coefficientFive.isModule)) comparison_at_unit)
+
+private theorem tensorFunctor_at_Z :
+    (tensorFunctor (algebraMap ℤ (ZMod 5))).obj Z =
+      tensorProductObj (algebraMap ℤ (ZMod 5)) Z :=
+  tensorFunctor_obj (algebraMap ℤ (ZMod 5)) Z
+
+example : reducedTensor ≠ 0 := modFive_tensor_unit_ne_zero
+
+private theorem doubling_tensorFunctor_at_unit :
+    (tensorFunctor (algebraMap ℤ (ZMod 5))).map doubling reducedTensor =
+      tensorProductTmul (algebraMap ℤ (ZMod 5)) Z sourceUnit (2 : ZMod 5) := by
+  let φ := algebraMap ℤ (ZMod 5)
+  have pure : tensorProductTmul φ Z (doubling sourceUnit) 1 =
+      tensorProductTmul φ Z sourceUnit (2 : ZMod 5) :=
+    (tensorProductTmul_add_left φ Z sourceUnit sourceUnit 1).trans
+      ((tensorProductTmul_add_right φ Z sourceUnit 1 1).symm.trans
+        (congrArg (tensorProductTmul φ Z sourceUnit) one_add_one_eq_two))
+  exact (tensorFunctor_map_tmul φ doubling sourceUnit 1).trans pure
+
+private theorem doubling_tensorFunctor_linearMap :
+    ((tensorFunctor (algebraMap ℤ (ZMod 5))).map doubling).hom =
+      LinearMap.id + LinearMap.id := by
+  rw [tensorFunctor_map_hom]
+  apply tensorProduct_hom_ext (algebraMap ℤ (ZMod 5)) Z
+  intro m s
+  calc
+    _ = tensorProductTmul (algebraMap ℤ (ZMod 5)) Z (doubling m) s :=
+      tensorProductMap_tmul (algebraMap ℤ (ZMod 5)) doubling m s
+    _ = tensorProductTmul (algebraMap ℤ (ZMod 5)) Z (m + m) s := rfl
+    _ = _ := tensorProductTmul_add_left (algebraMap ℤ (ZMod 5)) Z m m s
+
+private theorem doubling_tensorFunctor_comp_linearMap :
+    ((tensorFunctor (algebraMap ℤ (ZMod 5))).map (doubling ≫ doubling)).hom =
+      (LinearMap.id + LinearMap.id).comp (LinearMap.id + LinearMap.id) := by
+  simp only [Functor.map_comp, ModuleCat.hom_comp, doubling_tensorFunctor_linearMap]
+
+private theorem doubling_tensorFunctor_map_agreement :
+    tensorProductLinearEquiv (algebraMap ℤ (ZMod 5)) Z
+        (map (algebraMap ℤ (ZMod 5)) doubling.hom extendedUnit) =
+      (tensorFunctor (algebraMap ℤ (ZMod 5))).map doubling reducedTensor := by
+  exact doubling_tensor_agreement.trans
+    (tensorFunctor_map_apply (algebraMap ℤ (ZMod 5)) doubling reducedTensor).symm
+
+private theorem doubling_tensorFunctor_functor_agreement :
+    tensorProductLinearEquiv (algebraMap ℤ (ZMod 5)) Z
+        ((functor' (algebraMap ℤ (ZMod 5))).map doubling extendedUnit) =
+      (tensorFunctor (algebraMap ℤ (ZMod 5))).map doubling reducedTensor := by
+  exact doubling_functor_agreement.trans
+    (tensorFunctor_map_apply (algebraMap ℤ (ZMod 5)) doubling reducedTensor).symm
+
+private theorem doubling_tensorFunctor_moves_unit :
+    (tensorFunctor (algebraMap ℤ (ZMod 5))).map doubling reducedTensor ≠ reducedTensor := by
+  intro h
+  apply doubling_moves_extendedUnit
+  apply (tensorProductLinearEquiv (algebraMap ℤ (ZMod 5)) Z).injective
+  exact doubling_tensorFunctor_map_agreement.trans (h.trans comparison_at_unit.symm)
+
+private theorem tensorFunctor_identity_at_unit :
+    (tensorFunctor (algebraMap ℤ (ZMod 5))).map (𝟙 Z) reducedTensor = reducedTensor := by
+  exact tensorFunctor_map_id_apply (algebraMap ℤ (ZMod 5)) Z reducedTensor
+
+private theorem tensorFunctor_composition_at_unit :
+    (tensorFunctor (algebraMap ℤ (ZMod 5))).map (doubling ≫ doubling) reducedTensor =
+      (tensorFunctor (algebraMap ℤ (ZMod 5))).map doubling
+        ((tensorFunctor (algebraMap ℤ (ZMod 5))).map doubling reducedTensor) := by
+  exact tensorFunctor_map_comp_apply (algebraMap ℤ (ZMod 5)) doubling doubling reducedTensor
+
+example : (functor' (algebraMap ℤ (ZMod 5))).obj Z ≅
+    (tensorFunctor (algebraMap ℤ (ZMod 5))).obj Z :=
+  (tensorProductLinearEquiv (algebraMap ℤ (ZMod 5)) Z).toModuleIso
 
 /-! The arbitrary ring target is the integer matrix algebra, not a field. -/
 
@@ -569,6 +689,33 @@ private theorem diagonal_wrong_order_control :
   rw [diagonal_right_action_eq_zero, diagonal_left_product]
   exact Ne.symm diagonalTensor_e12_ne_zero
 
+private theorem diagonal_tensorFunctor_balance :
+    (tensorFunctor diagonalHom).map (𝟙 diagonalModule)
+        (tensorProductTmul diagonalHom diagonalModule
+          (MulOpposite.op diagonalIdempotent • diagonalUnit) e12) =
+      diagonalTensor e12 := by
+  rw [tensorFunctor_map_tmul, ModuleCat.id_apply]
+  exact (tensorProductTmul_balance diagonalHom diagonalModule diagonalIdempotent
+    diagonalUnit e12).trans
+      (congrArg (tensorProductTmul diagonalHom diagonalModule diagonalUnit)
+        diagonal_left_product)
+
+private theorem diagonal_tensorFunctor_wrong_order :
+    (tensorFunctor diagonalHom).map (𝟙 diagonalModule)
+        (@SMul.smul Aᵐᵒᵖ (tensorProductObj diagonalHom diagonalModule)
+          (tensorProductObj diagonalHom diagonalModule).isModule.toSMul
+          (MulOpposite.op (diagonalHom diagonalIdempotent)) (diagonalTensor e12)) ≠
+      (tensorFunctor diagonalHom).map (𝟙 diagonalModule)
+        (diagonalTensor (diagonalHom diagonalIdempotent * e12)) := by
+  intro h
+  apply diagonal_wrong_order_control
+  exact (tensorFunctor_map_id_apply diagonalHom diagonalModule _).symm.trans
+    (h.trans (tensorFunctor_map_id_apply diagonalHom diagonalModule _))
+
+example : (functor' diagonalHom).obj diagonalModule ≅
+    (tensorFunctor diagonalHom).obj diagonalModule :=
+  (tensorProductLinearEquiv diagonalHom diagonalModule).toModuleIso
+
 /-! Mathlib's categorical comparison is confined to commutative coefficients. -/
 
 private def categoricalTensor :
@@ -898,6 +1045,33 @@ private theorem swapped_balance_not_regular :
   rw [hmap]
   simpa only [rightFreeLinearEquiv_tmul, productUnit, swapHom.map_one, one_mul] using hc
 
+private theorem regularProduct_tensorFunctor_balance :
+    (tensorFunctor swapHom).map (𝟙 regularProductModule)
+        (tensorProductTmul swapHom regularProductModule
+          (@SMul.smul Bᵐᵒᵖ B regularProductModule.isModule.toSMul
+            (MulOpposite.op ((1, 0) : B)) (1 : B)) 1) =
+      regularProductTensor (0, 1) := by
+  rw [tensorFunctor_map_tmul, ModuleCat.id_apply]
+  exact (tensorProductTmul_balance swapHom regularProductModule ((1, 0) : B) 1 1).trans
+    (regularProduct_constructor (0, 1))
+
+private theorem regularProduct_tensorFunctor_balance_not_regular :
+    (tensorFunctor swapHom).map (𝟙 regularProductModule)
+        (tensorProductTmul swapHom regularProductModule
+          (@SMul.smul Bᵐᵒᵖ B regularProductModule.isModule.toSMul
+            (MulOpposite.op ((1, 0) : B)) (1 : B)) 1) ≠
+      (tensorFunctor swapHom).map (𝟙 regularProductModule) (regularProductTensor (1, 0)) := by
+  intro h
+  have he : regularProductTensor (0, 1) = regularProductTensor (1, 0) :=
+    regularProduct_tensorFunctor_balance.symm.trans
+      (h.trans (tensorFunctor_map_id_apply swapHom regularProductModule _))
+  have hc := congrArg Prod.fst (regularProductTensor_injective he)
+  norm_num at hc
+
+example : (functor' swapHom).obj regularProductModule ≅
+    (tensorFunctor swapHom).obj regularProductModule :=
+  (tensorProductLinearEquiv swapHom regularProductModule).toModuleIso
+
 end SelfMap
 
 /-! Zero boundaries use canonical unital maps. -/
@@ -926,6 +1100,41 @@ private theorem allZero_agreement :
         (tmul (algebraMap PUnit PUnit) (0 : allZeroModule) 1) = 0 := by
   rw [tensorProductLinearEquiv_tmul]
   simp only [tensorProductTmul_zero_left]
+
+private theorem tensorFunctor_zeroModule :
+    (tensorFunctor (algebraMap ℤ (ZMod 5))).map (𝟙 emptyModule)
+        (tensorProductTmul (algebraMap ℤ (ZMod 5)) emptyModule emptyVector 1) = 0 := by
+  exact (tensorFunctor_map_tmul (algebraMap ℤ (ZMod 5)) (𝟙 emptyModule) emptyVector 1).trans
+    ((congrArg (fun m : emptyModule ↦
+      tensorProductTmul (algebraMap ℤ (ZMod 5)) emptyModule m 1)
+      (Subsingleton.elim emptyVector 0)).trans
+        (tensorProductTmul_zero_left (algebraMap ℤ (ZMod 5)) emptyModule 1))
+
+private theorem tensorFunctor_zeroTarget :
+    (tensorFunctor (algebraMap ℤ PUnit)).map (𝟙 Z)
+        (tensorProductTmul (algebraMap ℤ PUnit) Z sourceUnit 1) = 0 := by
+  exact (tensorFunctor_map_tmul (algebraMap ℤ PUnit) (𝟙 Z) sourceUnit 1).trans
+    ((congrArg (tensorProductTmul (algebraMap ℤ PUnit) Z sourceUnit)
+      (Subsingleton.elim (1 : PUnit) 0)).trans
+        (tensorProductTmul_zero_right (algebraMap ℤ PUnit) Z sourceUnit))
+
+private theorem tensorFunctor_allZero :
+    (tensorFunctor (algebraMap PUnit PUnit)).map (𝟙 allZeroModule)
+        (tensorProductTmul (algebraMap PUnit PUnit) allZeroModule 0 1) = 0 := by
+  exact (tensorFunctor_map_tmul (algebraMap PUnit PUnit) (𝟙 allZeroModule) 0 1).trans
+    (tensorProductTmul_zero_left (algebraMap PUnit PUnit) allZeroModule 1)
+
+example : (functor' (algebraMap ℤ (ZMod 5))).obj emptyModule ≅
+    (tensorFunctor (algebraMap ℤ (ZMod 5))).obj emptyModule :=
+  (tensorProductLinearEquiv (algebraMap ℤ (ZMod 5)) emptyModule).toModuleIso
+
+example : (functor' (algebraMap ℤ PUnit)).obj Z ≅
+    (tensorFunctor (algebraMap ℤ PUnit)).obj Z :=
+  (tensorProductLinearEquiv (algebraMap ℤ PUnit) Z).toModuleIso
+
+example : (functor' (algebraMap PUnit PUnit)).obj allZeroModule ≅
+    (tensorFunctor (algebraMap PUnit PUnit)).obj allZeroModule :=
+  (tensorProductLinearEquiv (algebraMap PUnit PUnit) allZeroModule).toModuleIso
 
 /-! Independent lifts do not require the carrier universe to dominate either ring. -/
 
@@ -1020,6 +1229,40 @@ private theorem raisedCategoricalOutput_inverse :
       tmul (algebraMap LiftR.{0} LiftS.{1})
         (ULift.up sourceUnit : LiftM.{0}) (ULift.up 1) :=
   lifted_categorical_inverse.{0, 1, 0}
+
+private theorem lifted_tensorFunctor_identity :
+    (tensorFunctor (algebraMap LiftR.{uR} LiftS.{uS})).map
+        (𝟙 liftedModule.{uR, uM}) liftedTensor.{uR, uS, uM} =
+      liftedTensor.{uR, uS, uM} := by
+  exact tensorFunctor_map_tmul (algebraMap LiftR.{uR} LiftS.{uS})
+    (𝟙 liftedModule.{uR, uM}) (ULift.up sourceUnit) (ULift.up 1)
+
+private theorem raisedSource_tensorFunctor_identity :
+    (tensorFunctor (algebraMap LiftR.{1} LiftS.{0})).map
+      (𝟙 liftedModule.{1, 0}) raisedSource = raisedSource :=
+  lifted_tensorFunctor_identity.{1, 0, 0}
+
+private theorem raisedOutput_tensorFunctor_identity :
+    (tensorFunctor (algebraMap LiftR.{0} LiftS.{1})).map
+      (𝟙 liftedModule.{0, 0}) raisedOutput = raisedOutput :=
+  lifted_tensorFunctor_identity.{0, 1, 0}
+
+private theorem raisedCarrier_tensorFunctor_identity :
+    (tensorFunctor (algebraMap LiftR.{0} LiftS.{0})).map
+      (𝟙 liftedModule.{0, 1}) raisedCarrier = raisedCarrier :=
+  lifted_tensorFunctor_identity.{0, 0, 1}
+
+example : (functor' (algebraMap LiftR.{1} LiftS.{0})).obj liftedModule.{1, 0} ≅
+    (tensorFunctor (algebraMap LiftR.{1} LiftS.{0})).obj liftedModule.{1, 0} :=
+  (tensorProductLinearEquiv (algebraMap LiftR.{1} LiftS.{0}) liftedModule.{1, 0}).toModuleIso
+
+example : (functor' (algebraMap LiftR.{0} LiftS.{1})).obj liftedModule.{0, 0} ≅
+    (tensorFunctor (algebraMap LiftR.{0} LiftS.{1})).obj liftedModule.{0, 0} :=
+  (tensorProductLinearEquiv (algebraMap LiftR.{0} LiftS.{1}) liftedModule.{0, 0}).toModuleIso
+
+example : (functor' (algebraMap LiftR.{0} LiftS.{0})).obj liftedModule.{0, 1} ≅
+    (tensorFunctor (algebraMap LiftR.{0} LiftS.{0})).obj liftedModule.{0, 1} :=
+  (tensorProductLinearEquiv (algebraMap LiftR.{0} LiftS.{0}) liftedModule.{0, 1}).toModuleIso
 
 end Lifts
 
