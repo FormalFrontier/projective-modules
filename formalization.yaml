@@ -785,6 +785,34 @@ status:
         extensions. Both directions use the balanced tensor construction and
         supported coordinate idempotents; scalar, index and carrier universes
         are independent, including empty families and zero rings.
+    - declaration: "Module.piRightHomAddEquiv"
+      file: "ProjectiveModules/Module/RightProduct/Hom.lean"
+      note: >-
+        For an arbitrary index and a family of possibly noncommutative semirings,
+        maps linear for the canonical piRightModule coefficient-product action
+        on right-module families with additive commutative monoid fibers
+        correspond additively to families of factor-linear maps. The component
+        at i sends m to f (Pi.single i m) i; the inverse acts coordinatewise.
+        Component evaluation, supported inputs, equality detection, identity and
+        composition laws retain independent index, coefficient, source, target
+        and third-family universes. This is an additive equivalence, with no
+        finiteness, finite-generation, projectivity, presentation or
+        commutativity hypotheses; it is separate from reconstruction of
+        arbitrary modules over finite products of rings by projection scalar
+        extension.
+    - declaration: "Module.piRightEndEquiv"
+      file: "ProjectiveModules/Module/RightProduct/Hom.lean"
+      note: >-
+        Semiring equivalence between endomorphisms of the canonical assembled
+        right module and the family of factor endomorphism semirings, using
+        precisely the additive data of piRightHomAddEquiv. Components evaluate
+        on supported inputs and the inverse acts coordinatewise; identities
+        and multiplication are preserved in the order f * g = f.comp g.
+        The index is arbitrary, semiring coefficients need not commute, and
+        fibers need only be additive commutative monoids with their right
+        module structures. Index, coefficient and carrier universes are
+        independent; no finite-generation, projectivity or presentation
+        assumption is imposed.
     - declaration: "KTheory.ProjectiveClass.piEquiv"
       file: "ProjectiveModules/KTheory/Product.lean"
       note: >-

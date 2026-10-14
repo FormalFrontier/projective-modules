@@ -74,6 +74,7 @@ public import ProjectiveModules.Module.SummandCancellation
 public import ProjectiveModules.Module.RankFiberDecomposition
 public import ProjectiveModules.Module.RightEndomorphismMatrix
 public import ProjectiveModules.Module.RightProduct
+public import ProjectiveModules.Module.RightProduct.Hom
 public import ProjectiveModules.Module.RightRegular
 public import ProjectiveModules.Module.RightRegularDefect
 public import ProjectiveModules.Module.RightExtension
