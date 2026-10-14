@@ -89,18 +89,6 @@ private theorem linearCombination_single_letter (c : κ → ι) (k : κ)
       p * MonoidAlgebra.single (FreeMonoid.of (c k)) (1 : K) := by
   simp only [Finsupp.linearCombination_single, smul_eq_mul]
 
-private theorem pairMap_eq_linearCombination (a b : ι) :
-    MonoidAlgebra.freeWordPairMap (K := K) a b =
-      (Finsupp.linearCombination (MonoidAlgebra K (FreeMonoid ι))
-        (fun j : Fin 2 ↦ MonoidAlgebra.single (FreeMonoid.of (![a, b] j)) (1 : K))).comp
-        (Finsupp.linearEquivFunOnFinite (MonoidAlgebra K (FreeMonoid ι))
-          (MonoidAlgebra K (FreeMonoid ι)) (Fin 2)).symm.toLinearMap := by
-  rw [Finsupp.linearCombination_eq_fintype_linearCombination]
-  apply LinearMap.ext
-  intro z
-  simp [MonoidAlgebra.freeWordPairMap_apply, Fintype.linearCombination_apply,
-    Fin.sum_univ_two, smul_eq_mul]
-
 private theorem finite_linearCombination_injective (a b : ι) (hab : a ≠ b) :
     Function.Injective
       (Finsupp.linearCombination (MonoidAlgebra K (FreeMonoid ι))
@@ -110,7 +98,7 @@ private theorem finite_linearCombination_injective (a b : ι) (hab : a ≠ b) :
   intro z t hzt
   have hpair : MonoidAlgebra.freeWordPairMap a b (e z) =
       MonoidAlgebra.freeWordPairMap a b (e t) := by
-    simpa [pairMap_eq_linearCombination, e] using hzt
+    simpa [MonoidAlgebra.freeWordPairMap_eq_linearCombination, e] using hzt
   exact e.injective (MonoidAlgebra.freeWordPairMap_injective a b hab hpair)
 
 private theorem finite_family_independent (a b : ι) (hab : a ≠ b) :
@@ -166,13 +154,13 @@ private theorem finite_one_coordinate :
 example : MonoidAlgebra.freeWordPairMap false true (![1, 0] : Fin 2 → RationalWords) =
     (Finsupp.linearCombination RationalWords
       (fun j : Fin 2 ↦ rationalLetter (![false, true] j))) (Finsupp.single 0 1) := by
-  rw [pairMap_eq_linearCombination]
+  rw [MonoidAlgebra.freeWordPairMap_eq_linearCombination]
   simp only [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap, finite_zero_coordinate]
 
 example : MonoidAlgebra.freeWordPairMap false true (![0, 1] : Fin 2 → RationalWords) =
     (Finsupp.linearCombination RationalWords
       (fun j : Fin 2 ↦ rationalLetter (![false, true] j))) (Finsupp.single 1 1) := by
-  rw [pairMap_eq_linearCombination]
+  rw [MonoidAlgebra.freeWordPairMap_eq_linearCombination]
   simp only [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap, finite_one_coordinate]
 
 example : LinearIndependent RationalWords
@@ -318,9 +306,6 @@ example : ¬ LinearIndependent RationalWords (fun _ : Fin 2 ↦ rationalLetter f
   exact repeated_family_not_injective h.finsuppLinearCombination_injective
 
 -- Separately lifted coefficient, alphabet and index types retain independent universes.
-private abbrev LiftedWords.{uK, uι} :=
-  MonoidAlgebra (ULift.{uK} ℚ) (FreeMonoid (ULift.{uι} ℕ))
-
 private def liftedLetterEmbedding.{uι, uκ} : ULift.{uκ} ℕ → ULift.{uι} ℕ :=
   fun k ↦ ULift.up k.down
 
@@ -333,11 +318,12 @@ private theorem liftedLetterEmbedding_injective :
 private theorem lifted_coefficient_nonzero : (1 : ULift.{u} ℚ) ≠ 0 := one_ne_zero
 
 private theorem lifted_coordinate_nonzero :
-    (Finsupp.single (ULift.up 7 : ULift.{w} ℕ) (1 : LiftedWords.{u, v})) ≠ 0 :=
+    (Finsupp.single (ULift.up 7 : ULift.{w} ℕ)
+      (1 : MonoidAlgebra (ULift.{u} ℚ) (FreeMonoid (ULift.{v} ℕ)))) ≠ 0 :=
   Finsupp.single_ne_zero.mpr one_ne_zero
 
 private theorem lifted_output_coefficient :
-    (Finsupp.linearCombination LiftedWords.{u, v}
+    (Finsupp.linearCombination (MonoidAlgebra (ULift.{u} ℚ) (FreeMonoid (ULift.{v} ℕ)))
       (fun k : ULift.{w} ℕ ↦ MonoidAlgebra.single
         (FreeMonoid.of (liftedLetterEmbedding.{v, w} k)) (1 : ULift.{u} ℚ))
       (Finsupp.single (ULift.up 7 : ULift.{w} ℕ) 1)).coeff
@@ -345,13 +331,14 @@ private theorem lifted_output_coefficient :
   simp [liftedLetterEmbedding, smul_eq_mul]
 
 private theorem lifted_output_nonzero :
-    Finsupp.linearCombination LiftedWords.{u, v}
+    Finsupp.linearCombination (MonoidAlgebra (ULift.{u} ℚ) (FreeMonoid (ULift.{v} ℕ)))
         (fun k : ULift.{w} ℕ ↦ MonoidAlgebra.single
           (FreeMonoid.of (liftedLetterEmbedding.{v, w} k)) (1 : ULift.{u} ℚ))
         (Finsupp.single (ULift.up 7 : ULift.{w} ℕ) 1) ≠ 0 := by
   intro h
   have hcoeff := congrArg
-    (fun z : LiftedWords.{u, v} ↦ z.coeff (FreeMonoid.of (ULift.up 7 : ULift.{v} ℕ))) h
+    (fun z : MonoidAlgebra (ULift.{u} ℚ) (FreeMonoid (ULift.{v} ℕ)) ↦
+      z.coeff (FreeMonoid.of (ULift.up 7 : ULift.{v} ℕ))) h
   rw [lifted_output_coefficient, MonoidAlgebra.coeff_zero, Finsupp.zero_apply] at hcoeff
   exact lifted_coefficient_nonzero hcoeff
 
@@ -360,21 +347,22 @@ example : Function.Injective (liftedLetterEmbedding.{1, 2}) :=
 
 example : (1 : ULift.{0} ℚ) ≠ 0 := lifted_coefficient_nonzero
 
-example : (Finsupp.single (ULift.up 7 : ULift.{2} ℕ) (1 : LiftedWords.{0, 1})) ≠ 0 :=
+example : (Finsupp.single (ULift.up 7 : ULift.{2} ℕ)
+    (1 : MonoidAlgebra (ULift.{0} ℚ) (FreeMonoid (ULift.{1} ℕ)))) ≠ 0 :=
   lifted_coordinate_nonzero
 
-example : Finsupp.linearCombination LiftedWords.{0, 1}
+example : Finsupp.linearCombination (MonoidAlgebra (ULift.{0} ℚ) (FreeMonoid (ULift.{1} ℕ)))
     (fun k : ULift.{2} ℕ ↦ MonoidAlgebra.single
       (FreeMonoid.of (liftedLetterEmbedding.{1, 2} k)) (1 : ULift.{0} ℚ))
     (Finsupp.single (ULift.up 7 : ULift.{2} ℕ) 1) ≠ 0 := lifted_output_nonzero
 
 -- Coefficient height largest, and alphabet height largest, respectively.
-example : Finsupp.linearCombination LiftedWords.{2, 0}
+example : Finsupp.linearCombination (MonoidAlgebra (ULift.{2} ℚ) (FreeMonoid (ULift.{0} ℕ)))
     (fun k : ULift.{1} ℕ ↦ MonoidAlgebra.single
       (FreeMonoid.of (liftedLetterEmbedding.{0, 1} k)) (1 : ULift.{2} ℚ))
     (Finsupp.single (ULift.up 7 : ULift.{1} ℕ) 1) ≠ 0 := lifted_output_nonzero
 
-example : Finsupp.linearCombination LiftedWords.{1, 2}
+example : Finsupp.linearCombination (MonoidAlgebra (ULift.{1} ℚ) (FreeMonoid (ULift.{2} ℕ)))
     (fun k : ULift.{0} ℕ ↦ MonoidAlgebra.single
       (FreeMonoid.of (liftedLetterEmbedding.{2, 0} k)) (1 : ULift.{1} ℚ))
     (Finsupp.single (ULift.up 7 : ULift.{0} ℕ) 1) ≠ 0 := lifted_output_nonzero
