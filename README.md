@@ -99,8 +99,12 @@ the Formal Frontier source-maintainer team.
   finite projective modules and maps `f : M →ₗ[R] N`, `g : N →ₗ[R] M`,
   [`LinearMap.traceOfFiniteProjective_comp_comm`](ProjectiveModules/Module/Trace/Cyclicity.lean)
   equates the traces of `g.comp f` and `f.comp g`, with independent scalar
-  and carrier universes. The trace agrees with Mathlib's finite-basis trace
-  on finite free modules. The
+  and carrier universes. For endomorphisms `f, g : M →ₗ[R] M` with `M` an
+  additive commutative group, the
+  [commutator corollary](ProjectiveModules/Module/Trace/Cyclicity.lean)
+  `LinearMap.traceOfFiniteProjective_commutator` gives trace zero on
+  `f.comp g - g.comp f`; no ring structure on `R` is required.
+  The trace agrees with Mathlib's finite-basis trace on finite free modules. The
   [product and block formulas](ProjectiveModules/Module/Trace/Prod.lean) give
   the sum of factor traces on a product, the factor traces on diagonal blocks,
   and zero on off-diagonal blocks. An arbitrary block endomorphism of a product

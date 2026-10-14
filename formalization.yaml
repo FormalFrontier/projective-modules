@@ -30,8 +30,10 @@ project:
     endomorphism trace without choosing a basis. Its rank-one evaluation,
     conjugation and dual-map invariance, cyclicity for maps between two finite projective
     modules and finite-free comparison with the finite-basis trace retain
-    independent scalar and carrier universes. On nonfree
-    projectives it need not be a natural multiple of the scalar unit.
+    independent scalar and carrier universes. If the module is an additive
+    commutative group, additivity and cyclicity give trace zero on additive
+    commutators; no ring structure on the scalar semiring is required.
+    On nonfree projectives it need not be a natural multiple of the scalar unit.
     Product endomorphisms have the sum of their factor traces; diagonal
     inclusion-projection blocks have the factor traces and off-diagonal blocks
     have trace zero. An arbitrary block endomorphism of a product of finite

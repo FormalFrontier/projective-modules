@@ -8,15 +8,20 @@ module
 public import ProjectiveModules.Module.Trace.Basic
 
 /-!
-# Cyclicity of the finite-projective trace
+# Cyclicity and commutator traces of finite projective modules
 
 For linear maps in opposite directions between two finite projective modules
 over a commutative semiring, the traces of their composites agree. The module
 carriers may inhabit independent universes, and neither freeness nor additive
 inverses are required.
 
-The proof represents one map through the canonical dual tensor–Hom equivalence
-and reduces by tensor induction to the rank-one trace formula.
+When the module is an additive commutative group, the trace of an additive
+commutator of endomorphisms `f.comp g - g.comp f` is zero. This needs no ring
+structure on the scalar semiring: additivity and cyclicity suffice, without
+subtracting trace values.
+
+The cyclicity proof represents one map through the canonical dual tensor–Hom
+equivalence and reduces by tensor induction to the rank-one trace formula.
 
 ## References
 
@@ -61,5 +66,24 @@ theorem traceOfFiniteProjective_comp_comm
       simp only [h₁, h₂, traceOfFiniteProjective_smulRight, comp_apply]
   | add t₁ t₂ h₁ h₂ =>
       simp only [map_add, comp_add, add_comp, h₁, h₂]
+
+/-- The trace of an additive commutator on a finite projective module is zero.
+
+Additive inverses are required only in the module, not in the scalar semiring. -/
+theorem traceOfFiniteProjective_commutator
+    (R : Type uR) (M : Type uM) [CommSemiring R] [AddCommGroup M] [Module R M]
+    [Module.Finite R M] [Module.Projective R M] (f g : M →ₗ[R] M) :
+    traceOfFiniteProjective R M (f.comp g - g.comp f) = 0 := by
+  calc
+    traceOfFiniteProjective R M (f.comp g - g.comp f) =
+        traceOfFiniteProjective R M (f.comp g) +
+          traceOfFiniteProjective R M (-(g.comp f)) := by
+      rw [sub_eq_add_neg, map_add]
+    _ = traceOfFiniteProjective R M (g.comp f) +
+          traceOfFiniteProjective R M (-(g.comp f)) := by
+      rw [traceOfFiniteProjective_comp_comm R M M g f]
+    _ = traceOfFiniteProjective R M (g.comp f - g.comp f) := by
+      rw [sub_eq_add_neg, map_add]
+    _ = 0 := by rw [sub_self, map_zero]
 
 end LinearMap
