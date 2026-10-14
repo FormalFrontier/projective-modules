@@ -1095,6 +1095,15 @@ status:
         freeness, Noetherian or commutative scalars, or Small. All three
         universes are independent. The proof reuses Mathlib's
         Module.Projective.of_split with the kernel inclusion and projection.
+    - declaration: "Module.Projective.pi"
+      file: "ProjectiveModules/Module/ProjectivePi.lean"
+      note: >-
+        Supporting projectivity instance for finite dependent products over any
+        semiring, with canonical pointwise module structure and independent
+        scalar, index and carrier universes. Only projectivity of the factors
+        is required, not finite generation, freeness or additive inverses.
+        The proof transports Mathlib's dependent finitely supported projectivity
+        along its finite-index linear equivalence.
     - declaration: "Module.Projective.exists_fin_generating_family_iff_exists_prod_equiv"
       file: "ProjectiveModules/Module/ProjectiveComplement.lean"
       note: "Explicit n-generator/projective-complement equivalence, including the zero-generator case."

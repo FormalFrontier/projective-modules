@@ -561,6 +561,7 @@ aggregate import.
 | [Countably generated](ProjectiveModules/Module/CountablyGenerated.lean), [Noetherian submodules](ProjectiveModules/Module/CountablyGenerated/Noetherian.lean), [filtration](ProjectiveModules/Module/TransfiniteRangeBasis.lean) | Sequence-span predicate, submodule theorem, invariant countable supports and split-range assembly |
 | [Split kernels](ProjectiveModules/Module/ProjectiveKernel.lean) | Explicit section/retraction over any semiring, with additive-group source and additive-monoid target; kernel projection/application and inclusion-retraction laws; independent finite-source and projective-source closure, without target finiteness or projectivity and with independent universes |
 | [Complements](ProjectiveModules/Module/ProjectiveComplement.lean), [right inverse defects](ProjectiveModules/Module/RightRegularDefect.lean), [Hom exactness](ProjectiveModules/Module/HomExact.lean) | Splittings and additive Hom exactness over semirings; specified right regular decomposition and defect kernel over rings |
+| [Finite dependent products](ProjectiveModules/Module/ProjectivePi.lean) | Canonical pointwise products of projective modules over any semiring are projective for a finite index, without finite generation of the factors and with independent universes |
 | [Finite-projective category](ProjectiveModules/Category/FiniteProjective.lean), [stable category](ProjectiveModules/Category/Stable.lean) | Finite biproducts, preadditive stable quotient and small-ring Ext¹ detection |
 | [Projective scalar towers](ProjectiveModules/Module/ScalarRestriction.lean), [finite-projective restriction](ProjectiveModules/Category/FiniteProjectiveRestriction.lean) | Projectivity through semiring towers with projective coefficients; finite-projective ring-homomorphism restriction under its canonical coefficient hypothesis, with carrier, stored-action and map-application laws, both directions of the underlying-functor comparison, and identity/composition functor laws |
 | [Module-category equivalences](ProjectiveModules/Category/ModuleEquivalence.lean) | Finite-generation preservation and reflection at independent universes; finite-projective preservation with unrestricted source and target at the scalar/carrier maximum, and reflection with both carriers at their maxima |
@@ -627,6 +628,12 @@ sequence of left modules; [Hom exactness](ProjectiveModules/Module/HomExact.lean
 over semirings is additive rather than an unwarranted scalar-linear statement.
 [Projective complements](ProjectiveModules/Module/ProjectiveComplement.lean)
 split surjections and relate finite spanning families to free summands.
+The [finite dependent-product instance](ProjectiveModules/Module/ProjectivePi.lean)
+`Module.Projective.pi` makes `∀ i, M i` projective over any semiring when the
+index is finite and each factor is projective. It uses the existing pointwise
+module structure, needs no finite generation or additive inverses, and keeps
+scalar, index and carrier universes independent. Maps from the product therefore
+use Mathlib's existing projective lifting property.
 
 The [finite-projective restriction examples](tests/ProjectiveModulesTests/FiniteProjectiveRestrictionFunctorClient.lean)
 use the nonzero, nonfree principal right ideal of a noncentral diagonal
