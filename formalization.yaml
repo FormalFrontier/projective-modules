@@ -48,7 +48,10 @@ project:
     have trace zero. An arbitrary block endomorphism of a product of finite
     projective factors has the sum of its diagonal traces. The off-diagonal
     formulas assume finite projectivity only of the product, without bases,
-    additive inverses or coupled carrier universes.
+    additive inverses or coupled carrier universes. An arbitrary endomorphism
+    of a finite dependent product of finite projective modules has the finite
+    sum of the traces of its diagonal coordinate composites. The index need
+    only be finite, with independent scalar, index and carrier universes.
     Over arbitrary rings, the library also describes stably-free kernels of
     surjections onto finitely generated stably-free targets, finite-coordinate
     kernel presentations and surjective right-linear matrix kernels.
@@ -1253,6 +1256,16 @@ status:
         The contraction trace of TensorProduct.map f g is the product of the
         factor traces, for endomorphisms of finite projective
         additive-commutative-monoid modules over a commutative semiring.
+    - declaration: "LinearMap.traceOfFiniteProjective_pi"
+      file: "ProjectiveModules/Module/Trace/Pi.lean"
+      note: >-
+        The contraction trace of an arbitrary endomorphism of a finite
+        dependent product is the finsum of the traces of its diagonal
+        projection-endomorphism-single composites. The factors are finite
+        projective additive-commutative-monoid modules over a commutative
+        semiring. Only root index finiteness is assumed; scalar, index and
+        carrier universes are independent, without an enumeration, basis,
+        additive inverses or an additional output-projectivity premise.
 
 automation:
   methods:

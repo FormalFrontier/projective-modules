@@ -80,6 +80,16 @@ theorem splitKernelProjection_comp_subtype
   change x - i (r x) = x
   rw [LinearMap.mem_ker.mp x.2, map_zero, sub_zero]
 
+/-- The split-kernel projection fixes each element of the kernel. -/
+@[simp] theorem splitKernelProjection_apply_coe
+    {R : Type uR} [Semiring R]
+    {A : Type uA} [AddCommMonoid A] [Module R A]
+    {M : Type uM} [AddCommGroup M] [Module R M]
+    (i : A →ₗ[R] M) (r : M →ₗ[R] A)
+    (h : r.comp i = LinearMap.id) (x : LinearMap.ker r) :
+    splitKernelProjection i r h (x : M) = x :=
+  LinearMap.congr_fun (splitKernelProjection_comp_subtype i r h) x
+
 /-- The kernel of a retraction from a finite module is finite. -/
 theorem finite_splitKernel
     {R : Type uR} [Semiring R]

@@ -120,7 +120,12 @@ the Formal Frontier source-maintainer team.
   [tensor-product formula](ProjectiveModules/Module/Trace/TensorProduct.lean)
   multiplies the factor traces for endomorphisms of two finite projective
   additive-commutative-monoid modules, with independent scalar and factor
-  universes. It is available in bilinear and pointwise forms.
+  universes. It is available in bilinear and pointwise forms. The
+  [finite dependent-product formula](ProjectiveModules/Module/Trace/Pi.lean)
+  computes the trace of any endomorphism of a finite family of finite
+  projective modules as the sum of its diagonal coordinate traces. The index
+  need only be finite: no enumeration appears in the statement, and scalar,
+  index and carrier universes are independent.
 - **Right-module categorical dual:** For a fixed arbitrary ring `R`,
   [`ModuleCat.rightDual`](ProjectiveModules/Dual/ModuleCat.lean) is the
   contravariant functor from right `R`-modules to left `R`-modules, with ordinary
@@ -562,6 +567,7 @@ aggregate import.
 | [Split kernels](ProjectiveModules/Module/ProjectiveKernel.lean) | Explicit section/retraction over any semiring, with additive-group source and additive-monoid target; kernel projection/application and inclusion-retraction laws; independent finite-source and projective-source closure, without target finiteness or projectivity and with independent universes |
 | [Complements](ProjectiveModules/Module/ProjectiveComplement.lean), [right inverse defects](ProjectiveModules/Module/RightRegularDefect.lean), [Hom exactness](ProjectiveModules/Module/HomExact.lean) | Splittings and additive Hom exactness over semirings; specified right regular decomposition and defect kernel over rings |
 | [Finite dependent products](ProjectiveModules/Module/ProjectivePi.lean) | Canonical pointwise products of projective modules over any semiring are projective for a finite index, without finite generation of the factors and with independent universes |
+| [Finite dependent-product trace](ProjectiveModules/Module/Trace/Pi.lean) | Over a commutative semiring, arbitrary endomorphisms of finite dependent products of finite projective additive-commutative-monoid modules have the sum of their diagonal coordinate traces; `Finite` indices and independent scalar, index and carrier universes |
 | [Finite-projective category](ProjectiveModules/Category/FiniteProjective.lean), [stable category](ProjectiveModules/Category/Stable.lean) | Finite biproducts, preadditive stable quotient and small-ring Ext¹ detection |
 | [Projective scalar towers](ProjectiveModules/Module/ScalarRestriction.lean), [finite-projective restriction](ProjectiveModules/Category/FiniteProjectiveRestriction.lean) | Projectivity through semiring towers with projective coefficients; finite-projective ring-homomorphism restriction under its canonical coefficient hypothesis, with carrier, stored-action and map-application laws, both directions of the underlying-functor comparison, and identity/composition functor laws |
 | [Module-category equivalences](ProjectiveModules/Category/ModuleEquivalence.lean) | Finite-generation preservation and reflection at independent universes; finite-projective preservation with unrestricted source and target at the scalar/carrier maximum, and reflection with both carriers at their maxima |

@@ -159,3 +159,149 @@ example : Module.Finite S (LinearMap.ker (LinearMap.id (R := S) (M := A))) :=
   LinearMap.finite_splitKernel LinearMap.id LinearMap.id (by simp)
 
 end ProjectiveModulesTests.SplitKernel
+
+namespace ProjectiveModulesTests.SplitKernel
+
+-- A nonfree product domain retracts onto the regular module.
+private abbrev idealProductDomain := I × S
+
+private instance idealProductDomain_finite : Module.Finite S idealProductDomain := inferInstance
+private instance idealProductDomain_projective :
+    Module.Projective S idealProductDomain := inferInstance
+
+private def idealProductRetraction : idealProductDomain →ₗ[S] S := LinearMap.snd S I S
+private def idealProductSection : S →ₗ[S] idealProductDomain := LinearMap.inr S I S
+
+private theorem idealProductRetraction_comp_section :
+    idealProductRetraction.comp idealProductSection = LinearMap.id :=
+  LinearMap.snd_comp_inr S I S
+
+private def idealProductFirstPrime : PrimeSpectrum S :=
+  ⟨RingHom.ker ((RingHom.fst ℤ ℤ).comp (RingEquiv.toOpposite A).symm.toRingHom),
+    RingHom.ker_isPrime _⟩
+
+private def idealProductSecondPrime : PrimeSpectrum S :=
+  ⟨RingHom.ker ((RingHom.snd ℤ ℤ).comp (RingEquiv.toOpposite A).symm.toRingHom),
+    RingHom.ker_isPrime _⟩
+
+private theorem idealProductFirstPrime_notMem : b ∉ idealProductFirstPrime.asIdeal := by
+  change (1 : ℤ) ≠ 0
+  exact one_ne_zero
+
+private theorem idealProductSecondPrime_mem : b ∈ idealProductSecondPrime.asIdeal := by
+  change (0 : ℤ) = 0
+  rfl
+
+-- The two coordinate stalks have different ranks, even after adding a regular summand.
+private theorem idealProductDomain_stalk_ranks :
+    Module.rankAtStalk (R := S) idealProductDomain idealProductFirstPrime = 2 ∧
+      Module.rankAtStalk (R := S) idealProductDomain idealProductSecondPrime = 1 := by
+  have hfirst := hb.rankAtStalk_span_eq_one idealProductFirstPrime
+    idealProductFirstPrime_notMem
+  have hsecond := hb.rankAtStalk_span_eq_zero idealProductSecondPrime
+    idealProductSecondPrime_mem
+  have hprod := Module.rankAtStalk_prod (R := S) I S
+  have hself := Module.rankAtStalk_self (R := S)
+  constructor
+  · calc
+      Module.rankAtStalk (R := S) idealProductDomain idealProductFirstPrime =
+          Module.rankAtStalk (R := S) I idealProductFirstPrime +
+            Module.rankAtStalk (R := S) S idealProductFirstPrime := congrFun hprod _
+      _ = 2 := by
+        rw [hfirst, congrFun hself idealProductFirstPrime]
+        change (1 : ℕ) + 1 = 2
+        rfl
+  · calc
+      Module.rankAtStalk (R := S) idealProductDomain idealProductSecondPrime =
+          Module.rankAtStalk (R := S) I idealProductSecondPrime +
+            Module.rankAtStalk (R := S) S idealProductSecondPrime := congrFun hprod _
+      _ = 1 := by
+        rw [hsecond, congrFun hself idealProductSecondPrime]
+        change (0 : ℕ) + 1 = 1
+        rfl
+
+private theorem idealProductDomain_not_free : ¬ Module.Free S idealProductDomain := by
+  intro hfree
+  let _ : Module.Free S idealProductDomain := hfree
+  have hconstant := Module.rankAtStalk_eq_finrank_of_free (R := S) (M := idealProductDomain)
+  have h := (congrFun hconstant idealProductFirstPrime).trans
+    (congrFun hconstant idealProductSecondPrime).symm
+  rw [idealProductDomain_stalk_ranks.1, idealProductDomain_stalk_ranks.2] at h
+  exact (by decide : (2 : ℕ) ≠ 1) h
+
+private def idealProductKernelEquiv : I ≃ₗ[S] LinearMap.ker idealProductRetraction :=
+  (LinearEquiv.ofInjective (LinearMap.inl S I S) LinearMap.inl_injective).trans
+    (LinearEquiv.ofEq _ _ (LinearMap.range_inl S I S))
+
+private theorem idealProductKernel_not_free :
+    ¬ Module.Free S (LinearMap.ker idealProductRetraction) := by
+  intro hfree
+  exact hb.not_free_span hb0 hb1 (Module.Free.of_equiv' hfree idealProductKernelEquiv.symm)
+
+private def idealProductKernelVector : LinearMap.ker idealProductRetraction :=
+  ⟨(ModuleCat.RightExtension.spanGenerator e, 0), rfl⟩
+
+private theorem idealProductKernelVector_ne_zero : idealProductKernelVector ≠ 0 :=
+  fun h ↦ hb0 (congrArg (fun k : LinearMap.ker idealProductRetraction ↦ (k.val.1 : S)) h)
+
+-- The kernel has an annihilator; the domain's regular summand is faithful.
+private theorem idealProductKernel_annihilator (k : LinearMap.ker idealProductRetraction) :
+    (1 - b : S) ≠ 0 ∧ (1 - b) • k = 0 := by
+  refine ⟨sub_ne_zero.mpr (Ne.symm hb1), ?_⟩
+  obtain ⟨x, rfl⟩ := idealProductKernelEquiv.surjective k
+  rw [← map_smul, hb.one_sub_smul_span, map_zero]
+
+private def idealProductProjection : idealProductDomain →ₗ[S]
+    LinearMap.ker idealProductRetraction :=
+  LinearMap.splitKernelProjection idealProductSection idealProductRetraction
+    idealProductRetraction_comp_section
+
+private theorem idealProductProjection_apply (x : idealProductDomain) :
+    (idealProductProjection x : idealProductDomain) = (x.1, 0) := by
+  calc
+    (idealProductProjection x : idealProductDomain) =
+        x - idealProductSection (idealProductRetraction x) :=
+      LinearMap.splitKernelProjection_apply _ _ _ x
+    _ = (x.1, 0) := Prod.ext (sub_zero x.1) (sub_self x.2)
+
+private theorem idealProductProjection_fixes (k : LinearMap.ker idealProductRetraction) :
+    idealProductProjection k = k :=
+  DFunLike.congr_fun (LinearMap.splitKernelProjection_comp_subtype
+    idealProductSection idealProductRetraction idealProductRetraction_comp_section) k
+
+private theorem idealProductProjection_section (s : S) :
+    idealProductProjection (idealProductSection s) = 0 := by
+  apply Subtype.ext
+  rw [idealProductProjection_apply]
+  rfl
+
+private theorem idealProductProjection_ne_zero : idealProductProjection ≠ 0 := by
+  intro h
+  have hv := idealProductProjection_fixes idealProductKernelVector
+  rw [h, LinearMap.zero_apply] at hv
+  exact idealProductKernelVector_ne_zero hv.symm
+
+private theorem idealProductKernel_finite :
+    Module.Finite S (LinearMap.ker idealProductRetraction) :=
+  LinearMap.finite_splitKernel idealProductSection idealProductRetraction
+    idealProductRetraction_comp_section
+
+private theorem idealProductKernel_projective :
+    Module.Projective S (LinearMap.ker idealProductRetraction) :=
+  LinearMap.projective_splitKernel idealProductSection idealProductRetraction
+    idealProductRetraction_comp_section
+
+-- The zero scalar ring requires no nontriviality assumption.
+private theorem zeroRing_splitKernel :
+    (0 : PUnit) = 1 ∧
+      Module.Finite PUnit (LinearMap.ker (LinearMap.id (R := PUnit) (M := PUnit))) ∧
+      Module.Projective PUnit (LinearMap.ker (LinearMap.id (R := PUnit) (M := PUnit))) :=
+  ⟨Subsingleton.elim _ _, LinearMap.finite_splitKernel LinearMap.id LinearMap.id (by simp),
+    LinearMap.projective_splitKernel LinearMap.id LinearMap.id (by simp)⟩
+
+private theorem zeroRing_splitKernelProjection (x : PUnit) :
+    LinearMap.splitKernelProjection (LinearMap.id (R := PUnit) (M := PUnit))
+      LinearMap.id (by simp) x = 0 :=
+  Subsingleton.elim _ _
+
+end ProjectiveModulesTests.SplitKernel

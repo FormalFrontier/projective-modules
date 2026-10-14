@@ -6,6 +6,7 @@ module
 
 import ProjectiveModules.Module.ProjectiveKernel
 import Mathlib.Algebra.Ring.Prod
+import Mathlib.Data.Matrix.Basis
 import Mathlib.RingTheory.Finiteness.Prod
 
 /-!
@@ -68,6 +69,9 @@ example (x : ℤ × ℤ) : (π x : ℤ × ℤ) = x - i (f x) :=
 example : π.comp (LinearMap.ker f).subtype = LinearMap.id :=
   LinearMap.splitKernelProjection_comp_subtype i f f_comp_i
 
+example (k : LinearMap.ker f) : π k = k :=
+  LinearMap.splitKernelProjection_apply_coe i f f_comp_i k
+
 section FiniteSource
 
 -- The source is finite as the image of the regular module, then a product.
@@ -92,3 +96,97 @@ example : Module.Projective R₀ (LinearMap.ker f) :=
 
 end ProjectiveSource
 end ProjectiveModulesTests.SplitKernel.MixedProduct
+
+namespace ProjectiveModulesTests.SplitKernel.OppositeMatrices
+
+-- Mathlib's matrix units and regular-module instances supply the coefficient data.
+private abbrev A := Matrix (Fin 2) (Fin 2) ℤ
+private abbrev R := Aᵐᵒᵖ
+private def e00 : A := Matrix.single 0 0 1
+private def e01 : A := Matrix.single 0 1 1
+
+private theorem e01_mul_e00 : e01 * e00 = 0 := by simp [e01, e00]
+private theorem e00_mul_e01 : e00 * e01 = e01 := by simp [e00, e01]
+private theorem e01_ne_zero : e01 ≠ 0 := by
+  intro h
+  have hentry : (1 : ℤ) = 0 := by
+    simpa [e01] using congrArg (fun a : A ↦ a 0 1) h
+  exact one_ne_zero hentry
+
+-- Left multiplication in R becomes right multiplication after unop.
+example (a x : R) : MulOpposite.unop (a • x) =
+    MulOpposite.unop x * MulOpposite.unop a := rfl
+
+example : MulOpposite.unop ((MulOpposite.op e00 : R) • MulOpposite.op e01) ≠
+    e00 * e01 := by
+  change e01 * e00 ≠ e00 * e01
+  rw [e01_mul_e00, e00_mul_e01]
+  exact Ne.symm e01_ne_zero
+
+private def f : (R × R) →ₗ[R] R := LinearMap.snd R R R
+private def s : R →ₗ[R] (R × R) := LinearMap.inr R R R
+private theorem f_comp_s : f.comp s = LinearMap.id := LinearMap.snd_comp_inr R R R
+private def π : (R × R) →ₗ[R] LinearMap.ker f :=
+  LinearMap.splitKernelProjection s f f_comp_s
+
+private theorem projection_apply (x : R × R) : (π x : R × R) = (x.1, 0) := by
+  calc
+    (π x : R × R) = x - s (f x) :=
+      LinearMap.splitKernelProjection_apply s f f_comp_s x
+    _ = (x.1, 0) := Prod.ext (sub_zero _) (sub_self _)
+
+private theorem projection_retract : π.comp (LinearMap.ker f).subtype = LinearMap.id :=
+  LinearMap.splitKernelProjection_comp_subtype s f f_comp_s
+
+example (k : LinearMap.ker f) : π k = k := LinearMap.congr_fun projection_retract k
+
+example (y : R) : π (s y) = 0 := by
+  apply Subtype.ext
+  rw [projection_apply]
+  rfl
+
+private def x : R × R := (MulOpposite.op e01, MulOpposite.op e00)
+
+example : (π x : R × R) = (MulOpposite.op e01, 0) := projection_apply x
+
+example : f x ≠ 0 := by
+  intro h
+  have hentry : (1 : ℤ) = 0 := by
+    simpa [f, x, e00] using congrArg (fun r : R ↦ MulOpposite.unop r 0 0) h
+  exact one_ne_zero hentry
+
+private theorem projection_x_ne_zero : π x ≠ 0 := by
+  intro h
+  have hval : (π x : R × R) = 0 := congrArg Subtype.val h
+  rw [projection_apply] at hval
+  exact e01_ne_zero (congrArg (fun z : R × R ↦ MulOpposite.unop z.1) hval)
+
+example (a : R) : π (a • x) = a • π x := π.map_smul a x
+
+example : π (MulOpposite.op e00 • x) = 0 := by
+  apply Subtype.ext
+  rw [projection_apply]
+  exact Prod.ext (congrArg MulOpposite.op e01_mul_e00) rfl
+
+-- The complementary diagonal coefficient has a nonzero ordered projection value.
+example : MulOpposite.unop
+    ((π (MulOpposite.op (Matrix.single 1 1 1 : A) • x) : R × R).1) = e01 ∧ e01 ≠ 0 := by
+  refine ⟨?_, e01_ne_zero⟩
+  rw [projection_apply]
+  change e01 * Matrix.single 1 1 1 = e01
+  simp [e01]
+
+-- The input witnesses use only Mathlib's regular module and product instances.
+example : Module.Free R R := inferInstance
+private theorem source_finite : Module.Finite R (R × R) := inferInstance
+private theorem source_projective : Module.Projective R (R × R) := inferInstance
+
+example : Module.Finite R (LinearMap.ker f) := by
+  let _ : Module.Finite R (R × R) := source_finite
+  exact LinearMap.finite_splitKernel s f f_comp_s
+
+example : Module.Projective R (LinearMap.ker f) := by
+  let _ : Module.Projective R (R × R) := source_projective
+  exact LinearMap.projective_splitKernel s f f_comp_s
+
+end ProjectiveModulesTests.SplitKernel.OppositeMatrices

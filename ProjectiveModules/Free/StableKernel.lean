@@ -7,6 +7,7 @@ module
 
 public import ProjectiveModules.Free.StablePresentation
 public import ProjectiveModules.Module.ProjectiveComplement
+public import ProjectiveModules.Module.ProjectiveKernel
 public import ProjectiveModules.Module.RightRegular
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 
@@ -136,14 +137,9 @@ theorem finite_isStablyFree_iff_exists_fin_surjective_ker_equiv
   · rintro ⟨m, n, f, hf, ⟨e⟩⟩
     let _ : Module.IsStablyFree R (LinearMap.ker f) :=
       Module.IsStablyFree.ker_of_surjective f hf
-    let split : ((Fin m → R) × LinearMap.ker f) ≃ₗ[R] (Fin n → R) :=
-      Module.Projective.prodKerEquivOfSurjective f hf
-    let _ : Module.Finite R ((Fin m → R) × LinearMap.ker f) :=
-      Module.Finite.equiv split.symm
-    have hkerFinite : Module.Finite R (LinearMap.ker f) :=
-      Module.Finite.of_surjective (LinearMap.snd R (Fin m → R) (LinearMap.ker f))
-        LinearMap.snd_surjective
-    let _ : Module.Finite R (LinearMap.ker f) := hkerFinite
+    obtain ⟨s, hs⟩ := Module.projective_lifting_property f LinearMap.id hf
+    let _ : Module.Finite R (LinearMap.ker f) :=
+      LinearMap.finite_splitKernel s f hs
     exact ⟨Module.Finite.equiv e.symm, Module.IsStablyFree.equiv e.symm⟩
 
 end Module
@@ -172,16 +168,11 @@ theorem finite_isStablyFree_ker_mulVecBilin_of_surjective
   let _ : Module.IsStablyFree Rᵐᵒᵖ (ι → R) := inferInstance
   have hstable := Module.IsStablyFree.ker_of_surjective
     (Matrix.mulVecBilin R Rᵐᵒᵖ A) hA
-  let split := Module.Projective.prodKerEquivOfSurjective
-    (Matrix.mulVecBilin R Rᵐᵒᵖ A) hA
-  let _ : Module.Finite Rᵐᵒᵖ ((ι → R) ×
-      LinearMap.ker (Matrix.mulVecBilin R Rᵐᵒᵖ A)) :=
-    Module.Finite.equiv split.symm
+  obtain ⟨s, hs⟩ := Module.projective_lifting_property
+    (Matrix.mulVecBilin R Rᵐᵒᵖ A) LinearMap.id hA
   have hkerFinite : Module.Finite Rᵐᵒᵖ
       (LinearMap.ker (Matrix.mulVecBilin R Rᵐᵒᵖ A)) :=
-    Module.Finite.of_surjective
-      (LinearMap.snd Rᵐᵒᵖ (ι → R)
-        (LinearMap.ker (Matrix.mulVecBilin R Rᵐᵒᵖ A))) LinearMap.snd_surjective
+    LinearMap.finite_splitKernel s (Matrix.mulVecBilin R Rᵐᵒᵖ A) hs
   exact ⟨hkerFinite, hstable⟩
 
 end Matrix

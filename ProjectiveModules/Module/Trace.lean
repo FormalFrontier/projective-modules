@@ -11,6 +11,7 @@ public import ProjectiveModules.Module.Trace.Cyclicity
 public import ProjectiveModules.Module.Trace.Dual
 public import ProjectiveModules.Module.Trace.Prod
 public import ProjectiveModules.Module.Trace.TensorProduct
+public import ProjectiveModules.Module.Trace.Pi
 
 /-!
 # Finite-projective endomorphism trace
