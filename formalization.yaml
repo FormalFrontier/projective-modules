@@ -988,6 +988,50 @@ status:
     - declaration: "Module.rightEndomorphism_bijective_of_quotientScalarExtension_bijective"
       file: "ProjectiveModules/Module/RightEndomorphismMatrix.lean"
       note: "Reflect finite right-module invertibility through a quasiregular two-sided quotient, not arbitrary quotients."
+    - declaration: "LinearMap.splitKernelProjection"
+      file: "ProjectiveModules/Module/ProjectiveKernel.lean"
+      note: >-
+        For Semiring R, AddCommGroup M and AddCommMonoid A with R-module
+        structures, R-linear maps i : A → M and r : M → A with r.comp i = id
+        give a projection M → ker r. Its underlying value is x - i (r x).
+        Scalar and both carrier universes are independent; no finiteness,
+        projectivity, freeness, Noetherian, commutativity or Small premise.
+        The projection follows Prism's formalization and uses Mathlib's
+        linear-map and kernel APIs.
+    - declaration: "LinearMap.splitKernelProjection_apply"
+      file: "ProjectiveModules/Module/ProjectiveKernel.lean"
+      note: >-
+        The coerced projection value is x - i (r x), over any semiring with
+        additive-commutative-group source M and additive-commutative-monoid
+        target A, R-linear i : A → M, r : M → A and r.comp i = id.
+        No finite or projective premise; all three universes are independent.
+    - declaration: "LinearMap.splitKernelProjection_comp_subtype"
+      file: "ProjectiveModules/Module/ProjectiveKernel.lean"
+      note: >-
+        The projection composed with (ker r).subtype is the identity on ker r.
+        Only Semiring R, AddCommGroup M, AddCommMonoid A, their R-module
+        structures and R-linear i : A → M, r : M → A with r.comp i = id
+        are required, with independent scalar and carrier universes.
+    - declaration: "LinearMap.finite_splitKernel"
+      file: "ProjectiveModules/Module/ProjectiveKernel.lean"
+      note: >-
+        For Semiring R, AddCommGroup M and AddCommMonoid A with R-module
+        structures, R-linear i : A → M, r : M → A and r.comp i = id,
+        Module.Finite R M gives Module.Finite R (ker r). Source projectivity
+        is not required, nor target finiteness or projectivity, freeness,
+        Noetherian or commutative scalars, or Small. All three universes
+        are independent. The proof uses the projection retraction and
+        Mathlib's Module.Finite.of_surjective.
+    - declaration: "LinearMap.projective_splitKernel"
+      file: "ProjectiveModules/Module/ProjectiveKernel.lean"
+      note: >-
+        For Semiring R, AddCommGroup M and AddCommMonoid A with R-module
+        structures, R-linear i : A → M, r : M → A and r.comp i = id,
+        Module.Projective R M gives Module.Projective R (ker r). No source
+        finiteness or target finiteness/projectivity is required, nor
+        freeness, Noetherian or commutative scalars, or Small. All three
+        universes are independent. The proof reuses Mathlib's
+        Module.Projective.of_split with the kernel inclusion and projection.
     - declaration: "Module.Projective.exists_fin_generating_family_iff_exists_prod_equiv"
       file: "ProjectiveModules/Module/ProjectiveComplement.lean"
       note: "Explicit n-generator/projective-complement equivalence, including the zero-generator case."

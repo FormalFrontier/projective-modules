@@ -313,6 +313,17 @@ the Formal Frontier source-maintainer team.
   assuming that the presented module is free, that the ring is commutative,
   or that a rank condition holds. This is not the generators-and-relations
   notion `Module.FinitePresentation`.
+- **Split kernels:** Over any semiring `R`, let `M` be an additive commutative
+  group and `A` an additive commutative monoid, each with an `R`-module structure.
+  Given `i : A →ₗ[R] M` and `r : M →ₗ[R] A` with `r.comp i = LinearMap.id`, the
+  [split-kernel interface](ProjectiveModules/Module/ProjectiveKernel.lean) projects
+  `x` to `x - i (r x)` in `LinearMap.ker r` and retracts the kernel inclusion.
+  `LinearMap.finite_splitKernel` makes the kernel finitely generated when `M` is
+  finitely generated, without source projectivity; independently,
+  `LinearMap.projective_splitKernel` makes it projective when `M` is projective,
+  without source finiteness. Neither conclusion requires finiteness or
+  projectivity of `A`, freeness, Noetherian or commutative scalars, or a `Small`
+  premise. Scalar and both carrier universes are independent.
 - **Stably free kernels:** A surjection from a stably free module onto a finite
   stably free module has stably free kernel. Finite stably free modules are
   precisely kernels of surjections between finite coordinate modules;
@@ -519,6 +530,7 @@ aggregate import.
 | [Right endomorphism matrices and coefficient transport](ProjectiveModules/Module/RightEndomorphismMatrix.lean) | Semiring coefficient transport with finite source and arbitrary target; supplied equivalences with both indices finite; column convention for square endomorphism matrices, finite-coordinate Ring tensor bridges and quasi-regular quotient unit reflection |
 | [Local projectives](ProjectiveModules/Module/LocalProjective.lean), [arbitrary local freeness](ProjectiveModules/Module/ArbitraryLocalProjectiveFree.lean), [local scalar interface](ProjectiveModules/Module/LocalRing.lean) | Finite, countable and arbitrary-rank right-module routes under proper-ideal/unit-complement hypotheses; `IsLocalRing` scalar formulation |
 | [Countably generated](ProjectiveModules/Module/CountablyGenerated.lean), [Noetherian submodules](ProjectiveModules/Module/CountablyGenerated/Noetherian.lean), [filtration](ProjectiveModules/Module/TransfiniteRangeBasis.lean) | Sequence-span predicate, submodule theorem, invariant countable supports and split-range assembly |
+| [Split kernels](ProjectiveModules/Module/ProjectiveKernel.lean) | Explicit section/retraction over any semiring, with additive-group source and additive-monoid target; kernel projection/application and inclusion-retraction laws; independent finite-source and projective-source closure, without target finiteness or projectivity and with independent universes |
 | [Complements](ProjectiveModules/Module/ProjectiveComplement.lean), [right inverse defects](ProjectiveModules/Module/RightRegularDefect.lean), [Hom exactness](ProjectiveModules/Module/HomExact.lean) | Splittings and additive Hom exactness over semirings; specified right regular decomposition and defect kernel over rings |
 | [Finite-projective category](ProjectiveModules/Category/FiniteProjective.lean), [stable category](ProjectiveModules/Category/Stable.lean) | Finite biproducts, preadditive stable quotient and small-ring Ext¹ detection |
 | [Projective scalar towers](ProjectiveModules/Module/ScalarRestriction.lean), [finite-projective restriction](ProjectiveModules/Category/FiniteProjectiveRestriction.lean) | Projectivity through semiring towers with projective coefficients; finite-projective ring-homomorphism restriction under its canonical coefficient hypothesis, with carrier, stored-action and map-application laws, both directions of the underlying-functor comparison, and identity/composition functor laws |

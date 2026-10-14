@@ -7,6 +7,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.Module.CountablyGenerated
+public import ProjectiveModules.Module.ProjectiveKernel
 public import Mathlib.Algebra.Category.ModuleCat.Biproducts
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.LinearAlgebra.Projection
@@ -159,42 +160,6 @@ noncomputable def supportedRangeProdComplementEquiv
       (g := r) (f := i) Subtype.val_injective
       (Submodule.range_subtype _) hsplit
 
-/-- Projection from a split module onto the kernel of its retraction. -/
-def splitKernelProjection {A M : Type*}
-    [AddCommGroup A] [Module R A] [AddCommGroup M] [Module R M]
-    (i : A →ₗ[R] M) (r : M →ₗ[R] A)
-    (h : r.comp i = LinearMap.id) : M →ₗ[R] LinearMap.ker r :=
-  LinearMap.codRestrict (LinearMap.ker r)
-    (LinearMap.id - i.comp r) fun x ↦ by
-      rw [LinearMap.mem_ker]
-      change r (x - i (r x)) = 0
-      rw [map_sub, show r (i (r x)) = r x by
-        rw [← LinearMap.comp_apply, h, LinearMap.id_apply], sub_self]
-
-/-- The split-kernel projection retracts the kernel subtype. -/
-theorem splitKernelProjection_comp_subtype {A M : Type*}
-    [AddCommGroup A] [Module R A] [AddCommGroup M] [Module R M]
-    (i : A →ₗ[R] M) (r : M →ₗ[R] A)
-    (h : r.comp i = LinearMap.id) :
-    (splitKernelProjection i r h).comp (LinearMap.ker r).subtype =
-      LinearMap.id := by
-  apply LinearMap.ext
-  intro x
-  apply Subtype.ext
-  change x - i (r x) = x
-  rw [LinearMap.mem_ker.mp x.2, map_zero, sub_zero]
-
-/-- The kernel of a retraction from a projective module is projective. -/
-theorem projective_splitKernel {A M : Type*}
-    [AddCommGroup A] [Module R A] [AddCommGroup M] [Module R M]
-    [Module.Projective R M]
-    (i : A →ₗ[R] M) (r : M →ₗ[R] A)
-    (h : r.comp i = LinearMap.id) :
-    Module.Projective R (LinearMap.ker r) :=
-  Module.Projective.of_split (LinearMap.ker r).subtype
-    (splitKernelProjection i r h)
-    (splitKernelProjection_comp_subtype i r h)
-
 /-- The complement of an earlier invariant supported range piece in a later
 one is projective. -/
 theorem supportedRangeComplement_projective
@@ -312,11 +277,7 @@ theorem supportedDifferenceToComplement_surjective
   simp only [supportedDifferenceToComplement, LinearMap.comp_apply]
   rw [htoRange]
   apply Subtype.ext
-  change (y : p.supportedRange t) -
-      p.supportedRangeInclusion hst
-        (p.supportedRangeRetraction s t hs (y : p.supportedRange t)) =
-    (y : p.supportedRange t)
-  rw [LinearMap.mem_ker.mp y.2, map_zero]
+  rw [splitKernelProjection_apply, hker, map_zero]
   exact sub_zero (y : p.supportedRange t)
 
 /-- If the coordinate increment is countable, the complement of the earlier

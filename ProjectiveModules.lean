@@ -66,6 +66,7 @@ public import ProjectiveModules.Module.LocallyConstantRank
 public import ProjectiveModules.Module.MinimalSupport
 public import ProjectiveModules.Module.PID
 public import ProjectiveModules.Module.ProjectiveComplement
+public import ProjectiveModules.Module.ProjectiveKernel
 public import ProjectiveModules.Module.QuotientHom
 public import ProjectiveModules.Module.SummandCancellation
 public import ProjectiveModules.Module.RankFiberDecomposition
