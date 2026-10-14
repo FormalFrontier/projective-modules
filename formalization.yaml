@@ -28,8 +28,9 @@ project:
     For commutative semirings and finitely generated projective modules with
     additive commutative monoid structure, contraction gives a linear
     endomorphism trace without choosing a basis. Its rank-one evaluation,
-    conjugation invariance and finite-free comparison with the finite-basis
-    trace retain independent scalar and carrier universes. On nonfree
+    conjugation and dual-map invariance, cyclicity for maps between two finite projective
+    modules and finite-free comparison with the finite-basis trace retain
+    independent scalar and carrier universes. On nonfree
     projectives it need not be a natural multiple of the scalar unit.
     Product endomorphisms have the sum of their factor traces; diagonal
     inclusion-projection blocks have the factor traces and off-diagonal blocks
@@ -271,6 +272,9 @@ status:
     - declaration: "LinearMap.traceOfFiniteProjective_conj"
       file: "ProjectiveModules/Module/Trace/Conjugation.lean"
       note: "Invariance under linear equivalence between finite projective carriers in independent universes."
+    - declaration: "LinearMap.traceOfFiniteProjective_dualMap"
+      file: "ProjectiveModules/Module/Trace/Dual.lean"
+      note: "The trace of the dual endomorphism equals the trace of the original endomorphism for finite projective modules over a commutative semiring, with independent scalar and carrier universes and the pointwise dual action."
     - declaration: "LinearMap.traceOfFiniteProjective_eq_trace"
       file: "ProjectiveModules/Module/Trace/Comparison.lean"
       note: "Finite-free semiring comparison with Mathlib's finite-basis trace; not a universal assertion for nonfree projectives."
@@ -1189,6 +1193,9 @@ status:
         the finite coordinate module of size n to itself times P forcing P to
         be subsingleton, for complements P in the ring's universe. No
         arbitrary-semiring converse is claimed.
+    - declaration: "LinearMap.traceOfFiniteProjective_comp_comm"
+      file: "ProjectiveModules/Module/Trace/Cyclicity.lean"
+      note: "The traces of g.comp f and f.comp g agree for maps between two finite projective additive-commutative-monoid modules over a commutative semiring, with independent scalar and carrier universes."
 
 automation:
   methods:

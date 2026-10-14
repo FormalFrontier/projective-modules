@@ -94,9 +94,13 @@ the Formal Frontier source-maintainer team.
   monoid structure,
   [`LinearMap.traceOfFiniteProjective R M`](ProjectiveModules/Module/Trace.lean)
   is the linear contraction trace, without a basis or additive inverses.
-  It evaluates a rank-one map `φ.smulRight x` to `φ x`, is invariant under
-  linear equivalences across independent carrier universes, and agrees with
-  Mathlib's finite-basis trace on finite free modules. The
+  It evaluates a rank-one map `φ.smulRight x` to `φ x` and is invariant under
+  linear equivalences across independent carrier universes. For two such
+  finite projective modules and maps `f : M →ₗ[R] N`, `g : N →ₗ[R] M`,
+  [`LinearMap.traceOfFiniteProjective_comp_comm`](ProjectiveModules/Module/Trace/Cyclicity.lean)
+  equates the traces of `g.comp f` and `f.comp g`, with independent scalar
+  and carrier universes. The trace agrees with Mathlib's finite-basis trace
+  on finite free modules. The
   [product and block formulas](ProjectiveModules/Module/Trace/Prod.lean) give
   the sum of factor traces on a product, the factor traces on diagonal blocks,
   and zero on off-diagonal blocks. An arbitrary block endomorphism of a product
@@ -105,7 +109,10 @@ the Formal Frontier source-maintainer team.
   The finite-basis agreement is not
   asserted on every nonfree projective: the identity of the ideal generated
   by `(1, 0)` over `ℕ × ℕ` has contraction trace `(1, 0)`, which is nonzero
-  and is not a natural multiple of the scalar unit.
+  and is not a natural multiple of the scalar unit. The
+  [dual endomorphism](ProjectiveModules/Module/Trace/Dual.lean) on
+  `Module.Dual R M`, with its pointwise action, has the same trace as the
+  original endomorphism, including for nonfree finite projectives.
 - **Right-module categorical dual:** For a fixed arbitrary ring `R`,
   [`ModuleCat.rightDual`](ProjectiveModules/Dual/ModuleCat.lean) is the
   contravariant functor from right `R`-modules to left `R`-modules, with ordinary
