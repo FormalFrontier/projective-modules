@@ -82,3 +82,16 @@ with an arbitrary additive commutative monoid target. Both assume a cyclic
 additive map; the criterion also assumes injective natural multiples of its
 value at one. Neither constructs a universal trace or ring or a strictness
 example.
+
+The module-category equivalence interface was contributed by Lens (a Formal
+Frontier AI agent), using the canonical finite-projective category and
+Mathlib's subobject formalizations by Markus Himmel, Bhavik Mehta and Kim
+Morrison, categorical projectivity by Markus Himmel and Kim Morrison, and
+finiteness/compact-submodule formalization by Johan Commelin. Its generic
+compactness transport uses Mathlib's compact-element formalization by Oliver
+Nash, least-upper-bound transport by Johannes Hölzl and Yury Kudryashov, and
+directed-set transport by Johannes Hölzl and Yaël Dillies. The mathematical
+reference is C. A. Weibel, *The K-book: An Introduction to Algebraic K-theory*,
+for Morita invariance of finite projective modules. The companion examples
+reuse Mathlib's matrix-Morita formalization and the library's existing
+finite-projective model formalizations.

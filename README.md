@@ -159,6 +159,14 @@ the Formal Frontier source-maintainer team.
   and `[IsLocalRing R]`, with independent scalar and module universes and
   no finite or countable generation hypothesis. Commutativity is not required;
   right modules are recovered by specializing the scalars to `Rᵐᵒᵖ`.
+- **Module-category equivalences:** For arbitrary rings `R : Type uR` and
+  `S : Type uS`, a given equivalence `ModuleCat.{vR} R ≌ ModuleCat.{vS} S`
+  preserves and reflects finite generation, with independent scalar and carrier
+  universes. The [preservation interface](ProjectiveModules/Category/ModuleEquivalence.lean)
+  also preserves finite projectivity when the target carrier universe is
+  `max uS vS`, with unrestricted source carrier universe; it preserves and
+  reflects finite projectivity when both carriers are at the corresponding
+  maxima. There is no linearity, commutativity or freeness premise.
 - **Projectivity under scalar restriction:** Over semirings `R` and `S`,
   [`Module.Projective.trans`](ProjectiveModules/Module/ScalarRestriction.lean)
   makes any projective `S`-module `M` projective over `R` when `S` is
@@ -555,6 +563,8 @@ aggregate import.
 | [Complements](ProjectiveModules/Module/ProjectiveComplement.lean), [right inverse defects](ProjectiveModules/Module/RightRegularDefect.lean), [Hom exactness](ProjectiveModules/Module/HomExact.lean) | Splittings and additive Hom exactness over semirings; specified right regular decomposition and defect kernel over rings |
 | [Finite-projective category](ProjectiveModules/Category/FiniteProjective.lean), [stable category](ProjectiveModules/Category/Stable.lean) | Finite biproducts, preadditive stable quotient and small-ring Ext¹ detection |
 | [Projective scalar towers](ProjectiveModules/Module/ScalarRestriction.lean), [finite-projective restriction](ProjectiveModules/Category/FiniteProjectiveRestriction.lean) | Projectivity through semiring towers with projective coefficients; finite-projective ring-homomorphism restriction under its canonical coefficient hypothesis, with carrier, stored-action and map-application laws, both directions of the underlying-functor comparison, and identity/composition functor laws |
+| [Module-category equivalences](ProjectiveModules/Category/ModuleEquivalence.lean) | Finite-generation preservation and reflection at independent universes; finite-projective preservation with unrestricted source and target at the scalar/carrier maximum, and reflection with both carriers at their maxima |
+| [Compact elements](ProjectiveModules/Order/CompactlyGenerated.lean) | Order isomorphisms preserve and reflect compact elements of arbitrary partial orders; no completeness or top element required |
 | [Finite-projective representatives](ProjectiveModules/Category/FiniteProjectiveSmallness.lean) | Derived ring-universe essential smallness at independent carrier universes; ring-sized representatives, linear equivalences and class equality in one reference skeleton |
 | [Finite dimension](ProjectiveModules/Category/FiniteModuleDimension.lean) | Finite-rank representative transport; finite-free categorical isomorphism criteria over strong-rank-condition rings |
 | [Finite stabilization](ProjectiveModules/Module/FiniteStabilization.lean) | Replace a finite projective common stabilizer by a common standard finite free one; no hypotheses on the two ambient modules |

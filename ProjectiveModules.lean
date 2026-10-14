@@ -10,6 +10,7 @@ public import ProjectiveModules.Category.FiniteModuleDimension
 public import ProjectiveModules.Category.FiniteProjective
 public import ProjectiveModules.Category.FiniteProjectiveRestriction
 public import ProjectiveModules.Category.FiniteProjectiveSmallness
+public import ProjectiveModules.Category.ModuleEquivalence
 public import ProjectiveModules.Category.Stable
 public import ProjectiveModules.Contraction.BaseChange
 public import ProjectiveModules.Dual.ModuleCat
@@ -86,6 +87,7 @@ public import ProjectiveModules.Module.RightExtensionTensorProduct
 public import ProjectiveModules.Module.Trace
 public import ProjectiveModules.Module.TransfiniteCoordinateFiltration
 public import ProjectiveModules.Module.TransfiniteRangeBasis
+public import ProjectiveModules.Order.CompactlyGenerated
 
 /-!
 # Projective module interfaces

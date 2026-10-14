@@ -15,6 +15,12 @@ project:
     classification. Noncommutative and commutative results retain their distinct
     hypotheses; rank classification is not asserted for all finite projectives
     over arbitrary rings.
+    Given an equivalence of module categories over arbitrary rings, finite
+    generation is preserved and reflected with independent scalar and carrier
+    universes. Finite projectivity is preserved with an unrestricted source
+    carrier and target carrier at its scalar/carrier maximum, and is reflected
+    when both carriers are at their corresponding maxima. No linearity,
+    commutativity or freeness premise is imposed on this equivalence interface.
     Ordinary-coefficient evaluation gives an R-linear equivalence
     M ≃ₗ[R] ((M →ₗ[R] R) →ₗ[Rᵐᵒᵖ] R) for any semiring R and finitely
     generated projective left R-module M with additive commutative monoid
@@ -503,6 +509,30 @@ status:
     - declaration: "ModuleCat.FiniteProjective"
       file: "ProjectiveModules/Category/FiniteProjective.lean"
       note: "Finite projective modules as a full additive subcategory with finite biproducts over arbitrary rings."
+    - declaration: "ModuleCat.finite_iff_of_equivalence"
+      file: "ProjectiveModules/Category/ModuleEquivalence.lean"
+      note: >-
+        A given ModuleCat.{vR} R ≌ ModuleCat.{vS} S preserves and reflects
+        Module.Finite over arbitrary rings, with independent scalar universes
+        uR, uS and carrier universes vR, vS.
+    - declaration: "ModuleCat.isFiniteProjective_of_equivalence"
+      file: "ProjectiveModules/Category/ModuleEquivalence.lean"
+      note: >-
+        A given ModuleCat.{vR} R ≌ ModuleCat.{max uS vS} S sends the canonical
+        finite-projective object property to itself. The source carrier is
+        unrestricted; Small is not a public premise.
+    - declaration: "ModuleCat.isFiniteProjective_iff_of_equivalence"
+      file: "ProjectiveModules/Category/ModuleEquivalence.lean"
+      note: >-
+        A given ModuleCat.{max uR vR} R ≌ ModuleCat.{max uS vS} S preserves
+        and reflects the canonical finite-projective object property, with
+        no linearity, commutativity or freeness assumption.
+    - declaration: "OrderIso.isCompactElement"
+      file: "ProjectiveModules/Order/CompactlyGenerated.lean"
+      note: "Order isomorphisms map compact elements to compact elements in arbitrary partial orders."
+    - declaration: "OrderIso.isCompactElement_iff"
+      file: "ProjectiveModules/Order/CompactlyGenerated.lean"
+      note: "Compact-element preservation and reflection at independent universes, without completeness or a top element."
     - declaration: "ModuleCat.finiteProjectiveEssentiallySmall"
       file: "ProjectiveModules/Category/FiniteProjectiveSmallness.lean"
       note: >-
@@ -1299,3 +1329,11 @@ acknowledgements: >-
   Mathlib's tensor universal property, commutation, tensor maps and module
   transport; the scalar-first target follows Jujian Zhang's Mathlib
   change-of-rings formalization.
+  The module-category equivalence interface contributed by Lens uses
+  Mathlib's subobject formalizations by Markus Himmel, Bhavik Mehta and Kim
+  Morrison, categorical projectivity by Markus Himmel and Kim Morrison,
+  and finiteness/compact-submodule formalization by Johan Commelin. The
+  generic compactness transport uses compact elements by Oliver Nash,
+  least-upper-bound transport by Johannes Hölzl and Yury Kudryashov, and
+  directed-set transport by Johannes Hölzl and Yaël Dillies. Weibel's K-book
+  supplies the mathematical reference for Morita invariance.
