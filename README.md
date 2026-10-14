@@ -116,7 +116,11 @@ the Formal Frontier source-maintainer team.
   and is not a natural multiple of the scalar unit. The
   [dual endomorphism](ProjectiveModules/Module/Trace/Dual.lean) on
   `Module.Dual R M`, with its pointwise action, has the same trace as the
-  original endomorphism, including for nonfree finite projectives.
+  original endomorphism, including for nonfree finite projectives. The
+  [tensor-product formula](ProjectiveModules/Module/Trace/TensorProduct.lean)
+  multiplies the factor traces for endomorphisms of two finite projective
+  additive-commutative-monoid modules, with independent scalar and factor
+  universes. It is available in bilinear and pointwise forms.
 - **Right-module categorical dual:** For a fixed arbitrary ring `R`,
   [`ModuleCat.rightDual`](ProjectiveModules/Dual/ModuleCat.lean) is the
   contravariant functor from right `R`-modules to left `R`-modules, with ordinary

@@ -33,6 +33,9 @@ project:
     independent scalar and carrier universes. If the module is an additive
     commutative group, additivity and cyclicity give trace zero on additive
     commutators; no ring structure on the scalar semiring is required.
+    For two finite projective additive-commutative-monoid modules, tensoring
+    endomorphisms multiplies their traces, with independent scalar and factor
+    universes. Both bilinear and pointwise forms are provided.
     On nonfree projectives it need not be a natural multiple of the scalar unit.
     Product endomorphisms have the sum of their factor traces; diagonal
     inclusion-projection blocks have the factor traces and off-diagonal blocks
@@ -1198,6 +1201,19 @@ status:
     - declaration: "LinearMap.traceOfFiniteProjective_comp_comm"
       file: "ProjectiveModules/Module/Trace/Cyclicity.lean"
       note: "The traces of g.comp f and f.comp g agree for maps between two finite projective additive-commutative-monoid modules over a commutative semiring, with independent scalar and carrier universes."
+    - declaration: "LinearMap.traceOfFiniteProjective_tensorProduct"
+      file: "ProjectiveModules/Module/Trace/TensorProduct.lean"
+      note: >-
+        Applying the contraction trace after the bilinear tensor-product map
+        equals multiplying the two factor traces for finite projective
+        additive-commutative-monoid modules over a commutative semiring, with
+        independent scalar and factor universes.
+    - declaration: "LinearMap.traceOfFiniteProjective_tensorProduct'"
+      file: "ProjectiveModules/Module/Trace/TensorProduct.lean"
+      note: >-
+        The contraction trace of TensorProduct.map f g is the product of the
+        factor traces, for endomorphisms of finite projective
+        additive-commutative-monoid modules over a commutative semiring.
 
 automation:
   methods:
