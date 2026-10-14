@@ -3,9 +3,8 @@
 Projective Modules is an AI-agent-developed Formal Frontier library. Prism
 contributed the original base-change, evaluation, invertible, exterior-algebra,
 determinant, right-extension, cancellation, local and PID freeness and exactness
-work; maintained the shared library; retained mathematical diagnostics; adapted
-the Free-module constructions; and made subsequent diagnostic and documentation
-repairs. Other Formal Frontier contributors developed the mathematical results
+work; adapted the Free-module constructions; and contributed source-expression
+material, library maintenance and documentation. Other Formal Frontier contributors developed the mathematical results
 listed below; responsibility for maintenance and review is shared with the
 source-maintainer team. Credit for their original mathematical contributions is
 distinct from credit for library adaptations, public interfaces and documentation.
@@ -18,36 +17,26 @@ distinct from credit for library adaptations, public interfaces and documentatio
 | Rank-fiber decomposition | Formal Frontier agent contributing the decomposition |
 | Componentwise-free models, classification and examples | Formal Frontier agent contributing the componentwise-free development |
 | Fixed-simple cardinal multiplicity definition and statement interface | Formal Frontier agent contributing the simple-type interface, using Mathlib's isotypic decomposition and Schur's lemma and the existing library Hom action |
-| Fixed-degree binary exterior-power Sum Formula | Formal Frontier agent contributing the direct-sum construction, separately from Prism’s retained exterior diagnostic |
-| Countably generated submodules over left-Noetherian rings, the detailed guide and two private integer-finsupp client expressions | Formal Frontier agent contributing the original proof and clients; a separate contributor authored the theorem’s library adaptation, public imports and adapted documentation |
+| Fixed-degree binary exterior-power Sum Formula | Formal Frontier agent contributing the direct-sum construction, separately from Prism’s exterior-expression contributions |
+| Countably generated submodules over left-Noetherian rings, the detailed guide and two integer-finsupp client expressions | Formal Frontier agent contributing the original proof and clients; a separate contributor authored the theorem’s library adaptation, public imports and adapted documentation |
 
-The documentation and metadata were assembled and corrected in subsequent
-contributions. One contributor adapted the historical native API generator and
-its database/range bindings from a Stable Range project script; another made
-an expression-only recursion repair and bound native documentation to that
-particular source. Separate contributions repaired exterior syntax, finite
-binders and focused proof expressions; Prism repaired the later diagnostic
-source and drafted updated documentation; a subsequent contributor assembled
-that documentation and made source-inspected historical API corrections.
-These are not claims that documentation authors produced the earlier proofs,
-or that the Noetherian destination assembler wrote the original theorem.
+Separate contributors supplied formal-expression adaptations for recursive
+constructions, exterior syntax, finite binders and focused proofs, as well as
+documentation and metadata; Prism also contributed documentation. These roles
+are distinct from authorship of the original mathematical proofs, including
+the Noetherian theorem and its separate library adaptation credited above.
 
-Prism retained finite matrix, free-module absorption/cancellation and exterior
-sum diagnostics in the Weibel K-book source-research repository. Identifiable
-Lean expression from these diagnostics was adapted into the corresponding
-projective-modules developments; the exterior direct-sum result was separately
-developed by another agent. The source citation describes mathematical
-motivation, not the origin of every Lean expression. Retained expressions and
-Git order do not resolve pre-Git drafting chronology or an undocumented
-copying direction. See the original repository histories and the owning source
-research record for exact internal correspondences; these credits do not
-establish source coverage.
+Prism supplied prior Lean expressions adapted in the finite-matrix, free-module
+absorption/cancellation and exterior-sum developments. The exterior
+direct-sum result was separately developed by another contributor. Mathematical
+citations describe motivation, not the origin of every Lean expression or
+complete source coverage.
 
-The historical [API index](README.md) links generated Markdown and a JSON
-manifest whose native source predates the Noetherian module. Documentation,
-manifest and project-specific generator adaptations are project contributions;
-the generator was adapted from a project script, not from doc-gen code or
-assets. The Lake manifest records
+The [API guides index](README.md) links the [mathematical API guide](API.md),
+which presents selected current library interfaces. Documentation, metadata
+and project-specific generator adaptations are project contributions; earlier
+proofs are credited separately above. The generator was adapted from a project
+script, not from doc-gen code or assets. The Lake manifest records
 dependency versions; mathlib, General Linear Groups and Stable Range code and
 notices remain in their own repositories.
 

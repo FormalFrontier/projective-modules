@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+import ProjectiveModules.Module.ProjectiveComplement
 import ProjectiveModules.Module.ProjectiveKernel
 import ProjectiveModules.Module.RightRegular
 import ProjectiveModules.Module.RightExtensionIdeal
@@ -74,12 +75,104 @@ example : Function.Surjective q :=
 /-- The complementary idempotent span is the other summand of the regular module. -/
 def complementarySplit : (I × J) ≃ₗ[S] A := hb.spanProdEquiv.trans opEquiv.symm
 
+-- Over an arbitrary ring these formulas preserve the order of right coefficients.
+example {R : Type*} [Ring R] {e : R} (he : IsIdempotentElem e) (x r s : R) :
+    let h : IsIdempotentElem (MulOpposite.op e) :=
+      congrArg (MulOpposite.op : R → Rᵐᵒᵖ) he.eq
+    ((h.spanProdEquiv.symm (MulOpposite.op ((x * r) * s))).1 : Rᵐᵒᵖ).unop =
+        ((e * x) * r) * s ∧
+      ((h.spanProdEquiv.symm (MulOpposite.op ((x * r) * s))).2 : Rᵐᵒᵖ).unop =
+        (((1 - e) * x) * r) * s := by
+  intro h
+  constructor
+  · rw [IsIdempotentElem.spanProdEquiv_symm_apply_fst]
+    simp [← mul_assoc]
+  · rw [IsIdempotentElem.spanProdEquiv_symm_apply_snd]
+    simp [← mul_assoc]
+
 def nonzeroKernelVector : LinearMap.ker q := ⟨(0, 1), by
   apply Subtype.ext
   simp [q, projection, opEquiv, b, e, ← MulOpposite.op_mul]⟩
 
 example : nonzeroKernelVector ≠ 0 :=
   fun h ↦ one_ne_zero (congrArg (fun k : LinearMap.ker q ↦ k.val.2) h)
+
+-- On the kernel axis, the chosen lift contributes only its value at zero.
+example :
+    let hf := LinearMap.surjective_of_comp_eq_id sectionMap q q_comp_sectionMap
+    let C := Module.Projective.prodKerEquivOfSurjective
+      (R := S) (F := A) (P := I) q hf
+    C (0, nonzeroKernelVector) =
+        ((LinearEquiv.prodComm S I (LinearMap.ker q)).trans
+          (LinearMap.kerProdEquivOfRightInverse q
+            (Classical.choose (Module.projective_lifting_property
+              q (LinearMap.id (R := S) (M := I)) hf))
+            (Classical.choose_spec (Module.projective_lifting_property
+              q (LinearMap.id (R := S) (M := I)) hf)))) (0, nonzeroKernelVector) ∧
+      C (0, nonzeroKernelVector) = (0, 1) ∧
+      (C.symm (0, 1)).2.val = (0, 1) := by
+  dsimp only
+  refine ⟨?_, ?_, ?_⟩
+  · rw [Module.Projective.prodKerEquivOfSurjective_eq_prodComm_trans]
+  · rw [Module.Projective.prodKerEquivOfSurjective_apply]
+    simp only [nonzeroKernelVector, map_zero, add_zero]
+  · rw [Module.Projective.prodKerEquivOfSurjective_symm_snd]
+    have hq : q (0, 1) = 0 := LinearMap.mem_ker.mp nonzeroKernelVector.property
+    rw [hq, map_zero, sub_zero]
+
+-- In the ordinary carrier the opposite-ring projection is left multiplication.
+example (x : A) :
+    (((LinearMap.kerProdEquivOfRightInverse q sectionMap q_comp_sectionMap).symm x).2 :
+      S).unop = e * x := by
+  rw [LinearMap.kerProdEquivOfRightInverse_symm_snd]
+  simp [q, projection, opEquiv, b]
+
+example (x : A) :
+    ((LinearMap.kerProdEquivOfRightInverse q sectionMap q_comp_sectionMap).symm x).1.val =
+      (1 - e) * x := by
+  rw [LinearMap.kerProdEquivOfRightInverse_symm_fst]
+  simp [sectionMap, q, projection, opEquiv, b, sub_mul]
+
+example : LinearMap.kerProdEquivOfRightInverse q sectionMap q_comp_sectionMap
+    (nonzeroKernelVector, q (1, 0)) = (1, 1) := by
+  rw [LinearMap.kerProdEquivOfRightInverse_apply]
+  simp [nonzeroKernelVector, sectionMap, q, projection, opEquiv, b, e]
+
+example :
+    (LinearMap.kerProdEquivOfRightInverse q sectionMap q_comp_sectionMap).symm (1, 1) =
+      (nonzeroKernelVector, q (1, 0)) := by
+  apply Prod.ext
+  · apply Subtype.ext
+    rw [LinearMap.kerProdEquivOfRightInverse_symm_fst]
+    simp [nonzeroKernelVector, sectionMap, q, projection, opEquiv, b, e]
+  · apply Subtype.ext
+    rw [LinearMap.kerProdEquivOfRightInverse_symm_snd]
+    apply MulOpposite.unop_injective
+    simp [q, projection, opEquiv, b, e]
+
+example :
+    ((LinearMap.kerProdEquivOfRightInverse q sectionMap q_comp_sectionMap).symm
+      (1, 1)).1 ≠ 0 ∧
+      ((LinearMap.kerProdEquivOfRightInverse q sectionMap q_comp_sectionMap).symm
+        (1, 1)).2 ≠ 0 := by
+  constructor
+  · intro h
+    have hsnd := congrArg (fun k : LinearMap.ker q ↦ k.val.2) h
+    rw [LinearMap.kerProdEquivOfRightInverse_symm_fst] at hsnd
+    simp [sectionMap, q, projection, opEquiv, b, e] at hsnd
+  · intro h
+    have hfst := congrArg (fun p : I ↦ (p : S).unop.1) h
+    rw [LinearMap.kerProdEquivOfRightInverse_symm_snd] at hfst
+    simp [q, projection, opEquiv, b, e] at hfst
+
+example :
+    LinearMap.kerProdEquivOfRightInverse q sectionMap q_comp_sectionMap
+        ((LinearMap.kerProdEquivOfRightInverse q sectionMap q_comp_sectionMap).symm
+          (1, 1)) = (1, 1) ∧
+      (LinearMap.kerProdEquivOfRightInverse q sectionMap q_comp_sectionMap).symm
+        (LinearMap.kerProdEquivOfRightInverse q sectionMap q_comp_sectionMap
+          (nonzeroKernelVector, q (1, 0))) = (nonzeroKernelVector, q (1, 0)) :=
+  ⟨LinearEquiv.apply_symm_apply _ _, LinearEquiv.symm_apply_apply _ _⟩
 
 example : Module.Finite S (LinearMap.ker q) :=
   LinearMap.finite_splitKernel sectionMap q q_comp_sectionMap
@@ -134,6 +227,26 @@ lemma liftedQ_comp_section : liftedQ.comp liftedSection = LinearMap.id := by
     LinearEquiv.apply_symm_apply, LinearEquiv.symm_apply_apply, q_sectionMap,
     LinearMap.id_apply]
 
+-- These coordinates retain the distinct source and target universe lifts.
+example (x : ULift.{1} A) :
+    (((LinearMap.kerProdEquivOfRightInverse liftedQ liftedSection
+      liftedQ_comp_section).symm x).1.val).down = (1 - e) * x.down := by
+  rw [LinearMap.kerProdEquivOfRightInverse_symm_fst]
+  simp [liftedSection, liftedQ, sourceDown, targetDown, sectionMap, q, projection,
+    opEquiv, b, sub_mul]
+
+example (x : ULift.{1} A) :
+    ((((LinearMap.kerProdEquivOfRightInverse liftedQ liftedSection
+      liftedQ_comp_section).symm x).2).down : S).unop = e * x.down := by
+  rw [LinearMap.kerProdEquivOfRightInverse_symm_snd]
+  simp [liftedQ, sourceDown, targetDown, q, projection, opEquiv, b]
+
+example :
+    LinearMap.kerProdEquivOfRightInverse liftedQ liftedSection liftedQ_comp_section
+        ((LinearMap.kerProdEquivOfRightInverse liftedQ liftedSection
+          liftedQ_comp_section).symm (ULift.up (1, 1))) = ULift.up (1, 1) :=
+  LinearEquiv.apply_symm_apply _ _
+
 example : Module.Finite S (LinearMap.ker liftedQ) :=
   LinearMap.finite_splitKernel liftedSection liftedQ liftedQ_comp_section
 
@@ -149,6 +262,16 @@ lemma zeroRetraction_comp : zeroRetraction.comp zeroSection = LinearMap.id := by
   intro x
   exact Subsingleton.elim _ _
 
+example (x : A) :
+    LinearMap.kerProdEquivOfRightInverse zeroRetraction zeroSection zeroRetraction_comp
+      (⟨x, by simp [zeroRetraction]⟩, PUnit.unit) = x := by
+  simp [zeroSection]
+
+example (x : A) :
+    ((LinearMap.kerProdEquivOfRightInverse zeroRetraction zeroSection
+      zeroRetraction_comp).symm x).1.val = x := by
+  simp [zeroSection]
+
 example : Module.Finite S (LinearMap.ker zeroRetraction) :=
   LinearMap.finite_splitKernel zeroSection zeroRetraction zeroRetraction_comp
 
@@ -157,6 +280,19 @@ example : Module.Projective S (LinearMap.ker zeroRetraction) :=
 
 example : Module.Finite S (LinearMap.ker (LinearMap.id (R := S) (M := A))) :=
   LinearMap.finite_splitKernel LinearMap.id LinearMap.id (by simp)
+
+example (x : A) :
+    LinearMap.kerProdEquivOfRightInverse (LinearMap.id (R := S) (M := A))
+      LinearMap.id (by simp) (0, x) = x := by
+  rw [LinearMap.kerProdEquivOfRightInverse_apply]
+  simp
+
+example (x : A) :
+    ((LinearMap.kerProdEquivOfRightInverse (LinearMap.id (R := S) (M := A))
+      LinearMap.id (by simp)).symm x).1 = 0 := by
+  apply Subtype.ext
+  rw [LinearMap.kerProdEquivOfRightInverse_symm_fst]
+  simp
 
 end ProjectiveModulesTests.SplitKernel
 

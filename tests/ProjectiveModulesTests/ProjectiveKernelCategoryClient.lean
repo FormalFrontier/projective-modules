@@ -77,12 +77,31 @@ example (R : Type uR) [Ring R] [Nontrivial R] :
     let P := ModuleCat.FiniteProjective.of R (R × R)
     let Q := ModuleCat.FiniteProjective.of R R
     let f : P ⟶ Q := ModuleCat.FiniteProjective.ofHom R (LinearMap.fst R R R)
+    let C := LinearMap.kerProdEquivOfRightInverse f.hom.hom
+      (LinearMap.inl R R R) (LinearMap.fst_comp_inl R R R)
     HasKernel f ∧ Function.Surjective f.hom.hom ∧
-      ∃ k : LinearMap.ker f.hom.hom, k.val ≠ 0 := by
+      ∃ k : LinearMap.ker f.hom.hom, k.val ≠ 0 ∧
+        C (k, 1) = (1, 1) ∧ C.symm (1, 1) = (k, 1) ∧
+        C (C.symm (1, 1)) = (1, 1) ∧ C.symm (C (k, 1)) = (k, 1) := by
+  have hfst : (ModuleCat.FiniteProjective.ofHom R (LinearMap.fst R R R)).hom.hom =
+      LinearMap.fst R R R :=
+    ConcreteCategory.hom_ofHom (C := ModuleCat.FiniteProjective R)
+      (X := ModuleCat.FiniteProjective.of R (R × R))
+      (Y := ModuleCat.FiniteProjective.of R R) (LinearMap.fst R R R)
   refine ⟨hasKernelOfSurjective _ LinearMap.fst_surjective,
     LinearMap.fst_surjective, ?_⟩
-  refine ⟨⟨(0, 1), rfl⟩, ?_⟩
-  intro h
-  exact one_ne_zero (congrArg Prod.snd h)
+  refine ⟨⟨(0, 1), rfl⟩, ?_, ?_, ?_, ?_, ?_⟩
+  · intro h
+    exact one_ne_zero (congrArg Prod.snd h)
+  · simp only [LinearMap.kerProdEquivOfRightInverse_apply, LinearMap.inl_apply,
+      Prod.mk_add_mk, zero_add, add_zero]
+  · apply Prod.ext
+    · apply Subtype.ext
+      simp only [LinearMap.kerProdEquivOfRightInverse_symm_fst, hfst,
+        LinearMap.fst_apply, LinearMap.inl_apply, Prod.mk_sub_mk, sub_self, sub_zero]
+    · simp only [LinearMap.kerProdEquivOfRightInverse_symm_snd, hfst,
+        LinearMap.fst_apply]
+  · exact LinearEquiv.apply_symm_apply _ _
+  · exact LinearEquiv.symm_apply_apply _ _
 
 end ProjectiveModulesTests.SurjectiveKernel

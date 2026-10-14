@@ -8,10 +8,12 @@ public import ProjectiveModules.Category.ModuleEquivalence
 import ProjectiveModules.Order.CompactlyGenerated
 public import ProjectiveModulesTests.IdempotentSpanClient
 import ProjectiveModulesTests.FiniteProjectiveRestrictionModelClient
+import ProjectiveModules.Module.RightRegular
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Ulift
 public import Mathlib.RingTheory.Morita.Matrix
 import Mathlib.Algebra.Ring.PUnit
+import Mathlib.Algebra.Field.Rat
 
 /-!
 # Module-category equivalences on finite projective modules
@@ -20,10 +22,14 @@ The examples transport finite generation and finite projectivity of a nonfree
 product-opposite ideal, its universe lift, a swapped regular product module,
 a noncommutative matrix right ideal, and the integer column module. The column
 uses the canonical left `Matrix.Module` action on the bundled regular integer
-module. It is separate from the opposite-ring right ideal. Unit and counit
-isomorphisms compare the inverse composites, without identifying their objects
-definitionally. Zero and unit ideals, the zero ring, and empty matrices supply
-boundary cases. A universe-lifting functor supplies inputs, not equivalences.
+module. It is separate from the opposite-ring right ideal. Over the rationals,
+composing the matrix equivalence on opposite coefficients with the transpose
+ring equivalence gives right rows: the upper-right unit sends the first row
+vector to the second. The inverse image of the regular matrix module is the
+first-column range, with two rational coordinates. Unit and counit isomorphisms
+compare the inverse composites, without identifying their objects definitionally.
+Zero and unit ideals, the zero ring, and empty matrices supply boundary cases.
+A universe-lifting functor supplies inputs, not equivalences.
 Coordinate exchange on natural-number pairs also exercises compactness transport
 in a partial order without a greatest element.
 
@@ -135,9 +141,9 @@ example :
     (productIdempotentFiniteProjective K L).obj
   let e := CategoryTheory.Equivalence.refl
     (C := ModuleCat.{max (max uK uL) (max vR vS)} (K × L)ᵐᵒᵖ)
-  letI : Module.Finite (K × L)ᵐᵒᵖ (productIdempotentFiniteProjective K L) :=
+  let : Module.Finite (K × L)ᵐᵒᵖ (productIdempotentFiniteProjective K L) :=
     (productIdempotentFiniteProjective K L).property.1
-  letI : Module.Projective (K × L)ᵐᵒᵖ (productIdempotentFiniteProjective K L) :=
+  let : Module.Projective (K × L)ᵐᵒᵖ (productIdempotentFiniteProjective K L) :=
     (productIdempotentFiniteProjective K L).property.2
   have hX : ModuleCat.isFiniteProjective (K × L)ᵐᵒᵖ X :=
     (ModuleCat.isFiniteProjective_iff X).mpr
@@ -256,9 +262,9 @@ example :
       (RingEquiv.prodComm : K × L ≃+* L × K).symm
   let X := (ModuleCat.uliftFunctor.{max vR vS, max uK uL} (K × L)).obj
     (ModuleCat.of (K × L) (K × L))
-  letI : Module.Finite (K × L) (ModuleCat.of (K × L) (K × L)) :=
+  let : Module.Finite (K × L) (ModuleCat.of (K × L) (K × L)) :=
     (ModuleCat.FiniteProjective.of (K × L) (K × L)).property.1
-  letI : Module.Projective (K × L) (ModuleCat.of (K × L) (K × L)) :=
+  let : Module.Projective (K × L) (ModuleCat.of (K × L) (K × L)) :=
     (ModuleCat.FiniteProjective.of (K × L) (K × L)).property.2
   have hX : ModuleCat.isFiniteProjective (K × L) X :=
     (ModuleCat.isFiniteProjective_iff X).mpr
@@ -497,6 +503,223 @@ example (v : intMatrixColumn) :
   (intMatrixEquivalence.counitIso.app intMatrixColumn).toLinearEquiv.apply_symm_apply v
 
 end MatrixColumn
+
+section RightMatrix
+
+open scoped Matrix.Module
+
+private abbrev RatMatrix := Matrix (Fin 2) (Fin 2) ℚ
+
+/-- Transpose converts the matrix equivalence on opposite coefficients to right modules. -/
+private noncomputable def ratRightMatrixEquivalence :
+    ModuleCat.{vR} ℚᵐᵒᵖ ≌ ModuleCat.{vR} RatMatrixᵐᵒᵖ :=
+  (ModuleCat.matrixEquivalence ℚᵐᵒᵖ (0 : Fin 2)).trans
+    (ModuleCat.restrictScalarsEquivalenceOfRingEquiv
+      (RingEquiv.mopMatrix :
+        Matrix (Fin 2) (Fin 2) ℚᵐᵒᵖ ≃+* RatMatrixᵐᵒᵖ).symm)
+
+/-- The regular right rational module is sent to a two-coordinate right row. -/
+private noncomputable def ratMatrixRow : ModuleCat.{0} RatMatrixᵐᵒᵖ :=
+  ratRightMatrixEquivalence.{0}.functor.obj (ModuleCat.of ℚᵐᵒᵖ ℚ)
+
+private theorem ratMatrixRow_carrier : (ratMatrixRow : Type) = (Fin 2 → ℚ) := rfl
+
+/-- The transposed scalar pullback acts by `x * A`, not by `A * x`. -/
+private theorem ratMatrixRow_smul_apply (A : RatMatrix) (x : ratMatrixRow) (i : Fin 2) :
+    (MulOpposite.op A • x) i = ∑ j, x j * A j i := by
+  calc
+    (MulOpposite.op A • x) i = ∑ j : Fin 2,
+        (A.transpose.map MulOpposite.op) i j •
+          (show ModuleCat.of ℚᵐᵒᵖ ℚ from x j) :=
+      Matrix.Module.smul_apply (M := ModuleCat.of ℚᵐᵒᵖ ℚ)
+        (A.transpose.map MulOpposite.op) x i
+    _ = ∑ j, x j * A j i := rfl
+
+/-- The upper-right unit has the opposite basis-vector behavior from the left column. -/
+private theorem ratMatrixRow_upperRight_smul :
+    (MulOpposite.op (Matrix.single (0 : Fin 2) (1 : Fin 2) (1 : ℚ)) •
+      (show ratMatrixRow from Pi.single (0 : Fin 2) (1 : ℚ)) =
+        (show ratMatrixRow from Pi.single (1 : Fin 2) (1 : ℚ))) ∧
+    (MulOpposite.op (Matrix.single (0 : Fin 2) (1 : Fin 2) (1 : ℚ)) •
+      (show ratMatrixRow from Pi.single (1 : Fin 2) (1 : ℚ)) = (0 : ratMatrixRow)) := by
+  constructor
+  · funext i
+    rw [ratMatrixRow_smul_apply, Fintype.sum_eq_single (0 : Fin 2)]
+    · by_cases h : (1 : Fin 2) = i <;> simp [h]
+    · intro j hj
+      simp [hj.symm]
+  · funext i
+    change _ = (0 : ℚ)
+    rw [ratMatrixRow_smul_apply, Fintype.sum_eq_single (0 : Fin 2)]
+    · simp
+    · intro j hj
+      simp [hj.symm]
+
+private theorem ratMatrixRow_second_axis_ne_zero :
+    (show ratMatrixRow from Pi.single (1 : Fin 2) (1 : ℚ)) ≠ 0 := by
+  intro h
+  have h₁ := congrFun h (1 : Fin 2)
+  change (1 : ℚ) = 0 at h₁
+  exact one_ne_zero h₁
+
+/-- The first diagonal unit and the upper-right unit do not commute on the right row. -/
+private theorem ratMatrixRow_noncentral_boundary :
+    let e : RatMatrixᵐᵒᵖ := MulOpposite.op (Matrix.single (0 : Fin 2) (0 : Fin 2) (1 : ℚ))
+    let t : RatMatrixᵐᵒᵖ := MulOpposite.op (Matrix.single (0 : Fin 2) (1 : Fin 2) (1 : ℚ))
+    let x : ratMatrixRow := Pi.single (0 : Fin 2) (1 : ℚ)
+    e • (t • x) = 0 ∧ t • (e • x) ≠ 0 := by
+  have h₀ : MulOpposite.op (Matrix.single (0 : Fin 2) (0 : Fin 2) (1 : ℚ)) •
+      (show ratMatrixRow from Pi.single (0 : Fin 2) (1 : ℚ)) =
+        (show ratMatrixRow from Pi.single (0 : Fin 2) (1 : ℚ)) := by
+    funext i
+    rw [ratMatrixRow_smul_apply, Fintype.sum_eq_single (0 : Fin 2)]
+    · by_cases h : (0 : Fin 2) = i <;> simp [h]
+    · intro j hj
+      simp [hj.symm]
+  have h₁ : MulOpposite.op (Matrix.single (0 : Fin 2) (0 : Fin 2) (1 : ℚ)) •
+      (show ratMatrixRow from Pi.single (1 : Fin 2) (1 : ℚ)) = (0 : ratMatrixRow) := by
+    funext i
+    change _ = (0 : ℚ)
+    rw [ratMatrixRow_smul_apply, Fintype.sum_eq_single (0 : Fin 2)]
+    · simp
+    · intro j hj
+      simp [hj.symm]
+  dsimp only
+  constructor
+  · rw [ratMatrixRow_upperRight_smul.1, h₁]
+  · rw [h₀, ratMatrixRow_upperRight_smul.1]
+    exact ratMatrixRow_second_axis_ne_zero
+
+/-- The right row inherits finite projectivity from the source regular module. -/
+private theorem ratMatrixRow_isFiniteProjective :
+    ModuleCat.isFiniteProjective RatMatrixᵐᵒᵖ ratMatrixRow :=
+  ModuleCat.isFiniteProjective_of_equivalence ℚᵐᵒᵖ RatMatrixᵐᵒᵖ
+    ratRightMatrixEquivalence.{0} (ModuleCat.of ℚᵐᵒᵖ ℚ)
+    (ModuleCat.FiniteProjective.of ℚᵐᵒᵖ ℚ).property
+
+/-- The composite unit still inserts the first coordinate in the diagonal range. -/
+private theorem ratMatrixRow_unit_coe (a : ℚ) :
+    ((ratRightMatrixEquivalence.{0}.unitIso.app (ModuleCat.of ℚᵐᵒᵖ ℚ)).hom a).val =
+      Pi.single (0 : Fin 2) a := rfl
+
+private theorem ratMatrixRow_unit_inv (a : ℚ) :
+    (ratRightMatrixEquivalence.{0}.unitIso.app (ModuleCat.of ℚᵐᵒᵖ ℚ)).inv
+      ((ratRightMatrixEquivalence.{0}.unitIso.app (ModuleCat.of ℚᵐᵒᵖ ℚ)).hom a) = a :=
+  (ratRightMatrixEquivalence.{0}.unitIso.app
+    (ModuleCat.of ℚᵐᵒᵖ ℚ)).toLinearEquiv.symm_apply_apply a
+
+/-- The counit compares the forward-inverse composite with the regular right matrix module. -/
+private theorem ratRightMatrixRegular_counit (A : RatMatrix) :
+    (ratRightMatrixEquivalence.{0}.counitIso.app
+      (ModuleCat.of RatMatrixᵐᵒᵖ RatMatrix)).hom
+        ((ratRightMatrixEquivalence.{0}.counitIso.app
+          (ModuleCat.of RatMatrixᵐᵒᵖ RatMatrix)).inv A) = A :=
+  (ratRightMatrixEquivalence.{0}.counitIso.app
+    (ModuleCat.of RatMatrixᵐᵒᵖ RatMatrix)).toLinearEquiv.apply_symm_apply A
+
+/-- The inverse regular matrix module is the range of right multiplication by `E₀₀`. -/
+private noncomputable def ratMatrixRegularCorner : ModuleCat.{0} ℚᵐᵒᵖ :=
+  ratRightMatrixEquivalence.{0}.inverse.obj (ModuleCat.of RatMatrixᵐᵒᵖ RatMatrix)
+
+private theorem ratMatrixRegularCorner_second_column_zero
+    (x : ratMatrixRegularCorner) (i : Fin 2) : x.val i 1 = 0 := by
+  obtain ⟨A, hA⟩ := x.property
+  have h := congrArg (fun B : RatMatrix => B i (1 : Fin 2)) hA
+  change (∑ j : Fin 2, (show RatMatrix from A) i j *
+    ((Matrix.single (0 : Fin 2) (0 : Fin 2)
+      (1 : ℚᵐᵒᵖ)).transpose.map MulOpposite.unop) j 1) = x.val i 1 at h
+  simpa using h.symm
+
+/-- Extracting the first column gives two rational coordinates, not one regular generator. -/
+private noncomputable def ratMatrixRegularCornerEquiv :
+    ratMatrixRegularCorner ≃ₗ[ℚᵐᵒᵖ] (Fin 2 → ℚ) where
+  toFun x i := x.val i 0
+  invFun v := ⟨fun i j => if j = 0 then v i else 0,
+    ⟨fun i j => if j = 0 then v i else 0, by
+      funext i j
+      change (∑ k : Fin 2, (if k = 0 then v i else 0) *
+        ((Matrix.single (0 : Fin 2) (0 : Fin 2)
+          (1 : ℚᵐᵒᵖ)).transpose.map MulOpposite.unop) k j) =
+            if j = 0 then v i else 0
+      fin_cases j <;> simp⟩⟩
+  left_inv x := by
+    apply Subtype.ext
+    funext i j
+    fin_cases j
+    · simp
+    · simp [ratMatrixRegularCorner_second_column_zero]
+  right_inv v := by funext i; simp
+  map_add' _ _ := rfl
+  map_smul' r x := by
+    funext i
+    change ((show RatMatrix from x.val) *
+      ((Matrix.scalar (Fin 2) r).transpose.map MulOpposite.unop)) i 0 = x.val i 0 * r.unop
+    rw [Matrix.mul_apply, Fin.sum_univ_two]
+    simp
+
+private theorem ratMatrixRegularCornerEquiv_apply
+    (x : ratMatrixRegularCorner) (i : Fin 2) :
+    ratMatrixRegularCornerEquiv x i = x.val i 0 := rfl
+
+private theorem ratMatrixRegularCornerEquiv_symm_apply (v : Fin 2 → ℚ) (i j : Fin 2) :
+    (ratMatrixRegularCornerEquiv.symm v).val i j = if j = 0 then v i else 0 := rfl
+
+private theorem ratMatrixRegularCorner_isFiniteProjective :
+    ModuleCat.isFiniteProjective ℚᵐᵒᵖ ratMatrixRegularCorner :=
+  ModuleCat.isFiniteProjective_of_equivalence RatMatrixᵐᵒᵖ ℚᵐᵒᵖ
+    ratRightMatrixEquivalence.{0}.symm (ModuleCat.of RatMatrixᵐᵒᵖ RatMatrix)
+    (ModuleCat.FiniteProjective.of RatMatrixᵐᵒᵖ RatMatrix).property
+
+/-- The zero right module stays zero and finite projective under the right equivalence. -/
+private theorem ratRightMatrix_zero_controls :
+    ModuleCat.isFiniteProjective RatMatrixᵐᵒᵖ
+      (ratRightMatrixEquivalence.{0}.functor.obj (ModuleCat.of ℚᵐᵒᵖ PUnit.{1})) ∧
+    Subsingleton
+      (ratRightMatrixEquivalence.{0}.functor.obj (ModuleCat.of ℚᵐᵒᵖ PUnit.{1})) := by
+  refine ⟨ModuleCat.isFiniteProjective_of_equivalence ℚᵐᵒᵖ RatMatrixᵐᵒᵖ
+    ratRightMatrixEquivalence.{0} (ModuleCat.of ℚᵐᵒᵖ PUnit.{1})
+    (ModuleCat.FiniteProjective.of ℚᵐᵒᵖ PUnit.{1}).property, ?_⟩
+  change Subsingleton (Fin 2 → PUnit.{1})
+  infer_instance
+
+private theorem ratRight_identity_isFiniteProjective :
+    ModuleCat.isFiniteProjective ℚᵐᵒᵖ
+      ((CategoryTheory.Equivalence.refl (C := ModuleCat.{0} ℚᵐᵒᵖ)).functor.obj
+        (ModuleCat.of ℚᵐᵒᵖ ℚ)) :=
+  ModuleCat.isFiniteProjective_of_equivalence ℚᵐᵒᵖ ℚᵐᵒᵖ
+    (CategoryTheory.Equivalence.refl (C := ModuleCat.{0} ℚᵐᵒᵖ))
+    (ModuleCat.of ℚᵐᵒᵖ ℚ) (ModuleCat.FiniteProjective.of ℚᵐᵒᵖ ℚ).property
+
+/-- At height one, lifting before the right equivalence agrees with lifting the row. -/
+private noncomputable def ratMatrixRowULiftEquiv :
+    ratRightMatrixEquivalence.{1}.functor.obj (ModuleCat.of ℚᵐᵒᵖ (ULift.{1} ℚ)) ≃ₗ[RatMatrixᵐᵒᵖ]
+      ULift.{1} ratMatrixRow where
+  toFun x := ULift.up (fun i => (x i).down)
+  invFun x i := ULift.up (x.down i)
+  left_inv x := by funext i; exact ULift.ext _ _ rfl
+  right_inv x := by cases x; rfl
+  map_add' _ _ := rfl
+  map_smul' A x := by
+    apply ULift.ext
+    funext i
+    change (∑ j : Fin 2, MulOpposite.op (A.unop j i) • x j).down =
+      ∑ j : Fin 2, (x j).down * A.unop j i
+    simp only [Fin.sum_univ_two]
+    rfl
+
+private theorem ratMatrixRowULiftEquiv_down_apply
+    (x : ratRightMatrixEquivalence.{1}.functor.obj
+      (ModuleCat.of ℚᵐᵒᵖ (ULift.{1} ℚ))) (i : Fin 2) :
+    (ratMatrixRowULiftEquiv x).down i = (x i).down := rfl
+
+private theorem ratMatrixRowULift_isFiniteProjective :
+    ModuleCat.isFiniteProjective RatMatrixᵐᵒᵖ
+      (ratRightMatrixEquivalence.{1}.functor.obj (ModuleCat.of ℚᵐᵒᵖ (ULift.{1} ℚ))) :=
+  ModuleCat.isFiniteProjective_of_equivalence.{0, 0, 1, 1} ℚᵐᵒᵖ RatMatrixᵐᵒᵖ
+    ratRightMatrixEquivalence.{1} (ModuleCat.of ℚᵐᵒᵖ (ULift.{1} ℚ))
+    (ModuleCat.FiniteProjective.of ℚᵐᵒᵖ (ULift.{1} ℚ)).property
+
+end RightMatrix
 
 section IdealBoundaries
 

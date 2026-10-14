@@ -3,7 +3,7 @@ SPDX-License-Identifier: Apache-2.0
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Formal Frontier Agents
 -/
--- Contributors: Prism
+-- Contributors: Prism, Iris
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Biproducts
@@ -12,6 +12,7 @@ import Mathlib.Algebra.Homology.ShortComplex.Exact
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public import Mathlib.RingTheory.Finiteness.Projective
+public import StableRange.Module.SplitSurjective
 
 /-!
 # Complements of projective modules
@@ -22,6 +23,13 @@ projective module has an `n`-element spanning family exactly when it has a
 complement in the free module of rank `n`.  In particular, every finite
 projective module over an arbitrary ring has a finite complement and an
 explicit finite-standard-free product equivalence.
+
+## References
+
+* Mathlib, `Algebra.Module.Projective` and `Algebra.Category.ModuleCat.Biproducts`
+  (projective lifting and right split exact sequences).
+* Stable Range, `StableRange.Module.SplitSurjective`
+  (kernel-product equivalences with a specified section).
 -/
 
 @[expose] public section
@@ -29,107 +37,6 @@ explicit finite-standard-free product equivalence.
 universe uR uF uP uA uM uB
 
 open Function Set CategoryTheory CategoryTheory.Limits
-
-private theorem rightSplitExact_characteristic
-    {R : Type uR} [Ring R]
-    {A : Type uA} [AddCommGroup A] [Module R A]
-    {M : Type uM} [AddCommGroup M] [Module R M]
-    {B : Type uB} [AddCommGroup B] [Module R B]
-    {j : A →ₗ[R] M} {g : M →ₗ[R] B} {s : B →ₗ[R] M}
-    (hj : Injective j) (hexac : LinearMap.range j = LinearMap.ker g)
-    (hs : g.comp s = LinearMap.id) :
-    (∀ x : M, ((lequivProdOfRightSplitExact hj hexac hs).symm x).2 = g x) ∧
-      (∀ a : A, lequivProdOfRightSplitExact hj hexac hs (a, 0) = j a) := by
-  let liftedJ : ULift.{max uA uM uB} A →ₗ[R] ULift.{max uA uM uB} M :=
-    ULift.moduleEquiv.symm.toLinearMap ∘ₗ j ∘ₗ ULift.moduleEquiv.toLinearMap
-  let liftedG : ULift.{max uA uM uB} M →ₗ[R] ULift.{max uA uM uB} B :=
-    ULift.moduleEquiv.symm.toLinearMap ∘ₗ g ∘ₗ ULift.moduleEquiv.toLinearMap
-  let liftedS : ULift.{max uA uM uB} B →ₗ[R] ULift.{max uA uM uB} M :=
-    ULift.moduleEquiv.symm.toLinearMap ∘ₗ s ∘ₗ ULift.moduleEquiv.toLinearMap
-  have hj' : Injective liftedJ := by simpa [liftedJ] using hj
-  have hexac' : LinearMap.range liftedJ = LinearMap.ker liftedG := by
-    simp [liftedJ, liftedG, LinearMap.range_comp, LinearMap.ker_comp, hexac,
-      Submodule.comap_equiv_eq_map_symm]
-  have hs' : liftedG.comp liftedS = LinearMap.id := by
-    ext y
-    simpa [liftedG, liftedS] using congr($hs y.down)
-  let S := CategoryTheory.ShortComplex.moduleCatMkOfKerLERange
-    (ModuleCat.ofHom liftedJ) (ModuleCat.ofHom liftedG) (by
-      change LinearMap.range liftedJ ≤ LinearMap.ker liftedG
-      rw [hexac'])
-  let spl : S.Splitting := CategoryTheory.ShortComplex.Splitting.ofExactOfSection S
-    (CategoryTheory.ShortComplex.Exact.moduleCat_of_range_eq_ker _ _ hexac')
-    (ModuleCat.ofHom liftedS) (ModuleCat.hom_ext hs')
-    (by
-      change Mono (ModuleCat.ofHom liftedJ)
-      exact (ModuleCat.mono_iff_injective _).2 hj')
-  have hproj (X Y : ModuleCat.{max uA uM uB} R) :
-      (ModuleCat.biprodIsoProd X Y).hom ≫
-        ModuleCat.ofHom (LinearMap.snd R X Y) = CategoryTheory.Limits.biprod.snd := by
-    calc
-      _ = (ModuleCat.biprodIsoProd X Y).hom ≫
-            ((ModuleCat.biprodIsoProd X Y).inv ≫ CategoryTheory.Limits.biprod.snd) := by
-              rw [ModuleCat.biprodIsoProd_inv_comp_snd]
-      _ = CategoryTheory.Limits.biprod.snd := by
-        rw [← CategoryTheory.Category.assoc, CategoryTheory.Iso.hom_inv_id,
-          CategoryTheory.Category.id_comp]
-  have hproj_apply (X Y : ModuleCat.{max uA uM uB} R)
-      (z : ↑(X ⊞ Y : ModuleCat.{max uA uM uB} R)) :
-      ((ModuleCat.biprodIsoProd X Y).hom z).2 =
-        (CategoryTheory.Limits.biprod.snd : X ⊞ Y ⟶ Y) z := by
-    exact congrArg (fun arrow : X ⊞ Y ⟶ Y ↦ arrow z) (hproj X Y)
-  constructor
-  · intro x
-    change (((ModuleCat.biprodIsoProd S.X₁ S.X₃).hom
-      (spl.isoBinaryBiproduct.hom (ULift.up x))).2).down = g x
-    rw [hproj_apply]
-    have hcat : spl.isoBinaryBiproduct.hom ≫
-        (CategoryTheory.Limits.biprod.snd : S.X₁ ⊞ S.X₃ ⟶ S.X₃) = S.g := by
-      change CategoryTheory.Limits.biprod.lift spl.r S.g ≫
-        CategoryTheory.Limits.biprod.snd = S.g
-      exact CategoryTheory.Limits.biprod.lift_snd _ _
-    change ((spl.isoBinaryBiproduct.hom ≫
-      (CategoryTheory.Limits.biprod.snd : S.X₁ ⊞ S.X₃ ⟶ S.X₃))
-      (ULift.up x : ↑S.X₂)).down = g x
-    rw [hcat]
-    rfl
-  · intro a
-    have hcat : ModuleCat.ofHom (LinearMap.inl R S.X₁ S.X₃) ≫
-        (ModuleCat.biprodIsoProd S.X₁ S.X₃).inv =
-          (CategoryTheory.Limits.biprod.inl : S.X₁ ⟶ S.X₁ ⊞ S.X₃) := by
-      apply CategoryTheory.Limits.biprod.hom_ext
-      · rw [CategoryTheory.Category.assoc, ModuleCat.biprodIsoProd_inv_comp_fst,
-          CategoryTheory.Limits.biprod.inl_fst]
-        apply ModuleCat.hom_ext
-        ext y
-        rfl
-      · rw [CategoryTheory.Category.assoc, ModuleCat.biprodIsoProd_inv_comp_snd,
-          CategoryTheory.Limits.biprod.inl_snd]
-        apply ModuleCat.hom_ext
-        ext y
-        rfl
-    have hcat_apply (y : ↑S.X₁) :
-        (ModuleCat.biprodIsoProd S.X₁ S.X₃).inv (y, 0) =
-          (CategoryTheory.Limits.biprod.inl : S.X₁ ⟶ S.X₁ ⊞ S.X₃) y := by
-      exact congrArg (fun arrow : S.X₁ ⟶ S.X₁ ⊞ S.X₃ ↦ arrow y) hcat
-    change ((spl.isoBinaryBiproduct.inv
-      ((ModuleCat.biprodIsoProd S.X₁ S.X₃).inv
-        ((ULift.up a : ↑S.X₁), (0 : ↑S.X₃)))).down) = j a
-    calc
-      _ = ((spl.isoBinaryBiproduct.inv
-          ((CategoryTheory.Limits.biprod.inl : S.X₁ ⟶ S.X₁ ⊞ S.X₃)
-            (ULift.up a : ↑S.X₁))).down) := by
-          exact congrArg (fun z : ↑(S.X₁ ⊞ S.X₃) ↦
-            (spl.isoBinaryBiproduct.inv z).down) (hcat_apply (ULift.up a : ↑S.X₁))
-      _ = j a := by
-          change ((CategoryTheory.Limits.biprod.desc S.f spl.s)
-            ((CategoryTheory.Limits.biprod.inl : S.X₁ ⟶ S.X₁ ⊞ S.X₃)
-              (ULift.up a : ↑S.X₁))).down = j a
-          change ((CategoryTheory.Limits.biprod.inl ≫
-            CategoryTheory.Limits.biprod.desc S.f spl.s)
-            (ULift.up a : ↑S.X₁)).down = j a
-          rw [CategoryTheory.Limits.biprod.inl_desc]
-          rfl
 
 namespace Module.Projective
 
@@ -151,16 +58,59 @@ noncomputable def prodKerEquivOfSurjective [Module.Projective R P]
       (j := (LinearMap.ker f).subtype) (g := f) (f := s)
       Subtype.val_injective (Submodule.range_subtype _) hs
 
+/-- The projective splitting is the kernel-product equivalence for the section
+chosen by the projective lifting property, after exchanging the two factors. -/
+theorem prodKerEquivOfSurjective_eq_prodComm_trans [Module.Projective R P]
+    (f : F →ₗ[R] P) (hf : Surjective f) :
+    prodKerEquivOfSurjective f hf =
+      (LinearEquiv.prodComm R P (LinearMap.ker f)).trans
+        (LinearMap.kerProdEquivOfRightInverse f
+          (Classical.choose (Module.projective_lifting_property
+            f (LinearMap.id (R := R) (M := P)) hf))
+          (Classical.choose_spec (Module.projective_lifting_property
+            f (LinearMap.id (R := R) (M := P)) hf))) := by
+  apply LinearEquiv.ext
+  rintro ⟨p, k⟩
+  simp only [prodKerEquivOfSurjective, LinearEquiv.trans_apply,
+    LinearEquiv.prodComm_apply, Prod.swap_prod_mk,
+    LinearMap.kerProdEquivOfRightInverse_apply]
+  exact _root_.lequivProdOfRightSplitExact_apply
+    (j := (LinearMap.ker f).subtype) (f := f)
+    (g := Classical.choose (Module.projective_lifting_property
+      f (LinearMap.id (R := R) (M := P)) hf))
+    Subtype.val_injective (Submodule.range_subtype _)
+    (Classical.choose_spec (Module.projective_lifting_property
+      f (LinearMap.id (R := R) (M := P)) hf)) k p
+
+/-- The projective splitting adds the kernel element to the image of the
+section chosen by the projective lifting property. -/
+@[simp] theorem prodKerEquivOfSurjective_apply [Module.Projective R P]
+    (f : F →ₗ[R] P) (hf : Surjective f) (z : P × LinearMap.ker f) :
+    prodKerEquivOfSurjective f hf z = (z.2 : F) +
+      (Classical.choose (Module.projective_lifting_property
+        f (LinearMap.id (R := R) (M := P)) hf)) z.1 := by
+  rw [prodKerEquivOfSurjective_eq_prodComm_trans]
+  simp only [LinearEquiv.trans_apply, LinearEquiv.prodComm_apply,
+    LinearMap.kerProdEquivOfRightInverse_apply, Prod.fst_swap, Prod.snd_swap]
+
+/-- The kernel coordinate of the inverse splitting has underlying value equal
+to the original element minus the chosen lift of its target coordinate. -/
+@[simp] theorem prodKerEquivOfSurjective_symm_snd [Module.Projective R P]
+    (f : F →ₗ[R] P) (hf : Surjective f) (x : F) :
+    (((prodKerEquivOfSurjective f hf).symm x).2 : F) =
+      x - (Classical.choose (Module.projective_lifting_property
+        f (LinearMap.id (R := R) (M := P)) hf)) (f x) := by
+  rw [prodKerEquivOfSurjective_eq_prodComm_trans]
+  simp only [LinearEquiv.symm_trans_apply, LinearEquiv.symm_prodComm,
+    LinearEquiv.prodComm_apply, Prod.snd_swap, LinearMap.kerProdEquivOfRightInverse_symm_fst]
+
 /-- The target coordinate of the inverse splitting is the original surjection. -/
 @[simp] theorem prodKerEquivOfSurjective_symm_fst [Module.Projective R P]
     (f : F →ₗ[R] P) (hf : Surjective f) (x : F) :
     ((prodKerEquivOfSurjective f hf).symm x).1 = f x := by
-  unfold prodKerEquivOfSurjective
+  rw [prodKerEquivOfSurjective_eq_prodComm_trans]
   simp only [LinearEquiv.symm_trans_apply, LinearEquiv.symm_prodComm,
-    LinearEquiv.prodComm_apply]
-  exact (rightSplitExact_characteristic Subtype.val_injective (Submodule.range_subtype _)
-    (Classical.choose_spec (Module.projective_lifting_property
-      f (LinearMap.id (R := R) (M := P)) hf))).1 x
+    LinearEquiv.prodComm_apply, Prod.fst_swap, LinearMap.kerProdEquivOfRightInverse_symm_snd]
 
 /-- Projecting a split element to the target recovers its target coordinate. -/
 @[simp] theorem prodKerEquivOfSurjective_apply_fst [Module.Projective R P]
@@ -174,11 +124,9 @@ noncomputable def prodKerEquivOfSurjective [Module.Projective R P]
 @[simp] theorem prodKerEquivOfSurjective_apply_zero_snd [Module.Projective R P]
     (f : F →ₗ[R] P) (hf : Surjective f) (k : LinearMap.ker f) :
     prodKerEquivOfSurjective f hf (0, k) = (k : F) := by
-  unfold prodKerEquivOfSurjective
-  simp only [LinearEquiv.trans_apply, LinearEquiv.prodComm_apply]
-  exact (rightSplitExact_characteristic Subtype.val_injective (Submodule.range_subtype _)
-    (Classical.choose_spec (Module.projective_lifting_property
-      f (LinearMap.id (R := R) (M := P)) hf))).2 k
+  rw [prodKerEquivOfSurjective_eq_prodComm_trans]
+  simp only [LinearEquiv.trans_apply, LinearEquiv.prodComm_apply, Prod.swap_prod_mk,
+    LinearMap.kerProdEquivOfRightInverse_apply, map_zero, add_zero]
 
 /-- A projective module is a quotient of `F` exactly when it is a direct
 summand of `F`. -/

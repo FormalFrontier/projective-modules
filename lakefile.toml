@@ -21,7 +21,7 @@ rev = "2683f75e2c5774ddd1295c46062035cb6afabb8a"
 [[require]]
 name = "stable-range"
 git = "https://github.com/FormalFrontier/stable-range.git"
-rev = "71625754592cadb5330b3452d626dc659405da65"
+rev = "c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e"
 
 [[lean_lib]]
 name = "ProjectiveModules"

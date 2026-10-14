@@ -1,10 +1,18 @@
-# Generated API reference
+# API reference
 
-This is a **historical native display**, not an exhaustive current-release API.
-Doc-gen4 on original source `5d1b1b276d4a11ee6ce9ae238c9511de8dbec1e9`
-selected 43 modules and displayed 469 named sites, with 477 database name rows
-(eight non-displayed private names) and 47 module-documentation positions.
-Outside this historical module display,
+This guide collects selected mathematical APIs in `ProjectiveModules`, with
+signatures, characteristic formulas and links to their defining modules. It
+is not an exhaustive list of declarations. Consult the linked source for
+namespace, universe and instance context.
+
+The [split-kernel API](#projectivemodulesmoduleprojectivekernel) is described
+under its defining module, `ProjectiveKernel`, and is re-exported by
+`InvariantSupportedProjection`. The
+[projective-complement API](#projectivemodulesmoduleprojectivecomplement)
+describes the target-first product equivalence obtained from a chosen
+projective lift and its relation to a kernel-first equivalence with a
+specified section.
+
 [`Noetherian`](../ProjectiveModules/Module/CountablyGenerated/Noetherian.lean)
 proves that submodules of countably generated modules over Noetherian rings are
 countably generated (see [the guide](NoetherianSubmodule.md)), while
@@ -12,25 +20,10 @@ countably generated (see [the guide](NoetherianSubmodule.md)), while
 proves that, when the first index type is infinite, free coordinate modules over
 a nontrivial semiring are linearly equivalent if and only if their index types
 are equivalent.
-Neither the displayed sites nor the historical manifest field
-`public_display_names` constitute an exported-declaration census: displayed
-names include local instances. The example and private regression clients do
-not export their private declarations.
 
-Headers below reproduce historical native *display* signatures, including
-visible modifiers and implicit parameters, except for the two explicitly
-marked source-inspected `[Finite I]` amendments. Relative source links point
-into this checkout; corrected `ComponentwiseFree` and `RightExtension` ranges
-may differ from parenthetical historical native database ranges. The
-[manifest](api-manifest.json) remains bound to the original source and native
-records, not these later source-inspected edits. No new native output, current
-all-files census, proof audit or source-coverage certification is asserted.
-Headers are not proof bodies; pretty-printing can suppress inferable types.
-Consult the linked source for elaboration context.
-[Generation and limits](README.md) · [Credits](CREDITS.md) ·
-[source and tool manifest](api-manifest.json).
+[Further documentation](README.md) · [Credits](CREDITS.md).
 
-Missing source docstrings are explicitly marked; no authored notes are passed off as native docs.
+Entries without a source docstring are marked below.
 
 ## ProjectiveModules
 
@@ -2826,6 +2819,9 @@ three properties when `P` is projective.
 
 Scope: mathematical library leaf.
 
+The split-kernel projection and closure results re-exported by this module are
+described under [`ProjectiveKernel`](#projectivemodulesmoduleprojectivekernel).
+
 ### LinearMap.supportedRange
 
 ```lean
@@ -2932,36 +2928,6 @@ A later supported range piece is the product of an earlier piece and the
 kernel of the canonical retraction.
 
 [Source](../ProjectiveModules/Module/InvariantSupportedProjection.lean#L135-L160) (native database range lines 135–160).
-
-### LinearMap.splitKernelProjection
-
-```lean
-def LinearMap.splitKernelProjection {R : Type uR} [Ring R] {A : Type u_1} {M : Type u_2} [AddCommGroup A] [Module R A] [AddCommGroup M] [Module R M] (i : A →ₗ[R] M) (r : M →ₗ[R] A) (h : r ∘ₗ i = id) : M →ₗ[R] ↥r.ker
-```
-
-Projection from a split module onto the kernel of its retraction.
-
-[Source](../ProjectiveModules/Module/InvariantSupportedProjection.lean#L162-L172) (native database range lines 162–172).
-
-### LinearMap.splitKernelProjection_comp_subtype
-
-```lean
-theorem LinearMap.splitKernelProjection_comp_subtype {R : Type uR} [Ring R] {A : Type u_1} {M : Type u_2} [AddCommGroup A] [Module R A] [AddCommGroup M] [Module R M] (i : A →ₗ[R] M) (r : M →ₗ[R] A) (h : r ∘ₗ i = id) : i.splitKernelProjection r h ∘ₗ r.ker.subtype = id
-```
-
-The split-kernel projection retracts the kernel subtype.
-
-[Source](../ProjectiveModules/Module/InvariantSupportedProjection.lean#L174-L185) (native database range lines 174–185).
-
-### LinearMap.projective_splitKernel
-
-```lean
-theorem LinearMap.projective_splitKernel {R : Type uR} [Ring R] {A : Type u_1} {M : Type u_2} [AddCommGroup A] [Module R A] [AddCommGroup M] [Module R M] [Module.Projective R M] (i : A →ₗ[R] M) (r : M →ₗ[R] A) (h : r ∘ₗ i = id) : Module.Projective R ↥r.ker
-```
-
-The kernel of a retraction from a projective module is projective.
-
-[Source](../ProjectiveModules/Module/InvariantSupportedProjection.lean#L187-L196) (native database range lines 187–196).
 
 ### LinearMap.supportedRangeComplement_projective
 
@@ -3427,6 +3393,29 @@ An arbitrary-rank projective module over a commutative PID is free.
 
 Scope: mathematical library leaf.
 
+The product order here is `P × ker f`. The construction uses the section
+`Classical.choose (Module.projective_lifting_property f LinearMap.id hf)`;
+its ring and additive-group hypotheses are retained. For a supplied section
+`g : P →ₗ[R] F` with `hfg : f.comp g = LinearMap.id`, the dependency's
+`LinearMap.kerProdEquivOfRightInverse f g hfg` instead has type
+`(LinearMap.ker f × P) ≃ₗ[R] F`. That construction only requires a semiring,
+an additive-group source and an additive-monoid target, in independent scalar,
+source and target universes. It is provided by
+[`StableRange.Module.SplitSurjective`](https://github.com/FormalFrontier/stable-range/blob/c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e/StableRange/Module/SplitSurjective.lean),
+which [this module publicly imports](../ProjectiveModules/Module/ProjectiveComplement.lean#L15).
+
+The comparison below exchanges the two factors and uses exactly the section
+chosen by the projective lifting property, together with its chosen proof.
+It does not assert equality with a splitting formed using an arbitrary other
+section. The characteristic lemmas give forward and inverse formulas without
+unfolding the chosen construction. With ring scalars and additive groups,
+`LinearMap.kerProdEquivOfRightInverse_ofInjective` compares the kernel-first
+construction with Mathlib's `lequivProdOfRightSplitExact`: an injective map
+`j : X →ₗ[R] F` with `LinearMap.range j = LinearMap.ker f` identifies `X` with
+the kernel, while the section remains `g`. The types `X`, `F` and `P` may lie
+in independent universes. The lemma `lequivProdOfRightSplitExact_apply` gives
+the corresponding forward formula `(x, p) ↦ j x + g p`.
+
 ### Module.Projective.prodKerEquivOfSurjective
 
 ```lean
@@ -3436,7 +3425,114 @@ noncomputable def Module.Projective.prodKerEquivOfSurjective {R : Type uR} [Ring
 A surjection onto a projective module identifies its domain with the
 product of the target and its kernel.
 
-[Source](../ProjectiveModules/Module/ProjectiveComplement.lean#L37-L49) (native database range lines 37–49).
+[Source](../ProjectiveModules/Module/ProjectiveComplement.lean#L49-L59).
+
+### Module.Projective.prodKerEquivOfSurjective_eq_prodComm_trans
+
+```lean
+theorem Module.Projective.prodKerEquivOfSurjective_eq_prodComm_trans
+    {R : Type uR} [Ring R]
+    {F : Type uF} [AddCommGroup F] [Module R F]
+    {P : Type uP} [AddCommGroup P] [Module R P] [Module.Projective R P]
+    (f : F →ₗ[R] P) (hf : Function.Surjective f) :
+    Module.Projective.prodKerEquivOfSurjective f hf =
+      (LinearEquiv.prodComm R P (LinearMap.ker f)).trans
+        (LinearMap.kerProdEquivOfRightInverse f
+          (Classical.choose (Module.projective_lifting_property
+            f (LinearMap.id (R := R) (M := P)) hf))
+          (Classical.choose_spec (Module.projective_lifting_property
+            f (LinearMap.id (R := R) (M := P)) hf)))
+```
+
+The chosen projective splitting is `prodComm` followed by the kernel-product
+equivalence for that same chosen section. In particular, `(p, k)` is first
+sent to `(k, p)`, not to another ordering of the factors.
+
+[Source](../ProjectiveModules/Module/ProjectiveComplement.lean#L63-L83).
+
+### Module.Projective.prodKerEquivOfSurjective_apply
+
+```lean
+@[simp] theorem Module.Projective.prodKerEquivOfSurjective_apply
+    {R : Type uR} [Ring R]
+    {F : Type uF} [AddCommGroup F] [Module R F]
+    {P : Type uP} [AddCommGroup P] [Module R P] [Module.Projective R P]
+    (f : F →ₗ[R] P) (hf : Function.Surjective f)
+    (z : P × LinearMap.ker f) :
+    Module.Projective.prodKerEquivOfSurjective f hf z = (z.2 : F) +
+      (Classical.choose (Module.projective_lifting_property
+        f (LinearMap.id (R := R) (M := P)) hf)) z.1
+```
+
+The full forward formula adds the kernel element to the chosen lift of the
+target coordinate.
+
+[Source](../ProjectiveModules/Module/ProjectiveComplement.lean#L87-L94).
+
+### Module.Projective.prodKerEquivOfSurjective_symm_snd
+
+```lean
+@[simp] theorem Module.Projective.prodKerEquivOfSurjective_symm_snd
+    {R : Type uR} [Ring R]
+    {F : Type uF} [AddCommGroup F] [Module R F]
+    {P : Type uP} [AddCommGroup P] [Module R P] [Module.Projective R P]
+    (f : F →ₗ[R] P) (hf : Function.Surjective f) (x : F) :
+    (((Module.Projective.prodKerEquivOfSurjective f hf).symm x).2 : F) =
+      x - (Classical.choose (Module.projective_lifting_property
+        f (LinearMap.id (R := R) (M := P)) hf)) (f x)
+```
+
+The second inverse coordinate lies in `ker f`; its underlying value is the
+original element minus the chosen lift of its image.
+
+[Source](../ProjectiveModules/Module/ProjectiveComplement.lean#L98-L105).
+
+### Module.Projective.prodKerEquivOfSurjective_symm_fst
+
+```lean
+@[simp] theorem Module.Projective.prodKerEquivOfSurjective_symm_fst
+    {R : Type uR} [Ring R]
+    {F : Type uF} [AddCommGroup F] [Module R F]
+    {P : Type uP} [AddCommGroup P] [Module R P] [Module.Projective R P]
+    (f : F →ₗ[R] P) (hf : Function.Surjective f) (x : F) :
+    ((Module.Projective.prodKerEquivOfSurjective f hf).symm x).1 = f x
+```
+
+The first inverse coordinate is the original surjection, in contrast to the
+kernel-first order of `LinearMap.kerProdEquivOfRightInverse`.
+
+[Source](../ProjectiveModules/Module/ProjectiveComplement.lean#L108-L113).
+
+### Module.Projective.prodKerEquivOfSurjective_apply_fst
+
+```lean
+@[simp] theorem Module.Projective.prodKerEquivOfSurjective_apply_fst
+    {R : Type uR} [Ring R]
+    {F : Type uF} [AddCommGroup F] [Module R F]
+    {P : Type uP} [AddCommGroup P] [Module R P] [Module.Projective R P]
+    (f : F →ₗ[R] P) (hf : Function.Surjective f)
+    (p : P) (k : LinearMap.ker f) :
+    f (Module.Projective.prodKerEquivOfSurjective f hf (p, k)) = p
+```
+
+Applying the surjection to a split element recovers its target coordinate.
+
+[Source](../ProjectiveModules/Module/ProjectiveComplement.lean#L116-L121).
+
+### Module.Projective.prodKerEquivOfSurjective_apply_zero_snd
+
+```lean
+@[simp] theorem Module.Projective.prodKerEquivOfSurjective_apply_zero_snd
+    {R : Type uR} [Ring R]
+    {F : Type uF} [AddCommGroup F] [Module R F]
+    {P : Type uP} [AddCommGroup P] [Module R P] [Module.Projective R P]
+    (f : F →ₗ[R] P) (hf : Function.Surjective f) (k : LinearMap.ker f) :
+    Module.Projective.prodKerEquivOfSurjective f hf (0, k) = (k : F)
+```
+
+The kernel factor embeds by its original subtype map.
+
+[Source](../ProjectiveModules/Module/ProjectiveComplement.lean#L124-L129).
 
 ### Module.Projective.exists_surjective_iff_exists_prod_equiv
 
@@ -3447,7 +3543,7 @@ theorem Module.Projective.exists_surjective_iff_exists_prod_equiv {R : Type uR} 
 A projective module is a quotient of `F` exactly when it is a direct
 summand of `F`.
 
-[Source](../ProjectiveModules/Module/ProjectiveComplement.lean#L51-L65) (native database range lines 51–65).
+[Source](../ProjectiveModules/Module/ProjectiveComplement.lean#L133-L145).
 
 ### Module.Projective.exists_fin_generating_family_iff_exists_prod_equiv
 
@@ -3458,7 +3554,7 @@ theorem Module.Projective.exists_fin_generating_family_iff_exists_prod_equiv {R 
 A projective module has an `n`-element spanning family exactly when it is
 a direct summand of the standard free module of rank `n`.
 
-[Source](../ProjectiveModules/Module/ProjectiveComplement.lean#L67-L92) (native database range lines 67–92).
+[Source](../ProjectiveModules/Module/ProjectiveComplement.lean#L149-L172).
 
 ### Module.Projective.exists_finite_complement_linearEquiv
 
@@ -3469,7 +3565,7 @@ theorem Module.Projective.exists_finite_complement_linearEquiv {R : Type uR} [Ri
 A finite projective module has a finite complement whose product with it
 is explicitly equivalent to a finite standard free module.
 
-[Source](../ProjectiveModules/Module/ProjectiveComplement.lean#L94-L108) (native database range lines 94–108).
+[Source](../ProjectiveModules/Module/ProjectiveComplement.lean#L176-L188).
 
 ### Module.exists_finite_free_product_of_finite_projective
 
@@ -3480,7 +3576,145 @@ theorem Module.exists_finite_free_product_of_finite_projective {R : Type uR} [Ri
 A finite projective module has a finite complement whose product with the
 module is finite free.
 
-[Source](../ProjectiveModules/Module/ProjectiveComplement.lean#L116-L132) (native database range lines 116–132).
+[Source](../ProjectiveModules/Module/ProjectiveComplement.lean#L198-L212).
+
+## ProjectiveModules.Module.ProjectiveKernel
+
+Scope: mathematical library leaf.
+
+For a retraction `r : M →ₗ[R] A` with section `i : A →ₗ[R] M`, the
+split-kernel projection sends `x` to the kernel element with underlying value
+`x - i (r x)`. Here `R`, `A` and `M` lie in independent universes `uR`, `uA`
+and `uM`. Scalars need only form a semiring, the source `M` is an additive
+commutative group, and the target `A` need only be an additive commutative
+monoid. This module is [publicly imported by
+`InvariantSupportedProjection`](../ProjectiveModules/Module/InvariantSupportedProjection.lean#L10).
+
+For `f : M →ₗ[R] A` and its specified section `g`, write
+`C = LinearMap.kerProdEquivOfRightInverse f g hfg`, where
+`hfg : f.comp g = LinearMap.id`. This equivalence is provided by
+[`StableRange.Module.SplitSurjective`](https://github.com/FormalFrontier/stable-range/blob/c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e/StableRange/Module/SplitSurjective.lean),
+which [this module publicly imports](../ProjectiveModules/Module/ProjectiveKernel.lean#L11).
+It has type `(LinearMap.ker f × A) ≃ₗ[R] M` and sends `(k, a)` to `(k : M) + g a`.
+Its inverse retains `f x` as the second coordinate; the first coordinate is
+in `ker f` and has underlying value `x - g (f x)`. The dependency provides
+these formulas as the simp lemmas
+`LinearMap.kerProdEquivOfRightInverse_apply`,
+`LinearMap.kerProdEquivOfRightInverse_symm_fst` and
+`LinearMap.kerProdEquivOfRightInverse_symm_snd`. The bundled comparison below
+identifies that inverse linear map with the pairing of the existing
+split-kernel projection and `f`, using the same `f`, `g` and `hfg`.
+
+The two closure results are independent: `finite_splitKernel` assumes only
+that the source is finitely generated, and `projective_splitKernel` assumes
+only that the source is projective. Neither requires the other source
+property or either property of the target. Here `Module.Finite` means finite
+generation, not finiteness of the underlying type.
+
+### LinearMap.splitKernelProjection
+
+```lean
+def LinearMap.splitKernelProjection
+    {R : Type uR} [Semiring R]
+    {A : Type uA} [AddCommMonoid A] [Module R A]
+    {M : Type uM} [AddCommGroup M] [Module R M]
+    (i : A →ₗ[R] M) (r : M →ₗ[R] A)
+    (h : r.comp i = LinearMap.id) : M →ₗ[R] LinearMap.ker r
+```
+
+Projection from a split module onto the kernel of its retraction.
+
+[Source](../ProjectiveModules/Module/ProjectiveKernel.lean#L41-L57).
+
+### LinearMap.splitKernelProjection_apply
+
+```lean
+@[simp] theorem LinearMap.splitKernelProjection_apply
+    {R : Type uR} [Semiring R]
+    {A : Type uA} [AddCommMonoid A] [Module R A]
+    {M : Type uM} [AddCommGroup M] [Module R M]
+    (i : A →ₗ[R] M) (r : M →ₗ[R] A)
+    (h : r.comp i = LinearMap.id) (x : M) :
+    ((LinearMap.splitKernelProjection i r h x : LinearMap.ker r) : M) =
+      x - i (r x)
+```
+
+The underlying value of the projection subtracts the section applied to the
+retracted coordinate.
+
+[Source](../ProjectiveModules/Module/ProjectiveKernel.lean#L60-L67).
+
+### LinearMap.splitKernelProjection_comp_subtype
+
+```lean
+theorem LinearMap.splitKernelProjection_comp_subtype
+    {R : Type uR} [Semiring R]
+    {A : Type uA} [AddCommMonoid A] [Module R A]
+    {M : Type uM} [AddCommGroup M] [Module R M]
+    (i : A →ₗ[R] M) (r : M →ₗ[R] A)
+    (h : r.comp i = LinearMap.id) :
+    (LinearMap.splitKernelProjection i r h).comp (LinearMap.ker r).subtype =
+      LinearMap.id
+```
+
+The split-kernel projection retracts the kernel subtype.
+
+[Source](../ProjectiveModules/Module/ProjectiveKernel.lean#L70-L82).
+
+### LinearMap.splitKernelProjection_prod_eq_kerProdEquivOfRightInverse_symm
+
+```lean
+theorem LinearMap.splitKernelProjection_prod_eq_kerProdEquivOfRightInverse_symm
+    {R : Type uR} [Semiring R]
+    {A : Type uA} [AddCommMonoid A] [Module R A]
+    {M : Type uM} [AddCommGroup M] [Module R M]
+    (f : M →ₗ[R] A) (g : A →ₗ[R] M)
+    (hfg : f.comp g = LinearMap.id) :
+    (LinearMap.splitKernelProjection g f hfg).prod f =
+      (LinearMap.kerProdEquivOfRightInverse f g hfg).symm.toLinearMap
+```
+
+Equality of bundled linear maps `M →ₗ[R] (LinearMap.ker f × A)`: the
+projection paired with `f` is the inverse of the kernel-product equivalence
+for the same specified section. No finiteness or projectivity is assumed.
+
+[Source](../ProjectiveModules/Module/ProjectiveKernel.lean#L86-L100).
+
+### LinearMap.finite_splitKernel
+
+```lean
+theorem LinearMap.finite_splitKernel
+    {R : Type uR} [Semiring R]
+    {A : Type uA} [AddCommMonoid A] [Module R A]
+    {M : Type uM} [AddCommGroup M] [Module R M]
+    [Module.Finite R M]
+    (i : A →ₗ[R] M) (r : M →ₗ[R] A)
+    (h : r.comp i = LinearMap.id) :
+    Module.Finite R (LinearMap.ker r)
+```
+
+The kernel of a retraction from a finitely generated module is finitely
+generated; no projectivity assumption is needed.
+
+[Source](../ProjectiveModules/Module/ProjectiveKernel.lean#L113-L123).
+
+### LinearMap.projective_splitKernel
+
+```lean
+theorem LinearMap.projective_splitKernel
+    {R : Type uR} [Semiring R]
+    {A : Type uA} [AddCommMonoid A] [Module R A]
+    {M : Type uM} [AddCommGroup M] [Module R M]
+    [Module.Projective R M]
+    (i : A →ₗ[R] M) (r : M →ₗ[R] A)
+    (h : r.comp i = LinearMap.id) :
+    Module.Projective R (LinearMap.ker r)
+```
+
+The kernel of a retraction from a projective module is projective; no
+finiteness assumption is needed.
+
+[Source](../ProjectiveModules/Module/ProjectiveKernel.lean#L126-L136).
 
 ## ProjectiveModules.Module.RankFiberDecomposition
 

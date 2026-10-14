@@ -148,7 +148,7 @@ private theorem integer_product_splitter_target_coordinate :
       (Module.Projective.prodKerEquivOfSurjective
         (LinearMap.fst ℤ ℤ ℤ) LinearMap.fst_surjective
         (7, (⟨(0, 1), rfl⟩ : LinearMap.ker (LinearMap.fst ℤ ℤ ℤ)))) = 7 := by
-  simp
+  rw [Module.Projective.prodKerEquivOfSurjective_apply_fst]
 
 private theorem integer_product_splitter_inverse_target :
     ((Module.Projective.prodKerEquivOfSurjective

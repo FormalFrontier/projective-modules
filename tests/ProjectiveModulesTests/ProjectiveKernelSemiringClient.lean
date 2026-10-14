@@ -59,6 +59,57 @@ def k : LinearMap.ker f := ⟨(0, 1), rfl⟩
 example : k ≠ 0 :=
   fun h ↦ one_ne_zero (congrArg (fun x : LinearMap.ker f ↦ x.val.2) h)
 
+-- The kernel and target coordinates are both nonzero in this decomposition.
+example : LinearMap.kerProdEquivOfRightInverse f i f_comp_i (k, 3) = (3, 1) := by
+  simp [k, i]
+
+example : (LinearMap.kerProdEquivOfRightInverse f i f_comp_i).symm (3, 1) =
+    (k, 3) := by
+  apply Prod.ext
+  · apply Subtype.ext
+    rw [LinearMap.kerProdEquivOfRightInverse_symm_fst]
+    simp [f, i, k]
+  · rw [LinearMap.kerProdEquivOfRightInverse_symm_snd]
+    simp [f]
+
+example :
+    ((LinearMap.kerProdEquivOfRightInverse f i f_comp_i).symm (3, 1)).1 ≠ 0 ∧
+      ((LinearMap.kerProdEquivOfRightInverse f i f_comp_i).symm (3, 1)).2 ≠ 0 := by
+  constructor
+  · intro h
+    have hsnd := congrArg (fun k : LinearMap.ker f ↦ k.val.2) h
+    rw [LinearMap.kerProdEquivOfRightInverse_symm_fst] at hsnd
+    simp [f, i] at hsnd
+  · rw [LinearMap.kerProdEquivOfRightInverse_symm_snd]
+    simp [f]
+
+example (x : ℤ × ℤ) :
+    ((LinearMap.kerProdEquivOfRightInverse f i f_comp_i).symm x).1.val =
+      (0, x.2) := by
+  rw [LinearMap.kerProdEquivOfRightInverse_symm_fst]
+  apply Prod.ext <;> simp [f, i]
+
+example (x : ℤ × ℤ) :
+    ((LinearMap.kerProdEquivOfRightInverse f i f_comp_i).symm x).2 = x.1 := by
+  rw [LinearMap.kerProdEquivOfRightInverse_symm_snd]
+  rfl
+
+-- The natural-number coordinate of the scalar does not act on this source.
+example : LinearMap.kerProdEquivOfRightInverse f i f_comp_i
+    (((5, 2) : R₀) • (k, 3)) = (6, 2) := by
+  rw [map_smul]
+  have h : LinearMap.kerProdEquivOfRightInverse f i f_comp_i (k, 3) = (3, 1) := by
+    simp [k, i]
+  rw [h]
+  rfl
+
+example :
+    LinearMap.kerProdEquivOfRightInverse f i f_comp_i
+        ((LinearMap.kerProdEquivOfRightInverse f i f_comp_i).symm (3, 1)) = (3, 1) ∧
+      (LinearMap.kerProdEquivOfRightInverse f i f_comp_i).symm
+        (LinearMap.kerProdEquivOfRightInverse f i f_comp_i (k, 3)) = (k, 3) :=
+  ⟨LinearEquiv.apply_symm_apply _ _, LinearEquiv.symm_apply_apply _ _⟩
+
 -- The characteristic projection API is used without unfolding its definition.
 def π : (ℤ × ℤ) →ₗ[R₀] LinearMap.ker f :=
   LinearMap.splitKernelProjection i f f_comp_i
@@ -68,6 +119,21 @@ example (x : ℤ × ℤ) : (π x : ℤ × ℤ) = x - i (f x) :=
 
 example : π.comp (LinearMap.ker f).subtype = LinearMap.id :=
   LinearMap.splitKernelProjection_comp_subtype i f f_comp_i
+
+example : (π (3, 1), f (3, 1)) = (k, 3) := by
+  have h := LinearMap.congr_fun
+    (LinearMap.splitKernelProjection_prod_eq_kerProdEquivOfRightInverse_symm
+      f i f_comp_i) (3, 1)
+  calc
+    (π (3, 1), f (3, 1)) =
+        (LinearMap.kerProdEquivOfRightInverse f i f_comp_i).symm (3, 1) := h
+    _ = (k, 3) := by
+      apply Prod.ext
+      · apply Subtype.ext
+        rw [LinearMap.kerProdEquivOfRightInverse_symm_fst]
+        simp [f, i, k]
+      · rw [LinearMap.kerProdEquivOfRightInverse_symm_snd]
+        simp [f]
 
 example (k : LinearMap.ker f) : π k = k :=
   LinearMap.splitKernelProjection_apply_coe i f f_comp_i k

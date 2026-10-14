@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.RingTheory.Finiteness.Basic
+public import StableRange.Module.SplitSurjective
 
 /-!
 # Kernels of split linear maps
@@ -79,6 +80,24 @@ theorem splitKernelProjection_comp_subtype
   apply Subtype.ext
   change x - i (r x) = x
   rw [LinearMap.mem_ker.mp x.2, map_zero, sub_zero]
+
+/-- Pairing the split-kernel projection with the retraction gives the inverse of
+the kernel-product equivalence for the same specified section. -/
+theorem splitKernelProjection_prod_eq_kerProdEquivOfRightInverse_symm
+    {R : Type uR} [Semiring R]
+    {A : Type uA} [AddCommMonoid A] [Module R A]
+    {M : Type uM} [AddCommGroup M] [Module R M]
+    (f : M →ₗ[R] A) (g : A →ₗ[R] M)
+    (hfg : f.comp g = LinearMap.id) :
+    (splitKernelProjection g f hfg).prod f =
+      (kerProdEquivOfRightInverse f g hfg).symm.toLinearMap := by
+  apply LinearMap.ext
+  intro x
+  apply Prod.ext
+  · apply Subtype.ext
+    exact (splitKernelProjection_apply g f hfg x).trans
+      (kerProdEquivOfRightInverse_symm_fst f g hfg x).symm
+  · exact (kerProdEquivOfRightInverse_symm_snd f g hfg x).symm
 
 /-- The split-kernel projection fixes each element of the kernel. -/
 @[simp] theorem splitKernelProjection_apply_coe
