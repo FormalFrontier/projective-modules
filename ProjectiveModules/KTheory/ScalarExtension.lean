@@ -30,15 +30,17 @@ of scalar-extension functors.
 The class map uses `ProjectiveClass.lift`: scalar extension preserves linear
 equivalences, zero modules and binary direct sums. Its finite-generation and
 projectivity instances are independent preservation results. The K₀ map is
-then the universal group-completion extension of the class map.
+then the universal group-completion extension of the class map. If scalar
+extension is bijective on finite-projective classes, it is bijective on K₀:
+group completion preserves isomorphisms of commutative monoids.
 
 The scalar and module carrier universes are independent. The existing
 finite-projective representatives normalize classes into the scalar universe;
 linear equivalences compare scalar extensions before this normalization.
 The rings may be noncommutative or subsingleton, and the ring homomorphisms
 need not be injective. Addition is direct sum, not tensor multiplication.
-No injectivity of the induced maps or cancellation of projective modules is
-asserted.
+No unconditional injectivity of the induced maps or cancellation of projective
+modules is asserted.
 
 ## References and credits
 
@@ -174,6 +176,33 @@ scalar-extension map on finite-projective classes. -/
 theorem map_ofClass (φ : R →+* S) (a : ProjectiveClass R) :
     map φ (ofClass R a) = ofClass S (ProjectiveClass.map φ a) :=
   lift_ofClass R ((ofClass S).comp (ProjectiveClass.map φ)) a
+
+/-- Bijectivity of scalar extension on finite-projective right-module classes
+implies bijectivity on K₀, for arbitrary rings. Group completion preserves
+isomorphisms of commutative monoids. -/
+theorem map_bijective_of_projectiveClass_map_bijective (f : R →+* S)
+    (hf : Function.Bijective (ProjectiveClass.map f)) :
+    Function.Bijective (map f) := by
+  let e : ProjectiveClass R ≃+ ProjectiveClass S :=
+    AddEquiv.ofBijective (ProjectiveClass.map f) hf
+  have he : (⊤ : AddSubmonoid (ProjectiveClass R)).map e.toAddMonoidHom =
+      (⊤ : AddSubmonoid (ProjectiveClass S)) := by
+    rw [← AddMonoidHom.mrange_eq_map]
+    exact AddMonoidHom.mrange_eq_top_of_surjective _ e.surjective
+  let E : K0 R ≃+ K0 S :=
+    (AddLocalization.addMonoidOf (⊤ : AddSubmonoid (ProjectiveClass R))).addEquivOfAddEquiv
+      (AddLocalization.addMonoidOf (⊤ : AddSubmonoid (ProjectiveClass S)))
+      (j := e) he
+  have hE : E.toAddMonoidHom = map f := by
+    apply hom_ext_ofClass R
+    intro a
+    rw [map_ofClass]
+    exact AddSubmonoid.LocalizationMap.addEquivOfAddEquiv_eq
+      (AddLocalization.addMonoidOf (⊤ : AddSubmonoid (ProjectiveClass R)))
+      (k := AddLocalization.addMonoidOf (⊤ : AddSubmonoid (ProjectiveClass S)))
+      (j := e) he a
+  rw [← hE]
+  exact E.bijective
 
 /-- Scalar extension evaluates on a finite projective K₀ generator in any
 carrier universe. -/

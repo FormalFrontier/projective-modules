@@ -467,15 +467,8 @@ theorem K0.finrankHom_comp_map (φ : D →+* S) :
 
 /-- Right scalar extension between division rings induces a bijection on K₀. -/
 theorem K0.map_bijective (φ : D →+* S) : Function.Bijective (K0.map φ) := by
-  have hD : Function.Bijective (K0.finrankHom D) := by
-    rw [← K0.finrankEquiv_toAddMonoidHom D]
-    exact (K0.finrankEquiv D).bijective
-  have hS : Function.Bijective (K0.finrankHom S) := by
-    rw [← K0.finrankEquiv_toAddMonoidHom S]
-    exact (K0.finrankEquiv S).bijective
-  apply (Function.Bijective.of_comp_iff' hS (K0.map φ)).mp
-  rw [← AddMonoidHom.coe_comp, K0.finrankHom_comp_map φ]
-  exact hD
+  exact K0.map_bijective_of_projectiveClass_map_bijective φ
+    (ProjectiveClass.map_bijective φ)
 
 end ScalarExtensionNaturality
 

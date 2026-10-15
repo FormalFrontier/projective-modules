@@ -117,6 +117,12 @@ examples and qualifications; links below go to the corresponding result families
   and additive scalar-extension maps. Division-ring classes and K₀ are ℕ and ℤ;
   division-ring extension maps are bijective, and maps from a division-ring source
   to any ring are independent of the scalar homomorphism. Zero-ring objects collapse.
+- **[K₀ bijectivity from projective classes](ProjectiveModules/KTheory/ScalarExtension.lean):**
+  for arbitrary rings `R` and `S` in independent universes and any `f : R →+* S`,
+  bijectivity of the scalar-extension class map `ProjectiveClass.map f` implies
+  bijectivity of `K0.map f`, by
+  `KTheory.K0.map_bijective_of_projectiveClass_map_bijective`. This conditional
+  group-completion result assumes neither cancellation nor nontrivial rings.
 - **[Opposite-ring duality](docs/Overview.md#right-module-classes-and-k₀):** for any
   ring `R`, dualizing finite-projective right modules gives canonical additive
   equivalences of class monoids `ProjectiveClass R ≃+ ProjectiveClass Rᵐᵒᵖ`
