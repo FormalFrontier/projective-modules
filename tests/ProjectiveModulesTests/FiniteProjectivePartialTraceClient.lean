@@ -90,4 +90,38 @@ example :
       (0 : V ⊗[ℕ] V →ₗ[ℕ] V ⊗[ℕ] V) = (0 : V →ₗ[ℕ] V) :=
   (LinearMap.partialTraceOfFiniteProjective ℕ V V V).map_zero
 
+/-- Naturality for the coordinate-zero embedding
+and projection around tensor symmetry, with scalar partial trace the identity. -/
+private theorem partialTrace_tensorSwap_coordinateSquare :
+    LinearMap.partialTraceOfFiniteProjective ℕ V ℕ ℕ
+      (((LinearMap.proj (0 : Fin 2) : V →ₗ[ℕ] ℕ).lTensor V).comp
+        (tensorSwap.comp
+          (((LinearMap.id : ℕ →ₗ[ℕ] ℕ).smulRight
+            (Pi.single (0 : Fin 2) (1 : ℕ)) : ℕ →ₗ[ℕ] V).lTensor V))) =
+      (LinearMap.id : ℕ →ₗ[ℕ] ℕ) := by
+  calc
+    _ =
+        (LinearMap.proj (0 : Fin 2) : V →ₗ[ℕ] ℕ).comp
+          ((LinearMap.partialTraceOfFiniteProjective ℕ V V V tensorSwap).comp
+            ((LinearMap.id : ℕ →ₗ[ℕ] ℕ).smulRight
+              (Pi.single (0 : Fin 2) (1 : ℕ)) : ℕ →ₗ[ℕ] V)) :=
+      LinearMap.partialTraceOfFiniteProjective_naturality ℕ V V V ℕ ℕ tensorSwap
+        ((LinearMap.id : ℕ →ₗ[ℕ] ℕ).smulRight (Pi.single (0 : Fin 2) (1 : ℕ)))
+        (LinearMap.proj (0 : Fin 2))
+    _ =
+        (LinearMap.proj (0 : Fin 2) : V →ₗ[ℕ] ℕ).comp
+          ((LinearMap.id : V →ₗ[ℕ] V).comp
+            ((LinearMap.id : ℕ →ₗ[ℕ] ℕ).smulRight
+              (Pi.single (0 : Fin 2) (1 : ℕ)) : ℕ →ₗ[ℕ] V)) :=
+      congrArg (fun g : V →ₗ[ℕ] V =>
+        (LinearMap.proj (0 : Fin 2) : V →ₗ[ℕ] ℕ).comp
+          (g.comp
+            ((LinearMap.id : ℕ →ₗ[ℕ] ℕ).smulRight
+              (Pi.single (0 : Fin 2) (1 : ℕ)) : ℕ →ₗ[ℕ] V)))
+        partialTrace_tensorSwap
+    _ = (LinearMap.id : ℕ →ₗ[ℕ] ℕ) := by
+      apply LinearMap.ext
+      intro n
+      simp [LinearMap.comp_apply, LinearMap.smulRight_apply]
+
 end ProjectiveModulesTests

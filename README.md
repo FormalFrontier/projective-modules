@@ -42,6 +42,10 @@ examples and qualifications; links below go to the corresponding result families
   `R`-linear operator from maps `M ⊗[R] N →ₗ[R] M ⊗[R] P` to maps `N →ₗ[R] P`.
   The untraced semimodules `N` and `P` are arbitrary, with independent universes.
   On `TensorProduct.map a b`, its value is `tr_M(a) • b`.
+  Precomposition by `b.lTensor M` and postcomposition by `c.lTensor M` commute
+  with contraction, separately and together, for every input map and arbitrary
+  `b : N' →ₗ[R] N`, `c : P →ₗ[R] P'`. These are stock `TensorProduct.map` maps
+  with identity on `M`; all untraced factors are arbitrary, with independent scalar/carrier universes.
 - **[Tensor dual separation](ProjectiveModules/Dual/TensorProduct.lean):** over a
   commutative semiring, products of linear forms separate tensors of two arbitrary
   projective modules with additive commutative monoids and independent scalar and

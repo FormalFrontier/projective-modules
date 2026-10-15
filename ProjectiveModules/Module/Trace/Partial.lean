@@ -91,4 +91,71 @@ theorem partialTraceOfFiniteProjective_tensorProduct
       rTensorHomEquivHomRTensor_apply, TensorProduct.rTensorHomToHomRTensor_apply]
   rw [h, rTensor_tmul, TensorProduct.lid_tmul, smul_apply]
 
+universe uNprime uPprime
+
+variable (Nprime : Type uNprime) [AddCommMonoid Nprime] [Module R Nprime]
+variable (Pprime : Type uPprime) [AddCommMonoid Pprime] [Module R Pprime]
+
+/-- Precomposing the untraced input with `b : Nprime →ₗ[R] N` commutes with
+partial trace over the first factor `M`. Here `b.lTensor M` is the tensor map
+`id_M ⊗ b`; only `M` is finite projective. -/
+theorem partialTraceOfFiniteProjective_comp_lTensor
+    (f : M ⊗[R] N →ₗ[R] M ⊗[R] P) (b : Nprime →ₗ[R] N) :
+    partialTraceOfFiniteProjective R M Nprime P (f.comp (b.lTensor M)) =
+      (partialTraceOfFiniteProjective R M N P f).comp b := by
+  ext n
+  rw [comp_apply, partialTraceOfFiniteProjective_apply,
+    partialTraceOfFiniteProjective_apply]
+  have h : (TensorProduct.curry (f.comp (b.lTensor M))).flip n =
+      (TensorProduct.curry f).flip (b n) := by
+    ext m
+    simp only [flip_apply, TensorProduct.curry_apply, comp_apply, lTensor_tmul]
+  rw [h]
+
+/-- Postcomposing the untraced output with `c : P →ₗ[R] Pprime` commutes with
+partial trace over the first factor `M`. Here `c.lTensor M` is the tensor map
+`id_M ⊗ c`; only `M` is finite projective. -/
+theorem partialTraceOfFiniteProjective_lTensor_comp
+    (f : M ⊗[R] N →ₗ[R] M ⊗[R] P) (c : P →ₗ[R] Pprime) :
+    partialTraceOfFiniteProjective R M N Pprime ((c.lTensor M).comp f) =
+      c.comp (partialTraceOfFiniteProjective R M N P f) := by
+  ext n
+  rw [comp_apply, partialTraceOfFiniteProjective_apply,
+    partialTraceOfFiniteProjective_apply]
+  have h : (TensorProduct.curry ((c.lTensor M).comp f)).flip n =
+      (c.lTensor M).comp ((TensorProduct.curry f).flip n) := by
+    ext m
+    simp only [flip_apply, TensorProduct.curry_apply, comp_apply]
+  rw [h]
+  generalize (TensorProduct.curry f).flip n = g
+  obtain ⟨t, rfl⟩ := (rTensorHomEquivHomRTensor R M M P).surjective g
+  rw [LinearEquiv.symm_apply_apply]
+  -- The one-sided equivalence represents every curried map, even when `P`
+  -- is not finite projective. Contraction is linear on that entire tensor.
+  induction t using TensorProduct.inductionOn with
+  | tmul a p =>
+      have ht : (c.lTensor M).comp
+          (rTensorHomEquivHomRTensor R M M P (a ⊗ₜ[R] p)) =
+          rTensorHomEquivHomRTensor R M M Pprime (a ⊗ₜ[R] c p) := by
+        ext m
+        simp only [comp_apply, rTensorHomEquivHomRTensor_apply,
+          TensorProduct.rTensorHomToHomRTensor_apply, lTensor_tmul]
+      simp only [ht, LinearEquiv.symm_apply_apply, rTensor_tmul,
+        TensorProduct.lid_tmul, map_smul]
+  | add x y hx hy =>
+      simpa only [map_add, comp_add] using congrArg₂ (· + ·) hx hy
+
+/-- Partial trace over the first factor `M` commutes with simultaneous
+precomposition on the untraced input and postcomposition on the untraced
+output. The tensor maps are `id_M ⊗ b` and `id_M ⊗ c`, and composition is
+right-to-left. The four untraced semimodules are arbitrary and have independent
+universes; only `M` is finite projective. -/
+theorem partialTraceOfFiniteProjective_naturality
+    (f : M ⊗[R] N →ₗ[R] M ⊗[R] P) (b : Nprime →ₗ[R] N) (c : P →ₗ[R] Pprime) :
+    partialTraceOfFiniteProjective R M Nprime Pprime
+        ((c.lTensor M).comp (f.comp (b.lTensor M))) =
+      c.comp ((partialTraceOfFiniteProjective R M N P f).comp b) := by
+  rw [partialTraceOfFiniteProjective_lTensor_comp,
+    partialTraceOfFiniteProjective_comp_lTensor]
+
 end LinearMap
