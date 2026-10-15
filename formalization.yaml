@@ -292,6 +292,27 @@ status:
     - declaration: "LinearMap.traceOfFiniteProjective_eq_trace"
       file: "ProjectiveModules/Module/Trace/Comparison.lean"
       note: "Finite-free semiring comparison with Mathlib's finite-basis trace; not a universal assertion for nonfree projectives."
+    - declaration: "LinearMap.traceOfFiniteProjective_restrictScalars"
+      file: "ProjectiveModules/Module/Trace/ScalarRestriction.lean"
+      note: >-
+        For a commutative-semiring algebra R → A with A finite projective
+        over R and an additive-commutative-monoid module M finite projective
+        over A, the R-trace of any A-linear endomorphism f restricted to R
+        equals the R-trace of multiplication on A by its A-trace. The given
+        R-action on M is compatible with the tower. Finiteness and projectivity
+        over R are supplied explicitly by Module.Finite.trans and
+        Module.Projective.trans, not additional hypotheses. Scalar and carrier
+        universes are independent; no freeness or additive inverses are required.
+    - declaration: "LinearMap.traceOfFiniteProjective_restrictScalars_lmul_iff_trace_trace"
+      file: "ProjectiveModules/Module/Trace/ScalarRestriction.lean"
+      note: >-
+        For a tower R → A → T of commutative rings, with A finite free over R
+        and T finite free over A, the finite-projective restriction identity
+        for A-linear multiplication by x is equivalent to
+        Algebra.trace R T x = Algebra.trace R A (Algebra.trace A T x),
+        the symmetric form of Mathlib's Algebra.trace_trace. Scalar universes
+        are independent; freeness and finiteness over R are derived from the
+        two successive extensions, not separately assumed for T.
     - declaration: "LinearMap.traceOfFiniteProjective_baseChange"
       file: "ProjectiveModules/Module/Trace/BaseChange.lean"
       note: >-

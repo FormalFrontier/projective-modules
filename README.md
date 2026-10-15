@@ -37,6 +37,17 @@ examples and qualifications; links below go to the corresponding result families
   semirings, with no freeness or flatness assumption; on finite free modules over
   commutative rings it agrees with Mathlib's scalar-extension trace formula.
   Biduality and trace allow additive monoids; the commutator corollary needs additive groups.
+- **[Trace under scalar restriction](ProjectiveModules/Module/Trace/ScalarRestriction.lean):**
+  for a commutative-semiring algebra `R → A`, with `A` finite projective over
+  `R` and an additive-commutative-monoid module `M` finite projective over `A`,
+  every `A`-linear endomorphism `f` satisfies
+  `tr_R(f.restrictScalars R) = tr_R(Algebra.lmul R A (tr_A f))`, where `tr`
+  is the finite-projective contraction trace. The given `R`-action on `M`
+  must be compatible with the tower; scalar and carrier universes are independent,
+  without freeness or additive inverses. On successive finite free extensions
+  `R → A → T` of commutative rings, the multiplication-map specialization is
+  equivalent to `Algebra.trace R T x = Algebra.trace R A (Algebra.trace A T x)`,
+  the symmetric form of Mathlib's `Algebra.trace_trace`.
 - **[Rectangular product trace](ProjectiveModules/Module/Trace/Pi.lean):** for maps in
   opposite directions between two finite dependent products of additive-commutative-monoid
   modules over a commutative semiring, the trace of `g.comp f` is the sum of its
@@ -188,6 +199,7 @@ aggregate import.
 | [Right inverse defects](ProjectiveModules/Module/RightRegularDefect.lean), [Hom exactness](ProjectiveModules/Module/HomExact.lean) | Specified right regular decomposition and defect kernel over rings; additive Hom exactness over semirings |
 | [Finite dependent products](ProjectiveModules/Module/ProjectivePi.lean) | Canonical pointwise products of projective modules over any semiring are projective for a finite index, without finite generation of the factors and with independent universes |
 | [Finite dependent-product trace](ProjectiveModules/Module/Trace/Pi.lean) | Over a commutative semiring, arbitrary endomorphisms of finite dependent products of finite projective additive-commutative-monoid modules have the sum of their diagonal coordinate traces; `Finite` indices and independent scalar, index and carrier universes. For rectangular composites through another finite dependent product, sum the returning source-factor path traces; no finite generation or projectivity is required of the intermediate factors |
+| [Trace under scalar restriction](ProjectiveModules/Module/Trace/ScalarRestriction.lean) | Trace of an arbitrary endomorphism restricted through a finite-projective commutative-semiring tower; multiplication-map comparison with `Algebra.trace_trace` on successive finite free commutative-ring extensions |
 | [Trace and scalar extension](ProjectiveModules/Module/Trace/BaseChange.lean) | `traceOfFiniteProjective_baseChange`: contraction trace on the canonical tensor-product scalar extension is the image of the source trace for finite projective additive-commutative-monoid modules over commutative semirings; independent scalar and carrier universes, without freeness, flatness or finiteness of the scalar extension. `traceOfFiniteProjective_baseChange_iff_trace` identifies the formula with Mathlib's finite-free trace identity over commutative rings |
 | [Finite-projective category](ProjectiveModules/Category/FiniteProjective.lean), [stable category](ProjectiveModules/Category/Stable.lean) | Finite biproducts, preadditive stable quotient and small-ring Ext¹ detection |
 | [Projective scalar towers](ProjectiveModules/Module/ScalarRestriction.lean), [finite-projective restriction](ProjectiveModules/Category/FiniteProjectiveRestriction.lean) | Projectivity through semiring towers with projective coefficients; finite-projective ring-homomorphism restriction under its canonical coefficient hypothesis, with carrier, stored-action and map-application laws, both directions of the underlying-functor comparison, and identity/composition functor laws |
