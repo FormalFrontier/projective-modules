@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import Mathlib.RingTheory.TensorProduct.Finite
 public import ProjectiveModules.Module.Trace
 
 /-!
@@ -123,5 +124,78 @@ private theorem partialTrace_tensorSwap_coordinateSquare :
       apply LinearMap.ext
       intro n
       simp [LinearMap.comp_apply, LinearMap.smulRight_apply]
+
+private instance : Module.Finite ℕ (V ⊗[ℕ] V) :=
+  Module.Finite.of_basis
+    ((Pi.basisFun ℕ (Fin 2)).tensorProduct (Pi.basisFun ℕ (Fin 2)))
+
+private instance : Module.Projective ℕ (V ⊗[ℕ] V) :=
+  Module.Projective.of_basis
+    ((Pi.basisFun ℕ (Fin 2)).tensorProduct (Pi.basisFun ℕ (Fin 2)))
+
+/-- Iterating partial trace on tensor symmetry with a remaining scalar factor
+is twice the identity on the natural numbers. -/
+example :
+    LinearMap.partialTraceOfFiniteProjective ℕ (V ⊗[ℕ] V) ℕ ℕ
+      (tensorSwap.rTensor ℕ) = (2 : ℕ) • (LinearMap.id : ℕ →ₗ[ℕ] ℕ) := by
+  refine (LinearMap.partialTraceOfFiniteProjective_assoc ℕ V V ℕ ℕ
+    (tensorSwap.rTensor ℕ)).trans ?_
+  calc
+    _ = LinearMap.partialTraceOfFiniteProjective ℕ V ℕ ℕ
+        ((LinearMap.partialTraceOfFiniteProjective ℕ V V V tensorSwap).rTensor ℕ) := by
+      apply congrArg (LinearMap.partialTraceOfFiniteProjective ℕ V ℕ ℕ)
+      let u : V ⊗[ℕ] ℕ ≃ₗ[ℕ] V := TensorProduct.rid ℕ V
+      have hcoherence :
+          (TensorProduct.assoc ℕ V V ℕ).toLinearMap.comp
+              ((tensorSwap.rTensor ℕ).comp
+                (TensorProduct.assoc ℕ V V ℕ).symm.toLinearMap) =
+            (u.symm.toLinearMap.lTensor V).comp
+              (tensorSwap.comp (u.toLinearMap.lTensor V)) := by
+        apply TensorProduct.ext_threefold'
+        intro m n r
+        change n ⊗ₜ[ℕ] (m ⊗ₜ[ℕ] r) =
+          (r • n) ⊗ₜ[ℕ] (m ⊗ₜ[ℕ] (1 : ℕ))
+        apply (u.lTensor V).injective
+        change n ⊗ₜ[ℕ] (r • m) = (r • n) ⊗ₜ[ℕ] ((1 : ℕ) • m)
+        rw [one_smul]
+        exact (TensorProduct.smul_tmul (R := ℕ) r n m).symm
+      have hunit (g : V →ₗ[ℕ] V) :
+          u.symm.toLinearMap.comp (g.comp u.toLinearMap) = g.rTensor ℕ := by
+        apply TensorProduct.ext'
+        intro m r
+        change g (r • m) ⊗ₜ[ℕ] (1 : ℕ) = g m ⊗ₜ[ℕ] r
+        apply u.injective
+        change (1 : ℕ) • g (r • m) = r • g m
+        rw [one_smul, map_smul]
+      exact
+        (congrArg
+          (LinearMap.partialTraceOfFiniteProjective ℕ V (V ⊗[ℕ] ℕ) (V ⊗[ℕ] ℕ))
+          hcoherence).trans
+          ((LinearMap.partialTraceOfFiniteProjective_naturality ℕ V V V
+            (V ⊗[ℕ] ℕ) (V ⊗[ℕ] ℕ) tensorSwap u.toLinearMap u.symm.toLinearMap).trans
+            (hunit (LinearMap.partialTraceOfFiniteProjective ℕ V V V tensorSwap)))
+    _ = (2 : ℕ) • (LinearMap.id : ℕ →ₗ[ℕ] ℕ) := by
+      rw [partialTrace_tensorSwap]
+      have htrace : LinearMap.traceOfFiniteProjective ℕ V
+          (LinearMap.id : V →ₗ[ℕ] V) = (2 : ℕ) := by
+        calc
+          _ = LinearMap.trace ℕ V (LinearMap.id : V →ₗ[ℕ] V) :=
+            congrArg (fun t : (V →ₗ[ℕ] V) →ₗ[ℕ] ℕ => t LinearMap.id)
+              (LinearMap.traceOfFiniteProjective_eq_trace ℕ V)
+          _ = Matrix.trace
+              (LinearMap.toMatrix (Pi.basisFun ℕ (Fin 2)) (Pi.basisFun ℕ (Fin 2))
+                (LinearMap.id : V →ₗ[ℕ] V)) :=
+            LinearMap.trace_eq_matrix_trace ℕ (Pi.basisFun ℕ (Fin 2)) LinearMap.id
+          _ = 2 := by simp
+      exact (LinearMap.partialTraceOfFiniteProjective_tensorProduct ℕ V ℕ ℕ
+        (LinearMap.id : V →ₗ[ℕ] V) (LinearMap.id : ℕ →ₗ[ℕ] ℕ)).trans
+          (congrArg (fun r : ℕ => r • (LinearMap.id : ℕ →ₗ[ℕ] ℕ)) htrace)
+
+/-- Twice the identity on the natural numbers is a nonzero linear map. -/
+example : (2 : ℕ) • (LinearMap.id : ℕ →ₗ[ℕ] ℕ) ≠ 0 := by
+  intro h
+  have hvalue : (2 : ℕ) = 0 := by
+    simpa using congrArg (fun g : ℕ →ₗ[ℕ] ℕ => g 1) h
+  exact (by decide : (2 : ℕ) ≠ 0) hvalue
 
 end ProjectiveModulesTests

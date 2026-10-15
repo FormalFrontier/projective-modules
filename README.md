@@ -46,6 +46,10 @@ examples and qualifications; links below go to the corresponding result families
   with contraction, separately and together, for every input map and arbitrary
   `b : N' →ₗ[R] N`, `c : P →ₗ[R] P'`. These are stock `TensorProduct.map` maps
   with identity on `M`; all untraced factors are arbitrary, with independent scalar/carrier universes.
+  For two finite-projective traced factors `M` and `N`, contraction over `M ⊗[R] N`
+  agrees with successive contractions, first over `M` and then over `N`, after
+  inverse-associator input and forward-associator output transport. The remaining
+  input and output semimodules are arbitrary, with independent universes.
 - **[Tensor dual separation](ProjectiveModules/Dual/TensorProduct.lean):** over a
   commutative semiring, products of linear forms detect zero in `M ⊗[R] N` when
   `M` is projective and the canonical dual evaluation on `N` is left-separating
