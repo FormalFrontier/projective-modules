@@ -13,6 +13,7 @@ public import ProjectiveModules.Module.Trace.Prod
 public import ProjectiveModules.Module.Trace.TensorProduct
 public import ProjectiveModules.Module.Trace.Pi
 public import ProjectiveModules.Module.Trace.ScalarRestriction
+public import ProjectiveModules.Module.Trace.Partial
 
 /-!
 # Finite-projective endomorphism trace

@@ -42,7 +42,12 @@ project:
     For two finite projective additive-commutative-monoid modules, tensoring
     endomorphisms multiplies their traces, with independent scalar and factor
     universes. Both bilinear and pointwise forms are provided.
-    On nonfree projectives it need not be a natural multiple of the scalar unit.
+    Partial trace over a finite projective factor M contracts arbitrary linear
+    maps M tensor N → M tensor P to maps N → P, linearly in the whole input.
+    The untraced factors are arbitrary, with four independent universes. On
+    a tensor product of maps a and b it is trace(a) times b, without normalization.
+    On nonfree projectives the scalar trace need not be a natural multiple of
+    the scalar unit.
     Product endomorphisms have the sum of their factor traces; diagonal
     inclusion-projection blocks have the factor traces and off-diagonal blocks
     have trace zero. An arbitrary block endomorphism of a product of finite
@@ -283,6 +288,26 @@ status:
     - declaration: "LinearMap.traceOfFiniteProjective_smulRight"
       file: "ProjectiveModules/Module/Trace/Basic.lean"
       note: "Rank-one evaluation sends the endomorphism m ↦ φ m • x to φ x."
+    - declaration: "LinearMap.partialTraceOfFiniteProjective"
+      file: "ProjectiveModules/Module/Trace/Partial.lean"
+      note: >-
+        Canonical linear partial trace on all maps M tensor N → M tensor P
+        over a commutative semiring. Only the traced factor M is finite
+        projective; N and P are arbitrary additive-commutative-monoid modules,
+        with independent scalar and three carrier universes.
+    - declaration: "LinearMap.partialTraceOfFiniteProjective_apply"
+      file: "ProjectiveModules/Module/Trace/Partial.lean"
+      note: >-
+        At every input n, contract the inverse tensor–Hom image of
+        m ↦ f(m tensor n) by tensoring the scalar finite-projective trace
+        with the identity of P and applying the left unitor.
+    - declaration: "LinearMap.partialTraceOfFiniteProjective_tensorProduct"
+      file: "ProjectiveModules/Module/Trace/Partial.lean"
+      note: >-
+        The partial trace of TensorProduct.map a b is
+        traceOfFiniteProjective R M a • b. This is the ordinary unnormalized
+        trace, with no finiteness or projectivity assumption on the source
+        or target of b.
     - declaration: "LinearMap.traceOfFiniteProjective_conj"
       file: "ProjectiveModules/Module/Trace/Conjugation.lean"
       note: "Invariance under linear equivalence between finite projective carriers in independent universes."
