@@ -253,6 +253,47 @@ See [credits](CREDITS.md) for mathematical contributions and expression origins.
   module cancellation. Descent of isomorphism-invariant, zero-preserving,
   direct-sum-additive functions and the group-completion universal property
   come with evaluation and uniqueness laws.
+- **Morita invariance of right classes and K₀:** For arbitrary rings
+  `R : Type uR` and `S : Type uS`, let
+  `e : ModuleCat.{max uR vR} Rᵐᵒᵖ ≌ ModuleCat.{max uS vS} Sᵐᵒᵖ`,
+  with all four universe parameters independent. These are categories of right
+  modules, not opposite categories. Import
+  [`ProjectiveModules.KTheory.ModuleEquivalence`](../ProjectiveModules/KTheory/ModuleEquivalence.lean)
+  (also exported by `ProjectiveModules`) to use
+  `KTheory.ProjectiveClass.equivOfModuleEquivalence e` and
+  `KTheory.K0.equivOfModuleEquivalence e`. They are additive equivalences
+  `Cₑ : ProjectiveClass R ≃+ ProjectiveClass S` and `Gₑ : K0 R ≃+ K0 S`,
+  respectively, with the shorter names here understood in namespace `KTheory`.
+  The equivalence `e` is ordinary categorical data: no supplied scalar
+  linearity, additivity or finite-projective-preservation data is required,
+  nor any Noetherian or commutativity hypothesis, freeness assumption or `Small` premise.
+  For a finite-projective object
+  `X : ModuleCat.FiniteProjective.{uR, max uR vR} Rᵐᵒᵖ`, the characteristic laws give
+  `Cₑ (ProjectiveClass.of R X) = ProjectiveClass.of S (e.functor.obj X.obj)`
+  and `Gₑ (K0.of R X) = K0.of S (e.functor.obj X.obj)`, with the image's
+  finite-projective structure derived from `e`.
+  For a finite projective right module `M` in any carrier universe, first use
+  `ModuleCat.FiniteProjective.repr Rᵐᵒᵖ M`, then `ULift.{vR}` to reach the
+  supported source height, and only then apply `e.functor.obj`.
+  Inverse evaluation uses exactly the same recipe over `Sᵐᵒᵖ`, with
+  `ULift.{vS}` and `e.symm.functor`. In both namespaces, the
+  `equivOfModuleEquivalence_of`, `_of_module`, `_symm_of` and `_symm_of_module`
+  laws express these evaluations without unfolding the constructions.
+  The completion square is
+  `Gₑ (K0.ofClass R a) = K0.ofClass S (Cₑ a)` for every class `a`;
+  K₀'s `_ofClass` and `_symm_ofClass` laws give both directions, and
+  `_toAddMonoidHom` identifies the whole forward homomorphism with
+  `K0.lift R ((K0.ofClass S).comp Cₑ.toAddMonoidHom)`.
+  In both namespaces the `_symm`, `_refl`, `_trans` and `_congr` laws identify
+  inverse and identity transport, composition through the same supported
+  middle category, and equality of the induced additive equivalences when the
+  forward functors are naturally isomorphic. No cancellation of projective
+  classes or injectivity of `K0.ofClass` is assumed.
+  The mathematical reference is C. A. Weibel, *The K-book*, Chapter II.
+  The construction uses the library's representatives and class descent,
+  Mathlib's full-subcategory equivalence and `ULift` machinery, and its
+  additive localization/Grothendieck-group formalization; the module's
+  references retain the individual formalization credits.
 - **Scalar extension on classes and K₀:** Every unital homomorphism between
   arbitrary rings induces additive maps on finite-projective right-module
   classes and K₀. The [change-of-rings interface](../ProjectiveModules/KTheory/ScalarExtension.lean)

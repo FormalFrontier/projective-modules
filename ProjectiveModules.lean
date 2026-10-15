@@ -37,6 +37,7 @@ public import ProjectiveModules.Invertible.Endomorphism
 public import ProjectiveModules.Invertible.OfRankOne
 public import ProjectiveModules.Invertible.StableCancellation
 public import ProjectiveModules.KTheory.K0
+public import ProjectiveModules.KTheory.ModuleEquivalence
 public import ProjectiveModules.KTheory.Product
 public import ProjectiveModules.KTheory.Rank
 public import ProjectiveModules.KTheory.ScalarExtension

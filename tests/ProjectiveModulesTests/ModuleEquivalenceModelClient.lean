@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.Category.ModuleEquivalence
+public import ProjectiveModules.KTheory.ModuleEquivalence
 import ProjectiveModules.Order.CompactlyGenerated
 public import ProjectiveModulesTests.IdempotentSpanClient
 import ProjectiveModulesTests.FiniteProjectiveRestrictionModelClient
@@ -28,6 +29,9 @@ ring equivalence gives right rows: the upper-right unit sends the first row
 vector to the second. The inverse image of the regular matrix module is the
 first-column range, with two rational coordinates. Unit and counit isomorphisms
 compare the inverse composites, without identifying their objects definitionally.
+The induced class and K₀ equivalences compute these regular generators, commute
+with group completion as whole homomorphisms, and respect the unit comparison
+with identity transport.
 Zero and unit ideals, the zero ring, and empty matrices supply boundary cases.
 A universe-lifting functor supplies inputs, not equivalences.
 Coordinate exchange on natural-number pairs also exercises compactness transport
@@ -718,6 +722,203 @@ private theorem ratMatrixRowULift_isFiniteProjective :
   ModuleCat.isFiniteProjective_of_equivalence.{0, 0, 1, 1} ℚᵐᵒᵖ RatMatrixᵐᵒᵖ
     ratRightMatrixEquivalence.{1} (ModuleCat.of ℚᵐᵒᵖ (ULift.{1} ℚ))
     (ModuleCat.FiniteProjective.of ℚᵐᵒᵖ (ULift.{1} ℚ)).property
+
+section
+
+open KTheory
+
+-- Bundle the existing images, retaining their module structures and canonical instances.
+private noncomputable def ratMatrixRowFiniteProjective :
+    ModuleCat.FiniteProjective.{0, 0} RatMatrixᵐᵒᵖ :=
+  ⟨ratMatrixRow, ratMatrixRow_isFiniteProjective⟩
+
+private noncomputable def ratMatrixRegularCornerFiniteProjective :
+    ModuleCat.FiniteProjective.{0, 0} ℚᵐᵒᵖ :=
+  ⟨ratMatrixRegularCorner, ratMatrixRegularCorner_isFiniteProjective⟩
+
+-- Normalize the higher carriers before applying the height-zero functor or inverse.
+private noncomputable def ratMatrixNormalizedRowFiniteProjective :
+    ModuleCat.FiniteProjective.{0, 0} RatMatrixᵐᵒᵖ :=
+  ⟨ratRightMatrixEquivalence.{0}.functor.obj (ModuleCat.of ℚᵐᵒᵖ
+      (ULift.{0} (ModuleCat.FiniteProjective.repr ℚᵐᵒᵖ (ULift.{1} ℚ)))),
+    ModuleCat.isFiniteProjective_of_equivalence ℚᵐᵒᵖ RatMatrixᵐᵒᵖ
+      ratRightMatrixEquivalence.{0} _ ⟨inferInstance, inferInstance⟩⟩
+
+private noncomputable def ratMatrixNormalizedCornerFiniteProjective :
+    ModuleCat.FiniteProjective.{0, 0} ℚᵐᵒᵖ :=
+  ⟨ratRightMatrixEquivalence.{0}.symm.functor.obj (ModuleCat.of RatMatrixᵐᵒᵖ
+      (ULift.{0} (ModuleCat.FiniteProjective.repr RatMatrixᵐᵒᵖ (ULift.{1} RatMatrix)))),
+    ModuleCat.isFiniteProjective_of_equivalence RatMatrixᵐᵒᵖ ℚᵐᵒᵖ
+      ratRightMatrixEquivalence.{0}.symm _ ⟨inferInstance, inferInstance⟩⟩
+
+/-- Transport of the regular rational generator gives the right row, with its
+right-multiplication action and ordered diagonal/upper-right-unit control. -/
+private theorem ratRightMatrix_forward_regular (A : RatMatrix) (x : ratMatrixRow)
+    (i : Fin 2) :
+    ProjectiveClass.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}
+        (ProjectiveClass.of ℚ ℚ) =
+      ProjectiveClass.of RatMatrix ratMatrixRowFiniteProjective ∧
+    K0.equivOfModuleEquivalence ratRightMatrixEquivalence.{0} (K0.of ℚ ℚ) =
+      K0.of RatMatrix ratMatrixRowFiniteProjective ∧
+    (MulOpposite.op A • x) i = ∑ j, x j * A j i ∧
+    (let e : RatMatrixᵐᵒᵖ := MulOpposite.op (Matrix.single 0 0 (1 : ℚ))
+     let t : RatMatrixᵐᵒᵖ := MulOpposite.op (Matrix.single 0 1 (1 : ℚ))
+     let v : ratMatrixRow := Pi.single 0 (1 : ℚ)
+     e • (t • v) = 0 ∧ t • (e • v) ≠ 0) := by
+  exact ⟨ProjectiveClass.equivOfModuleEquivalence_of ratRightMatrixEquivalence.{0}
+      (ModuleCat.FiniteProjective.of ℚᵐᵒᵖ ℚ),
+    K0.equivOfModuleEquivalence_of ratRightMatrixEquivalence.{0}
+      (ModuleCat.FiniteProjective.of ℚᵐᵒᵖ ℚ),
+    ratMatrixRow_smul_apply A x i, ratMatrixRow_noncentral_boundary⟩
+
+/-- Inverse transport of the regular matrix generator is the range of `A ↦ A * E₀₀`.
+Its first column has two rational coordinates; it is not identified with the regular
+rational module. -/
+private theorem ratRightMatrix_inverse_regular :
+    (ProjectiveClass.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).symm
+        (ProjectiveClass.of RatMatrix RatMatrix) =
+      ProjectiveClass.of ℚ (Fin 2 → ℚ) ∧
+    (K0.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).symm
+        (K0.of RatMatrix RatMatrix) = K0.of ℚ (Fin 2 → ℚ) ∧
+    Nonempty (ratMatrixRegularCornerFiniteProjective ≃ₗ[ℚᵐᵒᵖ] (Fin 2 → ℚ)) := by
+  refine ⟨?_, ?_, ⟨ratMatrixRegularCornerEquiv⟩⟩
+  · calc
+      _ = ProjectiveClass.of ℚ ratMatrixRegularCornerFiniteProjective :=
+        ProjectiveClass.equivOfModuleEquivalence_symm_of ratRightMatrixEquivalence.{0}
+          (ModuleCat.FiniteProjective.of RatMatrixᵐᵒᵖ RatMatrix)
+      _ = ProjectiveClass.of ℚ (Fin 2 → ℚ) :=
+        ProjectiveClass.of_eq_of_equiv ℚ ratMatrixRegularCornerFiniteProjective
+          ratMatrixRegularCornerEquiv
+  · calc
+      _ = K0.of ℚ ratMatrixRegularCornerFiniteProjective :=
+        K0.equivOfModuleEquivalence_symm_of ratRightMatrixEquivalence.{0}
+          (ModuleCat.FiniteProjective.of RatMatrixᵐᵒᵖ RatMatrix)
+      _ = K0.of ℚ (Fin 2 → ℚ) :=
+        K0.of_eq_of_equiv ℚ ratMatrixRegularCornerFiniteProjective
+          ratMatrixRegularCornerEquiv
+
+/-- Normalizing higher-carrier regular inputs gives the same row and corner classes
+and K₀ generators. The height-zero functors act only after repr and supported ULift. -/
+private theorem ratRightMatrix_higher_carrier_normalization :
+    ProjectiveClass.of RatMatrix ratMatrixNormalizedRowFiniteProjective =
+      ProjectiveClass.of RatMatrix ratMatrixRowFiniteProjective ∧
+    K0.of RatMatrix ratMatrixNormalizedRowFiniteProjective =
+      K0.of RatMatrix ratMatrixRowFiniteProjective ∧
+    ProjectiveClass.of ℚ ratMatrixNormalizedCornerFiniteProjective =
+      ProjectiveClass.of ℚ ratMatrixRegularCornerFiniteProjective ∧
+    K0.of ℚ ratMatrixNormalizedCornerFiniteProjective =
+      K0.of ℚ ratMatrixRegularCornerFiniteProjective := by
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · calc
+      _ = ProjectiveClass.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}
+          (ProjectiveClass.of ℚ (ULift.{1} ℚ)) :=
+        (ProjectiveClass.equivOfModuleEquivalence_of_module
+          ratRightMatrixEquivalence.{0} (ULift.{1} ℚ)).symm
+      _ = ProjectiveClass.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}
+          (ProjectiveClass.of ℚ ℚ) :=
+        congrArg (ProjectiveClass.equivOfModuleEquivalence ratRightMatrixEquivalence.{0})
+          (ProjectiveClass.of_ulift ℚ ℚ)
+      _ = _ := (ratRightMatrix_forward_regular 0 0 0).1
+  · calc
+      _ = K0.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}
+          (K0.of ℚ (ULift.{1} ℚ)) :=
+        (K0.equivOfModuleEquivalence_of_module
+          ratRightMatrixEquivalence.{0} (ULift.{1} ℚ)).symm
+      _ = K0.equivOfModuleEquivalence ratRightMatrixEquivalence.{0} (K0.of ℚ ℚ) :=
+        congrArg (K0.equivOfModuleEquivalence ratRightMatrixEquivalence.{0})
+          (K0.of_ulift ℚ ℚ)
+      _ = _ := (ratRightMatrix_forward_regular 0 0 0).2.1
+  · calc
+      _ = (ProjectiveClass.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).symm
+          (ProjectiveClass.of RatMatrix (ULift.{1} RatMatrix)) :=
+        (ProjectiveClass.equivOfModuleEquivalence_symm_of_module
+          ratRightMatrixEquivalence.{0} (ULift.{1} RatMatrix)).symm
+      _ = (ProjectiveClass.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).symm
+          (ProjectiveClass.of RatMatrix RatMatrix) :=
+        congrArg (ProjectiveClass.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).symm
+          (ProjectiveClass.of_ulift RatMatrix RatMatrix)
+      _ = _ :=
+        ProjectiveClass.equivOfModuleEquivalence_symm_of ratRightMatrixEquivalence.{0}
+          (ModuleCat.FiniteProjective.of RatMatrixᵐᵒᵖ RatMatrix)
+  · calc
+      _ = (K0.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).symm
+          (K0.of RatMatrix (ULift.{1} RatMatrix)) :=
+        (K0.equivOfModuleEquivalence_symm_of_module
+          ratRightMatrixEquivalence.{0} (ULift.{1} RatMatrix)).symm
+      _ = (K0.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).symm
+          (K0.of RatMatrix RatMatrix) :=
+        congrArg (K0.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).symm
+          (K0.of_ulift RatMatrix RatMatrix)
+      _ = _ :=
+        K0.equivOfModuleEquivalence_symm_of ratRightMatrixEquivalence.{0}
+          (ModuleCat.FiniteProjective.of RatMatrixᵐᵒᵖ RatMatrix)
+
+/-- The whole K₀ hom is the universal extension of row transport on classes.
+Both completion squares are equalities of homomorphisms, not just selected values. -/
+private theorem ratRightMatrix_completion_contract :
+    (K0.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).toAddMonoidHom =
+      K0.lift ℚ ((K0.ofClass RatMatrix).comp
+        (ProjectiveClass.equivOfModuleEquivalence
+          ratRightMatrixEquivalence.{0}).toAddMonoidHom) ∧
+    (K0.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).toAddMonoidHom.comp
+        (K0.ofClass ℚ) =
+      (K0.ofClass RatMatrix).comp
+        (ProjectiveClass.equivOfModuleEquivalence
+          ratRightMatrixEquivalence.{0}).toAddMonoidHom ∧
+    (K0.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).symm.toAddMonoidHom.comp
+        (K0.ofClass RatMatrix) =
+      (K0.ofClass ℚ).comp
+        (ProjectiveClass.equivOfModuleEquivalence
+          ratRightMatrixEquivalence.{0}).symm.toAddMonoidHom := by
+  refine ⟨K0.equivOfModuleEquivalence_toAddMonoidHom ratRightMatrixEquivalence.{0}, ?_, ?_⟩
+  · apply AddMonoidHom.ext
+    intro a
+    exact K0.equivOfModuleEquivalence_ofClass ratRightMatrixEquivalence.{0} a
+  · apply AddMonoidHom.ext
+    intro b
+    exact K0.equivOfModuleEquivalence_symm_ofClass ratRightMatrixEquivalence.{0} b
+
+/-- Symmetry and composition agree with the unit's natural-isomorphism comparison
+and identity transport, on the entire class monoid and K₀ group. -/
+private theorem ratRightMatrix_roundTrip_contract :
+    (ProjectiveClass.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).trans
+        (ProjectiveClass.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).symm =
+      AddEquiv.refl (ProjectiveClass ℚ) ∧
+    (K0.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).trans
+        (K0.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).symm =
+      AddEquiv.refl (K0 ℚ) := by
+  constructor
+  · calc
+      _ = (ProjectiveClass.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).trans
+          (ProjectiveClass.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}.symm) :=
+        congrArg (ProjectiveClass.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).trans
+          (ProjectiveClass.equivOfModuleEquivalence_symm ratRightMatrixEquivalence.{0})
+      _ = ProjectiveClass.equivOfModuleEquivalence
+          (ratRightMatrixEquivalence.{0}.trans ratRightMatrixEquivalence.{0}.symm) :=
+        (ProjectiveClass.equivOfModuleEquivalence_trans _ _).symm
+      _ = ProjectiveClass.equivOfModuleEquivalence
+          (CategoryTheory.Equivalence.refl (C := ModuleCat.{0} ℚᵐᵒᵖ)) :=
+        ProjectiveClass.equivOfModuleEquivalence_congr _ _
+          ratRightMatrixEquivalence.{0}.unitIso.symm
+      _ = _ := ProjectiveClass.equivOfModuleEquivalence_refl
+  · calc
+      _ = (K0.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).trans
+          (K0.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}.symm) :=
+        congrArg (K0.equivOfModuleEquivalence ratRightMatrixEquivalence.{0}).trans
+          (K0.equivOfModuleEquivalence_symm ratRightMatrixEquivalence.{0})
+      _ = K0.equivOfModuleEquivalence
+          (ratRightMatrixEquivalence.{0}.trans ratRightMatrixEquivalence.{0}.symm) :=
+        (K0.equivOfModuleEquivalence_trans _ _).symm
+      _ = K0.equivOfModuleEquivalence
+          (CategoryTheory.Equivalence.refl (C := ModuleCat.{0} ℚᵐᵒᵖ)) :=
+        K0.equivOfModuleEquivalence_congr _ _ ratRightMatrixEquivalence.{0}.unitIso.symm
+      _ = _ := K0.equivOfModuleEquivalence_refl
+
+example : K0.equivOfModuleEquivalence
+    (CategoryTheory.Equivalence.refl (C := ModuleCat.{0} PUnit.{1}ᵐᵒᵖ)) = AddEquiv.refl _ :=
+  K0.equivOfModuleEquivalence_refl
+
+end
 
 end RightMatrix
 
