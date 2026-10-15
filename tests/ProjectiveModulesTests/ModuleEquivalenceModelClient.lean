@@ -6,6 +6,9 @@ module
 
 public import ProjectiveModules.Category.ModuleEquivalence
 public import ProjectiveModules.KTheory.ModuleEquivalence
+import ProjectiveModules.KTheory.Matrix
+import ProjectiveModules.KTheory.Rank
+import ProjectiveModules.KTheory.ZeroRing
 import ProjectiveModules.Order.CompactlyGenerated
 public import ProjectiveModulesTests.IdempotentSpanClient
 import ProjectiveModulesTests.FiniteProjectiveRestrictionModelClient
@@ -917,6 +920,52 @@ private theorem ratRightMatrix_roundTrip_contract :
 example : K0.equivOfModuleEquivalence
     (CategoryTheory.Equivalence.refl (C := ModuleCat.{0} PUnit.{1}ᵐᵒᵖ)) = AddEquiv.refl _ :=
   K0.equivOfModuleEquivalence_refl
+
+private theorem canonicalMatrix_forward_regular :
+    ProjectiveClass.matrixEquiv ℚ (Fin 2) (ProjectiveClass.of ℚ ℚ) =
+      ProjectiveClass.of RatMatrix ratMatrixRowFiniteProjective ∧
+    K0.matrixEquiv ℚ (Fin 2) (K0.of ℚ ℚ) =
+      K0.of RatMatrix ratMatrixRowFiniteProjective := by
+  exact ⟨ProjectiveClass.matrixEquiv_of_module ℚ (Fin 2) ℚ,
+    K0.matrixEquiv_of_module ℚ (Fin 2) ℚ⟩
+
+private theorem canonicalMatrix_inverse_regular :
+    (ProjectiveClass.matrixEquiv ℚ (Fin 2)).symm
+        (ProjectiveClass.of RatMatrix RatMatrix) =
+      ProjectiveClass.of ℚ (Fin 2 → ℚ) ∧
+    (K0.matrixEquiv ℚ (Fin 2)).symm (K0.of RatMatrix RatMatrix) =
+      K0.of ℚ (Fin 2 → ℚ) ∧
+    Nonempty (ratMatrixRegularCornerFiniteProjective ≃ₗ[ℚᵐᵒᵖ] (Fin 2 → ℚ)) ∧
+    (K0.matrixEquiv ℚ (Fin 2)).symm (K0.of RatMatrix RatMatrix) ≠ K0.of ℚ ℚ := by
+  refine ⟨ProjectiveClass.matrixEquiv_symm_regular ℚ (Fin 2),
+    K0.matrixEquiv_symm_regular ℚ (Fin 2), ratRightMatrix_inverse_regular.2.2, ?_⟩
+  rw [K0.matrixEquiv_symm_regular]
+  intro h
+  have hdim := congrArg (K0.finrankHom ℚ) h
+  have hQ : Module.finrank ℚᵐᵒᵖ ℚ = 1 :=
+    (MulOpposite.opLinearEquiv ℚᵐᵒᵖ : ℚ ≃ₗ[ℚᵐᵒᵖ] ℚᵐᵒᵖ).finrank_eq.trans
+      (Module.finrank_self ℚᵐᵒᵖ)
+  simp [K0.finrankHom_of_module, Module.finrank_pi_fintype, hQ] at hdim
+
+example (R : Type uR) [Ring R] :
+    (ProjectiveClass.matrixEquiv R (Fin 1)).symm
+        (ProjectiveClass.of (Matrix (Fin 1) (Fin 1) R) (Matrix (Fin 1) (Fin 1) R)) =
+      ProjectiveClass.of R R ∧
+    (K0.matrixEquiv R (Fin 1)).symm
+        (K0.of (Matrix (Fin 1) (Fin 1) R) (Matrix (Fin 1) (Fin 1) R)) = K0.of R R := by
+  constructor
+  · rw [ProjectiveClass.matrixEquiv_symm_regular]
+    exact ProjectiveClass.of_eq_of_equiv R (Fin 1 → R)
+      (LinearEquiv.funUnique (Fin 1) Rᵐᵒᵖ R)
+  · rw [K0.matrixEquiv_symm_regular]
+    exact K0.of_eq_of_equiv R (Fin 1 → R)
+      (LinearEquiv.funUnique (Fin 1) Rᵐᵒᵖ R)
+
+-- Empty matrices have trivial classes and K₀, but no index for matrixEquiv.
+example (a : ProjectiveClass (Matrix (Fin 0) (Fin 0) ℚ))
+    (z : K0 (Matrix (Fin 0) (Fin 0) ℚ)) :
+    a = 0 ∧ z = 0 ∧ ¬ Nonempty (Fin 0) := by
+  exact ⟨Subsingleton.elim _ _, Subsingleton.elim _ _, fun ⟨i⟩ ↦ Fin.elim0 i⟩
 
 end
 

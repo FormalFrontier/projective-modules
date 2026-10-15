@@ -313,6 +313,26 @@ See [credits](CREDITS.md) for mathematical contributions and expression origins.
   Mathlib's full-subcategory equivalence and `ULift` machinery, and its
   additive localization/Grothendieck-group formalization; the module's
   references retain the individual formalization credits.
+- **Matrix rings:** For any possibly noncommutative ring `R : Type u` and
+  `ι : Type v` with `[Fintype ι] [DecidableEq ι] [Nonempty ι]`, import
+  [`ProjectiveModules.KTheory.Matrix`](../ProjectiveModules/KTheory/Matrix.lean)
+  (also exported by `ProjectiveModules`) to use
+  `KTheory.ProjectiveClass.matrixEquiv R ι` and `KTheory.K0.matrixEquiv R ι`.
+  These are canonical additive equivalences with the corresponding objects for
+  `Matrix ι ι R`, obtained from Mathlib's matrix equivalence over `Rᵐᵒᵖ` and
+  restriction along `RingEquiv.mopMatrix.symm`.
+  The `_of_module` laws send arbitrary-carrier finite-projective generators to
+  the right row `ι → M`, with action `(op A • x) j = ∑ k, op (A k j) • x k`;
+  for the regular carrier this is `x * A`. The raw functor
+  `ModuleCat.toRightMatrixModCat` and its finite-projective preservation also
+  allow empty indices. The `_eq_of_index` laws identify the whole equivalences
+  for every coordinate and supported common height, with the `Fintype` and
+  `DecidableEq` instances fixed. Inverse `_symm_of` evaluation uses a supported
+  corner; `_symm_regular` sends the regular matrix generator to `[ι → R]`,
+  not generally `[R]`. `K0.matrixEquiv_comp_ofClass` identifies the whole
+  class-to-completion square, and the `AddEquiv` API supplies sums, zero and
+  round trips. No commutativity, nontriviality or cancellation is required.
+  The [matrix guide](MatrixK0Design.md) gives the carrier heights and corner formulas.
 - **Scalar extension on classes and K₀:** Every unital homomorphism between
   arbitrary rings induces additive maps on finite-projective right-module
   classes and K₀. The [change-of-rings interface](../ProjectiveModules/KTheory/ScalarExtension.lean)

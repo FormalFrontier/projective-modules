@@ -97,6 +97,11 @@ examples and qualifications; links below go to the corresponding result families
   equivalences of finite-projective classes and K₀, with four independent universe
   parameters and category carriers at their scalar/carrier maxima; no functor linearity
   or additivity premise.
+- **[Matrix rings](docs/Overview.md#right-module-classes-and-k₀):** over arbitrary
+  rings, finite nonempty indices with `Fintype` and `DecidableEq` give canonical
+  additive equivalences on finite-projective right-module classes and K₀.
+  Forward generators are right rows; the inverse regular matrix generator is
+  `[ι → R]`, not generally `[R]`.
 - **[Stable categories and rank](docs/Overview.md#stable-categories-and-stalk-rank):**
   the ring-module stable quotient is preadditive; Ext¹ detection needs `Small.{uM} R`.
   For commutative rings, finite projectives realize locally constant natural stalk
@@ -162,6 +167,8 @@ module from the [module map](#module-map); no source-research repository is need
 
 For the Noetherian theorem use `import ProjectiveModules.Module.CountablyGenerated.Noetherian`;
 its [guide](docs/NoetherianSubmodule.md) gives exact hypotheses and an integer-finsupp example.
+For matrix-ring classes and K₀ use `import ProjectiveModules.KTheory.Matrix`;
+the [matrix guide](docs/MatrixK0Design.md) explains the right-row action and inverse corner.
 Examples and regression clients build in the separate default test target.
 
 ## Module map
@@ -211,6 +218,7 @@ aggregate import.
 | [Right regular module](ProjectiveModules/Module/RightRegular.lean) | Canonical opposite-scalar free and finite instances on the ordinary semiring carrier, including zero semirings |
 | [Right-module K₀](ProjectiveModules/KTheory/K0.lean), [stabilization](ProjectiveModules/KTheory/Stabilization.lean) | Ring-sized projective class monoid and group completion; arbitrary-universe module generators, descent/universal properties, difference representatives and common finite-projective or finite-free stabilization |
 | [Right-module Morita invariance](ProjectiveModules/KTheory/ModuleEquivalence.lean) | Additive equivalences of projective classes and K₀ along ordinary right-module category equivalences; independent scalar/carrier universes, arbitrary-carrier representative/lift evaluation, inverse, completion and coherence laws |
+| [Matrix classes and K₀](ProjectiveModules/KTheory/Matrix.lean) | Canonical additive equivalences for arbitrary rings and finite nonempty decidable indices; arbitrary-carrier right-row generators, supported inverse corners, index/height independence and completion compatibility |
 | [K₀ scalar extension](ProjectiveModules/KTheory/ScalarExtension.lean) | Additive change-of-rings maps with arbitrary-carrier evaluation and whole-map identity/composition laws; independence of the homomorphism for division-ring sources and arbitrary ring targets |
 | [K₀ dimension](ProjectiveModules/KTheory/Rank.lean), [zero rings](ProjectiveModules/KTheory/ZeroRing.lean) | Dimension classifications of projective classes by ℕ and K₀ by ℤ over division rings, and bijectivity of division-ring scalar-extension maps; entire class/group collapse over subsingleton rings |
 | [Rank realization](ProjectiveModules/Module/LocallyConstantRank.lean), [fibers](ProjectiveModules/Module/RankFiberDecomposition.lean), [component models](ProjectiveModules/Module/ComponentwiseFree.lean) | Locally constant ranks and conditional componentwise-free classification |

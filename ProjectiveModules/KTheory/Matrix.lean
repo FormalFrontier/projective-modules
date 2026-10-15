@@ -1,0 +1,384 @@
+/-
+SPDX-License-Identifier: Apache-2.0
+Authors: Formal Frontier Agents
+-/
+module
+
+public import ProjectiveModules.KTheory.ModuleEquivalence
+public import ProjectiveModules.Module.ProjectivePi
+public import ProjectiveModules.Module.RightRegular
+public import Mathlib.RingTheory.Morita.Matrix
+
+/-!
+# Right-module classes and K₀ of matrix rings
+
+The constructions use Mathlib's matrix equivalence over the opposite coefficient
+ring, followed by restriction along the inverse transpose/opposite ring
+isomorphism. The choice equations include index and supported-height
+independence. Direct rows accept arbitrary carrier universes, while inverse
+corner evaluation uses a supported category height. The regular matrix module
+has inverse class `[ι → R]`, not in general `[R]`.
+
+## References and credits
+
+* Yunzhou Xie and Jujian Zhang's Mathlib matrix-Morita equivalence.
+* Mathlib's matrix module, transpose/opposite ring equivalence and restriction
+  of scalars.
+* Projective Modules' right-module class and K₀ equivalence interfaces.
+* Charles A. Weibel, *The K-book*, Chapter II: finite-projective right modules
+  and their additive group completion.
+
+See `docs/MatrixK0Design.md` for the construction and API.
+-/
+
+@[expose] public section
+
+open CategoryTheory
+
+universe u v w
+
+variable (R : Type u) [Ring R] (ι : Type v) [Fintype ι] [DecidableEq ι]
+
+namespace ModuleCat
+
+/-- The right-row functor: Mathlib's matrix functor on opposite coefficients,
+then scalar pullback along the inverse transpose/opposite ring isomorphism.
+No coordinate choice or carrier-height bound is needed for this functor. -/
+noncomputable def toRightMatrixModCat :
+    ModuleCat.{w} Rᵐᵒᵖ ⥤ ModuleCat.{max v w} (Matrix ι ι R)ᵐᵒᵖ :=
+  ModuleCat.toMatrixModCat Rᵐᵒᵖ ι ⋙
+    ModuleCat.restrictScalars
+      (RingEquiv.mopMatrix :
+        Matrix ι ι Rᵐᵒᵖ ≃+* (Matrix ι ι R)ᵐᵒᵖ).symm.toRingHom
+
+/-- The direct row has the coordinate carrier, without repr or ULift. -/
+theorem toRightMatrixModCat_obj_carrier (M : ModuleCat.{w} Rᵐᵒᵖ) :
+    ((toRightMatrixModCat R ι).obj M : Type (max v w)) = (ι → M) := by
+  rfl
+
+/-- Opposite matrix scalars act on the right; for the regular carrier this is
+`x * A`, with entries in the displayed noncommutative order. -/
+theorem toRightMatrixModCat_smul_apply (M : ModuleCat.{w} Rᵐᵒᵖ)
+    (A : Matrix ι ι R) (x : (toRightMatrixModCat R ι).obj M) (j : ι) :
+    (MulOpposite.op A • x) j = ∑ k, MulOpposite.op (A k j) • x k := by
+  exact Matrix.Module.smul_apply (M := M) (A.transpose.map MulOpposite.op) x j
+
+/-- The existing functorial map is coordinatewise application of the input map. -/
+theorem toRightMatrixModCat_map_apply {M N : ModuleCat.{w} Rᵐᵒᵖ}
+    (f : M ⟶ N) (x : (toRightMatrixModCat R ι).obj M) (j : ι) :
+    ((toRightMatrixModCat R ι).map f x) j = f (x j) := by
+  rfl
+
+section
+
+universe w'
+
+-- A linear equivalence acts coordinatewise on rows, including across carrier heights.
+private noncomputable def rightMatrixCongr
+    {M : Type w} [AddCommGroup M] [Module Rᵐᵒᵖ M]
+    {N : Type w'} [AddCommGroup N] [Module Rᵐᵒᵖ N] (e : M ≃ₗ[Rᵐᵒᵖ] N) :
+    (ModuleCat.toRightMatrixModCat R ι).obj (ModuleCat.of Rᵐᵒᵖ M) ≃ₗ[(Matrix ι ι R)ᵐᵒᵖ]
+      (ModuleCat.toRightMatrixModCat R ι).obj (ModuleCat.of Rᵐᵒᵖ N) where
+  toFun x j := e (x j)
+  invFun x j := e.symm (x j)
+  left_inv x := by funext j; exact e.symm_apply_apply (x j)
+  right_inv x := by funext j; exact e.apply_symm_apply (x j)
+  map_add' x y := by funext j; exact e.map_add (x j) (y j)
+  map_smul' A x := by
+    obtain ⟨A, rfl⟩ := MulOpposite.op_surjective A
+    funext j
+    simp only [RingHom.id_apply]
+    change e ((MulOpposite.op A • x) j) =
+      ∑ k, MulOpposite.op (A k j) • e (x k)
+    simp only [ModuleCat.toRightMatrixModCat_smul_apply, map_sum, map_smul]
+
+end
+
+/-- Direct rows of finite projectives are finite projective at arbitrary carrier
+heights, including for an empty index. This is not a global action instance. -/
+theorem isFiniteProjective_toRightMatrixModCat_obj (M : ModuleCat.{w} Rᵐᵒᵖ)
+    (hM : isFiniteProjective Rᵐᵒᵖ M) :
+    isFiniteProjective (Matrix ι ι R)ᵐᵒᵖ ((toRightMatrixModCat R ι).obj M) := by
+  classical
+  rcases isEmpty_or_nonempty ι with hι | hι
+  · -- Empty rows are the zero module, so no coordinate needs to be chosen.
+    let : IsEmpty ι := hι
+    let : Subsingleton ((toRightMatrixModCat R ι).obj M) :=
+      inferInstanceAs (Subsingleton (ι → M))
+    exact ⟨inferInstance, inferInstance⟩
+  · -- Apply categorical preservation only at a height containing both rings,
+    -- then lower the coordinates by a cross-universe linear equivalence.
+    let : Module.Finite Rᵐᵒᵖ M := hM.1
+    let : Module.Projective Rᵐᵒᵖ M := hM.2
+    let X : ModuleCat.{max (max u v) w} Rᵐᵒᵖ :=
+      ModuleCat.of Rᵐᵒᵖ (ULift.{max u v} M)
+    let e : ModuleCat.{max (max u v) w} Rᵐᵒᵖ ≌
+        ModuleCat.{max (max u v) w} (Matrix ι ι R)ᵐᵒᵖ :=
+      (ModuleCat.matrixEquivalence.{u, v, max u w} Rᵐᵒᵖ (Classical.choice hι)).trans
+        (ModuleCat.restrictScalarsEquivalenceOfRingEquiv
+          (RingEquiv.mopMatrix :
+            Matrix ι ι Rᵐᵒᵖ ≃+* (Matrix ι ι R)ᵐᵒᵖ).symm)
+    have hX : isFiniteProjective Rᵐᵒᵖ X := ⟨inferInstance, inferInstance⟩
+    have hY := isFiniteProjective_of_equivalence.{u, max u v, max (max u v) w, w}
+      Rᵐᵒᵖ (Matrix ι ι R)ᵐᵒᵖ e X hX
+    let : Module.Finite (Matrix ι ι R)ᵐᵒᵖ ((toRightMatrixModCat R ι).obj X) := hY.1
+    let : Module.Projective (Matrix ι ι R)ᵐᵒᵖ ((toRightMatrixModCat R ι).obj X) := hY.2
+    let f := rightMatrixCongr R ι
+      (ULift.moduleEquiv : ULift.{max u v} M ≃ₗ[Rᵐᵒᵖ] M)
+    exact ⟨Module.Finite.equiv f, Module.Projective.of_equiv' f⟩
+
+end ModuleCat
+
+namespace KTheory
+
+variable [Nonempty ι]
+
+namespace ProjectiveClass
+
+universe w'
+
+-- Compare the generic representative/ULift image with the direct row. Both the
+-- category height and the input carrier height are independent parameters.
+omit [Nonempty ι] in
+private theorem matrixImage_of_module (i : ι) (M : Type w')
+    [AddCommGroup M] [Module Rᵐᵒᵖ M]
+    [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M] :
+    let e : ModuleCat.{max (max u v) w} Rᵐᵒᵖ ≌
+        ModuleCat.{max (max u v) w} (Matrix ι ι R)ᵐᵒᵖ :=
+      (ModuleCat.matrixEquivalence.{u, v, max u w} Rᵐᵒᵖ i).trans
+        (ModuleCat.restrictScalarsEquivalenceOfRingEquiv
+          (RingEquiv.mopMatrix :
+            Matrix ι ι Rᵐᵒᵖ ≃+* (Matrix ι ι R)ᵐᵒᵖ).symm)
+    let X := ModuleCat.of Rᵐᵒᵖ M
+    let Y := (ModuleCat.toRightMatrixModCat R ι).obj X
+    let h := ModuleCat.isFiniteProjective_toRightMatrixModCat_obj R ι X
+      ⟨inferInstance, inferInstance⟩
+    equivOfModuleEquivalence.{u, max u v, max v w, w} e (of R M) =
+      @of (Matrix ι ι R) _ Y _ _ h.1 h.2 := by
+  let e : ModuleCat.{max (max u v) w} Rᵐᵒᵖ ≌
+      ModuleCat.{max (max u v) w} (Matrix ι ι R)ᵐᵒᵖ :=
+    (ModuleCat.matrixEquivalence.{u, v, max u w} Rᵐᵒᵖ i).trans
+      (ModuleCat.restrictScalarsEquivalenceOfRingEquiv
+        (RingEquiv.mopMatrix :
+          Matrix ι ι Rᵐᵒᵖ ≃+* (Matrix ι ι R)ᵐᵒᵖ).symm)
+  let L := ULift.{max v w} (ModuleCat.FiniteProjective.repr Rᵐᵒᵖ M)
+  let Z := (ModuleCat.toRightMatrixModCat R ι).obj (ModuleCat.of Rᵐᵒᵖ L)
+  let Y := (ModuleCat.toRightMatrixModCat R ι).obj (ModuleCat.of Rᵐᵒᵖ M)
+  have hZ := ModuleCat.isFiniteProjective_toRightMatrixModCat_obj R ι
+    (ModuleCat.of Rᵐᵒᵖ L) ⟨inferInstance, inferInstance⟩
+  have hY := ModuleCat.isFiniteProjective_toRightMatrixModCat_obj R ι
+    (ModuleCat.of Rᵐᵒᵖ M) ⟨inferInstance, inferInstance⟩
+  let : Module.Finite (Matrix ι ι R)ᵐᵒᵖ Z := hZ.1
+  let : Module.Projective (Matrix ι ι R)ᵐᵒᵖ Z := hZ.2
+  let : Module.Finite (Matrix ι ι R)ᵐᵒᵖ Y := hY.1
+  let : Module.Projective (Matrix ι ι R)ᵐᵒᵖ Y := hY.2
+  change equivOfModuleEquivalence.{u, max u v, max v w, w} e (of R M) = of _ Y
+  calc
+    equivOfModuleEquivalence.{u, max u v, max v w, w} e (of R M) = of _ Z :=
+      equivOfModuleEquivalence_of_module.{u, max u v, max v w, w, w'} e M
+    _ = of _ Y := of_eq_of_equiv (Matrix ι ι R) Z
+      (ModuleCat.rightMatrixCongr R ι (ULift.moduleEquiv.trans
+        (ModuleCat.FiniteProjective.reprEquiv Rᵐᵒᵖ M)))
+
+/-- The matrix-ring additive equivalence on finite-projective right-module
+classes, as in Weibel's *The K-book*, Chapter II. The construction chooses an
+index; `matrixEquiv_eq_of_index` specifies independence from that index and
+from supported carrier lifts. -/
+noncomputable def matrixEquiv : ProjectiveClass R ≃+ ProjectiveClass (Matrix ι ι R) :=
+  equivOfModuleEquivalence.{u, max u v, v, 0}
+    (show ModuleCat.{max u v} Rᵐᵒᵖ ≌
+        ModuleCat.{max u v} (Matrix ι ι R)ᵐᵒᵖ from
+      (ModuleCat.matrixEquivalence.{u, v, u} Rᵐᵒᵖ (Classical.arbitrary ι)).trans
+        (ModuleCat.restrictScalarsEquivalenceOfRingEquiv
+          (RingEquiv.mopMatrix :
+            Matrix ι ι Rᵐᵒᵖ ≃+* (Matrix ι ι R)ᵐᵒᵖ).symm))
+
+/-- Every chosen coordinate, at every supported common height, gives the same
+whole class equivalence. No equality of the inverse functors is assumed. -/
+theorem matrixEquiv_eq_of_index (i : ι) :
+    let e : ModuleCat.{max (max u v) w} Rᵐᵒᵖ ≌
+        ModuleCat.{max (max u v) w} (Matrix ι ι R)ᵐᵒᵖ :=
+      (ModuleCat.matrixEquivalence.{u, v, max u w} Rᵐᵒᵖ i).trans
+        (ModuleCat.restrictScalarsEquivalenceOfRingEquiv
+          (RingEquiv.mopMatrix :
+            Matrix ι ι Rᵐᵒᵖ ≃+* (Matrix ι ι R)ᵐᵒᵖ).symm)
+    matrixEquiv R ι = equivOfModuleEquivalence.{u, max u v, max v w, w} e := by
+  apply AddEquiv.ext
+  intro a
+  refine induction_on R a ?_
+  intro X
+  exact (matrixImage_of_module.{u, v, 0, u} R ι (Classical.arbitrary ι) X).trans
+    (matrixImage_of_module.{u, v, w, u} R ι i X).symm
+
+/-- An arbitrary finite-projective right module goes to its direct right row.
+The explicit evidence avoids a global instance on functor images. -/
+theorem matrixEquiv_of_module (M : Type w) [AddCommGroup M] [Module Rᵐᵒᵖ M]
+    [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M] :
+    let X := ModuleCat.of Rᵐᵒᵖ M
+    let Y := (ModuleCat.toRightMatrixModCat R ι).obj X
+    let h := ModuleCat.isFiniteProjective_toRightMatrixModCat_obj R ι X
+      ⟨inferInstance, inferInstance⟩
+    matrixEquiv R ι (of R M) = @of (Matrix ι ι R) _ Y _ _ h.1 h.2 := by
+  exact matrixImage_of_module.{u, v, 0, w} R ι (Classical.arbitrary ι) M
+
+/-- Inverse evaluation on a supported matrix module is its chosen corner,
+the range of `op (Eᵢᵢ)` with Mathlib's scalar-diagonal `Rᵐᵒᵖ` action. -/
+theorem matrixEquiv_symm_of (i : ι)
+    (Y : ModuleCat.FiniteProjective.{max u v, max (max u v) w}
+      (Matrix ι ι R)ᵐᵒᵖ) :
+    let e : ModuleCat.{max (max u v) w} Rᵐᵒᵖ ≌
+        ModuleCat.{max (max u v) w} (Matrix ι ι R)ᵐᵒᵖ :=
+      (ModuleCat.matrixEquivalence.{u, v, max u w} Rᵐᵒᵖ i).trans
+        (ModuleCat.restrictScalarsEquivalenceOfRingEquiv
+          (RingEquiv.mopMatrix :
+            Matrix ι ι Rᵐᵒᵖ ≃+* (Matrix ι ι R)ᵐᵒᵖ).symm)
+    let h := ModuleCat.isFiniteProjective_of_equivalence.{max u v, u,
+      max (max u v) w, max v w}
+      (Matrix ι ι R)ᵐᵒᵖ Rᵐᵒᵖ e.symm Y.obj Y.property
+    (matrixEquiv R ι).symm (of (Matrix ι ι R) Y) =
+      @of R _ (e.inverse.obj Y.obj) _ _ h.1 h.2 := by
+  dsimp only
+  rw [matrixEquiv_eq_of_index.{u, v, w} R ι i]
+  exact equivOfModuleEquivalence_symm_of.{u, max u v, max v w, w} _ Y
+
+/-- The inverse of the regular matrix class is the pointwise right-regular
+coordinate module `ι → R`, obtained by extracting the chosen column of `A * Eᵢᵢ`. -/
+theorem matrixEquiv_symm_regular :
+    (matrixEquiv R ι).symm (of (Matrix ι ι R) (Matrix ι ι R)) =
+      of R (ι → R) := by
+  let X := ModuleCat.of Rᵐᵒᵖ (ι → R)
+  let Y := (ModuleCat.toRightMatrixModCat R ι).obj X
+  have hY := ModuleCat.isFiniteProjective_toRightMatrixModCat_obj R ι X
+    ⟨inferInstance, inferInstance⟩
+  let : Module.Finite (Matrix ι ι R)ᵐᵒᵖ Y := hY.1
+  let : Module.Projective (Matrix ι ι R)ᵐᵒᵖ Y := hY.2
+  -- A row of coordinate vectors is a matrix whose j-th column is that vector.
+  -- Its row action is exactly ordinary right multiplication, without commuting entries.
+  let e : Y ≃ₗ[(Matrix ι ι R)ᵐᵒᵖ] Matrix ι ι R :=
+    { toFun := fun x j k => x k j
+      invFun := fun A j k => A k j
+      left_inv := fun _ => rfl
+      right_inv := fun _ => rfl
+      map_add' := fun _ _ => rfl
+      map_smul' := by
+        intro A x
+        obtain ⟨A, rfl⟩ := MulOpposite.op_surjective A
+        funext j k
+        let p : X →ₗ[Rᵐᵒᵖ] R := LinearMap.proj j
+        change p ((MulOpposite.op A • x) k) = ∑ l, p (x l) * A l k
+        calc
+          p ((MulOpposite.op A • x) k) =
+              p (∑ l, MulOpposite.op (A l k) • x l) :=
+            congrArg p (ModuleCat.toRightMatrixModCat_smul_apply R ι X A x k)
+          _ = ∑ l, p (MulOpposite.op (A l k) • x l) := map_sum p _ _
+          _ = ∑ l, MulOpposite.op (A l k) • p (x l) :=
+            Finset.sum_congr rfl fun l _ => p.map_smul (MulOpposite.op (A l k)) (x l)
+          _ = ∑ l, p (x l) * A l k :=
+            Finset.sum_congr rfl fun l _ => op_smul_eq_mul (A l k) (p (x l)) }
+  apply (matrixEquiv R ι).injective
+  rw [AddEquiv.apply_symm_apply]
+  exact (of_eq_of_equiv (Matrix ι ι R) Y e).symm.trans
+    (matrixEquiv_of_module R ι (ι → R)).symm
+
+end ProjectiveClass
+
+namespace K0
+
+/-- The matrix-ring additive equivalence on K₀ for a finite nonempty index,
+as in Weibel's *The K-book*, Chapter II, using the existing group completion. -/
+noncomputable def matrixEquiv : K0 R ≃+ K0 (Matrix ι ι R) :=
+  equivOfModuleEquivalence.{u, max u v, v, 0}
+    (show ModuleCat.{max u v} Rᵐᵒᵖ ≌
+        ModuleCat.{max u v} (Matrix ι ι R)ᵐᵒᵖ from
+      (ModuleCat.matrixEquivalence.{u, v, u} Rᵐᵒᵖ (Classical.arbitrary ι)).trans
+        (ModuleCat.restrictScalarsEquivalenceOfRingEquiv
+          (RingEquiv.mopMatrix :
+            Matrix ι ι Rᵐᵒᵖ ≃+* (Matrix ι ι R)ᵐᵒᵖ).symm))
+
+/-- The canonical class-to-completion square commutes as a whole additive hom. -/
+theorem matrixEquiv_comp_ofClass :
+    (matrixEquiv R ι).toAddMonoidHom.comp (ofClass R) =
+      (ofClass (Matrix ι ι R)).comp
+        (ProjectiveClass.matrixEquiv R ι).toAddMonoidHom := by
+  apply AddMonoidHom.ext
+  intro a
+  exact equivOfModuleEquivalence_ofClass.{u, max u v, v, 0}
+    ((ModuleCat.matrixEquivalence.{u, v, u} Rᵐᵒᵖ (Classical.arbitrary ι)).trans
+      (ModuleCat.restrictScalarsEquivalenceOfRingEquiv
+        (RingEquiv.mopMatrix :
+          Matrix ι ι Rᵐᵒᵖ ≃+* (Matrix ι ι R)ᵐᵒᵖ).symm)) a
+
+/-- The K₀ equivalence is independent of the chosen index and supported height. -/
+theorem matrixEquiv_eq_of_index (i : ι) :
+    let e : ModuleCat.{max (max u v) w} Rᵐᵒᵖ ≌
+        ModuleCat.{max (max u v) w} (Matrix ι ι R)ᵐᵒᵖ :=
+      (ModuleCat.matrixEquivalence.{u, v, max u w} Rᵐᵒᵖ i).trans
+        (ModuleCat.restrictScalarsEquivalenceOfRingEquiv
+          (RingEquiv.mopMatrix :
+            Matrix ι ι Rᵐᵒᵖ ≃+* (Matrix ι ι R)ᵐᵒᵖ).symm)
+    matrixEquiv R ι = equivOfModuleEquivalence.{u, max u v, max v w, w} e := by
+  dsimp only
+  apply AddEquiv.toAddMonoidHom_injective
+  apply hom_ext_ofClass R
+  intro a
+  simpa only [AddMonoidHom.comp_apply, AddEquiv.coe_toAddMonoidHom,
+    equivOfModuleEquivalence_ofClass,
+    ProjectiveClass.matrixEquiv_eq_of_index.{u, v, w} R ι i] using
+      DFunLike.congr_fun (matrixEquiv_comp_ofClass R ι) a
+
+/-- Arbitrary-carrier K₀ generators evaluate on the direct right row. -/
+theorem matrixEquiv_of_module (M : Type w) [AddCommGroup M] [Module Rᵐᵒᵖ M]
+    [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M] :
+    let X := ModuleCat.of Rᵐᵒᵖ M
+    let Y := (ModuleCat.toRightMatrixModCat R ι).obj X
+    let h := ModuleCat.isFiniteProjective_toRightMatrixModCat_obj R ι X
+      ⟨inferInstance, inferInstance⟩
+    matrixEquiv R ι (of R M) = @of (Matrix ι ι R) _ Y _ _ h.1 h.2 := by
+  dsimp only
+  calc
+    matrixEquiv R ι (of R M) =
+        ofClass (Matrix ι ι R) (ProjectiveClass.matrixEquiv R ι
+          (ProjectiveClass.of R M)) :=
+      DFunLike.congr_fun (matrixEquiv_comp_ofClass R ι) (ProjectiveClass.of R M)
+    _ = _ := congrArg (ofClass (Matrix ι ι R))
+      (ProjectiveClass.matrixEquiv_of_module R ι M)
+
+/-- Inverse K₀ generator evaluation uses the supported chosen-corner image. -/
+theorem matrixEquiv_symm_of (i : ι)
+    (Y : ModuleCat.FiniteProjective.{max u v, max (max u v) w}
+      (Matrix ι ι R)ᵐᵒᵖ) :
+    let e : ModuleCat.{max (max u v) w} Rᵐᵒᵖ ≌
+        ModuleCat.{max (max u v) w} (Matrix ι ι R)ᵐᵒᵖ :=
+      (ModuleCat.matrixEquivalence.{u, v, max u w} Rᵐᵒᵖ i).trans
+        (ModuleCat.restrictScalarsEquivalenceOfRingEquiv
+          (RingEquiv.mopMatrix :
+            Matrix ι ι Rᵐᵒᵖ ≃+* (Matrix ι ι R)ᵐᵒᵖ).symm)
+    let h := ModuleCat.isFiniteProjective_of_equivalence.{max u v, u,
+      max (max u v) w, max v w}
+      (Matrix ι ι R)ᵐᵒᵖ Rᵐᵒᵖ e.symm Y.obj Y.property
+    (matrixEquiv R ι).symm (of (Matrix ι ι R) Y) =
+      @of R _ (e.inverse.obj Y.obj) _ _ h.1 h.2 := by
+  dsimp only
+  rw [matrixEquiv_eq_of_index.{u, v, w} R ι i]
+  exact equivOfModuleEquivalence_symm_of.{u, max u v, max v w, w} _ Y
+
+/-- Inverse regular-generator normalization needs neither IBN nor injectivity
+of the class-to-K₀ map. The coordinate action is the canonical `Rᵐᵒᵖ` Pi action. -/
+theorem matrixEquiv_symm_regular :
+    (matrixEquiv R ι).symm (of (Matrix ι ι R) (Matrix ι ι R)) =
+      of R (ι → R) := by
+  apply (matrixEquiv R ι).injective
+  rw [AddEquiv.apply_symm_apply]
+  -- Evaluate the whole completion square at the inverse regular class.
+  -- Only the additive equivalence is cancelled, not the class-to-K₀ map.
+  have h := DFunLike.congr_fun (matrixEquiv_comp_ofClass R ι)
+    ((ProjectiveClass.matrixEquiv R ι).symm
+      (ProjectiveClass.of (Matrix ι ι R) (Matrix ι ι R)))
+  simp only [AddMonoidHom.comp_apply, AddEquiv.coe_toAddMonoidHom] at h
+  -- Cancel the outer class round trip before normalizing the inverse class.
+  rw [AddEquiv.apply_symm_apply] at h
+  simpa only [ProjectiveClass.matrixEquiv_symm_regular, ofClass_of] using h.symm
+
+end K0
+
+end KTheory
