@@ -47,9 +47,12 @@ examples and qualifications; links below go to the corresponding result families
   `b : N' →ₗ[R] N`, `c : P →ₗ[R] P'`. These are stock `TensorProduct.map` maps
   with identity on `M`; all untraced factors are arbitrary, with independent scalar/carrier universes.
 - **[Tensor dual separation](ProjectiveModules/Dual/TensorProduct.lean):** over a
-  commutative semiring, products of linear forms separate tensors of two arbitrary
-  projective modules with additive commutative monoids and independent scalar and
-  carrier universes; no finite-generation assumption is required.
+  commutative semiring, products of linear forms detect zero in `M ⊗[R] N` when
+  `M` is projective and the canonical dual evaluation on `N` is left-separating
+  (detects zero). Additive commutative monoids and independent scalar/carrier
+  universes suffice, without finite generation. The two-projective criterion is
+  a corollary; any scalar submodule, including any ideal, can be the second factor
+  without a projectivity assumption on it.
 - **[Trace under scalar restriction](ProjectiveModules/Module/Trace/ScalarRestriction.lean):**
   for a commutative-semiring algebra `R → A`, with `A` finite projective over
   `R` and an additive-commutative-monoid module `M` finite projective over `A`,
