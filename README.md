@@ -97,6 +97,10 @@ examples and qualifications; links below go to the corresponding result families
   and additive scalar-extension maps. Division-ring classes and K₀ are ℕ and ℤ;
   division-ring extension maps are bijective, and maps from a division-ring source
   to any ring are independent of the scalar homomorphism. Zero-ring objects collapse.
+- **[Opposite-ring duality](docs/Overview.md#right-module-classes-and-k₀):** the
+  [duality interface](ProjectiveModules/KTheory/Dual.lean) specifies additive
+  equivalences of right finite-projective classes and K₀ for any ring and its
+  opposite, with canonical double-opposite transport and independent carrier universes.
 - **[Morita invariance](docs/Overview.md#right-module-classes-and-k₀):** ordinary
   equivalences of right-module categories over arbitrary rings induce additive
   equivalences of finite-projective classes and K₀, with four independent universe
@@ -223,6 +227,7 @@ aggregate import.
 | [Finite stabilization](ProjectiveModules/Module/FiniteStabilization.lean) | Replace a finite projective common stabilizer by a common standard finite free one; no hypotheses on the two ambient modules |
 | [Right regular module](ProjectiveModules/Module/RightRegular.lean) | Canonical opposite-scalar free and finite instances on the ordinary semiring carrier, including zero semirings |
 | [Right-module K₀](ProjectiveModules/KTheory/K0.lean), [stabilization](ProjectiveModules/KTheory/Stabilization.lean) | Ring-sized projective class monoid and group completion; arbitrary-universe module generators, descent/universal properties, difference representatives and common finite-projective or finite-free stabilization |
+| [Opposite-ring duality](ProjectiveModules/KTheory/Dual.lean) | Additive class and K₀ equivalence interfaces over arbitrary rings; normalized right duals, inverse double-opposite transport, regular generators, completion squares and universal extension |
 | [Right-module Morita invariance](ProjectiveModules/KTheory/ModuleEquivalence.lean) | Additive equivalences of projective classes and K₀ along ordinary right-module category equivalences; independent scalar/carrier universes, arbitrary-carrier representative/lift evaluation, inverse, completion and coherence laws |
 | [Matrix classes and K₀](ProjectiveModules/KTheory/Matrix.lean) | Canonical additive equivalences for arbitrary rings and finite nonempty decidable indices; arbitrary-carrier right-row generators, supported inverse corners, index/height independence and completion compatibility |
 | [K₀ scalar extension](ProjectiveModules/KTheory/ScalarExtension.lean) | Additive change-of-rings maps with arbitrary-carrier evaluation and whole-map identity/composition laws; independence of the homomorphism for division-ring sources and arbitrary ring targets |

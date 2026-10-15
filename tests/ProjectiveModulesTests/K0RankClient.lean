@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.KTheory.Rank
+import ProjectiveModules.KTheory.Dual
 import ProjectiveModules.KTheory.ScalarExtension
 import ProjectiveModules.KTheory.ZeroRing
 import Mathlib.Algebra.Algebra.Basic
@@ -1075,5 +1076,51 @@ private theorem matrix_scalar_negative_three :
   exact (by decide : (-3 : ℤ) ≠ 0) dimensions
 
 end MatrixScalarMaps
+
+section RightDuality
+
+-- `rational_zero_ring_negative_three` already proves the signed regular
+-- generator is nonzero; `rational_negative_three` computes its coordinate.
+-- Carrier lifting preserves this same generator by the existing `K0.of_ulift`.
+-- No injectivity assertion about the general completion map is needed.
+private theorem rational_lifted_signed_regular_dual :
+    K0.dualEquiv ℚ ((-3 : ℤ) • K0.of ℚ (ULift.{v + 1} ℚᵐᵒᵖ)) =
+        (-3 : ℤ) • K0.of ℚᵐᵒᵖ (ℚᵐᵒᵖ)ᵐᵒᵖ ∧
+      K0.dualEquiv ℚ ((-3 : ℤ) • K0.of ℚ (ULift.{v + 1} ℚᵐᵒᵖ)) ≠ 0 ∧
+      (K0.dualEquiv ℚ).symm ((-3 : ℤ) • K0.of ℚᵐᵒᵖ (ℚᵐᵒᵖ)ᵐᵒᵖ) =
+        (-3 : ℤ) • K0.of ℚ (ULift.{v + 1} ℚᵐᵒᵖ) := by
+  have source : K0.of ℚ ℚ = K0.of ℚ ℚᵐᵒᵖ :=
+    K0.of_eq_of_equiv ℚ ℚ (MulOpposite.opLinearEquiv ℚᵐᵒᵖ)
+  have target : K0.of ℚᵐᵒᵖ ℚᵐᵒᵖ = K0.of ℚᵐᵒᵖ (ℚᵐᵒᵖ)ᵐᵒᵖ :=
+    K0.of_eq_of_equiv ℚᵐᵒᵖ ℚᵐᵒᵖ (MulOpposite.opLinearEquiv (ℚᵐᵒᵖ)ᵐᵒᵖ)
+  have regular : K0.dualEquiv ℚ (K0.of ℚ ℚᵐᵒᵖ) =
+      K0.of ℚᵐᵒᵖ (ℚᵐᵒᵖ)ᵐᵒᵖ := by
+    rw [← source, K0.dualEquiv_regular, target]
+  have image :
+      K0.dualEquiv ℚ ((-3 : ℤ) • K0.of ℚ (ULift.{v + 1} ℚᵐᵒᵖ)) =
+        (-3 : ℤ) • K0.of ℚᵐᵒᵖ (ℚᵐᵒᵖ)ᵐᵒᵖ := by
+    rw [map_zsmul, K0.of_ulift, regular]
+  have source_ne : (-3 : ℤ) • K0.of ℚ (ULift.{v + 1} ℚᵐᵒᵖ) ≠ 0 := by
+    simpa only [K0.of_ulift] using rational_zero_ring_negative_three.{0}.2.2
+  refine ⟨image, ?_, ?_⟩
+  · intro equality
+    apply source_ne
+    apply (K0.dualEquiv ℚ).injective
+    simpa only [map_zero] using equality
+  · rw [← image]
+    exact (K0.dualEquiv ℚ).symm_apply_apply _
+
+-- PUnit is separately a zero module over a nonzero division ring and a
+-- coefficient ring with 0 = 1, as in the existing zero-module dimension and
+-- zero-ring scalar-boundary examples. Duality accepts both interpretations.
+private theorem punit_dual_boundaries :
+    ProjectiveClass.dualEquiv ℚ (ProjectiveClass.of ℚ PUnit.{v + 1}) = 0 ∧
+      K0.dualEquiv PUnit.{u + 1}
+          (K0.of PUnit.{u + 1} PUnit.{u + 1}ᵐᵒᵖ) = 0 := by
+  constructor
+  · rw [ProjectiveClass.of_zero, map_zero]
+  · exact Subsingleton.elim _ _
+
+end RightDuality
 
 end ProjectiveModulesTests.K0RankClient

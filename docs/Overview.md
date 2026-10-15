@@ -272,6 +272,30 @@ See [credits](CREDITS.md) for mathematical contributions and expression origins.
   module cancellation. Descent of isomorphism-invariant, zero-preserving,
   direct-sum-additive functions and the group-completion universal property
   come with evaluation and uniqueness laws.
+- **Opposite-ring duality:** For any ring `R : Type uR`, the
+  [duality interface](../ProjectiveModules/KTheory/Dual.lean) specifies
+  `KTheory.ProjectiveClass.dualEquiv R : ProjectiveClass R ≃+ ProjectiveClass Rᵐᵒᵖ`
+  and `KTheory.K0.dualEquiv R : K0 R ≃+ K0 Rᵐᵒᵖ`, with the shorter types
+  read in namespace `KTheory`. For a finite projective right `R`-module
+  `M : Type uM`, its normalized dual is `M →ₗ[Rᵐᵒᵖ] R`, bundled by restriction along
+  `q.symm.toRingHom`, where `q = RingEquiv.opOp R`; this makes a right
+  `Rᵐᵒᵖ`-module, not an identification of `R` with its opposite.
+  The inverse dualizes over `Rᵐᵒᵖ` and then uses the existing scalar-extension
+  `map q.symm.toRingHom`. The whole twice-dual homomorphism is
+  `map q.toRingHom`, not an identity between objects over different rings.
+  Forward and inverse module formulas allow independent carrier universes,
+  with dual carrier in `Type (max uR uM)`; the ordinary right regular generator over
+  `R` goes to the ordinary right regular generator over `Rᵐᵒᵖ`.
+  Both completion squares and the forward/inverse `K0.lift`
+  characterizations are equalities of whole additive homomorphisms.
+  The mathematical ingredients are finite-projective Hom, biduality,
+  representatives, class descent and group completion; no equivalence of whole
+  module categories, commutativity, nontriviality, freeness, rank, cancellation
+  or `Small` premise is required. Separately, the
+  [coefficient comparison](../ProjectiveModules/Module/RightDual.lean)
+  `LinearEquiv.rightDualOpposite` sends `f` to `op ∘ f` over any semiring
+  and additive-commutative-monoid right module, without finite generation or
+  projectivity; it is semilinear along the double-opposite isomorphism.
 - **Morita invariance of right classes and K₀:** For arbitrary rings
   `R : Type uR` and `S : Type uS`, let
   `e : ModuleCat.{max uR vR} Rᵐᵒᵖ ≌ ModuleCat.{max uS vS} Sᵐᵒᵖ`,
