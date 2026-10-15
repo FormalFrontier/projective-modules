@@ -42,6 +42,10 @@ examples and qualifications; links below go to the corresponding result families
   `R`-linear operator from maps `M ⊗[R] N →ₗ[R] M ⊗[R] P` to maps `N →ₗ[R] P`.
   The untraced semimodules `N` and `P` are arbitrary, with independent universes.
   On `TensorProduct.map a b`, its value is `tr_M(a) • b`.
+- **[Tensor dual separation](ProjectiveModules/Dual/TensorProduct.lean):** over a
+  commutative semiring, products of linear forms separate tensors of two arbitrary
+  projective modules with additive commutative monoids and independent scalar and
+  carrier universes; no finite-generation assumption is required.
 - **[Trace under scalar restriction](ProjectiveModules/Module/Trace/ScalarRestriction.lean):**
   for a commutative-semiring algebra `R → A`, with `A` finite projective over
   `R` and an additive-commutative-monoid module `M` finite projective over `A`,

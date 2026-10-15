@@ -10,6 +10,7 @@ public import ProjectiveModules
 import ProjectiveModules.Module.ComponentwiseFreeExamples
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.RingTheory.PrincipalIdealDomain
+import ProjectiveModulesTests.TensorDualSeparationClient
 
 /-!
 # Ordinary aggregate-import regression clients
