@@ -45,6 +45,18 @@ examples and qualifications; links below go to the corresponding result families
   universes; split-range assembly itself requires explicitly free increments.
 - **[Categories and restriction](docs/Overview.md#categories-scalar-restriction-and-size):**
   arbitrary-ring module-category equivalences preserve/reflect finite generation.
+  For rings `R : Type uR` and `S : Type uS`,
+  `ModuleCat.finitePresentation_of_equivalence` states that, for
+  `e : ModuleCat.{vR} R ≌ ModuleCat.{max uS vS} S` and `X : ModuleCat.{vR} R`,
+  finite presentation over `R` implies finite presentation of `e.functor.obj X`
+  over `S`, with unrestricted source carrier universe. With both carriers at
+  `max uR vR` and `max uS vS`, respectively,
+  `ModuleCat.finitePresentation_iff_of_equivalence` gives
+  `Module.FinitePresentation S (e.functor.obj X) ↔ Module.FinitePresentation R X`.
+  Here `Module.FinitePresentation` means finite generation with finitely
+  generated relations, without a projectivity or freeness assumption. These
+  maximum universe bounds are standard sufficient choices, not necessary
+  conditions for every ring or equivalence.
   Finite-projective preservation needs the target carrier at its scalar/carrier maximum;
   reflection needs both carriers there. Semiring towers preserve projectivity with
   projective coefficients; ring-map finite-projective restriction needs its canonical
@@ -169,7 +181,7 @@ aggregate import.
 | [Finite dependent-product trace](ProjectiveModules/Module/Trace/Pi.lean) | Over a commutative semiring, arbitrary endomorphisms of finite dependent products of finite projective additive-commutative-monoid modules have the sum of their diagonal coordinate traces; `Finite` indices and independent scalar, index and carrier universes |
 | [Finite-projective category](ProjectiveModules/Category/FiniteProjective.lean), [stable category](ProjectiveModules/Category/Stable.lean) | Finite biproducts, preadditive stable quotient and small-ring Ext¹ detection |
 | [Projective scalar towers](ProjectiveModules/Module/ScalarRestriction.lean), [finite-projective restriction](ProjectiveModules/Category/FiniteProjectiveRestriction.lean) | Projectivity through semiring towers with projective coefficients; finite-projective ring-homomorphism restriction under its canonical coefficient hypothesis, with carrier, stored-action and map-application laws, both directions of the underlying-functor comparison, and identity/composition functor laws |
-| [Module-category equivalences](ProjectiveModules/Category/ModuleEquivalence.lean) | Finite-generation preservation and reflection at independent universes; finite-projective preservation with unrestricted source and target at the scalar/carrier maximum, and reflection with both carriers at their maxima |
+| [Module-category equivalences](ProjectiveModules/Category/ModuleEquivalence.lean) | Finite-generation preservation and reflection at independent universes; canonical finite-presentation preservation with unrestricted source and target at the scalar/carrier maximum, and preservation and reflection with both carriers at their maxima; the same bounds for finite projectivity |
 | [Compact elements](ProjectiveModules/Order/CompactlyGenerated.lean) | Order isomorphisms preserve and reflect compact elements of arbitrary partial orders; no completeness or top element required |
 | [Finite-projective representatives](ProjectiveModules/Category/FiniteProjectiveSmallness.lean) | Derived ring-universe essential smallness at independent carrier universes; ring-sized representatives, linear equivalences and class equality in one reference skeleton |
 | [Finite dimension](ProjectiveModules/Category/FiniteModuleDimension.lean) | Finite-rank representative transport; finite-free categorical isomorphism criteria over strong-rank-condition rings |
