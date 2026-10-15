@@ -53,6 +53,11 @@ examples and qualifications; links below go to the corresponding result families
   universes suffice, without finite generation. The two-projective criterion is
   a corollary; any scalar submodule, including any ideal, can be the second factor
   without a projectivity assumption on it.
+- **[Canonical tensor–Hom injectivity](ProjectiveModules/Dual/TensorProduct.lean):** over a
+  commutative semiring `R`, the canonical map `Module.Dual R M ⊗[R] N →ₗ[R] M →ₗ[R] N`
+  is injective when the output `N` is projective. Both modules are additive commutative
+  monoids with independent scalar and carrier universes; neither needs finite generation,
+  and no projectivity of `M` is assumed.
 - **[Trace under scalar restriction](ProjectiveModules/Module/Trace/ScalarRestriction.lean):**
   for a commutative-semiring algebra `R → A`, with `A` finite projective over
   `R` and an additive-commutative-monoid module `M` finite projective over `A`,

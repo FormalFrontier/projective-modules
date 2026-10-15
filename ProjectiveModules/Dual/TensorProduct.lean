@@ -4,10 +4,11 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
-# Rank-one dual forms detect zero in tensors
+# Dual tensor separation and canonical tensor–Hom injectivity
 
 Over a commutative semiring, products of linear forms detect zero in `M ⊗[R] N`
 when `M` is projective and the canonical evaluation pairing `Module.Dual.eval R N`
@@ -23,6 +24,21 @@ is a corollary. The scalar-submodule application
 
 The proof generalizes the projective-factor splitting argument, using Mathlib's
 projective splitting, finitely supported tensor coordinates and dual evaluation APIs.
+
+Over a commutative semiring, the canonical map `dualTensorHom R M N` from
+`Module.Dual R M ⊗[R] N` to `M →ₗ[R] N` is injective whenever the output module `N`
+is projective. Both modules may be additive commutative monoids of arbitrary rank;
+no projectivity of `M` or finite-generation assumption is required.
+
+## References
+
+- Mathlib's Contraction formalization by Oliver Nash and Antoine Labelle
+  (`Mathlib.LinearAlgebra.Contraction`). The injectivity proof follows its Finsupp
+  factorization, naturality and retract approach.
+- Mathlib's Finsupp-Hom formalization by Johan Commelin
+  (`Mathlib.RingTheory.Finiteness.Finsupp`).
+- Mathlib's projective-module formalization by Kevin Buzzard and Antoine Labelle
+  (`Mathlib.Algebra.Module.Projective`), used for the canonical free-module splitting.
 -/
 
 @[expose] public section
@@ -104,3 +120,42 @@ theorem forall_dualDistrib_apply_eq_zero_iff_submodule
     (fun x hx => Subtype.ext (hx I.subtype)) t
 
 end TensorProduct
+
+/-- Over a commutative semiring, the canonical map from `Module.Dual R M ⊗[R] N`
+to `M →ₗ[R] N` is injective if the output module `N` is projective. Neither module
+needs to be finitely generated, and `M` need not be projective. The proof follows
+Mathlib's Finsupp factorization and output-retract approach in Contraction. -/
+theorem dualTensorHom_injective_of_projective_right
+    (R : Type uR) [CommSemiring R]
+    (M : Type uM) (N : Type uN)
+    [AddCommMonoid M] [AddCommMonoid N]
+    [Module R M] [Module R N] [Module.Projective R N] :
+    Function.Injective (dualTensorHom R M N) := by
+  classical
+  have hscalar : Function.Injective (dualTensorHom R M R) := by
+    rw [dualTensorHom_self_right]
+    exact (TensorProduct.rid R (Module.Dual R M)).injective
+  -- For a free output, all three maps in the Finsupp factorization are injective.
+  have hfree : Function.Injective (dualTensorHom R M (N →₀ R)) := by
+    rw [dualTensorHom_finsupp, LinearMap.coe_comp, LinearMap.coe_comp]
+    exact (LinearMap.finsuppLinearMap_injective (S := R) (R := R) (M := M)
+      (N := R) (ι := N)).comp
+        ((Finsupp.mapRange_injective _ (map_zero _) hscalar).comp
+          (TensorProduct.finsuppRight R R (Module.Dual R M) R N).injective)
+  obtain ⟨s, hs⟩ :=
+    Module.projective_def'.mp (inferInstance : Module.Projective R N)
+  -- The section of the output remains a section after tensoring with the dual.
+  have hsTensor : Function.Injective (s.lTensor (Module.Dual R M)) := by
+    apply LinearMap.injective_of_comp_eq_id _
+      ((Finsupp.linearCombination R (id : N → N)).lTensor (Module.Dual R M))
+    rw [← LinearMap.lTensor_comp, hs, LinearMap.lTensor_id]
+  intro x y h
+  apply hsTensor
+  apply hfree
+  calc
+    dualTensorHom R M (N →₀ R) (s.lTensor (Module.Dual R M) x) =
+        s.comp (dualTensorHom R M N x) :=
+      LinearMap.congr_fun (dualTensorHom_comp_lTensor (M := M) s) x
+    _ = s.comp (dualTensorHom R M N y) := congrArg (fun f => s.comp f) h
+    _ = dualTensorHom R M (N →₀ R) (s.lTensor (Module.Dual R M) y) :=
+      (LinearMap.congr_fun (dualTensorHom_comp_lTensor (M := M) s) y).symm

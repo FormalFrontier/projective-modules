@@ -81,3 +81,57 @@ theorem dualDistrib_submodule_zero
   exact map_zero _
 
 end ProjectiveModulesTests
+
+namespace ProjectiveModulesTests.TensorHom
+
+
+/-- A rank-one operator with Finsupp output has a unique tensor preimage,
+without any projectivity assumption on its source. -/
+private theorem tensorHom_rankOne_unique
+    (M : Type uM) [AddCommMonoid M] [Module ℕ M]
+    (φ : Module.Dual ℕ M) (n : ℕ →₀ ℕ)
+    (t : Module.Dual ℕ M ⊗[ℕ] (ℕ →₀ ℕ))
+    (h : ∀ m : M, dualTensorHom ℕ M (ℕ →₀ ℕ) t m = φ m • n) :
+    t = φ ⊗ₜ[ℕ] n := by
+  apply dualTensorHom_injective_of_projective_right ℕ M (ℕ →₀ ℕ)
+  apply LinearMap.ext
+  intro m
+  rw [dualTensorHom_apply]
+  exact h m
+
+/-- The coordinate rank-one operator on the standard natural-number Finsupp
+module is nonzero and has a unique tensor preimage. The nonzero tensor and
+operator are established directly by evaluation. -/
+private theorem nat_finsupp_rankOne_nonzero_unique :
+    let φ : Module.Dual ℕ (ℕ →₀ ℕ) := Finsupp.lapply 0
+    let n : ℕ →₀ ℕ := Finsupp.single 1 1
+    let m : ℕ →₀ ℕ := Finsupp.single 0 1
+    let t : Module.Dual ℕ (ℕ →₀ ℕ) ⊗[ℕ] (ℕ →₀ ℕ) := φ ⊗ₜ[ℕ] n
+    dualTensorHom ℕ (ℕ →₀ ℕ) (ℕ →₀ ℕ) t m = n ∧
+      dualTensorHom ℕ (ℕ →₀ ℕ) (ℕ →₀ ℕ) t ≠ 0 ∧ t ≠ 0 ∧
+      ∀ t' : Module.Dual ℕ (ℕ →₀ ℕ) ⊗[ℕ] (ℕ →₀ ℕ),
+        (∀ m' : ℕ →₀ ℕ,
+          dualTensorHom ℕ (ℕ →₀ ℕ) (ℕ →₀ ℕ) t' m' = φ m' • n) → t' = t := by
+  let φ : Module.Dual ℕ (ℕ →₀ ℕ) := Finsupp.lapply 0
+  let n : ℕ →₀ ℕ := Finsupp.single 1 1
+  let m : ℕ →₀ ℕ := Finsupp.single 0 1
+  let t : Module.Dual ℕ (ℕ →₀ ℕ) ⊗[ℕ] (ℕ →₀ ℕ) := φ ⊗ₜ[ℕ] n
+  have hEval : dualTensorHom ℕ (ℕ →₀ ℕ) (ℕ →₀ ℕ) t m = n := by
+    simp only [t, φ, m, dualTensorHom_apply, Finsupp.lapply_apply,
+      Finsupp.single_eq_same, one_smul]
+  have hn : n ≠ 0 := Finsupp.single_ne_zero.mpr Nat.one_ne_zero
+  have hImageNe : dualTensorHom ℕ (ℕ →₀ ℕ) (ℕ →₀ ℕ) t ≠ 0 := by
+    intro hz
+    apply hn
+    calc
+      n = dualTensorHom ℕ (ℕ →₀ ℕ) (ℕ →₀ ℕ) t m := hEval.symm
+      _ = 0 := by rw [hz, LinearMap.zero_apply]
+  have ht : t ≠ 0 := by
+    intro hzero
+    apply hImageNe
+    rw [hzero, map_zero]
+  refine ⟨hEval, hImageNe, ht, ?_⟩
+  intro t' h
+  exact tensorHom_rankOne_unique (ℕ →₀ ℕ) φ n t' h
+
+end ProjectiveModulesTests.TensorHom
