@@ -33,7 +33,16 @@ examples and qualifications; links below go to the corresponding result families
   only of common finite free summands. Finite-projective left-module biduality uses ordinary coefficients
   over arbitrary semirings; finite-projective contraction trace, cyclicity, dual,
   product, tensor and finite dependent-product laws use commutative semirings.
+  Contraction trace also commutes with arbitrary scalar extension between commutative
+  semirings, with no freeness or flatness assumption; on finite free modules over
+  commutative rings it agrees with Mathlib's scalar-extension trace formula.
   Biduality and trace allow additive monoids; the commutator corollary needs additive groups.
+- **[Rectangular product trace](ProjectiveModules/Module/Trace/Pi.lean):** for maps in
+  opposite directions between two finite dependent products of additive-commutative-monoid
+  modules over a commutative semiring, the trace of `g.comp f` is the sum of its
+  returning coordinate-path traces. Only the source factors must be finitely generated
+  and projective; the intermediate factors need neither property. Scalar, both index
+  and both carrier universes are independent.
 - **[Duals and Hom](docs/Overview.md#categorical-duals-and-hom-modules):** right categorical
   duals use arbitrary rings. For a finite-projective source over a semiring and
   commuting target actions, Hom is independently projective or finite over the outer
@@ -178,7 +187,8 @@ aggregate import.
 | [Complements](ProjectiveModules/Module/ProjectiveComplement.lean) | Over a ring `R`, with additive-group modules `F`, `P` and projective target `P`, `Module.Projective.prodKerEquivOfSurjective` chooses a section of a surjection `f : F →ₗ[R] P` and gives `(P × ker f) ≃ₗ[R] F`; finite projective modules have finite complements in finite standard free modules |
 | [Right inverse defects](ProjectiveModules/Module/RightRegularDefect.lean), [Hom exactness](ProjectiveModules/Module/HomExact.lean) | Specified right regular decomposition and defect kernel over rings; additive Hom exactness over semirings |
 | [Finite dependent products](ProjectiveModules/Module/ProjectivePi.lean) | Canonical pointwise products of projective modules over any semiring are projective for a finite index, without finite generation of the factors and with independent universes |
-| [Finite dependent-product trace](ProjectiveModules/Module/Trace/Pi.lean) | Over a commutative semiring, arbitrary endomorphisms of finite dependent products of finite projective additive-commutative-monoid modules have the sum of their diagonal coordinate traces; `Finite` indices and independent scalar, index and carrier universes |
+| [Finite dependent-product trace](ProjectiveModules/Module/Trace/Pi.lean) | Over a commutative semiring, arbitrary endomorphisms of finite dependent products of finite projective additive-commutative-monoid modules have the sum of their diagonal coordinate traces; `Finite` indices and independent scalar, index and carrier universes. For rectangular composites through another finite dependent product, sum the returning source-factor path traces; no finite generation or projectivity is required of the intermediate factors |
+| [Trace and scalar extension](ProjectiveModules/Module/Trace/BaseChange.lean) | `traceOfFiniteProjective_baseChange`: contraction trace on the canonical tensor-product scalar extension is the image of the source trace for finite projective additive-commutative-monoid modules over commutative semirings; independent scalar and carrier universes, without freeness, flatness or finiteness of the scalar extension. `traceOfFiniteProjective_baseChange_iff_trace` identifies the formula with Mathlib's finite-free trace identity over commutative rings |
 | [Finite-projective category](ProjectiveModules/Category/FiniteProjective.lean), [stable category](ProjectiveModules/Category/Stable.lean) | Finite biproducts, preadditive stable quotient and small-ring Ext¹ detection |
 | [Projective scalar towers](ProjectiveModules/Module/ScalarRestriction.lean), [finite-projective restriction](ProjectiveModules/Category/FiniteProjectiveRestriction.lean) | Projectivity through semiring towers with projective coefficients; finite-projective ring-homomorphism restriction under its canonical coefficient hypothesis, with carrier, stored-action and map-application laws, both directions of the underlying-functor comparison, and identity/composition functor laws |
 | [Module-category equivalences](ProjectiveModules/Category/ModuleEquivalence.lean) | Finite-generation preservation and reflection at independent universes; canonical finite-presentation preservation with unrestricted source and target at the scalar/carrier maximum, and preservation and reflection with both carriers at their maxima; the same bounds for finite projectivity |

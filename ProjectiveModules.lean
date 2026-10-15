@@ -88,6 +88,7 @@ public import ProjectiveModules.Module.RightExtensionIdeal
 public import ProjectiveModules.Module.RightExtensionQuotient
 public import ProjectiveModules.Module.RightExtensionTensorProduct
 public import ProjectiveModules.Module.Trace
+public import ProjectiveModules.Module.Trace.BaseChange
 public import ProjectiveModules.Module.TransfiniteCoordinateFiltration
 public import ProjectiveModules.Module.TransfiniteRangeBasis
 public import ProjectiveModules.Order.CompactlyGenerated

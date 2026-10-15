@@ -292,6 +292,20 @@ status:
     - declaration: "LinearMap.traceOfFiniteProjective_eq_trace"
       file: "ProjectiveModules/Module/Trace/Comparison.lean"
       note: "Finite-free semiring comparison with Mathlib's finite-basis trace; not a universal assertion for nonfree projectives."
+    - declaration: "LinearMap.traceOfFiniteProjective_baseChange"
+      file: "ProjectiveModules/Module/Trace/BaseChange.lean"
+      note: >-
+        Contraction trace commutes with arbitrary scalar extension between
+        commutative semirings: the trace of f.baseChange A on A tensor M is the
+        algebraMap image of the trace of f. Only the source module is assumed
+        finite projective; scalar and carrier universes are independent, with
+        no freeness, flatness or finiteness assumption on the scalar extension.
+    - declaration: "LinearMap.traceOfFiniteProjective_baseChange_iff_trace"
+      file: "ProjectiveModules/Module/Trace/BaseChange.lean"
+      note: >-
+        Over commutative rings and a finite free source, source and target
+        contraction-trace comparisons identify the scalar-extension identity
+        with Mathlib's LinearMap.trace_baseChange formula.
     - declaration: "LinearMap.traceOfFiniteProjective_prodMap"
       file: "ProjectiveModules/Module/Trace/Prod.lean"
       note: "Product endomorphisms have the sum of the factor traces over a commutative semiring, with independent scalar and factor universes."

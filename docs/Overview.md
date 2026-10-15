@@ -135,6 +135,25 @@ See [credits](CREDITS.md) for mathematical contributions and expression origins.
   projective modules as the sum of its diagonal coordinate traces. The index
   need only be finite: no enumeration appears in the statement, and scalar,
   index and carrier universes are independent.
+
+  The [rectangular-composite formula](../ProjectiveModules/Module/Trace/Pi.lean)
+  `LinearMap.traceOfFiniteProjective_pi_comp` applies to
+  `f : (∀ i, M i) →ₗ[R] (∀ j, N j)` and
+  `g : (∀ j, N j) →ₗ[R] (∀ i, M i)` for finite index types and
+  additive-commutative-monoid modules over a commutative semiring, with the
+  pointwise actions on both products. Only the source factors `M i` must be
+  finitely generated and projective; the intermediate
+  factors `N j` need neither property. Let `fji : M i →ₗ[R] N j` and
+  `gij : N j →ₗ[R] M i` be the coordinate maps obtained by single-coordinate
+  inclusion, then `f` or `g` respectively, then projection. The trace of `g.comp f` is
+  `∑ᶠ i, ∑ᶠ j, LinearMap.traceOfFiniteProjective R (M i) (gij.comp fji)`.
+  Every summand is a trace on a source factor, not a trace on `N j` or an
+  assertion equating two full-module traces. Both indices need only be `Finite`;
+  the scalar, two index and two carrier universes are independent. A
+  [natural-number example](../tests/ProjectiveModulesTests/TracePiCompositionClient.lean)
+  with source `Fin 2 → ℕ` passes through factors `ℕ` and `ℕ → ℕ`: its four
+  returning path traces are `8`, `1`, `1` and `15`, giving composite trace `25`.
+
 ### Categorical duals and Hom modules
 
 - **Right-module categorical dual:** For a fixed arbitrary ring `R`,
