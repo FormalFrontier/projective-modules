@@ -273,7 +273,8 @@ See [credits](CREDITS.md) for mathematical contributions and expression origins.
   direct-sum-additive functions and the group-completion universal property
   come with evaluation and uniqueness laws.
 - **Opposite-ring duality:** For any ring `R : Type uR`, the
-  [duality interface](../ProjectiveModules/KTheory/Dual.lean) specifies
+  [normalized right-module dual](../ProjectiveModules/KTheory/Dual.lean) induces
+  canonical additive equivalences
   `KTheory.ProjectiveClass.dualEquiv R : ProjectiveClass R ≃+ ProjectiveClass Rᵐᵒᵖ`
   and `KTheory.K0.dualEquiv R : K0 R ≃+ K0 Rᵐᵒᵖ`, with the shorter types
   read in namespace `KTheory`. For a finite projective right `R`-module
