@@ -102,15 +102,15 @@ theorem isFiniteProjective_of_equivalence
       ModuleCat.isFiniteProjective S (e.functor.obj X) := by
   intro hX
   obtain ⟨hfin, hproj⟩ := (isFiniteProjective_iff X).mp hX
-  letI : Module.Finite R X := hfin
-  letI : Module.Projective R X := hproj
+  let : Module.Finite R X := hfin
+  let : Module.Projective R X := hproj
   -- Algebraic projectivity gives categorical projectivity at any source height.
-  letI : CategoryTheory.Projective X :=
+  let : CategoryTheory.Projective X :=
     projective_of_categoryTheory_projective X
-  letI : CategoryTheory.Projective (e.functor.obj X) :=
+  let : CategoryTheory.Projective (e.functor.obj X) :=
     (e.map_projective_iff X).mpr inferInstance
   -- Only the return to algebraic projectivity needs the supported target height.
-  letI : Small.{max uS vS} S := small_max S
+  let : Small.{max uS vS} S := small_max S
   exact (isFiniteProjective_iff (e.functor.obj X)).mpr
     ⟨(finite_iff_of_equivalence R S e X).mpr inferInstance,
       projective_of_module_projective (e.functor.obj X)⟩
@@ -128,14 +128,14 @@ theorem isFiniteProjective_iff_of_equivalence
   constructor
   · intro hY
     obtain ⟨hfin, hproj⟩ := (isFiniteProjective_iff (e.functor.obj X)).mp hY
-    letI : Module.Finite S (e.functor.obj X) := hfin
-    letI : Module.Projective S (e.functor.obj X) := hproj
-    letI : CategoryTheory.Projective (e.functor.obj X) :=
+    let : Module.Finite S (e.functor.obj X) := hfin
+    let : Module.Projective S (e.functor.obj X) := hproj
+    let : CategoryTheory.Projective (e.functor.obj X) :=
       projective_of_categoryTheory_projective (e.functor.obj X)
     -- Reflection uses the given equivalence, not an enlarged or chosen equivalence.
-    letI : CategoryTheory.Projective X :=
+    let : CategoryTheory.Projective X :=
       (e.map_projective_iff X).mp inferInstance
-    letI : Small.{max uR vR} R := small_max R
+    let : Small.{max uR vR} R := small_max R
     exact (isFiniteProjective_iff X).mpr
       ⟨(finite_iff_of_equivalence R S e X).mp inferInstance,
         projective_of_module_projective X⟩
