@@ -9,6 +9,7 @@ public import ProjectiveModules.KTheory.Rank
 public import ProjectiveModules.Module.ProjectivePi
 public import ProjectiveModules.Module.RightRegular
 public import Mathlib.RingTheory.Morita.Matrix
+public import Mathlib.LinearAlgebra.Matrix.Action
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 public import Mathlib.Data.ZMod.QuotientGroup
 
@@ -74,6 +75,33 @@ theorem toRightMatrixModCat_smul_apply (M : ModuleCat.{w} Rᵐᵒᵖ)
     (A : Matrix ι ι R) (x : (toRightMatrixModCat R ι).obj M) (j : ι) :
     (MulOpposite.op A • x) j = ∑ k, MulOpposite.op (A k j) • x k := by
   exact Matrix.Module.smul_apply (M := M) (A.transpose.map MulOpposite.op) x j
+
+/-- The direct right row of the regular coefficient module is linearly
+equivalent to the canonical matrix row with the vector-matrix action.
+Both maps are the identity on row coordinates. -/
+noncomputable def toRightMatrixModCatRegularLinearEquiv :
+    (toRightMatrixModCat R ι).obj (ModuleCat.of Rᵐᵒᵖ R) ≃ₗ[(Matrix ι ι R)ᵐᵒᵖ] (ι → R) where
+  toFun := id
+  invFun := id
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_add' _ _ := rfl
+  map_smul' A x := by
+    obtain ⟨A, rfl⟩ := MulOpposite.op_surjective A
+    funext j
+    change (MulOpposite.op A • x) j = (Matrix.vecMul x A) j
+    exact toRightMatrixModCat_smul_apply R ι (ModuleCat.of Rᵐᵒᵖ R) A x j
+
+/-- The regular-row comparison preserves every coordinate. -/
+@[simp]
+theorem toRightMatrixModCatRegularLinearEquiv_apply
+    (x : (toRightMatrixModCat R ι).obj (ModuleCat.of Rᵐᵒᵖ R)) :
+    toRightMatrixModCatRegularLinearEquiv R ι x = x := rfl
+
+/-- The inverse regular-row comparison preserves every coordinate. -/
+@[simp]
+theorem toRightMatrixModCatRegularLinearEquiv_symm_apply (x : ι → R) :
+    (toRightMatrixModCatRegularLinearEquiv R ι).symm x = x := rfl
 
 /-- The existing functorial map is coordinatewise application of the input map. -/
 theorem toRightMatrixModCat_map_apply {M N : ModuleCat.{w} Rᵐᵒᵖ}

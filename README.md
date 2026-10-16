@@ -139,6 +139,13 @@ examples and qualifications; links below go to the corresponding result families
   `n > 1` the scalar-extension map has no additive left inverse. The empty-index
   matrix ring is zero and its regular-class subgroup has index one. These coordinate
   formulas do not assert an identification with intrinsic module length.
+- **[Finite matrix families](ProjectiveModules/KTheory/Semisimple.lean):** for a finite
+  family of finite nonempty matrix blocks over division rings, finite-projective
+  classes have natural-number coordinates and K₀ has integer coordinates.
+  The coordinate basis consists of the classes of supported right rows, which
+  uniquely classify simple right modules in arbitrary carrier universes. The
+  regular module has coordinate `card (κ i)` at each block, not its square.
+  Empty outer families are included.
 - **[K₀ bijectivity from projective classes](ProjectiveModules/KTheory/ScalarExtension.lean):**
   for arbitrary rings `R` and `S` in independent universes and any `f : R →+* S`,
   bijectivity of the scalar-extension class map `ProjectiveClass.map f` implies

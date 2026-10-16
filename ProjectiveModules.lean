@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 -- Contributors: Prism
 module
 
+public import ProjectiveModules.Category.ChangeOfRings
 public import ProjectiveModules.Category.FiniteModuleDimension
 public import ProjectiveModules.Category.FiniteProjective
 public import ProjectiveModules.Category.FiniteProjectiveRestriction

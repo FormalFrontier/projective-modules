@@ -504,6 +504,40 @@ theorem piRightSingle_smul (a : ∀ i, Ri i) (i : ι) (x : Mi i) :
     simp only [piRight_smul_apply, piRightSingle_apply_same]
   · simp only [piRight_smul_apply, piRightSingle_apply_ne Ri Mi i j h, smul_zero]
 
+/-- A coefficient-product module whose other factors are zero is linearly equivalent
+to its selected factor, restricted along the opposite coordinate projection.
+The index need not be finite, and the two carriers may have different universes. -/
+noncomputable def piRightLinearEquivOfIsZero (i : ι)
+    (h : ∀ j, j ≠ i → CategoryTheory.Limits.IsZero (Mi j)) :
+    piRight Ri Mi ≃ₗ[(∀ j, Ri j)ᵐᵒᵖ]
+      (ModuleCat.restrictScalars (RingHom.op (Pi.evalRingHom Ri i))).obj (Mi i) where
+  toFun x := x i
+  invFun y := piRightSingle Ri Mi i y
+  left_inv x := by
+    apply (piRight_ext_iff Ri Mi _ _).2
+    intro j
+    by_cases hj : j = i
+    · subst j
+      exact piRightSingle_apply_same Ri Mi i (x i)
+    · let : Subsingleton (Mi j) := subsingleton_of_isZero (h j hj)
+      exact Subsingleton.elim _ _
+  right_inv y := piRightSingle_apply_same Ri Mi i y
+  map_add' _ _ := rfl
+  map_smul' a x := piRight_smul_apply Ri Mi a.unop x i
+
+/-- The supported-product comparison evaluates at the selected coordinate. -/
+@[simp]
+theorem piRightLinearEquivOfIsZero_apply (i : ι)
+    (h : ∀ j, j ≠ i → CategoryTheory.Limits.IsZero (Mi j)) (x : piRight Ri Mi) :
+    piRightLinearEquivOfIsZero Ri Mi i h x = x i := rfl
+
+/-- The inverse comparison inserts a value at the selected coordinate. -/
+@[simp]
+theorem piRightLinearEquivOfIsZero_symm_apply (i : ι)
+    (h : ∀ j, j ≠ i → CategoryTheory.Limits.IsZero (Mi j))
+    (y : (ModuleCat.restrictScalars (RingHom.op (Pi.evalRingHom Ri i))).obj (Mi i)) :
+    (piRightLinearEquivOfIsZero Ri Mi i h).symm y = piRightSingle Ri Mi i y := rfl
+
 /-- A finite coefficient-product module is reconstructed from its supported
 coordinates. The finite sum requires no chosen enumeration. -/
 theorem piRight_eq_finsum_single [Finite ι] (x : piRight Ri Mi) :
