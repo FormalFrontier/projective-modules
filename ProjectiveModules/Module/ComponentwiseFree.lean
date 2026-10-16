@@ -11,7 +11,12 @@ public import ProjectiveModules.Module.RankFiberDecomposition
 public import Mathlib.CategoryTheory.Skeletal
 
 /-!
-# Componentwise-free modules
+# Complete orthogonal refinements and componentwise-free modules
+
+Two finite complete orthogonal idempotent families over a semiring have a
+complete orthogonal Cartesian product family when their entries commute
+across the two families. The refinement retains all pairs, including those
+whose product is zero.
 
 A module over a commutative ring is componentwise free if, after a finite
 complete orthogonal idempotent decomposition of the ring, it is a finite free
@@ -23,6 +28,12 @@ componentwise-free modules are classified by their locally constant stalk-rank
 function, compares the explicit model with `ofLocallyConstantRank`, and packages
 the result as an equivalence with the skeleton of the corresponding full
 subcategory of finite projective modules.
+
+## References
+
+The idempotent family predicates and the orthogonality-and-sum criterion used
+for Cartesian refinement follow Andrew Yang's formalization in Mathlib's
+`Mathlib.RingTheory.Idempotents`.
 -/
 
 public section
@@ -31,6 +42,39 @@ open Function Set
 open CategoryTheory
 
 universe u v w
+
+namespace CompleteOrthogonalIdempotents
+
+/-- Cartesian products of two complete orthogonal idempotent families form a
+complete orthogonal family if the entries commute across the two families.
+Every pair of indices is retained, including pairs with zero product. -/
+theorem prod_mul {S : Type u} {I : Type v} {J : Type w}
+    [Semiring S] [Fintype I] [Fintype J] {e : I → S} {f : J → S}
+    (he : CompleteOrthogonalIdempotents e) (hf : CompleteOrthogonalIdempotents f)
+    (hcomm : ∀ i j, Commute (e i) (f j)) :
+    CompleteOrthogonalIdempotents (fun ij : I × J ↦ e ij.1 * f ij.2) := by
+  classical
+  apply CompleteOrthogonalIdempotents.iff_ortho_complete.mpr
+  constructor
+  · intro ij kl hij
+    calc
+      (e ij.1 * f ij.2) * (e kl.1 * f kl.2) =
+          e ij.1 * (f ij.2 * e kl.1) * f kl.2 := by simp only [mul_assoc]
+      _ = e ij.1 * (e kl.1 * f ij.2) * f kl.2 := by
+        rw [← (hcomm kl.1 ij.2).eq]
+      _ = (e ij.1 * e kl.1) * (f ij.2 * f kl.2) := by simp only [mul_assoc]
+      _ = 0 := by
+        by_cases hi : ij.1 = kl.1
+        · have hj : ij.2 ≠ kl.2 := fun hj ↦ hij (Prod.ext hi hj)
+          rw [hf.ortho hj, mul_zero]
+        · rw [he.ortho hi, zero_mul]
+  · calc
+      ∑ ij : I × J, e ij.1 * f ij.2 = ∑ i : I, ∑ j : J, e i * f j :=
+        Fintype.sum_prod_type _
+      _ = (∑ i : I, e i) * ∑ j : J, f j := (Fintype.sum_mul_sum e f).symm
+      _ = 1 := by rw [he.complete, hf.complete, one_mul]
+
+end CompleteOrthogonalIdempotents
 
 namespace Module
 

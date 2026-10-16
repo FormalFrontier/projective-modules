@@ -26,6 +26,11 @@ examples and qualifications; links below go to the corresponding result families
   For commutative semirings, an idempotent ideal is free iff its generator is zero or
   one. Right-ideal extension along any ring map is regular when the generator maps
   to one; image-zero annihilation requires idempotence, but image-one does not.
+- **[Commuting idempotent refinements](ProjectiveModules/Module/ComponentwiseFree.lean):**
+  over any semiring, two finite complete orthogonal idempotent families whose entries
+  commute across the families have a complete orthogonal Cartesian product family.
+  All pairs are retained, including zero products; the two index universes are independent,
+  and empty families and zero semirings are allowed.
 - **[Exterior constructions](docs/Overview.md#exterior-constructions):** full exterior
   algebra commutes with arbitrary scalar extension, and its equivalence identifies
   homogeneous submodule images in every degree, without asserting a general tensor
@@ -380,7 +385,7 @@ aggregate import.
 | [Semisimple coordinates and simple rows](ProjectiveModules/KTheory/SemisimpleEquivalence.lean) | `KTheory.matrixBlockModuleOfRingEquiv` restricts supported right rows along a chosen finite matrix decomposition; simple-module classification at arbitrary carrier universes, coefficient endomorphism rings, natural class coordinates, integer K₀ basis and block-size regular coordinates; `IsSemisimpleRing.matrixDivisionDecomposition_simple_basis` uses a decomposition chosen from Mathlib's Wedderburn–Artin theorem, including the empty outer family |
 | [K₀ scalar extension](ProjectiveModules/KTheory/ScalarExtension.lean) | Additive change-of-rings maps with arbitrary-carrier evaluation and whole-map identity/composition laws; independence of the homomorphism for division-ring sources and arbitrary ring targets |
 | [K₀ dimension](ProjectiveModules/KTheory/Rank.lean), [zero rings](ProjectiveModules/KTheory/ZeroRing.lean) | Dimension classifications of projective classes by ℕ and K₀ by ℤ over division rings, and bijectivity of division-ring scalar-extension maps; entire class/group collapse over subsingleton rings |
-| [Rank realization](ProjectiveModules/Module/LocallyConstantRank.lean), [fibers](ProjectiveModules/Module/RankFiberDecomposition.lean), [component models](ProjectiveModules/Module/ComponentwiseFree.lean) | Locally constant ranks and conditional componentwise-free classification |
+| [Rank realization](ProjectiveModules/Module/LocallyConstantRank.lean), [fibers](ProjectiveModules/Module/RankFiberDecomposition.lean), [component models](ProjectiveModules/Module/ComponentwiseFree.lean) | Locally constant ranks, commuting complete orthogonal Cartesian refinements over semirings, and conditional componentwise-free classification |
 | [PID](ProjectiveModules/Module/PID.lean), [Laurent](ProjectiveModules/Module/LaurentPolynomial.lean) | Arbitrary-rank commutative PID freeness; one-variable Laurent finite-projective freeness |
 
 `ProjectiveModules/Module/ComponentwiseFreeExamples.lean` and
@@ -446,6 +451,9 @@ including namespace, universe and instance context; see the
 - The Stacks Project, [Tag 00NZ](https://stacks.math.columbia.edu/tag/00NZ):
   finite flat modules over local rings are free.
 
+- Andrew Yang and Mathlib contributors, [`Mathlib.RingTheory.Idempotents`](https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/RingTheory/Idempotents.lean),
+  for complete orthogonal idempotent families and their orthogonality-and-sum criterion.
+
 Focused modules list mathematical references and prior formalization APIs;
 [credits](docs/CREDITS.md) describe contributions and Mathlib reuse.
 
@@ -471,3 +479,5 @@ The commutative-base comparisons additionally reuse Mathlib's tensor
 universal property, commutation, tensor maps and module transport; their
 scalar-first target follows Jujian Zhang's Mathlib change-of-rings
 formalization. These tensor comparison interfaces were contributed by Lens.
+The commuting-idempotent refinement follows Andrew Yang's Mathlib idempotent-family
+interfaces and orthogonality-and-sum criterion.
