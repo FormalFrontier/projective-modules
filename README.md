@@ -57,6 +57,14 @@ examples and qualifications; links below go to the corresponding result families
   universes suffice, without finite generation. The two-projective criterion is
   a corollary; any scalar submodule, including any ideal, can be the second factor
   without a projectivity assumption on it.
+- **[Tensor equality from linear forms](ProjectiveModules/Dual/TensorProduct.lean):**
+  over a commutative semiring `R`, two tensors in `M ⊗[R] N` are equal iff
+  every product of linear forms takes equal values on them, when `M` is
+  projective and the canonical dual evaluation `Module.Dual.eval R N` is
+  injective. In particular, both modules being projective suffices. Additive
+  commutative monoids, independent scalar/carrier universes and arbitrary rank
+  are allowed; ordinary point injectivity on `N`, not merely zero detection,
+  is the hypothesis of the general criterion.
 - **[Canonical tensor–Hom injectivity](ProjectiveModules/Dual/TensorProduct.lean):** over a
   commutative semiring `R`, the canonical map `Module.Dual R M ⊗[R] N →ₗ[R] M →ₗ[R] N`
   is injective when the output `N` is projective. Both modules are additive commutative

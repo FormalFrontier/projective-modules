@@ -8,6 +8,7 @@ public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
+# Rank-one dual forms detect equality and zero in tensors
 # Dual tensor separation and canonical tensor–Hom injectivity
 
 Over a commutative semiring, products of linear forms detect zero in `M ⊗[R] N`
@@ -16,6 +17,13 @@ is left-separating. The factors may have arbitrary rank, their additive structur
 need only be commutative monoids, and the scalar and carrier universes are independent.
 Left separation here means detection of zero, not separation of arbitrary pairs of
 points in semimodules.
+
+Products of linear forms distinguish arbitrary tensor points when `M` is projective
+and the canonical dual evaluation on `N` is injective. If both factors are projective,
+Mathlib's `Module.eval_apply_injective` supplies this injectivity. Specializing the
+two-projective equality criterion to comparison with zero gives the original
+two-projective zero criterion by linearity. This does not replace the weaker
+zero-detection hypothesis in the one-projective zero criterion.
 
 The two-projective criterion `TensorProduct.forall_dualDistrib_apply_eq_zero_iff`
 is a corollary. The scalar-submodule application
@@ -118,6 +126,76 @@ theorem forall_dualDistrib_apply_eq_zero_iff_submodule
       TensorProduct.dualDistrib R M I (f ⊗ₜ[R] g) t = 0) ↔ t = 0 := by
   exact forall_dualDistrib_apply_eq_zero_iff_of_eval_separatingLeft R M I
     (fun x hx => Subtype.ext (hx I.subtype)) t
+
+/-- Two tensors with projective first factor are equal exactly when every rank-one
+product of linear forms takes equal values on them, provided the canonical dual
+evaluation on the second factor is injective. Ordinary point injectivity is required,
+not merely detection of zero; neither factor needs to be finitely generated. -/
+theorem forall_dualDistrib_apply_eq_iff_of_eval_injective
+    (R : Type uR) [CommSemiring R]
+    (M : Type uM) (N : Type uN)
+    [AddCommMonoid M] [AddCommMonoid N]
+    [Module R M] [Module R N]
+    [Module.Projective R M]
+    (hN : Function.Injective (Module.Dual.eval R N))
+    (t u : M ⊗[R] N) :
+    (∀ f : Module.Dual R M, ∀ g : Module.Dual R N,
+      TensorProduct.dualDistrib R M N (f ⊗ₜ[R] g) t =
+        TensorProduct.dualDistrib R M N (f ⊗ₜ[R] g) u) ↔ t = u := by
+  constructor
+  · intro h
+    classical
+    obtain ⟨sM, hsM⟩ :=
+      Module.projective_def'.mp (inferInstance : Module.Projective R M)
+    -- Pull each dual form back along an N-valued split coordinate.
+    have hcoord (i : M) (g : Module.Dual R N) :
+        g.comp ((Finsupp.lapply i).comp
+            ((TensorProduct.finsuppScalarLeft R N M).toLinearMap.comp (sM.rTensor N))) =
+          TensorProduct.dualDistrib R M N ((Finsupp.lapply i).comp sM ⊗ₜ[R] g) := by
+      apply TensorProduct.ext'
+      intro m n
+      simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, LinearMap.rTensor_tmul,
+        Finsupp.lapply_apply, TensorProduct.finsuppScalarLeft_apply_tmul_apply, map_smul,
+        TensorProduct.dualDistrib_apply, smul_eq_mul]
+    have hsplit : sM.rTensor N t = sM.rTensor N u := by
+      apply (TensorProduct.finsuppScalarLeft R N M).injective
+      apply Finsupp.ext
+      intro i
+      change TensorProduct.finsuppScalarLeft R N M (sM.rTensor N t) i =
+        TensorProduct.finsuppScalarLeft R N M (sM.rTensor N u) i
+      apply hN
+      apply LinearMap.ext
+      intro g
+      change g (TensorProduct.finsuppScalarLeft R N M (sM.rTensor N t) i) =
+        g (TensorProduct.finsuppScalarLeft R N M (sM.rTensor N u) i)
+      exact ((LinearMap.congr_fun (hcoord i g) t).trans
+        (h ((Finsupp.lapply i).comp sM) g)).trans (LinearMap.congr_fun (hcoord i g) u).symm
+    -- Apply the tensor of the sole projective retraction to both split images.
+    calc
+      t = (Finsupp.linearCombination R (id : M → M)).rTensor N (sM.rTensor N t) := by
+        rw [← LinearMap.rTensor_comp_apply, hsM, LinearMap.rTensor_id, LinearMap.id_apply]
+      _ = (Finsupp.linearCombination R (id : M → M)).rTensor N (sM.rTensor N u) := by
+        rw [hsplit]
+      _ = u := by
+        rw [← LinearMap.rTensor_comp_apply, hsM, LinearMap.rTensor_id, LinearMap.id_apply]
+  · intro htu f g
+    rw [htu]
+
+/-- Two tensors of projective modules are equal exactly when every rank-one product
+of linear forms takes equal values on them. The modules may have arbitrary rank
+and need only have additive commutative monoid structures. -/
+theorem forall_dualDistrib_apply_eq_iff
+    (R : Type uR) [CommSemiring R]
+    (M : Type uM) (N : Type uN)
+    [AddCommMonoid M] [AddCommMonoid N]
+    [Module R M] [Module R N]
+    [Module.Projective R M] [Module.Projective R N]
+    (t u : M ⊗[R] N) :
+    (∀ f : Module.Dual R M, ∀ g : Module.Dual R N,
+      TensorProduct.dualDistrib R M N (f ⊗ₜ[R] g) t =
+        TensorProduct.dualDistrib R M N (f ⊗ₜ[R] g) u) ↔ t = u := by
+  exact forall_dualDistrib_apply_eq_iff_of_eval_injective R M N
+    (Module.eval_apply_injective R (V := N)) t u
 
 end TensorProduct
 

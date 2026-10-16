@@ -18,6 +18,11 @@ The identity dual forms on `ℕ` evaluate to `1` on `1 ⊗ₜ[ℕ] 1`, independe
 establishing nonvanishing before using the two-projective separation theorem.
 Every rank-one dual form vanishes on the zero tensor with a scalar-submodule
 factor by linearity.
+
+The scalar model over `ℕ` instantiates point equality with one projective factor and
+injective dual evaluation. The countably generated free model `ℕ →₀ ℕ` instantiates
+the both-projective point-equality criterion. Coordinate forms distinguish the
+basis tensors at `(0, 0)` and `(1, 0)` independently of the point-equality criterion.
 -/
 
 open scoped TensorProduct
@@ -79,6 +84,52 @@ theorem dualDistrib_submodule_zero
       TensorProduct.dualDistrib R M I (f ⊗ₜ[R] g) (0 : M ⊗[R] I) = 0 := by
   intro f g
   exact map_zero _
+
+/-- The scalar semimodule over `ℕ` satisfies the one-projective point-equality
+hypotheses, and its tensor square has the independently witnessed nonzero point
+`1 ⊗ₜ[ℕ] 1`. -/
+theorem nat_tensor_point_equality_model :
+    Module.Projective ℕ ℕ ∧
+      Function.Injective (Module.Dual.eval ℕ ℕ) ∧
+      (∀ t u : ℕ ⊗[ℕ] ℕ,
+        (∀ f : Module.Dual ℕ ℕ, ∀ g : Module.Dual ℕ ℕ,
+          TensorProduct.dualDistrib ℕ ℕ ℕ (f ⊗ₜ[ℕ] g) t =
+            TensorProduct.dualDistrib ℕ ℕ ℕ (f ⊗ₜ[ℕ] g) u) ↔ t = u) ∧
+      ((1 : ℕ) ⊗ₜ[ℕ] (1 : ℕ)) ≠ (0 : ℕ ⊗[ℕ] ℕ) := by
+  refine ⟨inferInstance, Module.eval_apply_injective ℕ (V := ℕ), ?_,
+    nat_one_tmul_one_dual_separation.1⟩
+  intro t u
+  exact TensorProduct.forall_dualDistrib_apply_eq_iff_of_eval_injective
+    ℕ ℕ ℕ (Module.eval_apply_injective ℕ (V := ℕ)) t u
+
+/-- The standard countably generated free semimodule over `ℕ` satisfies the
+both-projective point-equality hypotheses. Its basis tensors at `(0, 0)` and `(1, 0)`
+are distinct by explicit coordinate evaluation, without using point equality. -/
+theorem nat_finsupp_tensor_point_equality_model :
+    Module.Projective ℕ (ℕ →₀ ℕ) ∧
+      Function.Injective (Module.Dual.eval ℕ (ℕ →₀ ℕ)) ∧
+      (∀ t u : (ℕ →₀ ℕ) ⊗[ℕ] (ℕ →₀ ℕ),
+        (∀ f : Module.Dual ℕ (ℕ →₀ ℕ), ∀ g : Module.Dual ℕ (ℕ →₀ ℕ),
+          TensorProduct.dualDistrib ℕ (ℕ →₀ ℕ) (ℕ →₀ ℕ) (f ⊗ₜ[ℕ] g) t =
+            TensorProduct.dualDistrib ℕ (ℕ →₀ ℕ) (ℕ →₀ ℕ) (f ⊗ₜ[ℕ] g) u) ↔ t = u) ∧
+      ((Finsupp.single 0 1 : ℕ →₀ ℕ) ⊗ₜ[ℕ] (Finsupp.single 0 1 : ℕ →₀ ℕ)) ≠
+        ((Finsupp.single 1 1 : ℕ →₀ ℕ) ⊗ₜ[ℕ] (Finsupp.single 0 1 : ℕ →₀ ℕ)) := by
+  haveI : Module.Projective ℕ (ℕ →₀ ℕ) :=
+    Module.Projective.of_basis (Finsupp.basisSingleOne : Module.Basis ℕ ℕ (ℕ →₀ ℕ))
+  have hpoints :
+      ((Finsupp.single 0 1 : ℕ →₀ ℕ) ⊗ₜ[ℕ] (Finsupp.single 0 1 : ℕ →₀ ℕ)) ≠
+        ((Finsupp.single 1 1 : ℕ →₀ ℕ) ⊗ₜ[ℕ] (Finsupp.single 0 1 : ℕ →₀ ℕ)) := by
+    intro h
+    have hcoord := congrArg
+      (TensorProduct.dualDistrib ℕ (ℕ →₀ ℕ) (ℕ →₀ ℕ)
+        ((Finsupp.lapply 0 : Module.Dual ℕ (ℕ →₀ ℕ)) ⊗ₜ[ℕ]
+          (Finsupp.lapply 0 : Module.Dual ℕ (ℕ →₀ ℕ)))) h
+    have hbad : (1 : ℕ) = 0 := by
+      simpa [TensorProduct.dualDistrib_apply, Finsupp.lapply_apply] using hcoord
+    exact Nat.one_ne_zero hbad
+  refine ⟨inferInstance, Module.eval_apply_injective ℕ (V := ℕ →₀ ℕ), ?_, hpoints⟩
+  intro t u
+  exact TensorProduct.forall_dualDistrib_apply_eq_iff ℕ (ℕ →₀ ℕ) (ℕ →₀ ℕ) t u
 
 end ProjectiveModulesTests
 
