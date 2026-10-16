@@ -14,6 +14,8 @@ examples and qualifications; links below go to the corresponding result families
   arbitrary rings reconstruct right modules and split finite-projective classes and K₀.
   Coordinate recovery also allows infinite indices; binary universes are independent,
   empty families and zero rings are included, and no class cancellation is assumed.
+  Finite families of left modules over semirings are finitely generated or projective
+  over the coefficient product when the factors are, with the canonical pointwise action.
 - **[Noetherian and PID freeness](docs/Overview.md#noetherian-submodules-and-pid-freeness):**
   over a left-Noetherian, possibly noncommutative ring, submodules of sequence-spanned
   modules are sequence-spanned, with independent universes and no ambient Noetherian,
@@ -25,9 +27,12 @@ examples and qualifications; links below go to the corresponding result families
   one. Right-ideal extension along any ring map is regular when the generator maps
   to one; image-zero annihilation requires idempotence, but image-one does not.
 - **[Exterior constructions](docs/Overview.md#exterior-constructions):** full exterior
-  algebra commutes with arbitrary scalar extension. The separate fixed-ring binary
-  fixed-degree Sum Formula is natural for module maps; projective exterior powers
-  and determinants are also provided, not fixed-degree scalar extension.
+  algebra commutes with arbitrary scalar extension, and its equivalence identifies
+  homogeneous submodule images in every degree, without asserting a general tensor
+  equivalence of fixed-degree carriers. The fixed-ring binary fixed-degree Sum Formula
+  is natural for module maps; projective exterior powers and determinants are also
+  provided. The top exterior power of a finite projective module of constant stalk
+  rank is invertible, including degree zero and the zero ring.
 - **[Duality and trace](docs/Overview.md#duality-biduality-and-trace):** finite-projective
   dual/evaluation base change; rank-one invertibles including zero rings; cancellation
   only of common finite free summands. Finite-projective left-module biduality uses ordinary coefficients
@@ -300,6 +305,8 @@ aggregate import.
 | [Dual](ProjectiveModules/Dual/BaseChange.lean), [Contraction](ProjectiveModules/Contraction/BaseChange.lean), [Invertible](ProjectiveModules/Invertible/OfRankOne.lean) | Dual/evaluation base change, rank-one iff, scalar endomorphisms and finite-summand cancellation |
 | [Bidual evaluation](ProjectiveModules/Module/Bidual.lean) | Ordinary-coefficient bidual equivalence for finite projective semiring modules; forward/inverse evaluation, naturality and coefficient-preserving commutative comparison |
 | [Exterior algebra](ProjectiveModules/ExteriorAlgebra/BaseChange.lean), [exterior powers](ProjectiveModules/ExteriorPower/DirectSum.lean) | Full algebra base change; projective powers, determinants/top powers and binary fixed-degree Sum Formula |
+| [Homogeneous exterior base change](ProjectiveModules/ExteriorPower/BaseChange.lean) | `ExteriorAlgebra.equivBaseChange_map_exteriorPower`: image equality with the scalar-extended homogeneous submodule, for arbitrary degree and independent ring/carrier universes |
+| [Invertible top exterior powers](ProjectiveModules/ExteriorPower/Invertible.lean) | `exteriorPower.invertible_of_rankAtStalk_eq`: the top exterior power of a finite projective module of constant stalk rank is invertible, without a nontrivial-ring hypothesis |
 | [Free modules](ProjectiveModules/Free/CountableCancellation.lean), [infinite coordinates](ProjectiveModules/Free/InfiniteCoordinates.lean), [rank conditions](ProjectiveModules/Free/InvariantBasisNumber.lean) | Countable cancellation/absorption; finite stably-free semisimple endpoint; infinite basis cardinality and free-coordinate classification without IBN; semiring-homomorphism pullbacks of rank condition and IBN |
 | [Linear-map modules](ProjectiveModules/Free/LinearMap.lean) | Finite free semiring source and commuting target actions; independent freeness and finiteness conclusions for Hom over the outer semiring, with independent universes and chosen-basis inverse factorization |
 | [Free-word semirings](ProjectiveModules/Free/FreeWordAlgebra.lean) | Rank-two to rank-one left-linear injection by distinct right suffixes and strong-rank obstruction; arbitrary semiring coefficients and alphabet |
@@ -309,6 +316,7 @@ aggregate import.
 | [Scalar rank](ProjectiveModules/Module/ScalarRank.lean) | Compatible-scalar rank times fixed-simple multiplicity; canonical noncommutative right matrix-row dimension |
 | [Finite stable presentations](ProjectiveModules/Free/StablePresentation.lean) | Arbitrary-ring finite/stably-free existence equivalence; IBN-only cross-sum and integer-difference invariance for semirings |
 | [Balanced tensor](ProjectiveModules/Module/BalancedTensorProduct.lean), [right extension](ProjectiveModules/Module/RightExtension.lean) | Right-module scalar extension over arbitrary ring homomorphisms, quotients, finite free coordinates |
+| [Left coefficient products](ProjectiveModules/Module/Product.lean) | `Module.finite_pi` and `Module.projective_pi`: finite-family closure over the coefficient semiring product for the canonical pointwise left action, with independent index, coefficient and carrier universes |
 | [Right coefficient products](ProjectiveModules/Module/RightProduct.lean) | Named Pi/binary opposite-scalar actions; finite arbitrary-projective closure; canonical finite-projective bundles; coordinate recovery and finite reconstruction along projection scalar extension, with independent universes |
 | [Right coefficient-product maps](ProjectiveModules/Module/RightProduct/Hom.lean) | `Module.piRightHomAddEquiv`: additive component correspondence for maps linear under the canonical right coefficient-product action on arbitrary-index families over semirings with additive-commutative-monoid fibers; supported-input components, coordinatewise inverse, identity and composition laws. `Module.piRightEndEquiv`: semiring equivalence with the family of factor endomorphism semirings, using the same additive data and `f * g = f.comp g`; independent index, coefficient and carrier universes, without finiteness, finite generation, projectivity, presentation or commutativity assumptions |
 | [Product classes and K₀](ProjectiveModules/KTheory/Product.lean) | Finite Pi/binary additive equivalences along projection right extensions; module generators, group-completion and signed inverse laws; independent scalar/carrier universes, without commutativity or cancellation |

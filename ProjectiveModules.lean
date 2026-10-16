@@ -18,8 +18,10 @@ public import ProjectiveModules.Dual.ModuleCat
 public import ProjectiveModules.Dual.Quotient
 public import ProjectiveModules.Dual.TensorProduct
 public import ProjectiveModules.ExteriorAlgebra.BaseChange
+public import ProjectiveModules.ExteriorPower.BaseChange
 public import ProjectiveModules.ExteriorPower.Determinant
 public import ProjectiveModules.ExteriorPower.DirectSum
+public import ProjectiveModules.ExteriorPower.Invertible
 public import ProjectiveModules.ExteriorPower.Projective
 public import ProjectiveModules.ExteriorPower.Top
 public import ProjectiveModules.Free.CountableAbsorption
@@ -80,6 +82,7 @@ public import ProjectiveModules.Module.QuotientHom
 public import ProjectiveModules.Module.SummandCancellation
 public import ProjectiveModules.Module.RankFiberDecomposition
 public import ProjectiveModules.Module.RightEndomorphismMatrix
+public import ProjectiveModules.Module.Product
 public import ProjectiveModules.Module.RightProduct
 public import ProjectiveModules.Module.RightProduct.Hom
 public import ProjectiveModules.Module.RightRegular
