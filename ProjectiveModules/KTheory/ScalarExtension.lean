@@ -118,6 +118,20 @@ theorem map_of (φ : R →+* S) (M : Type uM) [AddCommGroup M] [Module Rᵐᵒ�
       of_eq_of_equiv S _
         (ModuleCat.RightExtension.mapLinearEquiv φ (FiniteProjective.reprEquiv Rᵐᵒᵖ M))
 
+/-- Scalar extension sends the scalar-self regular right-module class to the
+scalar-self regular right-module class of the target ring. -/
+@[simp]
+theorem map_of_self (φ : R →+* S) :
+    map φ (of R Rᵐᵒᵖ) = of S Sᵐᵒᵖ := by
+  rw [map_of]
+  exact of_eq_of_equiv S _
+    ((ModuleCat.RightExtension.mapLinearEquiv φ
+      ((LinearEquiv.piUnique Rᵐᵒᵖ (fun _ : Fin 1 ↦ Rᵐᵒᵖ)).symm.trans
+        (Module.rightFreeCoordEquiv R (Fin 1)))).trans
+      ((ModuleCat.RightExtension.rightFreeLinearEquiv φ (Fin 1)).trans
+        ((Module.rightFreeCoordEquiv S (Fin 1)).symm.trans
+          (LinearEquiv.piUnique Sᵐᵒᵖ (fun _ : Fin 1 ↦ Sᵐᵒᵖ)))))
+
 variable (R) in
 /-- Scalar extension along the identity induces the identity additive map
 on the entire finite-projective class monoid. -/
@@ -212,6 +226,14 @@ theorem map_of (φ : R →+* S) (M : Type uM) [AddCommGroup M] [Module Rᵐᵒ�
     map φ (of R M) = of S (ModuleCat.RightExtension.Obj φ M) := by
   simpa only [ProjectiveClass.map_of, ofClass_of] using
     map_ofClass φ (ProjectiveClass.of R M)
+
+/-- Scalar extension sends the scalar-self regular right-module K₀ generator
+to the corresponding generator over the target ring. -/
+@[simp]
+theorem map_of_self (φ : R →+* S) :
+    map φ (of R Rᵐᵒᵖ) = of S Sᵐᵒᵖ := by
+  simpa only [ProjectiveClass.map_of_self, ofClass_of] using
+    map_ofClass φ (ProjectiveClass.of R Rᵐᵒᵖ)
 
 variable (R) in
 /-- Scalar extension along the identity induces the identity additive map

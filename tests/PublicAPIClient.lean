@@ -11,6 +11,8 @@ import ProjectiveModules.Module.ComponentwiseFreeExamples
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.RingTheory.PrincipalIdealDomain
 import ProjectiveModulesTests.TensorDualSeparationClient
+import ProjectiveModulesTests.K0RetractionMatrixClient
+import ProjectiveModulesTests.K0LocalPIDCalculationsClient
 import ProjectiveModulesTests.K0CompletionBijectivityClient
 
 /-!

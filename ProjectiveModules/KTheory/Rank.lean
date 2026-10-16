@@ -6,12 +6,18 @@ module
 
 public import ProjectiveModules.KTheory.K0
 public import ProjectiveModules.KTheory.ScalarExtension
+public import ProjectiveModules.Module.LocalRing
+public import ProjectiveModules.Module.PID
 public import ProjectiveModules.Module.RightExtensionFree
 public import Mathlib.Algebra.Field.Opposite
 public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.RingTheory.Localization.FractionRing
+public import StableRange.Local
+
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Dimension maps on right-module classes and K₀
@@ -46,6 +52,12 @@ Consequently both induced additive maps are bijective. The scalar homomorphism
 itself need not be surjective. Independence from the choice of homomorphism
 holds even for an arbitrary ring target, as proved in
 `ProjectiveModules.KTheory.ScalarExtension`.
+
+For a possibly noncommutative local ring `R`, `K0.localDimensionHom R` uses
+scalar extension to the Jacobson residue division ring before taking dimension.
+Its module formula is a residue-module dimension, not source-ring finrank.
+For a commutative principal ideal domain, the corresponding scalar extension
+uses Mathlib's fraction field.
 
 ## References and credits
 
@@ -409,6 +421,32 @@ end DimensionEquivalence
 
 end K0
 
+section IntegerRetraction
+
+universe uA uD
+
+variable {A : Type uA} [Ring A] {D : Type uD} [DivisionRing D]
+
+/-- Scalar extension to a division ring sends the regular right-module K₀
+generator to an element of integer dimension one. -/
+@[simp]
+theorem K0.finrankHom_map_of_self (φ : A →+* D) :
+    K0.finrankHom D (K0.map φ (K0.of A Aᵐᵒᵖ)) = 1 := by
+  rw [K0.map_of_self, K0.finrankHom_of_self]
+
+/-- A unital map from an arbitrary ring to a division ring gives a retraction
+onto the integer multiples of the regular right-module class. No surjectivity
+of the ring homomorphism is required. This is the split integer summand of
+Weibel's *The K-book*, Chapter II, §2. -/
+theorem K0.finrankHom_comp_map_zmultiplesHom (φ : A →+* D) :
+    ((K0.finrankHom D).comp (K0.map φ)).comp
+        (zmultiplesHom (K0 A) (K0.of A Aᵐᵒᵖ)) = AddMonoidHom.id ℤ := by
+  apply AddMonoidHom.ext_int
+  simpa only [AddMonoidHom.comp_apply, zmultiplesHom_apply, one_zsmul,
+    AddMonoidHom.id_apply] using K0.finrankHom_map_of_self φ
+
+end IntegerRetraction
+
 end KTheory
 
 universe uS
@@ -472,4 +510,332 @@ theorem K0.map_bijective (φ : D →+* S) : Function.Bijective (K0.map φ) := by
 
 end ScalarExtensionNaturality
 
+section ProjectiveFreeScalarExtension
+
+variable {R : Type u} [Ring R] {D : Type uS} [DivisionRing D]
+
+/-- Scalar extension to a division ring is bijective on finite-projective
+right-module classes when every canonical finite-projective source object is
+free. The scalar homomorphism need not be injective or surjective. -/
+theorem ProjectiveClass.map_bijective_of_projective_free (q : R →+* D)
+    (hfree : ∀ X : ModuleCat.FiniteProjective.{u, u} Rᵐᵒᵖ,
+      Module.Free Rᵐᵒᵖ X) :
+    Function.Bijective (ProjectiveClass.map q) := by
+  classical
+  have hcoordinate (X : ModuleCat.FiniteProjective.{u, u} Rᵐᵒᵖ) :
+      ∃ n : ℕ, ProjectiveClass.of R X =
+        ProjectiveClass.of R (Fin n → Rᵐᵒᵖ) := by
+    let : Module.Free Rᵐᵒᵖ X := hfree X
+    let ι := Module.Free.ChooseBasisIndex Rᵐᵒᵖ X
+    let : Fintype ι := Module.Free.ChooseBasisIndex.fintype Rᵐᵒᵖ X
+    let b : Module.Basis (Fin (Fintype.card ι)) Rᵐᵒᵖ X :=
+      (Module.Free.chooseBasis Rᵐᵒᵖ X).reindex (Fintype.equivFin ι)
+    exact ⟨Fintype.card ι, ProjectiveClass.of_eq_of_equiv R X b.equivFun⟩
+  have hmap (n : ℕ) :
+      ProjectiveClass.map q (ProjectiveClass.of R (Fin n → Rᵐᵒᵖ)) =
+        ProjectiveClass.of D (Fin n → Dᵐᵒᵖ) := by
+    rw [ProjectiveClass.of_fin_fun_eq_nsmul, map_nsmul,
+      ProjectiveClass.map_of_self, ProjectiveClass.of_fin_fun_eq_nsmul]
+  constructor
+  · intro a b hab
+    obtain ⟨X, rfl⟩ := ProjectiveClass.of_surjective R a
+    obtain ⟨Y, rfl⟩ := ProjectiveClass.of_surjective R b
+    obtain ⟨m, hm⟩ := hcoordinate X
+    obtain ⟨n, hn⟩ := hcoordinate Y
+    dsimp only at hab ⊢
+    rw [hm, hn, hmap, hmap] at hab
+    have hmn : m = n := by
+      simpa only [ProjectiveClass.finrankHom_of_module, Module.finrank_fin_fun] using
+        congrArg (ProjectiveClass.finrankHom D) hab
+    rw [hm, hn, hmn]
+  · intro a
+    refine ⟨ProjectiveClass.of R (Fin (ProjectiveClass.finrankHom D a) → Rᵐᵒᵖ), ?_⟩
+    rw [hmap, ← ProjectiveClass.finrankEquiv_symm_apply]
+    exact ProjectiveClass.finrankEquiv_symm_apply_finrank D a
+
+end ProjectiveFreeScalarExtension
+
+/-!
+## Local rings and principal ideal domains
+
+The residue construction below uses Mathlib's standard ideal quotient and its
+division-ring structure, with the canonical Jacobson maximality theorem from
+`StableRange.Local`. Finite-projective freeness is provided by
+`Module.Projective.free_of_isLocalRing` and `Module.Projective.free_of_pid` in
+this library; applying these to opposite scalars gives the right-module inputs.
+The PID calculation uses Mathlib's existing fraction field, with no new rank
+or group-completion construction.
+-/
+
+namespace K0
+
+section LocalDimension
+
+variable (R : Type u) [Ring R] [IsLocalRing R]
+
+/-- Integer dimension after scalar extension to the canonical Jacobson residue
+division ring of a possibly noncommutative local ring. The quotient, its ring
+structure and the scalar-extension action are the standard constructions. -/
+noncomputable def localDimensionHom : K0 R →+ ℤ := by
+  letI : (Ring.jacobson R).IsMaximal := IsLocalRing.isMaximal_ringJacobson R
+  letI : DivisionRing (R ⧸ Ring.jacobson R) :=
+    Ideal.Quotient.divisionRing (Ring.jacobson R)
+  exact (finrankHom (R ⧸ Ring.jacobson R)).comp
+    (map (Ideal.Quotient.mk (Ring.jacobson R)))
+
+/-- The whole local dimension homomorphism is canonical residue scalar
+extension followed by division-ring dimension. -/
+theorem localDimensionHom_eq_comp :
+    localDimensionHom R =
+      (@finrankHom (R ⧸ Ring.jacobson R)
+        (@Ideal.Quotient.divisionRing R _ (Ring.jacobson R) _
+          (IsLocalRing.isMaximal_ringJacobson R))).comp
+        (map (Ideal.Quotient.mk (Ring.jacobson R))) := rfl
+
+/-- Local dimension evaluates by applying division-ring dimension to the
+canonical residue scalar extension. -/
+theorem localDimensionHom_apply (x : K0 R) :
+    localDimensionHom R x =
+      @finrankHom (R ⧸ Ring.jacobson R)
+        (@Ideal.Quotient.divisionRing R _ (Ring.jacobson R) _
+          (IsLocalRing.isMaximal_ringJacobson R))
+        (map (Ideal.Quotient.mk (Ring.jacobson R)) x) := rfl
+
+/-- On class generators, local dimension is residue class dimension followed
+by the canonical integer cast. -/
+theorem localDimensionHom_ofClass (a : ProjectiveClass R) :
+    localDimensionHom R (ofClass R a) =
+      (@ProjectiveClass.finrankHom (R ⧸ Ring.jacobson R)
+        (@Ideal.Quotient.divisionRing R _ (Ring.jacobson R) _
+          (IsLocalRing.isMaximal_ringJacobson R))
+        (ProjectiveClass.map (Ideal.Quotient.mk (Ring.jacobson R)) a) : ℤ) := by
+  let : (Ring.jacobson R).IsMaximal := IsLocalRing.isMaximal_ringJacobson R
+  let : DivisionRing (R ⧸ Ring.jacobson R) :=
+    Ideal.Quotient.divisionRing (Ring.jacobson R)
+  change finrankHom (R ⧸ Ring.jacobson R)
+    (map (Ideal.Quotient.mk (Ring.jacobson R)) (ofClass R a)) = _
+  rw [map_ofClass, finrankHom_ofClass]
+
+/-- On finite projective right modules in any carrier universe, local dimension
+is the dimension of the canonical residue module, not source-ring finrank. -/
+theorem localDimensionHom_of_module (M : Type v) [AddCommGroup M]
+    [Module Rᵐᵒᵖ M] [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M] :
+    localDimensionHom R (of R M) =
+      (Module.finrank (R ⧸ Ring.jacobson R)ᵐᵒᵖ
+        (ModuleCat.RightExtension.Obj (Ideal.Quotient.mk (Ring.jacobson R)) M) : ℤ) := by
+  let : (Ring.jacobson R).IsMaximal := IsLocalRing.isMaximal_ringJacobson R
+  let : DivisionRing (R ⧸ Ring.jacobson R) :=
+    Ideal.Quotient.divisionRing (Ring.jacobson R)
+  change finrankHom (R ⧸ Ring.jacobson R)
+    (map (Ideal.Quotient.mk (Ring.jacobson R)) (of R M)) = _
+  rw [map_of, finrankHom_of_module]
+
+/-- The regular right-module generator has local dimension one. -/
+@[simp]
+theorem localDimensionHom_of_self : localDimensionHom R (of R Rᵐᵒᵖ) = 1 := by
+  let : (Ring.jacobson R).IsMaximal := IsLocalRing.isMaximal_ringJacobson R
+  let : DivisionRing (R ⧸ Ring.jacobson R) :=
+    Ideal.Quotient.divisionRing (Ring.jacobson R)
+  exact finrankHom_map_of_self (Ideal.Quotient.mk (Ring.jacobson R))
+
+/-- Dimension over the canonical Jacobson residue division ring classifies K₀
+of a possibly noncommutative local ring. See Weibel's *The K-book*,
+Chapter II, §2, for the local-ring K₀ calculation. -/
+theorem localDimensionHom_bijective : Function.Bijective (localDimensionHom R) := by
+  let : (Ring.jacobson R).IsMaximal := IsLocalRing.isMaximal_ringJacobson R
+  let : DivisionRing (R ⧸ Ring.jacobson R) :=
+    Ideal.Quotient.divisionRing (Ring.jacobson R)
+  have hmap : Function.Bijective (map (Ideal.Quotient.mk (Ring.jacobson R))) :=
+    map_bijective_of_projectiveClass_map_bijective _
+      (ProjectiveClass.map_bijective_of_projective_free _ fun X ↦
+        Module.Projective.free_of_isLocalRing (R := Rᵐᵒᵖ) (P := X))
+  have hdimension : Function.Bijective (finrankHom (R ⧸ Ring.jacobson R)) := by
+    rw [← finrankEquiv_toAddMonoidHom]
+    exact (finrankEquiv (R ⧸ Ring.jacobson R)).bijective
+  change Function.Bijective
+    ((finrankHom (R ⧸ Ring.jacobson R)).comp
+      (map (Ideal.Quotient.mk (Ring.jacobson R))))
+  exact hdimension.comp hmap
+
+end LocalDimension
+
+section PrincipalIdealDomainDimension
+
+variable (R : Type u) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+
+/-- Scalar extension to the fraction field followed by integer dimension
+classifies K₀ of a commutative principal ideal domain. See Weibel's *The K-book*,
+Chapter II, §2, for this calculation and its specialization to the integers. -/
+theorem pidDimension_bijective :
+    Function.Bijective
+      ((finrankHom (FractionRing R)).comp (map (algebraMap R (FractionRing R)))) := by
+  let : IsPrincipalIdealRing Rᵐᵒᵖ :=
+    IsPrincipalIdealRing.of_surjective (RingEquiv.toOpposite R).toRingHom
+      (RingEquiv.toOpposite R).surjective
+  have hmap : Function.Bijective (map (algebraMap R (FractionRing R))) :=
+    map_bijective_of_projectiveClass_map_bijective _
+      (ProjectiveClass.map_bijective_of_projective_free _ fun X ↦
+        Module.Projective.free_of_pid Rᵐᵒᵖ X)
+  have hdimension : Function.Bijective (finrankHom (FractionRing R)) := by
+    rw [← finrankEquiv_toAddMonoidHom]
+    exact (finrankEquiv (FractionRing R)).bijective
+  exact hdimension.comp hmap
+
+end PrincipalIdealDomainDimension
+
+end K0
+
 end KTheory
+
+/-!
+## Integer-valued equivalences for local rings and principal ideal domains
+
+`K0.localEquivInt` and `K0.pidEquivInt` bundle the canonical dimension maps as
+additive equivalences. Their inverses send any integer to that multiple of the
+regular right-module generator. Module evaluation uses residue dimension for
+local rings and fraction-field dimension for principal ideal domains. In the
+PID case this also agrees with the source module's finrank.
+-/
+
+namespace KTheory.K0
+
+section LocalIntegerEquivalence
+
+variable (R : Type u) [Ring R] [IsLocalRing R]
+
+/-- K₀ of a possibly noncommutative local ring is additively equivalent to the
+integers by dimension over its canonical Jacobson residue division ring.
+See Weibel, *The K-book*, Chapter II, §2. -/
+@[no_expose]
+noncomputable def localEquivInt : K0 R ≃+ ℤ :=
+  AddEquiv.ofBijective (localDimensionHom R) (localDimensionHom_bijective R)
+
+/-- The whole forward homomorphism of the local K₀ equivalence is the canonical
+residue dimension homomorphism. -/
+theorem localEquivInt_toAddMonoidHom :
+    (localEquivInt R).toAddMonoidHom = localDimensionHom R := by
+  apply AddMonoidHom.ext
+  intro x
+  exact AddEquiv.ofBijective_apply (localDimensionHom R)
+    (localDimensionHom_bijective R) x
+
+/-- The local K₀ equivalence evaluates by the canonical residue dimension map. -/
+theorem localEquivInt_apply (x : K0 R) :
+    localEquivInt R x = localDimensionHom R x :=
+  congrArg (fun F : K0 R →+ ℤ ↦ F x) (localEquivInt_toAddMonoidHom R)
+
+/-- On finite projective right modules in any carrier universe, the local K₀
+equivalence is the dimension of the canonical residue module, not source-ring
+finrank. -/
+@[simp]
+theorem localEquivInt_of_module (M : Type v) [AddCommGroup M]
+    [Module Rᵐᵒᵖ M] [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M] :
+    localEquivInt R (of R M) =
+      (Module.finrank (R ⧸ Ring.jacobson R)ᵐᵒᵖ
+        (ModuleCat.RightExtension.Obj (Ideal.Quotient.mk (Ring.jacobson R)) M) : ℤ) := by
+  rw [localEquivInt_apply, localDimensionHom_of_module]
+
+/-- The local K₀ equivalence sends the regular right-module generator to one. -/
+@[simp]
+theorem localEquivInt_of_self : localEquivInt R (of R Rᵐᵒᵖ) = 1 := by
+  rw [localEquivInt_apply, localDimensionHom_of_self]
+
+/-- The inverse local K₀ equivalence sends every integer, including negative
+integers, to that multiple of the regular right-module generator. -/
+theorem localEquivInt_symm_apply (z : ℤ) :
+    (localEquivInt R).symm z = z • of R Rᵐᵒᵖ := by
+  apply (localEquivInt R).injective
+  rw [AddEquiv.apply_symm_apply, map_zsmul, localEquivInt_of_self]
+  simp
+
+/-- The inverse local K₀ equivalence sends one to the regular right-module
+generator. -/
+@[simp]
+theorem localEquivInt_symm_one : (localEquivInt R).symm 1 = of R Rᵐᵒᵖ := by
+  rw [localEquivInt_symm_apply, one_zsmul]
+
+end LocalIntegerEquivalence
+
+section PrincipalIdealDomainIntegerEquivalence
+
+variable (R : Type u) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+
+/-- K₀ of a commutative principal ideal domain is additively equivalent to the
+integers by scalar extension to its fraction field followed by dimension.
+See Weibel, *The K-book*, Chapter II, §2. -/
+@[no_expose]
+noncomputable def pidEquivInt : K0 R ≃+ ℤ :=
+  AddEquiv.ofBijective
+    ((finrankHom (FractionRing R)).comp (map (algebraMap R (FractionRing R))))
+    (pidDimension_bijective R)
+
+/-- The whole forward homomorphism of the PID K₀ equivalence is canonical
+fraction-field scalar extension followed by integer dimension. -/
+theorem pidEquivInt_toAddMonoidHom :
+    (pidEquivInt R).toAddMonoidHom =
+      (finrankHom (FractionRing R)).comp (map (algebraMap R (FractionRing R))) := by
+  apply AddMonoidHom.ext
+  intro x
+  exact AddEquiv.ofBijective_apply
+    ((finrankHom (FractionRing R)).comp (map (algebraMap R (FractionRing R))))
+    (pidDimension_bijective R) x
+
+/-- The PID K₀ equivalence evaluates by dimension after canonical fraction-field
+scalar extension. -/
+theorem pidEquivInt_apply (x : K0 R) :
+    pidEquivInt R x =
+      finrankHom (FractionRing R) (map (algebraMap R (FractionRing R)) x) :=
+  congrArg (fun F : K0 R →+ ℤ ↦ F x) (pidEquivInt_toAddMonoidHom R)
+
+/-- On finite projective right modules in any carrier universe, the PID K₀
+equivalence is the dimension of the canonical fraction-field extension. -/
+@[simp]
+theorem pidEquivInt_of_module (M : Type v) [AddCommGroup M]
+    [Module Rᵐᵒᵖ M] [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M] :
+    pidEquivInt R (of R M) =
+      (Module.finrank (FractionRing R)ᵐᵒᵖ
+        (ModuleCat.RightExtension.Obj (algebraMap R (FractionRing R)) M) : ℤ) := by
+  rw [pidEquivInt_apply, map_of, finrankHom_of_module]
+
+/-- On finite projective right modules over a PID, fraction-field dimension
+agrees with source-ring finrank. The carrier universe is independent of the
+scalar universe, and projective freeness is supplied by the PID theorem. -/
+theorem pidEquivInt_of_module_finrank (M : Type v) [AddCommGroup M]
+    [Module Rᵐᵒᵖ M] [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M] :
+    pidEquivInt R (of R M) = (Module.finrank Rᵐᵒᵖ M : ℤ) := by
+  let : IsPrincipalIdealRing Rᵐᵒᵖ :=
+    IsPrincipalIdealRing.of_surjective (RingEquiv.toOpposite R).toRingHom
+      (RingEquiv.toOpposite R).surjective
+  let : Module.Free Rᵐᵒᵖ M := Module.Projective.free_of_pid Rᵐᵒᵖ M
+  let e : M ≃ₗ[Rᵐᵒᵖ] (Fin (Module.finrank Rᵐᵒᵖ M) → R) :=
+    (Module.finBasis Rᵐᵒᵖ M).equivFun.trans (Module.rightFreeCoordEquiv R _)
+  let eF :
+      ModuleCat.RightExtension.Obj (algebraMap R (FractionRing R)) M ≃ₗ[(FractionRing R)ᵐᵒᵖ]
+        (Fin (Module.finrank Rᵐᵒᵖ M) → (FractionRing R)ᵐᵒᵖ) :=
+    (ModuleCat.RightExtension.mapLinearEquiv (algebraMap R (FractionRing R)) e).trans
+      ((ModuleCat.RightExtension.rightFreeLinearEquiv (algebraMap R (FractionRing R)) _).trans
+        (Module.rightFreeCoordEquiv (FractionRing R) _).symm)
+  rw [pidEquivInt_of_module, eF.finrank_eq, Module.finrank_fin_fun]
+
+/-- The PID K₀ equivalence sends the regular right-module generator to one. -/
+@[simp]
+theorem pidEquivInt_of_self : pidEquivInt R (of R Rᵐᵒᵖ) = 1 := by
+  rw [pidEquivInt_apply, map_of_self, finrankHom_of_self]
+
+/-- The inverse PID K₀ equivalence sends every integer, including negative
+integers, to that multiple of the regular right-module generator. -/
+theorem pidEquivInt_symm_apply (z : ℤ) :
+    (pidEquivInt R).symm z = z • of R Rᵐᵒᵖ := by
+  apply (pidEquivInt R).injective
+  rw [AddEquiv.apply_symm_apply, map_zsmul, pidEquivInt_of_self]
+  simp
+
+/-- The inverse PID K₀ equivalence sends one to the regular right-module
+generator. -/
+@[simp]
+theorem pidEquivInt_symm_one : (pidEquivInt R).symm 1 = of R Rᵐᵒᵖ := by
+  rw [pidEquivInt_symm_apply, one_zsmul]
+
+end PrincipalIdealDomainIntegerEquivalence
+
+end KTheory.K0
