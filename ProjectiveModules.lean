@@ -64,6 +64,7 @@ public import ProjectiveModules.Module.ComponentwiseFree
 public import ProjectiveModules.Module.FiniteProjectiveHom
 public import ProjectiveModules.Module.FiniteStabilization
 public import ProjectiveModules.Module.HomExact
+public import ProjectiveModules.Module.Injective
 public import ProjectiveModules.Module.InvariantSupportedProjection
 public import ProjectiveModules.Module.IsotypicMultiplicity
 public import ProjectiveModules.Module.MatrixRow

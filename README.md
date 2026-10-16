@@ -101,6 +101,16 @@ examples and qualifications; links below go to the corresponding result families
   is free over a ring with a proper two-sided ideal and unit complement, with no
   generation bound. The `IsLocalRing` form permits noncommutative rings and independent
   universes; split-range assembly itself requires explicitly free increments.
+- **[Finite projectives and injectivity](ProjectiveModules/Module/Injective.lean):**
+  `Module.injective_of_finite_projective` shows that a finitely generated projective
+  left module over an arbitrary left self-injective ring is injective, with
+  independent scalar and carrier universes.
+  [Morita invariance of self-injectivity](ProjectiveModules/Category/ModuleEquivalence.lean)
+  states that for rings `R : Type uR`, `S : Type uS` and any given equivalence
+  `e : ModuleCat.{max uR vR} R ≌ ModuleCat.{max uS vS} S`,
+  `ModuleCat.selfInjective_iff_of_equivalence` gives
+  `Module.Injective R R ↔ Module.Injective S S`. The ring and carrier universes
+  are independent; no identification of the two regular-module images is assumed.
 - **[Categories and restriction](docs/Overview.md#categories-scalar-restriction-and-size):**
   arbitrary-ring module-category equivalences preserve/reflect finite generation.
   For rings `R : Type uR` and `S : Type uS`,
@@ -345,6 +355,7 @@ aggregate import.
 | [Countably generated](ProjectiveModules/Module/CountablyGenerated.lean), [Noetherian submodules](ProjectiveModules/Module/CountablyGenerated/Noetherian.lean), [filtration](ProjectiveModules/Module/TransfiniteRangeBasis.lean) | Sequence-span predicate, submodule theorem, invariant countable supports and split-range assembly |
 | [Split kernels](ProjectiveModules/Module/ProjectiveKernel.lean) | Over a semiring `R`, with additive-group source `M` and additive-monoid target `A`, the imported `LinearMap.kerProdEquivOfRightInverse` gives `(ker f × A) ≃ₗ[R] M` for a specified linear section of `f : M →ₗ[R] A`; kernel projection/application and inclusion-retraction laws; independent finite-source and projective-source closure, without target finiteness or projectivity and with independent universes |
 | [Complements](ProjectiveModules/Module/ProjectiveComplement.lean) | Over a ring `R`, with additive-group modules `F`, `P` and projective target `P`, `Module.Projective.prodKerEquivOfSurjective` chooses a section of a surjection `f : F →ₗ[R] P` and gives `(P × ker f) ≃ₗ[R] F`; finite projective modules have finite complements in finite standard free modules |
+| [Injectivity](ProjectiveModules/Module/Injective.lean) | Finitely generated projective left modules over an arbitrary left self-injective ring are injective, with independent scalar and carrier universes |
 | [Right inverse defects](ProjectiveModules/Module/RightRegularDefect.lean), [Hom exactness](ProjectiveModules/Module/HomExact.lean) | Specified right regular decomposition and defect kernel over rings; additive Hom exactness over semirings |
 | [Finite dependent products](ProjectiveModules/Module/ProjectivePi.lean) | Canonical pointwise products of projective modules over any semiring are projective for a finite index, without finite generation of the factors and with independent universes |
 | [Finite dependent-product trace](ProjectiveModules/Module/Trace/Pi.lean) | Over a commutative semiring, arbitrary endomorphisms of finite dependent products of finite projective additive-commutative-monoid modules have the sum of their diagonal coordinate traces; `Finite` indices and independent scalar, index and carrier universes. For rectangular composites through another finite dependent product, sum the returning source-factor path traces; no finite generation or projectivity is required of the intermediate factors |
@@ -353,7 +364,7 @@ aggregate import.
 | [Partial trace](ProjectiveModules/Module/Trace/Partial.lean) | `partialTraceOfFiniteProjective`: linear contraction of arbitrary maps `M ⊗ N →ₗ M ⊗ P` to maps `N →ₗ P` over a commutative semiring, with only the traced factor `M` finite projective and four independent universes. The all-map evaluation formula uses the canonical tensor–Hom inverse; on `TensorProduct.map a b` the result is `traceOfFiniteProjective R M a • b`, without normalization. On `V = Fin 2 → ℕ`, tensor symmetry has partial trace `id` |
 | [Finite-projective category](ProjectiveModules/Category/FiniteProjective.lean), [stable category](ProjectiveModules/Category/Stable.lean) | Finite biproducts, preadditive stable quotient and small-ring Ext¹ detection |
 | [Projective scalar towers](ProjectiveModules/Module/ScalarRestriction.lean), [finite-projective restriction](ProjectiveModules/Category/FiniteProjectiveRestriction.lean) | Projectivity through semiring towers with projective coefficients; finite-projective ring-homomorphism restriction under its canonical coefficient hypothesis, with carrier, stored-action and map-application laws, both directions of the underlying-functor comparison, and identity/composition functor laws |
-| [Module-category equivalences](ProjectiveModules/Category/ModuleEquivalence.lean) | Finite-generation preservation and reflection at independent universes; canonical finite-presentation preservation with unrestricted source and target at the scalar/carrier maximum, and preservation and reflection with both carriers at their maxima; the same bounds for finite projectivity |
+| [Module-category equivalences](ProjectiveModules/Category/ModuleEquivalence.lean) | Finite-generation preservation and reflection at independent universes; canonical finite-presentation preservation with unrestricted source and target at the scalar/carrier maximum, and preservation and reflection with both carriers at their maxima; the same bounds for finite projectivity; left self-injectivity of the two rings is equivalent under any given equivalence with both carriers at their scalar/carrier maxima |
 | [Compact elements](ProjectiveModules/Order/CompactlyGenerated.lean) | Order isomorphisms preserve and reflect compact elements of arbitrary partial orders; no completeness or top element required |
 | [Finite-projective representatives](ProjectiveModules/Category/FiniteProjectiveSmallness.lean) | Derived ring-universe essential smallness at independent carrier universes; ring-sized representatives, linear equivalences and class equality in one reference skeleton |
 | [Finite dimension](ProjectiveModules/Category/FiniteModuleDimension.lean) | Finite-rank representative transport; finite-free categorical isomorphism criteria over strong-rank-condition rings |

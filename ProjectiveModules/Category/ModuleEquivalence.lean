@@ -5,8 +5,10 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.Category.FiniteProjective
+public import ProjectiveModules.Module.Injective
 public import Mathlib.Algebra.Category.FGModuleCat.Basic
 public import Mathlib.Algebra.Module.FinitePresentation
+import Mathlib.Algebra.Category.ModuleCat.Injective
 import Mathlib.Algebra.Category.ModuleCat.Subobject
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Category.Preorder
@@ -21,6 +23,8 @@ The scalar and carrier universes may be independent. It also preserves finite
 presentation and finite projectivity when the target carrier universe is
 `max uS vS`, and reflects these properties when both carrier universes have this
 form. The forward theorems place no such restriction on the source carrier universe.
+Self-injectivity of the regular modules is also preserved and reflected when both
+carrier universes have the corresponding form.
 
 ## Main results
 
@@ -29,6 +33,7 @@ form. The forward theorems place no such restriction on the source carrier unive
 * `ModuleCat.finitePresentation_iff_of_equivalence`
 * `ModuleCat.isFiniteProjective_of_equivalence`
 * `ModuleCat.isFiniteProjective_iff_of_equivalence`
+* `ModuleCat.selfInjective_iff_of_equivalence`
 
 The conclusions use `Module.Finite`, `Module.FinitePresentation` and the existing
 `ModuleCat.isFiniteProjective` property defining `ModuleCat.FiniteProjective`.
@@ -53,6 +58,11 @@ its inverse image has a finitely generated kernel, and equivalences preserve
 kernels and finite generation. All statements assume a given equivalence; they
 do not assert its existence.
 
+For self-injectivity, the inverse image of the lifted target regular module is
+finite projective, hence injective over a self-injective source ring. Categorical
+injectivity passes through the equivalence, and its counit identifies the result
+with the lifted target regular module. Injectivity then descends from the lift.
+
 ## References
 
 * C. A. Weibel, *The K-book: An Introduction to Algebraic K-theory*, for Morita
@@ -65,6 +75,8 @@ do not assert its existence.
   `ProjectiveModules.Order.CompactlyGenerated` and the Mathlib APIs credited there.
 * Mathlib's finite-presentation and kernel criteria for modules by Andrew Yang.
 * The finite-projective object property and category by Formal Frontier Agents.
+* Mathlib's algebraic and categorical injectivity formalizations by Jujian Zhang
+  and Kevin Buzzard.
 -/
 
 @[expose] public section
@@ -244,3 +256,56 @@ theorem finitePresentation_iff_of_equivalence
 end ModuleCat
 
 end FinitePresentation
+
+section SelfInjectivity
+
+variable (R : Type uR) (S : Type uS) [Ring R] [Ring S]
+
+namespace ModuleCat
+
+private theorem selfInjective_of_equivalence
+    (e : ModuleCat.{max uR vR} R ≌ ModuleCat.{max uS vS} S)
+    [Module.Injective R R] : Module.Injective S S := by
+  -- Use the target regular module at the target carrier height.
+  let Y : ModuleCat.{max uS vS} S := of S (ULift.{vS} S)
+  have hY : isFiniteProjective S Y :=
+    (isFiniteProjective_iff Y).mpr ⟨inferInstance, inferInstance⟩
+  have hX : Module.Finite R (e.inverse.obj Y) ∧
+      Module.Projective R (e.inverse.obj Y) :=
+    (isFiniteProjective_iff (e.inverse.obj Y)).mp
+      (isFiniteProjective_of_equivalence S R e.symm Y hY)
+  let : Module.Finite R (e.inverse.obj Y) := hX.1
+  let : Module.Projective R (e.inverse.obj Y) := hX.2
+  let : Module.Injective R (e.inverse.obj Y) :=
+    Module.injective_of_finite_projective R (e.inverse.obj Y)
+  let : CategoryTheory.Injective (e.inverse.obj Y) :=
+    Module.injective_object_of_injective_module R (e.inverse.obj Y)
+  have hImage : CategoryTheory.Injective (e.functor.obj (e.inverse.obj Y)) :=
+    (e.map_injective_iff (e.inverse.obj Y)).mpr inferInstance
+  -- The counit, not an identification of the two regular modules, is the comparison.
+  let : CategoryTheory.Injective Y :=
+    CategoryTheory.Injective.of_iso (e.counitIso.app Y) hImage
+  exact Module.injective_of_ulift_injective S
+    (Module.injective_module_of_injective_object S Y)
+
+/-- Self-injectivity of the regular module is invariant under an equivalence of
+module categories, with independent scalar and carrier universes.
+
+The proof uses the finite projective inverse image of the lifted target regular
+module and the counit of the given equivalence. It does not identify the image of
+one regular module with the other. This is Morita invariance of self-injectivity;
+see C. A. Weibel, *The K-book: An Introduction to Algebraic K-theory*. -/
+theorem selfInjective_iff_of_equivalence
+    (e : ModuleCat.{max uR vR} R ≌ ModuleCat.{max uS vS} S) :
+    Module.Injective R R ↔ Module.Injective S S := by
+  constructor
+  · intro hR
+    let : Module.Injective R R := hR
+    exact selfInjective_of_equivalence R S e
+  · intro hS
+    let : Module.Injective S S := hS
+    exact selfInjective_of_equivalence S R e.symm
+
+end ModuleCat
+
+end SelfInjectivity
