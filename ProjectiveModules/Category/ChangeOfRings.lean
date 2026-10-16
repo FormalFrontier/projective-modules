@@ -30,7 +30,7 @@ identify both maps with Mathlib's `ModuleCat.restrictScalarsIsoOfEquiv`.
 
 @[expose] public section
 
-universe uR uS
+universe uR uS uM
 
 open CategoryTheory
 
@@ -125,5 +125,36 @@ theorem restrictScalarsUliftIsoOfEquiv_refl (R : Type uR) [Ring R] :
       (congrArg (ULift.down : ULift.{uR} R → R)
         (restrictScalarsId'App_hom_apply (RingHom.id R) rfl
           (of R (ULift.{uR} R)) x)).symm
+
+/-- Restriction along a surjective ring homomorphism preserves the endomorphism
+ring. Both directions leave the underlying additive map unchanged. -/
+noncomputable def restrictScalarsEndEquiv {R : Type uR} {S : Type uS} [Ring R] [Ring S]
+    (f : R →+* S) (hf : Function.Surjective f) (M : ModuleCat.{uM} S) :
+    Module.End S M ≃+* Module.End R ((restrictScalars f).obj M) where
+  toFun g := ((restrictScalars f).map (ofHom (X := M) (Y := M) g)).hom
+  invFun g :=
+    { toFun := g
+      map_add' := g.map_add
+      map_smul' := fun s m ↦ by
+        obtain ⟨r, rfl⟩ := hf s
+        exact g.map_smul r m }
+  left_inv _ := LinearMap.ext fun _ ↦ rfl
+  right_inv _ := LinearMap.ext fun _ ↦ rfl
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+
+/-- Restriction does not change the values of an endomorphism. -/
+@[simp]
+theorem restrictScalarsEndEquiv_apply {R : Type uR} {S : Type uS} [Ring R] [Ring S]
+    (f : R →+* S) (hf : Function.Surjective f) (M : ModuleCat.{uM} S)
+    (g : Module.End S M) (x : M) :
+    restrictScalarsEndEquiv f hf M g x = g x := rfl
+
+/-- The inverse endomorphism correspondence leaves values unchanged as well. -/
+@[simp]
+theorem restrictScalarsEndEquiv_symm_apply {R : Type uR} {S : Type uS}
+    [Ring R] [Ring S] (f : R →+* S) (hf : Function.Surjective f) (M : ModuleCat.{uM} S)
+    (g : Module.End R ((restrictScalars f).obj M)) (x : M) :
+    (restrictScalarsEndEquiv f hf M).symm g x = g x := rfl
 
 end ModuleCat

@@ -109,6 +109,157 @@ theorem toRightMatrixModCat_map_apply {M N : ModuleCat.{w} Rᵐᵒᵖ}
     ((toRightMatrixModCat R ι).map f x) j = f (x j) := by
   rfl
 
+/-- An elementary matrix moves one coordinate of a right row to another,
+with the coefficient acting on the right. -/
+theorem toRightMatrixModCat_single_smul (M : ModuleCat.{w} Rᵐᵒᵖ)
+    (i j : ι) (r : R) (x : (toRightMatrixModCat R ι).obj M) :
+    MulOpposite.op (Matrix.single i j r) • x =
+      Pi.single j (MulOpposite.op r • x i) := by
+  funext k
+  calc
+    (MulOpposite.op (Matrix.single i j r) • x) k =
+        ∑ l, MulOpposite.op ((Matrix.single i j r) l k) • x l :=
+      toRightMatrixModCat_smul_apply R ι M (Matrix.single i j r) x k
+    _ = ∑ l, (Matrix.single j i (MulOpposite.op r)) k l • x l := by
+      apply Finset.sum_congr rfl
+      intro l _
+      congr 1
+      by_cases hi : i = l <;> by_cases hj : j = k <;>
+        simp [hi, hj]
+    _ = (Pi.single j (MulOpposite.op r • x i) : ι → M) k := by
+      have h :
+          (fun k : ι ↦ ∑ l : ι,
+            (Matrix.single j i (MulOpposite.op r) : Matrix ι ι Rᵐᵒᵖ) k l •
+              (x l : M)) =
+            @Pi.single ι (fun _ : ι ↦ (M : Type w))
+              (fun _ : ι ↦ (inferInstance : Zero (M : Type w)))
+              (inferInstance : DecidableEq ι) j (MulOpposite.op r • x i) :=
+        @Matrix.Module.single_smul ι Rᵐᵒᵖ (M : Type w)
+          (inferInstance : Ring Rᵐᵒᵖ) (inferInstance : Fintype ι)
+          (inferInstance : DecidableEq ι) M.isAddCommGroup M.isModule
+          j i (MulOpposite.op r) (x : ι → M)
+      exact congrArg (fun y : ι → (M : Type w) ↦ y k) h
+
+/-- Morphisms of right rows commute with elementary-matrix coordinate transfers. -/
+theorem toRightMatrixModCat_hom_single_smul {M N : ModuleCat.{w} Rᵐᵒᵖ}
+    (f : (toRightMatrixModCat R ι).obj M ⟶ (toRightMatrixModCat R ι).obj N)
+    (i j : ι) (r : R) (x : (toRightMatrixModCat R ι).obj M) :
+    f (Pi.single j (MulOpposite.op r • x i)) =
+      Pi.single j (MulOpposite.op r • f x i) := by
+  exact Eq.trans
+    (congrArg
+      (fun z : (toRightMatrixModCat R ι).obj M ↦
+        (f z : (toRightMatrixModCat R ι).obj N))
+      (toRightMatrixModCat_single_smul R ι M i j r x).symm)
+    (Eq.trans
+      (show (f (MulOpposite.op (Matrix.single i j r) • x) :
+          (toRightMatrixModCat R ι).obj N) =
+          MulOpposite.op (Matrix.single i j r) •
+            (f x : (toRightMatrixModCat R ι).obj N) from
+        f.hom.map_smul (MulOpposite.op (Matrix.single i j r)) x)
+      (toRightMatrixModCat_single_smul R ι N i j r
+        (f x : (toRightMatrixModCat R ι).obj N)))
+
+/-- The right-row functor is fully faithful at arbitrary carrier heights.
+Its inverse on morphisms evaluates a row supported at the chosen index. -/
+noncomputable def fullyFaithfulToRightMatrixModCat (i : ι) :
+    (toRightMatrixModCat.{u, v, w} R ι).FullyFaithful where
+  preimage {X Y} f := ModuleCat.ofHom (X := X) (Y := Y)
+    ({ toFun := fun x ↦ f (Pi.single i x) i
+       map_add' x y := by
+         rw [Pi.single_add]
+         exact congrFun (f.hom.map_add _ _) i
+       map_smul' r x := by
+         obtain ⟨r, rfl⟩ := MulOpposite.op_surjective r
+         have h := congrFun
+           (toRightMatrixModCat_hom_single_smul R ι f i i r
+             (Pi.single i x : (toRightMatrixModCat R ι).obj X)) i
+         simpa only [Pi.single_eq_same, RingHom.id_apply] using h } : X →ₗ[Rᵐᵒᵖ] Y)
+  map_preimage {X Y} f := by
+    apply ModuleCat.hom_ext
+    apply LinearMap.ext
+    intro x
+    funext j
+    change f (Pi.single i (x j)) i = f x j
+    have h := congrFun (toRightMatrixModCat_hom_single_smul R ι f j i 1 x) i
+    simpa only [MulOpposite.op_one, one_smul, Pi.single_eq_same] using h
+  preimage_map {X Y} f := by
+    apply ModuleCat.hom_ext
+    apply LinearMap.ext
+    intro x
+    let u : (toRightMatrixModCat R ι).obj X :=
+      show (toRightMatrixModCat R ι).obj X from
+        @Pi.single ι (fun _ : ι ↦ (X : Type w))
+          (fun _ : ι ↦ (inferInstance : Zero (X : Type w)))
+          (inferInstance : DecidableEq ι) i x
+    have hu : (u i : X) = x :=
+      @Pi.single_eq_same ι (fun _ : ι ↦ (X : Type w))
+        (fun _ : ι ↦ (inferInstance : Zero (X : Type w)))
+        (inferInstance : DecidableEq ι) i x
+    change (((toRightMatrixModCat R ι).map f u) i : Y) = (f x : Y)
+    exact @Eq.trans (Y : Type w)
+      (((toRightMatrixModCat R ι).map f u) i) (f (u i) : Y) (f x : Y)
+      (toRightMatrixModCat_map_apply R ι (M := X) (N := Y) f u i)
+      (congrArg (fun y : X ↦ (f y : Y)) hu)
+
+/-- The inverse on morphisms evaluates a supported row at the chosen index. -/
+@[simp]
+theorem fullyFaithfulToRightMatrixModCat_preimage_apply (i : ι)
+    {X Y : ModuleCat.{w} Rᵐᵒᵖ}
+    (f : (toRightMatrixModCat R ι).obj X ⟶ (toRightMatrixModCat R ι).obj Y) (x : X) :
+    (fullyFaithfulToRightMatrixModCat R ι i).preimage f x = f (Pi.single i x) i := rfl
+
+/-- At a common carrier height, the fully faithful right-row functor agrees
+with the one supplied by the matrix and restriction-of-scalars equivalences. -/
+theorem fullyFaithfulToRightMatrixModCat_eq (i : ι) :
+    let e : ModuleCat.{max (max u v) w} Rᵐᵒᵖ ≌
+        ModuleCat.{max (max u v) w} (Matrix ι ι R)ᵐᵒᵖ :=
+      (ModuleCat.matrixEquivalence.{u, v, max u w} Rᵐᵒᵖ i).trans
+        (ModuleCat.restrictScalarsEquivalenceOfRingEquiv
+          (RingEquiv.mopMatrix :
+            Matrix ι ι Rᵐᵒᵖ ≃+* (Matrix ι ι R)ᵐᵒᵖ).symm)
+    fullyFaithfulToRightMatrixModCat.{u, v, max (max u v) w} R ι i =
+      e.fullyFaithfulFunctor := by
+  exact Subsingleton.elim _ _
+
+/-- The right-row functor identifies endomorphism rings at arbitrary carrier
+heights. The chosen matrix index is used only for its inverse. -/
+noncomputable def toRightMatrixModCatEndEquiv (i : ι) (M : ModuleCat.{w} Rᵐᵒᵖ) :
+    Module.End Rᵐᵒᵖ M ≃+*
+      Module.End (Matrix ι ι R)ᵐᵒᵖ ((toRightMatrixModCat R ι).obj M) := by
+  let g : CategoryTheory.End M ≃+*
+      CategoryTheory.End ((toRightMatrixModCat R ι).obj M) :=
+    { __ := (fullyFaithfulToRightMatrixModCat R ι i).mulEquivEnd M
+      map_add' := fun _ _ ↦ rfl }
+  exact (ModuleCat.endRingEquiv M).symm.trans
+    (g.trans (ModuleCat.endRingEquiv ((toRightMatrixModCat R ι).obj M)))
+
+/-- The endomorphism correspondence applies the original endomorphism in every
+row coordinate. -/
+@[simp]
+theorem toRightMatrixModCatEndEquiv_apply (i : ι)
+    (M : ModuleCat.{w} Rᵐᵒᵖ) (f : Module.End Rᵐᵒᵖ M)
+    (x : (toRightMatrixModCat R ι).obj M) (j : ι) :
+    toRightMatrixModCatEndEquiv R ι i M f x j = f (x j) := rfl
+
+/-- The inverse endomorphism correspondence evaluates a row supported at the
+chosen index and then takes that coordinate. -/
+@[simp]
+theorem toRightMatrixModCatEndEquiv_symm_apply (i : ι)
+    (M : ModuleCat.{w} Rᵐᵒᵖ)
+    (f : Module.End (Matrix ι ι R)ᵐᵒᵖ ((toRightMatrixModCat R ι).obj M)) (m : M) :
+    (toRightMatrixModCatEndEquiv R ι i M).symm f m = f (Pi.single i m) i := by
+  calc
+    (toRightMatrixModCatEndEquiv R ι i M).symm f m =
+        toRightMatrixModCatEndEquiv R ι i M
+          ((toRightMatrixModCatEndEquiv R ι i M).symm f) (Pi.single i m) i := by
+      simpa only [Pi.single_eq_same] using
+        (toRightMatrixModCatEndEquiv_apply R ι i M
+          ((toRightMatrixModCatEndEquiv R ι i M).symm f) (Pi.single i m) i).symm
+    _ = f (Pi.single i m) i :=
+      congrFun (LinearMap.congr_fun
+        ((toRightMatrixModCatEndEquiv R ι i M).apply_symm_apply f) (Pi.single i m)) i
+
 section
 
 universe w'

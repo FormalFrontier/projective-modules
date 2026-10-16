@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.Category.ModuleEquivalence
+public import ProjectiveModules.Category.ChangeOfRings
 public import ProjectiveModules.KTheory.K0
 import Mathlib.Algebra.Category.ModuleCat.Ulift
 import Mathlib.CategoryTheory.ObjectProperty.Equivalence
@@ -258,6 +259,30 @@ theorem equivOfModuleEquivalence_of_module (M : Type w)
           (ModuleCat.of Rᵐᵒᵖ (ULift.{vR} (ModuleCat.FiniteProjective.repr Rᵐᵒᵖ M)))
           ⟨inferInstance, inferInstance⟩).2 := by
   exact classMap_of_module e M
+
+/-- Restriction along a ring equivalence preserves the regular right-module
+class, represented by the canonical left regular modules over the opposite rings.
+The supported lifts allow the two rings to have independent universes. -/
+theorem equivOfModuleEquivalence_restrictScalars_regular (f : R ≃+* S) :
+    equivOfModuleEquivalence.{uS, uR, uR, uS}
+        (ModuleCat.restrictScalarsEquivalenceOfRingEquiv f.op) (of S Sᵐᵒᵖ) =
+      of R Rᵐᵒᵖ := by
+  let X : ModuleCat.FiniteProjective.{uS, max uR uS} Sᵐᵒᵖ :=
+    ModuleCat.FiniteProjective.of Sᵐᵒᵖ (ULift.{uR} Sᵐᵒᵖ)
+  let Y : ModuleCat.FiniteProjective.{uR, max uR uS} Rᵐᵒᵖ :=
+    (finiteProjectiveEquivalence
+      (ModuleCat.restrictScalarsEquivalenceOfRingEquiv f.op)).functor.obj X
+  have hX : of S Sᵐᵒᵖ = of S X := (of_ulift S Sᵐᵒᵖ).symm
+  calc
+    equivOfModuleEquivalence.{uS, uR, uR, uS}
+        (ModuleCat.restrictScalarsEquivalenceOfRingEquiv f.op) (of S Sᵐᵒᵖ) =
+        of R Y := by
+      rw [hX]
+      exact equivOfModuleEquivalence_of _ X
+    _ = of R (ULift.{uS} Rᵐᵒᵖ) :=
+      of_eq_of_equiv R Y
+        (ModuleCat.restrictScalarsUliftIsoOfEquiv f.op).toLinearEquiv
+    _ = of R Rᵐᵒᵖ := of_ulift R Rᵐᵒᵖ
 
 /-- Inverse transport is transport along the inverse category equivalence. -/
 theorem equivOfModuleEquivalence_symm :

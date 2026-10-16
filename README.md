@@ -157,6 +157,19 @@ examples and qualifications; links below go to the corresponding result families
   uniquely classify simple right modules in arbitrary carrier universes. The
   regular module has coordinate `card (κ i)` at each block, not its square.
   Empty outer families are included.
+- **[Semisimple rings](ProjectiveModules/KTheory/SemisimpleEquivalence.lean):** for
+  a ring `R` with `IsSemisimpleRing R`, a chosen Wedderburn–Artin decomposition
+  gives natural coordinates on finite-projective right-module classes and
+  integer coordinates on K₀. Its transported supported right rows uniquely
+  classify simple right modules in arbitrary carrier universes; their classes
+  are the coordinate units and their K₀ generators form the integer basis.
+  Each row's endomorphism ring is isomorphic to its coefficient division ring,
+  not its opposite. The regular coordinates are the block sizes, not their
+  squares. Empty outer families include zero rings. The chosen-decomposition
+  API also allows independent ring, coefficient and index universes; its row
+  construction works over coefficient rings, and the endomorphism statement
+  only requires the selected matrix index to be nonempty. No commutativity or
+  `Small` hypothesis is imposed.
 - **[K₀ bijectivity from projective classes](ProjectiveModules/KTheory/ScalarExtension.lean):**
   for arbitrary rings `R` and `S` in independent universes and any `f : R →+* S`,
   bijectivity of the scalar-extension class map `ProjectiveClass.map f` implies
@@ -292,6 +305,9 @@ For the Noetherian theorem use `import ProjectiveModules.Module.CountablyGenerat
 its [guide](docs/NoetherianSubmodule.md) gives exact hypotheses and an integer-finsupp example.
 For matrix-ring classes and K₀ use `import ProjectiveModules.KTheory.Matrix`;
 the [matrix guide](docs/MatrixK0Design.md) explains the right-row action and inverse corner.
+For semisimple right-module coordinates and the simple-row K₀ basis, use
+`import ProjectiveModules.KTheory.SemisimpleEquivalence`; its module documentation
+explains chosen decompositions and the two-block rational example.
 Examples and regression clients build in the separate default test target.
 
 ## Module map
@@ -347,6 +363,7 @@ aggregate import.
 | [Opposite-ring duality](ProjectiveModules/KTheory/Dual.lean) | Canonical additive equivalences of class monoids and K₀ over arbitrary rings; normalized right duals, inverse double-opposite transport, regular generators, completion squares and universal extension |
 | [Right-module Morita invariance](ProjectiveModules/KTheory/ModuleEquivalence.lean) | Additive equivalences of projective classes and K₀ along ordinary right-module category equivalences; independent scalar/carrier universes, arbitrary-carrier representative/lift evaluation, inverse, completion and coherence laws |
 | [Matrix classes and K₀](ProjectiveModules/KTheory/Matrix.lean) | Canonical additive equivalences for arbitrary rings and finite nonempty decidable indices; arbitrary-carrier right-row generators, supported inverse corners, index/height independence and completion compatibility |
+| [Semisimple coordinates and simple rows](ProjectiveModules/KTheory/SemisimpleEquivalence.lean) | `KTheory.matrixBlockModuleOfRingEquiv` restricts supported right rows along a chosen finite matrix decomposition; simple-module classification at arbitrary carrier universes, coefficient endomorphism rings, natural class coordinates, integer K₀ basis and block-size regular coordinates; `IsSemisimpleRing.matrixDivisionDecomposition_simple_basis` uses a decomposition chosen from Mathlib's Wedderburn–Artin theorem, including the empty outer family |
 | [K₀ scalar extension](ProjectiveModules/KTheory/ScalarExtension.lean) | Additive change-of-rings maps with arbitrary-carrier evaluation and whole-map identity/composition laws; independence of the homomorphism for division-ring sources and arbitrary ring targets |
 | [K₀ dimension](ProjectiveModules/KTheory/Rank.lean), [zero rings](ProjectiveModules/KTheory/ZeroRing.lean) | Dimension classifications of projective classes by ℕ and K₀ by ℤ over division rings, and bijectivity of division-ring scalar-extension maps; entire class/group collapse over subsingleton rings |
 | [Rank realization](ProjectiveModules/Module/LocallyConstantRank.lean), [fibers](ProjectiveModules/Module/RankFiberDecomposition.lean), [component models](ProjectiveModules/Module/ComponentwiseFree.lean) | Locally constant ranks and conditional componentwise-free classification |

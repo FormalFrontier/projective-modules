@@ -111,11 +111,15 @@ theorem matrixBlockModule_smul_apply (i : ι)
     (MulOpposite.op a • x) j = MulOpposite.op (a j) • x j :=
   ModuleCat.FiniteProjective.pi_smul_apply _ _ a x j
 
-private theorem matrixBlockModule_linearEquiv_row (i : ι) :
-    Nonempty (matrixBlockModule D κ i ≃ₗ[(∀ j, Matrix (κ j) (κ j) (D j))ᵐᵒᵖ]
+/-- The supported coefficient-product row is linearly equivalent to the
+canonical row restricted along the opposite coordinate projection. The map
+projects to the selected factor and uses the regular-row comparison; the inverse
+inserts that row in the selected factor. The selected matrix index may be empty. -/
+noncomputable def matrixBlockModuleLinearEquivRow (i : ι) :
+    matrixBlockModule D κ i ≃ₗ[(∀ j, Matrix (κ j) (κ j) (D j))ᵐᵒᵖ]
       (ModuleCat.restrictScalars
         (RingHom.op (Pi.evalRingHom (fun j ↦ Matrix (κ j) (κ j) (D j)) i))).obj
-          (ModuleCat.of (Matrix (κ i) (κ i) (D i))ᵐᵒᵖ (κ i → D i))) := by
+          (ModuleCat.of (Matrix (κ i) (κ i) (D i))ᵐᵒᵖ (κ i → D i)) := by
   classical
   let A := fun j ↦ Matrix (κ j) (κ j) (D j)
   let Mi := fun j ↦ (matrixRowFactors D κ i j).obj
@@ -128,22 +132,52 @@ private theorem matrixBlockModule_linearEquiv_row (i : ι) :
     exact ModuleCat.isZero_of_subsingleton _
   let e := (ModuleCat.FiniteProjective.piLinearEquiv A (matrixRowFactors D κ i)).trans
     (ModuleCat.piRightLinearEquivOfIsZero A Mi i hzero)
-  have erow : (ModuleCat.restrictScalars p).obj (Mi i) ≃ₗ[(∀ j, A j)ᵐᵒᵖ]
-      (ModuleCat.restrictScalars p).obj row := by
-    change (ModuleCat.restrictScalars p).obj ((matrixRowFactors D κ i i).obj)
-      ≃ₗ[(∀ j, A j)ᵐᵒᵖ] (ModuleCat.restrictScalars p).obj row
-    rw [matrixRowFactors_same]
-    let f := ModuleCat.toRightMatrixModCatRegularLinearEquiv (D i) (κ i)
-    exact
-      { toFun := f
-        invFun := f.symm
-        left_inv := f.symm_apply_apply
-        right_inv := f.apply_symm_apply
-        map_add' := f.map_add
-        map_smul' := fun a x ↦ by
-          change f (p a • x) = p a • f x
-          exact f.map_smul (p a) x }
-  exact ⟨e.trans erow⟩
+  let f : Mi i ≃ₗ[(A i)ᵐᵒᵖ] row :=
+    (CategoryTheory.eqToIso (matrixRowFactors_same D κ i)).toLinearEquiv.trans
+      (ModuleCat.toRightMatrixModCatRegularLinearEquiv (D i) (κ i))
+  let erow : (ModuleCat.restrictScalars p).obj (Mi i) ≃ₗ[(∀ j, A j)ᵐᵒᵖ]
+      (ModuleCat.restrictScalars p).obj row :=
+    { toFun := f
+      invFun := f.symm
+      left_inv := f.symm_apply_apply
+      right_inv := f.apply_symm_apply
+      map_add' := f.map_add
+      map_smul' := fun a x ↦ by
+        change f (p a • x) = p a • f x
+        exact f.map_smul (p a) x }
+  exact e.trans erow
+
+/-- The row comparison projects to the selected factor, identifies that factor
+with the direct row, and uses the regular-row linear equivalence. -/
+@[simp]
+theorem matrixBlockModuleLinearEquivRow_apply (i : ι) (x : matrixBlockModule D κ i) :
+    matrixBlockModuleLinearEquivRow D κ i x =
+      ModuleCat.toRightMatrixModCatRegularLinearEquiv (D i) (κ i)
+        ((CategoryTheory.eqToIso (matrixRowFactors_same D κ i)).hom (x i)) := rfl
+
+/-- The inverse row comparison inserts the row in its supported factor, using
+the canonical coefficient-product and regular-row comparisons. -/
+@[simp]
+theorem matrixBlockModuleLinearEquivRow_symm_apply (i : ι)
+    (x : (ModuleCat.restrictScalars
+      (RingHom.op (Pi.evalRingHom (fun j ↦ Matrix (κ j) (κ j) (D j)) i))).obj
+        (ModuleCat.of (Matrix (κ i) (κ i) (D i))ᵐᵒᵖ (κ i → D i))) :
+    (matrixBlockModuleLinearEquivRow D κ i).symm x =
+      (ModuleCat.FiniteProjective.piLinearEquiv
+        (fun j ↦ Matrix (κ j) (κ j) (D j)) (matrixRowFactors D κ i)).symm
+          (ModuleCat.piRightSingle (fun j ↦ Matrix (κ j) (κ j) (D j))
+            (fun j ↦ (matrixRowFactors D κ i j).obj) i
+              ((CategoryTheory.eqToIso (matrixRowFactors_same D κ i)).inv
+                ((ModuleCat.toRightMatrixModCatRegularLinearEquiv (D i) (κ i)).symm x))) := rfl
+
+/-- The supported coefficient-product row is linearly equivalent to the
+canonical row restricted along the opposite coordinate projection. -/
+theorem matrixBlockModule_linearEquiv_row (i : ι) :
+    Nonempty (matrixBlockModule D κ i ≃ₗ[(∀ j, Matrix (κ j) (κ j) (D j))ᵐᵒᵖ]
+      (ModuleCat.restrictScalars
+        (RingHom.op (Pi.evalRingHom (fun j ↦ Matrix (κ j) (κ j) (D j)) i))).obj
+          (ModuleCat.of (Matrix (κ i) (κ i) (D i))ᵐᵒᵖ (κ i → D i))) :=
+  ⟨matrixBlockModuleLinearEquivRow D κ i⟩
 
 end
 
