@@ -112,12 +112,6 @@ noncomputable def traceModCommutators :
   exact ∑ i : Fin n,
     ((q.comp u).comp (φ i).toAddMonoidHom).comp (LinearMap.evalAddMonoidHom (x i))
 
-private theorem quotient_mk_mul_comm (a b : R) :
-    QuotientAddGroup.mk' (Ring.additiveCommutators R) (a * b) =
-      QuotientAddGroup.mk' (Ring.additiveCommutators R) (b * a) := by
-  exact QuotientAddGroup.eq_iff_sub_mem.mpr
-    (Ring.commutator_mem_additiveCommutators a b)
-
 private theorem sum_dualFamily_comp_comm
     {P : Type*} [AddCommGroup P] [Module Rᵐᵒᵖ P]
     {N : Type*} [AddCommGroup N] [Module Rᵐᵒᵖ N]
@@ -151,7 +145,7 @@ private theorem sum_dualFamily_comp_comm
       intro j _
       apply Finset.sum_congr rfl
       intro i _
-      exact quotient_mk_mul_comm R _ _
+      exact Ring.additiveCommutatorQuotient_mk_mul_comm _ _
     _ = ∑ j, q (MulOpposite.unop (ψ j (F (G (y j))))) := by
       apply Finset.sum_congr rfl
       intro j _
