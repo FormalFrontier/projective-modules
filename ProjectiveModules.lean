@@ -23,6 +23,7 @@ public import ProjectiveModules.ExteriorPower.Determinant
 public import ProjectiveModules.ExteriorPower.DirectSum
 public import ProjectiveModules.ExteriorPower.Invertible
 public import ProjectiveModules.ExteriorPower.Projective
+public import ProjectiveModules.ExteriorPower.StalkRank
 public import ProjectiveModules.ExteriorPower.Top
 public import ProjectiveModules.Free.CountableAbsorption
 public import ProjectiveModules.Free.CountableCancellation

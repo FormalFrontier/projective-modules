@@ -75,6 +75,14 @@ See [credits](CREDITS.md) for mathematical contributions and expression origins.
   supplies a fixed-degree scalar-extension theorem. The library also proves
   [projectivity of exterior powers](../ProjectiveModules/ExteriorPower/Projective.lean)
   and constructs [determinants](../ProjectiveModules/ExteriorPower/Determinant.lean).
+- **[Exterior vanishing](../ProjectiveModules/ExteriorPower/StalkRank.lean):**
+  for a finite flat module over a commutative ring, the exterior power of degree
+  `k` is subsingleton if every stalk rank is strictly less than `k`
+  (`exteriorPower.subsingleton_of_rankAtStalk_lt`). The ring and module have
+  independent universes; zero rings and degree zero are included. Global
+  projectivity or finite presentation is not assumed. The bound cannot be
+  weakened to a non-strict inequality: the zeroth exterior power of the zero
+  module over a nonzero field is the field itself.
 ### Duality, biduality and trace
 
 - **Duality and invertibility:** The [finite-projective dual](../ProjectiveModules/Dual/BaseChange.lean)

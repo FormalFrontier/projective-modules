@@ -84,3 +84,6 @@ reference is C. A. Weibel, *The K-book: An Introduction to Algebraic K-theory*,
 for Morita invariance of finite projective modules. The companion examples
 reuse Mathlib's matrix-Morita formalization and the library's existing
 finite-projective model formalizations.
+
+Lens suggested the rational zero-module example in degree zero showing that
+exterior-power vanishing requires a strict stalk-rank bound, not a nonstrict one.
