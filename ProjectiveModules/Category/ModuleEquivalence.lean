@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.Category.FiniteProjective
+public import ProjectiveModules.Category.SubmoduleEquivalence
 public import ProjectiveModules.Module.Injective
 public import Mathlib.Algebra.Category.FGModuleCat.Basic
 public import Mathlib.Algebra.Module.FinitePresentation
@@ -101,9 +102,7 @@ theorem finite_iff_of_equivalence
     Module.Finite S (e.functor.obj X) ↔ Module.Finite R X := by
   -- Every subobject is represented by a submodule, with no smallness of the ring.
   let φ : Submodule R X ≃o Submodule S (e.functor.obj X) :=
-    (subobjectModule X).symm.trans
-      ((Subobject.lowerEquivalence (MonoOver.congr X e)).toOrderIso.trans
-        (subobjectModule (e.functor.obj X)))
+    submoduleOrderIsoOfEquivalence e X
   -- Finite generation means compactness of the greatest submodule.
   simp only [Module.finite_def, Submodule.fg_iff_compact]
   simpa only [φ.map_top] using φ.isCompactElement_iff (⊤ : Submodule R X)

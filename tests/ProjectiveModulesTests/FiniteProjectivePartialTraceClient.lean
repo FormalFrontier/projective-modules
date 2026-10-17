@@ -135,7 +135,7 @@ private instance : Module.Projective ℕ (V ⊗[ℕ] V) :=
 
 /-- Iterating partial trace on tensor symmetry with a remaining scalar factor
 is twice the identity on the natural numbers. -/
-example :
+private theorem partialTrace_tensorSwap_rTensor :
     LinearMap.partialTraceOfFiniteProjective ℕ (V ⊗[ℕ] V) ℕ ℕ
       (tensorSwap.rTensor ℕ) = (2 : ℕ) • (LinearMap.id : ℕ →ₗ[ℕ] ℕ) := by
   refine (LinearMap.partialTraceOfFiniteProjective_assoc ℕ V V ℕ ℕ
@@ -192,7 +192,7 @@ example :
           (congrArg (fun r : ℕ => r • (LinearMap.id : ℕ →ₗ[ℕ] ℕ)) htrace)
 
 /-- Twice the identity on the natural numbers is a nonzero linear map. -/
-example : (2 : ℕ) • (LinearMap.id : ℕ →ₗ[ℕ] ℕ) ≠ 0 := by
+private theorem two_smul_id_ne_zero : (2 : ℕ) • (LinearMap.id : ℕ →ₗ[ℕ] ℕ) ≠ 0 := by
   intro h
   have hvalue : (2 : ℕ) = 0 := by
     simpa using congrArg (fun g : ℕ →ₗ[ℕ] ℕ => g 1) h

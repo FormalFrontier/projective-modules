@@ -150,6 +150,34 @@ examples and qualifications; links below go to the corresponding result families
   reflection needs both carriers there. Semiring towers preserve projectivity with
   projective coefficients; ring-map finite-projective restriction needs its canonical
   coefficient finite projective, separately on each side. Representatives allow independent carriers.
+- **Noetherian modules and rings under equivalence:** For rings `R : Type uR`
+  and `S : Type uS`, the [Noetherian interface](ProjectiveModules/Category/Noetherian.lean)
+  identifies `CategoryTheory.IsNoetherianObject X` with `IsNoetherian R X`:
+  the ascending chain condition on all submodules, equivalently finite
+  generation of every submodule. A given equivalence
+  `ModuleCat.{vR} R ≌ ModuleCat.{vS} S` preserves and reflects this module
+  property, with independent scalar and carrier universes. This uses the
+  general preservation and reflection of Noetherian objects under category
+  equivalences, with independent object and morphism universes.
+  For the ring implication `IsNoetherianRing R → IsNoetherianRing S`,
+  `ModuleCat.{vR} R ≌ ModuleCat.{max uS vS} S` suffices: the source
+  carrier universe is unrestricted. An equivalence
+  `ModuleCat.{max uR vR} R ≌ ModuleCat.{max uS vS} S` gives
+  `IsNoetherianRing R ↔ IsNoetherianRing S`. Here `IsNoetherianRing` means
+  **left** Noetherian; neither commutative rings nor a linearity assumption
+  on the equivalence is required.
+- **[Submodule lattices and length](ProjectiveModules/Category/Length.lean):**
+  ordinary equivalences `e : ModuleCat.{vR} R ≌ ModuleCat.{vS} S` over arbitrary
+  rings give the canonical order isomorphism
+  `ModuleCat.submoduleOrderIsoOfEquivalence e X` on all submodules. For every
+  module `X`, `ModuleCat.length_eq_of_equivalence e X` gives
+  `Module.length S (e.functor.obj X) = Module.length R X` in `ℕ∞`, including `⊤`;
+  `ModuleCat.isFiniteLength_iff_of_equivalence e X` preserves and reflects the
+  proposition `IsFiniteLength`. Scalar and carrier universes are independent,
+  with no maximum-universe or finite-generation hypothesis. This compares a
+  module with its image, not the two regular modules: the matrix equivalence
+  sends `ℚ` to the simple column module `Fin 2 → ℚ` of length 1 over
+  `Matrix (Fin 2) (Fin 2) ℚ`, whose left regular module instead has length 2.
 - **[Stabilization and dimension](docs/Overview.md#stabilization-and-finite-dimension):**
   over arbitrary rings a finite-projective common stabilizer can be replaced by a
   standard finite free one, without hypotheses on the two modules. Finite free
@@ -214,6 +242,11 @@ examples and qualifications; links below go to the corresponding result families
   bijectivity of `K0.map f`, by
   `KTheory.K0.map_bijective_of_projectiveClass_map_bijective`. This conditional
   group-completion result assumes neither cancellation nor nontrivial rings.
+- **[Nilpotent-kernel invariance](ProjectiveModules/KTheory/Nilpotent.lean):**
+  for a surjective unital homomorphism of arbitrary, possibly noncommutative rings
+  with uniformly nilpotent two-sided kernel ideal, the scalar-extension maps on
+  finite-projective right-module isomorphism-class monoids and on K₀
+  are additive equivalences.
 - **[Opposite-ring duality](docs/Overview.md#right-module-classes-and-k₀):** for any
   ring `R`, dualizing finite-projective right modules gives canonical additive
   equivalences of class monoids `ProjectiveClass R ≃+ ProjectiveClass Rᵐᵒᵖ`
@@ -341,6 +374,8 @@ module from the [module map](#module-map); no source-research repository is need
 
 For the Noetherian theorem use `import ProjectiveModules.Module.CountablyGenerated.Noetherian`;
 its [guide](docs/NoetherianSubmodule.md) gives exact hypotheses and an integer-finsupp example.
+For Noetherian objects and transport under module-category equivalences, use
+`import ProjectiveModules.Category.Noetherian`.
 For matrix-ring classes and K₀ use `import ProjectiveModules.KTheory.Matrix`;
 the [matrix guide](docs/MatrixK0Design.md) explains the right-row action and inverse corner.
 For semisimple right-module coordinates and the simple-row K₀ basis, use
@@ -348,11 +383,19 @@ For semisimple right-module coordinates and the simple-row K₀ basis, use
 explains chosen decompositions and the two-block rational example.
 Examples and regression clients build in the separate default test target.
 
+For the length theorems use `import ProjectiveModules.Category.Length`; they are
+not re-exported by the aggregate. This focused import also re-exports
+`ProjectiveModules.Category.SubmoduleEquivalence` for submodule transport.
+Given `e` and `X` as above, `ModuleCat.submoduleOrderIsoOfEquivalence e X` has type
+`Submodule R X ≃o Submodule S (e.functor.obj X)`; its `OrderIso` API provides
+order reflection, inverse transport and top/bottom preservation. The length
+and finite-length theorems apply to the same `e` and `X` without finiteness assumptions.
+
 ## Module map
 
-The aggregate exports the production modules; the paths below link directly
-to representative interfaces. The dual is reached through the contraction
-aggregate import.
+The paths below link directly to representative production interfaces. The
+Noetherian equivalence interface requires its focused import and is not exported
+by the aggregate. The dual is reached through the contraction aggregate import.
 
 | Area | Interfaces and scope |
 | --- | --- |
@@ -396,6 +439,8 @@ aggregate import.
 | [Finite-projective category](ProjectiveModules/Category/FiniteProjective.lean), [stable category](ProjectiveModules/Category/Stable.lean) | Finite biproducts, preadditive stable quotient and small-ring Ext¹ detection |
 | [Projective scalar towers](ProjectiveModules/Module/ScalarRestriction.lean), [finite-projective restriction](ProjectiveModules/Category/FiniteProjectiveRestriction.lean) | Projectivity through semiring towers with projective coefficients; finite-projective ring-homomorphism restriction under its canonical coefficient hypothesis, with carrier, stored-action and map-application laws, both directions of the underlying-functor comparison, and identity/composition functor laws |
 | [Module-category equivalences](ProjectiveModules/Category/ModuleEquivalence.lean) | Finite-generation preservation and reflection at independent universes; canonical finite-presentation preservation with unrestricted source and target at the scalar/carrier maximum, and preservation and reflection with both carriers at their maxima; the same bounds for finite projectivity; left self-injectivity of the two rings is equivalent under any given equivalence with both carriers at their scalar/carrier maxima |
+| [Noetherian objects, modules and rings](ProjectiveModules/Category/Noetherian.lean) | Canonical subobject/submodule ascending-chain bridge; Noetherian-module preservation and reflection at independent universes; left-Noetherian ring transport with target at the scalar/carrier maximum and unrestricted source, and ring iff at both maxima |
+| [Submodule equivalences](ProjectiveModules/Category/SubmoduleEquivalence.lean), [length](ProjectiveModules/Category/Length.lean) | Canonical submodule order isomorphism, numerical length equality in `ℕ∞` for all modules (including `⊤`), and finite-length equivalence; arbitrary rings and independent scalar/carrier universes, without maximum-universe or finiteness hypotheses |
 | [Compact elements](ProjectiveModules/Order/CompactlyGenerated.lean) | Order isomorphisms preserve and reflect compact elements of arbitrary partial orders; no completeness or top element required |
 | [Finite-projective representatives](ProjectiveModules/Category/FiniteProjectiveSmallness.lean) | Derived ring-universe essential smallness at independent carrier universes; ring-sized representatives, linear equivalences and class equality in one reference skeleton |
 | [Finite dimension](ProjectiveModules/Category/FiniteModuleDimension.lean) | Finite-rank representative transport; finite-free categorical isomorphism criteria over strong-rank-condition rings |
