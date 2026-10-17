@@ -49,6 +49,7 @@ public import ProjectiveModules.KTheory.Product
 public import ProjectiveModules.KTheory.Rank
 public import ProjectiveModules.KTheory.ScalarExtension
 public import ProjectiveModules.KTheory.Stabilization
+public import ProjectiveModules.KTheory.TensorProduct
 public import ProjectiveModules.KTheory.Trace
 public import ProjectiveModules.KTheory.TraceNaturality
 public import ProjectiveModules.KTheory.ZeroRing

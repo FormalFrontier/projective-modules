@@ -147,6 +147,13 @@ examples and qualifications; links below go to the corresponding result families
   and additive scalar-extension maps. Division-ring classes and K₀ are ℕ and ℤ;
   division-ring extension maps are bijective, and maps from a division-ring source
   to any ring are independent of the scalar homomorphism. Zero-ring objects collapse.
+  Isomorphism-invariant functions descend to class functions, and preservation of zero
+  and direct sum bundles this descent as an additive map.
+- **[Tensor products of projective classes](ProjectiveModules/KTheory/TensorProduct.lean):**
+  over a commutative ring, `ProjectiveClass.tensorMul` sends the classes of right modules
+  `M` and `N` to the class of `M ⊗[Rᵐᵒᵖ] N`, allowing independent carrier universes and
+  zero rings. Tensor multiplication is a binary function on the direct-sum class monoid,
+  not a semiring or ring structure.
 - **[K₀ trace naturality](ProjectiveModules/KTheory/TraceNaturality.lean):**
   for arbitrary rings `R`, `S` in independent universes and every unital
   `f : R →+* S`, `KTheory.K0.traceModCommutators_map` identifies trace after

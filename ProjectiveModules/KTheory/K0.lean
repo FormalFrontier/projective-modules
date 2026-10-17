@@ -25,8 +25,9 @@ direct sum, modeled by the product of module carriers.
 the ring-universe representatives of `ModuleCat.FiniteProjective` place them
 in one reference category. Equality in `ProjectiveClass R` is module
 isomorphism; equality in `K0 R` need not be module isomorphism.
-`ProjectiveClass.lift` descends isomorphism-invariant functions preserving zero
-and direct sum from the reference modules to additive maps on their classes.
+`ProjectiveClass.liftFunction` descends isomorphism-invariant functions from the
+reference modules to functions on their classes. `ProjectiveClass.lift` bundles
+this descent as an additive map when the function preserves zero and direct sum.
 
 ## Implementation notes
 
@@ -236,6 +237,43 @@ theorem addHom_ext {A : Type w} [AddZero A] {f g : ProjectiveClass R →+ A}
   intro a
   exact induction_on R a h
 
+section LiftFunction
+
+variable {A : Type w}
+  (f : ModuleCat.FiniteProjective.{u, u} Rᵐᵒᵖ → A)
+  (hiso : ∀ {X Y : ModuleCat.FiniteProjective.{u, u} Rᵐᵒᵖ}, (X ≅ Y) → f X = f Y)
+
+/-- Descend an isomorphism-invariant function on finite projective right modules
+to a function on their isomorphism classes, with no algebraic structure on the target. -/
+@[no_expose]
+noncomputable def liftFunction : ProjectiveClass R → A :=
+  fun a ↦ Quotient.lift (s := isIsomorphicSetoid (RightProjective R)) f
+    (fun _ _ e ↦ hiso (Classical.choice e)) ((classEquiv R a).toMul)
+
+/-- The descended function evaluates on a reference-module class as the supplied function. -/
+@[simp]
+theorem liftFunction_of (X : ModuleCat.FiniteProjective.{u, u} Rᵐᵒᵖ) :
+    liftFunction R f hiso (of R X) = f X := by
+  simp only [liftFunction, of, AddEquiv.apply_symm_apply, toMul_ofMul,
+    ModuleCat.FiniteProjective.isoClass_of, Quotient.lift_mk]
+
+/-- For an input in any carrier universe, the descended function evaluates the
+supplied function on its ring-universe representative. -/
+theorem liftFunction_of_module :
+    liftFunction R f hiso (of R M) =
+      f (ModuleCat.FiniteProjective.repr Rᵐᵒᵖ M) := by
+  rw [← of_repr R M]
+  exact liftFunction_of R f hiso (ModuleCat.FiniteProjective.repr Rᵐᵒᵖ M)
+
+/-- A descended function is uniquely determined by its values on reference-module classes. -/
+theorem liftFunction_unique (F : ProjectiveClass R → A)
+    (h : ∀ X : ModuleCat.FiniteProjective.{u, u} Rᵐᵒᵖ, F (of R X) = f X) :
+    F = liftFunction R f hiso := by
+  funext a
+  exact induction_on R a (fun X ↦ (h X).trans (liftFunction_of R f hiso X).symm)
+
+end LiftFunction
+
 section Lift
 
 variable {A : Type w} [AddZero A]
@@ -244,16 +282,6 @@ variable {A : Type w} [AddZero A]
   (hzero : f (ModuleCat.FiniteProjective.of Rᵐᵒᵖ PUnit.{u + 1}) = 0)
   (hadd : ∀ X Y : ModuleCat.FiniteProjective.{u, u} Rᵐᵒᵖ,
     f (ModuleCat.FiniteProjective.of Rᵐᵒᵖ (X × Y)) = f X + f Y)
-
-private noncomputable def liftFunction : ProjectiveClass R → A :=
-  fun a ↦ Quotient.lift (s := isIsomorphicSetoid (RightProjective R)) f
-    (fun _ _ e ↦ hiso (Classical.choice e)) ((classEquiv R a).toMul)
-
-omit [AddZero A] in
-private theorem liftFunction_of (X : ModuleCat.FiniteProjective.{u, u} Rᵐᵒᵖ) :
-    liftFunction R f hiso (of R X) = f X := by
-  simp only [liftFunction, of, AddEquiv.apply_symm_apply, toMul_ofMul,
-    ModuleCat.FiniteProjective.isoClass_of, Quotient.lift_mk]
 
 /-- Descend an isomorphism-invariant function on finite projective right modules
 which preserves zero and direct sum to an additive map on their class monoid. -/
@@ -276,6 +304,11 @@ noncomputable def lift : ProjectiveClass R →+ A where
       _ = liftFunction R f hiso (of R X) + liftFunction R f hiso (of R Y) := by
         rw [liftFunction_of, liftFunction_of]
 
+/-- Forgetting the additive structure of the descended map gives the function descent. -/
+theorem coe_lift :
+    (lift R f hiso hzero hadd : ProjectiveClass R → A) = liftFunction R f hiso := by
+  rfl
+
 /-- The descended map evaluates on a reference-module class as the supplied function. -/
 @[simp]
 theorem lift_of (X : ModuleCat.FiniteProjective.{u, u} Rᵐᵒᵖ) :
@@ -287,16 +320,15 @@ supplied function on its ring-universe representative. -/
 theorem lift_of_module :
     lift R f hiso hzero hadd (of R M) =
       f (ModuleCat.FiniteProjective.repr Rᵐᵒᵖ M) := by
-  rw [← of_repr R M]
-  exact lift_of R f hiso hzero hadd (ModuleCat.FiniteProjective.repr Rᵐᵒᵖ M)
+  exact liftFunction_of_module R M f hiso
 
 /-- A descended additive map is uniquely determined by its values on module classes. -/
 theorem lift_unique (F : ProjectiveClass R →+ A)
     (h : ∀ X : ModuleCat.FiniteProjective.{u, u} Rᵐᵒᵖ, F (of R X) = f X) :
     F = lift R f hiso hzero hadd := by
-  apply addHom_ext R
-  intro X
-  exact (h X).trans (lift_of R f hiso hzero hadd X).symm
+  apply AddMonoidHom.ext
+  intro a
+  exact congrFun (liftFunction_unique R f hiso F h) a
 
 end Lift
 
