@@ -51,6 +51,7 @@ public import ProjectiveModules.KTheory.Matrix
 public import ProjectiveModules.KTheory.ModuleEquivalence
 public import ProjectiveModules.KTheory.Product
 public import ProjectiveModules.KTheory.Rank
+public import ProjectiveModules.KTheory.Ring
 public import ProjectiveModules.KTheory.ScalarExtension
 public import ProjectiveModules.KTheory.Nilpotent
 public import ProjectiveModules.KTheory.Stabilization

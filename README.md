@@ -209,8 +209,15 @@ examples and qualifications; links below go to the corresponding result families
   the unit is the regular right-module class `of R Rᵐᵒᵖ`, and natural-number casts
   use the direct-sum monoid's scaling of that unit. This is the class-semiring
   construction of Weibel, *The K-book*, II §2, extended to include the zero ring.
-  `K0 R` remains the additive Grothendieck group; no K₀ multiplication or ring
-  structure is provided.
+- **[Tensor-product ring on K₀](ProjectiveModules/KTheory/Ring.lean):** for every
+  commutative ring `R`, including the zero ring, the additive Grothendieck group
+  `K0 R` has the commutative-ring structure supplied by Group Theory's generic
+  completion API. Its additive group and whole `K0.ofClass` map are retained.
+  `K0.ofClassRingHom` bundles the class map; the unit is the regular right-module
+  generator, and multiplication of module generators computes `M ⊗[Rᵐᵒᵖ] N`,
+  with independent module-carrier universes. The generic ring lift and
+  extensionality APIs apply to any target ring in an independent universe,
+  including noncommutative and zero targets.
 - **[K₀ trace naturality](ProjectiveModules/KTheory/TraceNaturality.lean):**
   for arbitrary rings `R`, `S` in independent universes and every unital
   `f : R →+* S`, `KTheory.K0.traceModCommutators_map` identifies trace after
@@ -468,7 +475,8 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Finite stabilization](ProjectiveModules/Module/FiniteStabilization.lean) | Replace a finite projective common stabilizer by a common standard finite free one; no hypotheses on the two ambient modules |
 | [Right regular module](ProjectiveModules/Module/RightRegular.lean) | Canonical opposite-scalar free and finite instances on the ordinary semiring carrier, including zero semirings |
 | [Right-module K₀](ProjectiveModules/KTheory/K0.lean), [stabilization](ProjectiveModules/KTheory/Stabilization.lean) | Ring-sized projective class monoid and group completion; arbitrary-universe module generators, descent/universal properties, difference representatives and common finite-projective or finite-free stabilization |
-| [Tensor semiring](ProjectiveModules/KTheory/TensorProduct.lean) | Canonical commutative semiring on finite-projective right-module classes over commutative rings, including zero rings; direct-sum addition, tensor multiplication, regular unit and natural casts, with independent module-carrier universes. K₀ remains additive |
+| [Tensor semiring](ProjectiveModules/KTheory/TensorProduct.lean) | Canonical commutative semiring on finite-projective right-module classes over commutative rings, including zero rings; direct-sum addition, tensor multiplication, regular unit and natural casts, with independent module-carrier universes |
+| [Tensor-product ring on K₀](ProjectiveModules/KTheory/Ring.lean) | Generic Grothendieck commutative ring on the existing K₀ group; bundled class ring homomorphism with the same whole additive map, regular unit, tensor-generator multiplication and regular-module cast formulas. The generic ring universal property permits arbitrary target rings and independent universes |
 | [Opposite-ring duality](ProjectiveModules/KTheory/Dual.lean) | Canonical additive equivalences of class monoids and K₀ over arbitrary rings; normalized right duals, inverse double-opposite transport, regular generators, completion squares and universal extension |
 | [Right-module Morita invariance](ProjectiveModules/KTheory/ModuleEquivalence.lean) | Additive equivalences of projective classes and K₀ along ordinary right-module category equivalences; independent scalar/carrier universes, arbitrary-carrier representative/lift evaluation, inverse, completion and coherence laws |
 | [Matrix classes and K₀](ProjectiveModules/KTheory/Matrix.lean) | Canonical additive equivalences for arbitrary rings and finite nonempty decidable indices; arbitrary-carrier right-row generators, supported inverse corners, index/height independence and completion compatibility |
@@ -515,9 +523,11 @@ comparison coherence, which can report a `privateModule` warning. These
 ordinary commands do not make warnings fatal. The root resolves
 mathlib `83abb3e776bdefcbc447a1e44d0debe4010039e5`, GLG
 `c9705889a85f85cc89d92d21372bb9bc360162c8` and Stable Range
-[`c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e`](https://github.com/FormalFrontier/stable-range/commit/c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e).
-Both latter libraries declare
-the same mathlib revision and Lean `4.34.0-rc2` toolchain as this root.
+[`c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e`](https://github.com/FormalFrontier/stable-range/commit/c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e),
+with Group Theory
+[`e217d21d8e1fa0d1613a7e9bfb035517b1b90d14`](https://github.com/FormalFrontier/group-theory/commit/e217d21d8e1fa0d1613a7e9bfb035517b1b90d14).
+These three libraries declare the same mathlib revision and Lean `4.34.0-rc2`
+toolchain as this root.
 Dependencies are not vendored.
 
 ## Documentation limits
@@ -571,3 +581,6 @@ scalar-first target follows Jujian Zhang's Mathlib change-of-rings
 formalization. These tensor comparison interfaces were contributed by Lens.
 The commuting-idempotent refinement follows Andrew Yang's Mathlib idempotent-family
 interfaces and orthogonality-and-sum criterion.
+The tensor-product K₀ ring reuses this library's projective-class tensor semiring,
+Formal Frontier Group Theory's additive Grothendieck ring and universal property,
+and Alex J. Best and Yaël Dillies' Mathlib completion formalization.
