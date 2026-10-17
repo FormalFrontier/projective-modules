@@ -9,15 +9,16 @@ import ProjectiveModules.KTheory.Rank
 import ProjectiveModules.KTheory.ZeroRing
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Ring.PUnit
-import Mathlib.LinearAlgebra.TensorProduct.Associator
+import Mathlib.Data.Nat.Cast.Basic
 
 /-!
-# Tensor products of regular projective classes
+# Tensor-semiring arithmetic on projective classes
 
-The rational regular class tensors with itself to give the same class, whose
-dimension proves it is nonzero. Over the one-element scalar ring the tensor
-class is zero, using this library's zero-ring class API. The tensor comparison
-is Mathlib's left unit equivalence.
+Over the rationals, natural-number classes multiply three by two to give six,
+and the additive dimension map proves that the result is nonzero. A nested
+raw tensor computation also exercises the associativity, commutativity, unit,
+distribution and scaling API, followed by the existing additive completion map.
+Over the one-element scalar ring, the semiring unit is zero.
 -/
 
 public section
@@ -25,25 +26,47 @@ public section
 namespace KTheory.ProjectiveClass
 
 example :
-    tensorMul ℚ (of ℚ ℚᵐᵒᵖ) (of ℚ ℚᵐᵒᵖ) = of ℚ ℚᵐᵒᵖ ∧
-      of ℚ ℚᵐᵒᵖ ≠ 0 := by
-  constructor
-  · rw [tensorMul_of_module]
-    exact of_eq_of_equiv ℚ _ (TensorProduct.lid ℚᵐᵒᵖ ℚᵐᵒᵖ)
-  · intro h
-    have h' : (1 : ℕ) = 0 := by
-      simpa only [finrankHom_of_self, map_zero] using congrArg (finrankHom ℚ) h
-    exact one_ne_zero h'
-
-section
-
-attribute [local instance] Module.Finite.of_finite
+    (K0.ofClass ℚ : ProjectiveClass ℚ →+ K0 ℚ)
+      (tensorMul ℚ
+        (tensorMul ℚ (3 • of ℚ ℚᵐᵒᵖ) (of ℚ ℚᵐᵒᵖ))
+        (tensorMul ℚ (of ℚ ℚᵐᵒᵖ) (2 • of ℚ ℚᵐᵒᵖ))) =
+      6 • K0.of ℚ ℚᵐᵒᵖ := by
+  have h :
+      tensorMul ℚ
+        (tensorMul ℚ (3 • of ℚ ℚᵐᵒᵖ) (of ℚ ℚᵐᵒᵖ))
+        (tensorMul ℚ (of ℚ ℚᵐᵒᵖ) (2 • of ℚ ℚᵐᵒᵖ)) =
+          6 • of ℚ ℚᵐᵒᵖ := by
+    rw [tensorMul_assoc, regular_tensorMul, regular_tensorMul, tensorMul_comm]
+    rw [show (6 : ℕ) = 3 + 3 from rfl, add_nsmul, two_nsmul,
+      add_tensorMul, regular_tensorMul]
+  rw [h]
+  simpa only [K0.ofClass_of] using
+    (K0.ofClass ℚ : ProjectiveClass ℚ →+ K0 ℚ).map_nsmul 6 (of ℚ ℚᵐᵒᵖ)
 
 example :
-    tensorMul PUnit.{1} (of PUnit.{1} PUnit.{1}ᵐᵒᵖ)
-      (of PUnit.{1} PUnit.{1}ᵐᵒᵖ) = 0 := by
-  rw [tensorMul_of_module, of_eq_zero_of_subsingleton]
+    ((3 : ℕ) : ProjectiveClass ℚ) * ((2 : ℕ) : ProjectiveClass ℚ) =
+        ((6 : ℕ) : ProjectiveClass ℚ) ∧
+      ((6 : ℕ) : ProjectiveClass ℚ) ≠ 0 := by
+  constructor
+  · exact (Nat.cast_mul 3 2).symm
+  · intro h
+    have hdim : (6 : ℕ) = 0 := by
+      calc
+        (6 : ℕ) = 6 • (finrankHom ℚ) (of ℚ ℚᵐᵒᵖ) := by
+          simp only [finrankHom_of_self, Nat.nsmul_eq_mul, mul_one]
+        _ = (finrankHom ℚ) (6 • of ℚ ℚᵐᵒᵖ) := by
+          exact ((finrankHom ℚ).map_nsmul 6 (of ℚ ℚᵐᵒᵖ)).symm
+        _ = (finrankHom ℚ) ((6 : ℕ) : ProjectiveClass ℚ) :=
+          congrArg (finrankHom ℚ) (natCast_eq_nsmul ℚ 6).symm
+        _ = (finrankHom ℚ) 0 := congrArg (finrankHom ℚ) h
+        _ = 0 := (finrankHom ℚ).map_zero
+    exact (Nat.succ_ne_zero 5) hdim
 
-end
+example (R : Type*) [CommRing R] (n : ℕ) (a : ProjectiveClass R) :
+    (n : ProjectiveClass R) * (a + 0) + a = (n + 1) • a := by
+  simp [add_mul]
+
+example : (1 : ProjectiveClass PUnit.{1}) = 0 :=
+  Subsingleton.elim _ _
 
 end KTheory.ProjectiveClass

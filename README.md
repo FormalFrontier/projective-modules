@@ -191,11 +191,16 @@ examples and qualifications; links below go to the corresponding result families
   to any ring are independent of the scalar homomorphism. Zero-ring objects collapse.
   Isomorphism-invariant functions descend to class functions, and preservation of zero
   and direct sum bundles this descent as an additive map.
-- **[Tensor products of projective classes](ProjectiveModules/KTheory/TensorProduct.lean):**
-  over a commutative ring, `ProjectiveClass.tensorMul` sends the classes of right modules
-  `M` and `N` to the class of `M ⊗[Rᵐᵒᵖ] N`, allowing independent carrier universes and
-  zero rings. Tensor multiplication is a binary function on the direct-sum class monoid,
-  not a semiring or ring structure.
+- **[Tensor semiring of projective classes](ProjectiveModules/KTheory/TensorProduct.lean):**
+  for every commutative ring `R`, `ProjectiveClass R` has a canonical `CommSemiring`
+  instance with direct-sum addition and tensor multiplication. On finite projective
+  right modules in independent carrier universes, multiplication gives the class of
+  `M ⊗[Rᵐᵒᵖ] N`. Right actions are represented by left `Rᵐᵒᵖ`-module structures;
+  the unit is the regular right-module class `of R Rᵐᵒᵖ`, and natural-number casts
+  use the direct-sum monoid's scaling of that unit. This is the class-semiring
+  construction of Weibel, *The K-book*, II §2, extended to include the zero ring.
+  `K0 R` remains the additive Grothendieck group; no K₀ multiplication or ring
+  structure is provided.
 - **[K₀ trace naturality](ProjectiveModules/KTheory/TraceNaturality.lean):**
   for arbitrary rings `R`, `S` in independent universes and every unital
   `f : R →+* S`, `KTheory.K0.traceModCommutators_map` identifies trace after
@@ -447,6 +452,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Finite stabilization](ProjectiveModules/Module/FiniteStabilization.lean) | Replace a finite projective common stabilizer by a common standard finite free one; no hypotheses on the two ambient modules |
 | [Right regular module](ProjectiveModules/Module/RightRegular.lean) | Canonical opposite-scalar free and finite instances on the ordinary semiring carrier, including zero semirings |
 | [Right-module K₀](ProjectiveModules/KTheory/K0.lean), [stabilization](ProjectiveModules/KTheory/Stabilization.lean) | Ring-sized projective class monoid and group completion; arbitrary-universe module generators, descent/universal properties, difference representatives and common finite-projective or finite-free stabilization |
+| [Tensor semiring](ProjectiveModules/KTheory/TensorProduct.lean) | Canonical commutative semiring on finite-projective right-module classes over commutative rings, including zero rings; direct-sum addition, tensor multiplication, regular unit and natural casts, with independent module-carrier universes. K₀ remains additive |
 | [Opposite-ring duality](ProjectiveModules/KTheory/Dual.lean) | Canonical additive equivalences of class monoids and K₀ over arbitrary rings; normalized right duals, inverse double-opposite transport, regular generators, completion squares and universal extension |
 | [Right-module Morita invariance](ProjectiveModules/KTheory/ModuleEquivalence.lean) | Additive equivalences of projective classes and K₀ along ordinary right-module category equivalences; independent scalar/carrier universes, arbitrary-carrier representative/lift evaluation, inverse, completion and coherence laws |
 | [Matrix classes and K₀](ProjectiveModules/KTheory/Matrix.lean) | Canonical additive equivalences for arbitrary rings and finite nonempty decidable indices; arbitrary-carrier right-row generators, supported inverse corners, index/height independence and completion compatibility |
