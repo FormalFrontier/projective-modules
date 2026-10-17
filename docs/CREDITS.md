@@ -87,3 +87,12 @@ finite-projective model formalizations.
 
 Lens suggested the rational zero-module example in degree zero showing that
 exterior-power vanishing requires a strict stalk-rank bound, not a nonstrict one.
+
+The continuous scalar endomorphism equivalence and its characteristic API were
+formalized by Formal Frontier Agents. They follow Prism's canonical algebraic
+scalar endomorphism equivalence in Projective Modules rather than a separate
+algebraic existence proof. The topology arguments reuse Mathlib's homothety
+family, scalar-field continuous linear equivalence, bounded-convergence topology
+and closed-kernel continuity for linear forms; the Hausdorff line argument also
+supplies the given module topology. No completeness or norm on the line is
+needed, and no vector or frame is supplied by the caller.

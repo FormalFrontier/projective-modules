@@ -53,6 +53,10 @@ examples and qualifications; links below go to the corresponding result families
   a Hausdorff invertible topological vector space over a nontrivially normed field
   has the module topology on its given space. No completeness of the field or
   norm on the vector space is assumed; scalar and carrier universes are independent.
+  Scalar multiplication gives `ContinuousLinearMap.scalarEndEquiv`, a continuous
+  linear equivalence from the field to its continuous endomorphisms with bounded
+  convergence. Its inverse is the canonical algebraic scalar, with action and
+  algebraic-comparison laws; no input vector, frame or inverse is required.
 - **[Partial trace](ProjectiveModules/Module/Trace/Partial.lean):** over a commutative
   semiring `R`, contraction in a finite-projective tensor factor `M` defines an
   `R`-linear operator from maps `M ⊗[R] N →ₗ[R] M ⊗[R] P` to maps `N →ₗ[R] P`.
@@ -347,7 +351,7 @@ aggregate import.
 | Area | Interfaces and scope |
 | --- | --- |
 | [Dual](ProjectiveModules/Dual/BaseChange.lean), [Contraction](ProjectiveModules/Contraction/BaseChange.lean), [Invertible](ProjectiveModules/Invertible/OfRankOne.lean) | Dual/evaluation base change, rank-one iff, scalar endomorphisms and finite-summand cancellation |
-| [Invertible module topologies](ProjectiveModules/Invertible/Topology.lean) | `Module.Invertible.isModuleTopology`: the given topology of a Hausdorff invertible topological vector space over a nontrivially normed field is its module topology, without field completeness |
+| [Invertible module topologies and continuous endomorphisms](ProjectiveModules/Invertible/Topology.lean) | `Module.Invertible.isModuleTopology` identifies the given module topology; `ContinuousLinearMap.scalarEndEquiv` identifies the scalar field with continuous endomorphisms in bounded convergence. Hausdorff invertible topological vector spaces over nontrivially normed fields, with independent scalar/carrier universes and no completeness, norm or chosen frame |
 | [Bidual evaluation](ProjectiveModules/Module/Bidual.lean) | Ordinary-coefficient bidual equivalence for finite projective semiring modules; forward/inverse evaluation, naturality and coefficient-preserving commutative comparison |
 | [Exterior algebra](ProjectiveModules/ExteriorAlgebra/BaseChange.lean), [exterior powers](ProjectiveModules/ExteriorPower/DirectSum.lean) | Full algebra base change; projective powers, determinants/top powers and binary fixed-degree Sum Formula |
 | [Homogeneous exterior base change](ProjectiveModules/ExteriorPower/BaseChange.lean) | `ExteriorAlgebra.equivBaseChange_map_exteriorPower`: image equality with the scalar-extended homogeneous submodule, for arbitrary degree and independent ring/carrier universes |

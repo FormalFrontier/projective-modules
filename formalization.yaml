@@ -436,6 +436,16 @@ status:
         over a nontrivially normed field is its module topology. Scalar and
         carrier universes are independent; neither field completeness nor a
         norm on the vector space is assumed.
+    - declaration: "ContinuousLinearMap.scalarEndEquiv"
+      file: "ProjectiveModules/Invertible/Topology.lean"
+      note: >-
+        Scalar multiplication is a continuous linear equivalence from a
+        nontrivially normed field to the bounded-convergence continuous
+        endomorphisms of a Hausdorff invertible topological vector space.
+        The original topology and independent scalar/carrier universes are
+        retained, with no completeness, norm, input vector, frame or inverse.
+        Forward action, inverse action on every vector, algebraic comparison
+        and agreement with the scalar-field homothety equivalence are provided.
     - declaration: "Module.Free.countableFinsuppEquivOfProdFiniteFinsuppEquiv"
       file: "ProjectiveModules/Free/CountableCancellation.lean"
       note: "Cancel a finite free summand in countably infinite free coordinates; not arbitrary cancellation."

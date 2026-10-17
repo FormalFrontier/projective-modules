@@ -137,6 +137,12 @@ private theorem ulift_down_coordinate (κ : Type u) [NontriviallyNormedField κ]
     Module.Invertible.isModuleTopology κ (ULift.{max u v + 1} κ)
   exact ⟨IsModuleTopology.continuous_of_linearMap _, rfl, one_ne_zero⟩
 
+-- The scalar-field comparison computes the inverse on the identity endomorphism.
+private theorem scalar_end_inverse_id (κ : Type u) [NontriviallyNormedField κ] :
+    (ContinuousLinearMap.scalarEndEquiv κ κ).symm (ContinuousLinearMap.id κ κ) = 1 := by
+  rw [ContinuousLinearMap.scalarEndEquiv_self]
+  rfl
+
 private theorem arbitrary_integer_finsupp_submodule
     (N : Submodule ℤ (ℕ →₀ ℤ)) : Module.CountablyGenerated ℤ N :=
   Module.CountablyGenerated.submodule_of_isNoetherianRing
