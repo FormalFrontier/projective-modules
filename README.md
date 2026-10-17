@@ -50,6 +50,12 @@ examples and qualifications; links below go to the corresponding result families
   to the homogeneous exterior power of `S ⊗[R] P` in that fiber's rank.
   The tensor product of the determinant lines of two finite projective modules
   is isomorphic to the determinant line of their product.
+- **[K₀ determinant](ProjectiveModules/KTheory/Determinant.lean):** for every
+  commutative ring `R`, `KTheory.K0.determinantHom R` is the surjective additive
+  homomorphism from right-module K₀ to the additively written Picard group.
+  Its value on a finite projective module is its determinant-line class,
+  transported from `Rᵐᵒᵖ` to `R`. This normalization determines it uniquely;
+  carrier universes are independent and the zero ring is included.
 - **[Duality and trace](docs/Overview.md#duality-biduality-and-trace):** finite-projective
   dual/evaluation base change; rank-one invertibles including zero rings; cancellation
   only of common finite free summands. Finite-projective left-module biduality uses ordinary coefficients
