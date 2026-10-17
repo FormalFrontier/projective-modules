@@ -89,6 +89,37 @@ theorem rankAtStalk_eq_rankFiberRank_of_mem (i : rankFiberIndex R M)
     rankAtStalk (R := R) M p = rankFiberRank R M i :=
   (Function.Fiber.mem_iff_eq_image (rankLocallyConstant R M) p i).1 hp
 
+/-- If the stalk rank is constant, every nonempty rank fiber has that rank. -/
+theorem rankFiberRank_eq_of_rankAtStalk_eq (i : rankFiberIndex R M) {n : ℕ}
+    (h : ∀ p : PrimeSpectrum R, rankAtStalk (R := R) M p = n) :
+    rankFiberRank R M i = n := by
+  obtain ⟨p, hp⟩ := Function.Fiber.fiber_nonempty (rankLocallyConstant R M) i
+  exact (rankAtStalk_eq_rankFiberRank_of_mem R M i p hp).symm.trans (h p)
+
+/-- A rank-fiber idempotent is one exactly when its fiber contains every prime. -/
+theorem rankFiberIdempotent_eq_one_iff (i : rankFiberIndex R M) :
+    rankFiberIdempotent R M i = 1 ↔ ∀ p : PrimeSpectrum R, p ∈ i.1 := by
+  constructor
+  · intro h p
+    apply (rankFiberIdempotent_notMem_iff R M i p).1
+    rw [h]
+    exact p.asIdeal.one_notMem
+  · intro h
+    have htop : rankFiberClopen R M i = ⊤ := by
+      apply TopologicalSpace.Clopens.ext
+      exact Set.eq_univ_of_forall h
+    unfold rankFiberIdempotent
+    rw [htop, PrimeSpectrum.isIdempotentElemEquivClopens_symm_top]
+
+/-- If the stalk rank is constant, every rank-fiber idempotent is one. -/
+theorem rankFiberIdempotent_eq_one_of_rankAtStalk_eq (i : rankFiberIndex R M) {n : ℕ}
+    (h : ∀ p : PrimeSpectrum R, rankAtStalk (R := R) M p = n) :
+    rankFiberIdempotent R M i = 1 := by
+  apply (rankFiberIdempotent_eq_one_iff R M i).2
+  intro p
+  apply (Function.Fiber.mem_iff_eq_image (rankLocallyConstant R M) p i).2
+  exact (h p).trans (rankFiberRank_eq_of_rankAtStalk_eq R M i h).symm
+
 private theorem rankFiberIdempotents_orthogonal :
     OrthogonalIdempotents (rankFiberIdempotent R M) where
   idem := rankFiberIdempotent_isIdempotent R M

@@ -5,6 +5,8 @@ formalizations. They use Mathlib's exterior-power maps and
 degree-zero and degree-one equivalences by Sophie Morel and Joël Riou,
 tensor-product constructions by Kenny Lau and Mario Carneiro, stalk-rank
 formalization by Andrew Yang, and invertible-module formalization by Junyan Xu.
+The comparison over an arbitrary coefficient algebra uses the exterior-algebra
+grading formalized by Eric Wieser in Mathlib to split each homogeneous inclusion.
 The determinant-line proofs compose these providers with the rank-fiber quotient
 rings and their restricted scalar actions.
 

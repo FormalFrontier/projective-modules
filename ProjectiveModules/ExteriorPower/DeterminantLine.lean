@@ -7,12 +7,17 @@ Authors: Formal Frontier Agents
 module
 
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
+import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.LinearAlgebra.Pi
+public import Mathlib.RingTheory.Finiteness.Prod
 public import Mathlib.RingTheory.PicardGroup
 public import ProjectiveModules.Module.RankFiberDecomposition
 public import ProjectiveModules.ExteriorPower.Invertible
+import ProjectiveModules.ExteriorPower.BaseChange
+import ProjectiveModules.ExteriorPower.ProdPairing
 import ProjectiveModules.Module.Product
+import ProjectiveModules.Module.ComponentwiseFree
 import ProjectiveModules.Invertible.OfRankOne
 
 /-!
@@ -28,6 +33,8 @@ Isomorphic modules have isomorphic determinant lines, and scalar extension to a
 rank-fiber ring recovers the corresponding top exterior power. The zero module
 has determinant line isomorphic to the regular module; the determinant line of
 an invertible module is isomorphic to the module itself.
+The tensor product of two determinant lines is isomorphic to the determinant
+line of the product of the underlying finite projective modules.
 
 Each component is an invertible top exterior power. A componentwise evaluation
 pairing assembles these into an invertible module over the original ring.
@@ -41,9 +48,10 @@ The construction uses the rank-fiber decomposition and Mathlib's exterior-power,
 tensor-product and invertible-module interfaces. In particular, the final step
 uses `Module.Invertible.right`, from the invertible-module formalization by
 Junyan Xu. The rank-fiber decomposition and the exterior-algebra base-change
-formalization are credited in `docs/CREDITS.md`. The degree-zero and degree-one
-comparisons use Mathlib's exterior-power equivalences by Sophie Morel and
-Joël Riou.
+formalization are credited in `docs/CREDITS.md`. The comparison with an arbitrary
+coefficient algebra uses Mathlib's exterior-algebra grading by Eric Wieser to
+split the homogeneous inclusion. The degree-zero and degree-one comparisons
+use Mathlib's exterior-power equivalences by Sophie Morel and Joël Riou.
 -/
 
 @[expose] public section
@@ -564,11 +572,70 @@ theorem determinantLine_component (i : rankFiberIndex R P) :
     simp [s, q]
   exact ⟨LinearEquiv.ofBijective f ⟨hleft.injective, hright.surjective⟩⟩
 
+/-- Scalar extension supported on one rank fiber recovers the top exterior power
+of the scalar-extended module. The support condition says that the fiber's
+idempotent maps to one in the coefficient ring. -/
+theorem determinantLine_component_baseChange (S : Type w) [CommRing S] [Algebra R S]
+    (i : rankFiberIndex R P) (hi : algebraMap R S (rankFiberIdempotent R P i) = 1) :
+    Nonempty ((S ⊗[R] DeterminantLine R P) ≃ₗ[S]
+      (⋀[S]^(rankFiberRank R P i) (S ⊗[R] P))) := by
+  classical
+  -- The support condition factors the coefficient map through this fiber ring.
+  have hker : Ideal.span {1 - rankFiberIdempotent R P i} ≤
+      RingHom.ker (algebraMap R S) := by
+    apply (Ideal.span_singleton_le_iff_mem (I := RingHom.ker (algebraMap R S))).mpr
+    rw [RingHom.mem_ker, map_sub, map_one, hi, sub_self]
+  let q : rankFiberRing R P i →ₐ[R] S :=
+    Ideal.Quotient.liftₐ _ (Algebra.ofId R S)
+      (fun r hr ↦ RingHom.mem_ker.mp (hker hr))
+  letI : Algebra (rankFiberRing R P i) S := q.toRingHom.toAlgebra
+  letI : IsScalarTower R (rankFiberRing R P i) S := IsScalarTower.of_algHom q
+  -- Recover the selected component before extending its coefficients to S.
+  let componentEquiv := Classical.choice (determinantLine_component R P i)
+  let determinantEquiv : S ⊗[R] DeterminantLine R P ≃ₗ[S]
+      S ⊗[rankFiberRing R P i] DeterminantLineComponent R P i :=
+    (TensorProduct.AlgebraTensorModule.cancelBaseChange R (rankFiberRing R P i)
+      S S (DeterminantLine R P)).symm.trans
+        (componentEquiv.baseChange (rankFiberRing R P i) S)
+  let moduleEquiv : S ⊗[rankFiberRing R P i] rankFiberModule R P i ≃ₗ[S]
+      S ⊗[R] P :=
+    TensorProduct.AlgebraTensorModule.cancelBaseChange R (rankFiberRing R P i) S S P
+  let A := rankFiberRing R P i
+  let M := rankFiberModule R P i
+  let n := rankFiberRank R P i
+  -- Homogeneous inclusion is split, so tensoring it needs no flatness assumption.
+  let retract : ExteriorAlgebra A M →ₗ[A] (⋀[A]^n M) :=
+    (DirectSum.component A ℕ (fun k : ℕ ↦ ⋀[A]^k M) n).comp
+      (ExteriorAlgebra.GradedAlgebra.liftι A M).toLinearMap
+  have hsplit : retract.comp (⋀[A]^n M).subtype = LinearMap.id := by
+    apply LinearMap.ext
+    intro x
+    change DirectSum.component A ℕ (fun k : ℕ ↦ ⋀[A]^k M) n
+      (ExteriorAlgebra.GradedAlgebra.liftι A M x) = x
+    rw [ExteriorAlgebra.GradedAlgebra.liftι_eq]
+    simpa only [DirectSum.lof_eq_of] using
+      (DirectSum.component.lof_self A (M := fun k : ℕ ↦ ⋀[A]^k M) n x)
+  have hsplitS : (retract.baseChange S).comp ((⋀[A]^n M).subtype.baseChange S) =
+      LinearMap.id := by
+    rw [← LinearMap.baseChange_comp, hsplit, LinearMap.baseChange_id]
+  let rangeEquiv : (S ⊗[A] (⋀[A]^n M)) ≃ₗ[S] (⋀[A]^n M).baseChange S :=
+    LinearEquiv.ofLeftInverse
+      (f := (⋀[A]^n M).subtype.baseChange S) (g := retract.baseChange S)
+      (fun x ↦ DFunLike.congr_fun hsplitS x)
+  let e := (ExteriorAlgebra.equivBaseChange (R := A) (S := S) (M := M)).toLinearEquiv
+  -- The exterior-algebra comparison identifies the image of each fixed degree.
+  let imageEquiv : (⋀[S]^n (S ⊗[A] M)) ≃ₗ[S] (⋀[A]^n M).baseChange S :=
+    (Submodule.equivMapOfInjective e.toLinearMap e.injective _).trans
+      (LinearEquiv.ofEq _ _
+        (ExteriorAlgebra.equivBaseChange_map_exteriorPower (R := A) (S := S) (M := M) n))
+  let carrierEquiv : (S ⊗[A] (⋀[A]^n M)) ≃ₗ[S] (⋀[S]^n (S ⊗[A] M)) :=
+    rangeEquiv.trans imageEquiv.symm
+  exact ⟨determinantEquiv.trans (carrierEquiv.trans (exteriorPowerCongr n moduleEquiv))⟩
+
 private theorem rankFiberRank_eq_of_forall_rankAtStalk_eq (n : ℕ)
     (h : ∀ p : PrimeSpectrum R, rankAtStalk (R := R) P p = n)
     (i : rankFiberIndex R P) : rankFiberRank R P i = n := by
-  obtain ⟨p, hp⟩ := Function.Fiber.fiber_nonempty (rankLocallyConstant R P) i
-  exact (rankAtStalk_eq_rankFiberRank_of_mem R P i p hp).symm.trans (h p)
+  exact rankFiberRank_eq_of_rankAtStalk_eq R P i h
 
 -- The quotient-ring action in each component agrees with restriction of scalars.
 private def determinantLinePiEquiv (N : rankFiberIndex R P → Type w)
@@ -632,5 +699,230 @@ theorem determinantLine_invertibleModule (L : Type v) [AddCommGroup L] [Module R
   exact ⟨(determinantLinePiEquiv R L (fun i ↦ rankFiberModule R L i) e).trans
     (rankFiberLinearEquiv R L).symm⟩
 
+
+/-- The tensor product of determinant lines is isomorphic to the determinant line
+of the product of two finite projective modules.
+
+For the determinant construction, see C. A. Weibel,
+*The K-book: An Introduction to Algebraic K-theory*. -/
+theorem determinantLine_prod (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q] :
+    Nonempty ((DeterminantLine R P ⊗[R] DeterminantLine R Q) ≃ₗ[R]
+      DeterminantLine R (P × Q)) := by
+  classical
+  let T := (rankFiberIndex R P × rankFiberIndex R Q) × rankFiberIndex R (P × Q)
+  let h : T → R := fun t ↦
+    (rankFiberIdempotent R P t.1.1 * rankFiberIdempotent R Q t.1.2) *
+      rankFiberIdempotent R (P × Q) t.2
+  have hh : CompleteOrthogonalIdempotents h :=
+    ((rankFiberIdempotents_complete R P).prod_mul
+      (rankFiberIdempotents_complete R Q) (fun _ _ ↦ Commute.all _ _)).prod_mul
+        (rankFiberIdempotents_complete R (P × Q)) (fun _ _ ↦ Commute.all _ _)
+  let S : T → Type u := fun t ↦ R ⧸ Ideal.span {1 - h t}
+  have hh_one (t : T) : algebraMap R (S t) (h t) = 1 := by
+    have hz : algebraMap R (S t) (1 - h t) = 0 :=
+      Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.subset_span (Set.mem_singleton _))
+    exact (sub_eq_zero.mp (by simpa only [map_sub, map_one] using hz)).symm
+  -- Multiplying the joint idempotent by any of its factors fixes it.
+  have hsupport (t : T) (a : R) (ha : a * h t = h t) :
+      algebraMap R (S t) a = 1 := by
+    calc
+      algebraMap R (S t) a = algebraMap R (S t) a * algebraMap R (S t) (h t) := by
+        rw [hh_one t, mul_one]
+      _ = algebraMap R (S t) (a * h t) := (map_mul _ _ _).symm
+      _ = 1 := by rw [ha, hh_one t]
+  have hP_one (t : T) :
+      algebraMap R (S t) (rankFiberIdempotent R P t.1.1) = 1 := by
+    apply hsupport t (rankFiberIdempotent R P t.1.1)
+    dsimp [h]
+    calc
+      rankFiberIdempotent R P t.1.1 *
+          ((rankFiberIdempotent R P t.1.1 * rankFiberIdempotent R Q t.1.2) *
+            rankFiberIdempotent R (P × Q) t.2) =
+          ((rankFiberIdempotent R P t.1.1 * rankFiberIdempotent R P t.1.1) *
+            rankFiberIdempotent R Q t.1.2) * rankFiberIdempotent R (P × Q) t.2 := by
+        ac_rfl
+      _ = _ := by rw [(rankFiberIdempotent_isIdempotent R P t.1.1).eq]
+  have hQ_one (t : T) :
+      algebraMap R (S t) (rankFiberIdempotent R Q t.1.2) = 1 := by
+    apply hsupport t (rankFiberIdempotent R Q t.1.2)
+    dsimp [h]
+    calc
+      rankFiberIdempotent R Q t.1.2 *
+          ((rankFiberIdempotent R P t.1.1 * rankFiberIdempotent R Q t.1.2) *
+            rankFiberIdempotent R (P × Q) t.2) =
+          (rankFiberIdempotent R P t.1.1 *
+            (rankFiberIdempotent R Q t.1.2 * rankFiberIdempotent R Q t.1.2)) *
+              rankFiberIdempotent R (P × Q) t.2 := by
+        ac_rfl
+      _ = _ := by rw [(rankFiberIdempotent_isIdempotent R Q t.1.2).eq]
+  have hPQ_one (t : T) :
+      algebraMap R (S t) (rankFiberIdempotent R (P × Q) t.2) = 1 := by
+    apply hsupport t (rankFiberIdempotent R (P × Q) t.2)
+    dsimp [h]
+    calc
+      rankFiberIdempotent R (P × Q) t.2 *
+          ((rankFiberIdempotent R P t.1.1 * rankFiberIdempotent R Q t.1.2) *
+            rankFiberIdempotent R (P × Q) t.2) =
+          (rankFiberIdempotent R P t.1.1 * rankFiberIdempotent R Q t.1.2) *
+            (rankFiberIdempotent R (P × Q) t.2 *
+              rankFiberIdempotent R (P × Q) t.2) := by
+        ac_rfl
+      _ = _ := by rw [(rankFiberIdempotent_isIdempotent R (P × Q) t.2).eq]
+  -- The support maps factor through the original rank-fiber quotient rings.
+  have hP_rank (t : T) :
+      rankAtStalk (R := S t) (S t ⊗[R] P) =
+        fun _ ↦ rankFiberRank R P t.1.1 := by
+    let A := rankFiberRing R P t.1.1
+    let f : A →ₐ[R] S t := Ideal.Quotient.liftₐ
+      (Ideal.span {1 - rankFiberIdempotent R P t.1.1}) (Algebra.ofId R (S t)) (by
+        intro a ha
+        obtain ⟨b, rfl⟩ := Ideal.mem_span_singleton'.mp ha
+        change algebraMap R (S t) (b * (1 - rankFiberIdempotent R P t.1.1)) = 0
+        rw [map_mul, map_sub, map_one, hP_one t, sub_self, mul_zero])
+    let _ : Algebra A (S t) := f.toRingHom.toAlgebra
+    let _ : IsScalarTower R A (S t) := IsScalarTower.of_algHom f
+    let e : (S t ⊗[A] rankFiberModule R P t.1.1) ≃ₗ[S t] (S t ⊗[R] P) :=
+      TensorProduct.AlgebraTensorModule.cancelBaseChange R A (S t) (S t) P
+    calc
+      rankAtStalk (R := S t) (S t ⊗[R] P) =
+          rankAtStalk (R := S t) (S t ⊗[A] rankFiberModule R P t.1.1) :=
+        (rankAtStalk_eq_of_equiv e).symm
+      _ = fun _ ↦ rankFiberRank R P t.1.1 := by
+        funext p
+        rw [rankAtStalk_baseChange]
+        exact rankAtStalk_rankFiberModule R P t.1.1 (p.comap (algebraMap A (S t)))
+  have hQ_rank (t : T) :
+      rankAtStalk (R := S t) (S t ⊗[R] Q) =
+        fun _ ↦ rankFiberRank R Q t.1.2 := by
+    let A := rankFiberRing R Q t.1.2
+    let f : A →ₐ[R] S t := Ideal.Quotient.liftₐ
+      (Ideal.span {1 - rankFiberIdempotent R Q t.1.2}) (Algebra.ofId R (S t)) (by
+        intro a ha
+        obtain ⟨b, rfl⟩ := Ideal.mem_span_singleton'.mp ha
+        change algebraMap R (S t) (b * (1 - rankFiberIdempotent R Q t.1.2)) = 0
+        rw [map_mul, map_sub, map_one, hQ_one t, sub_self, mul_zero])
+    let _ : Algebra A (S t) := f.toRingHom.toAlgebra
+    let _ : IsScalarTower R A (S t) := IsScalarTower.of_algHom f
+    let e : (S t ⊗[A] rankFiberModule R Q t.1.2) ≃ₗ[S t] (S t ⊗[R] Q) :=
+      TensorProduct.AlgebraTensorModule.cancelBaseChange R A (S t) (S t) Q
+    calc
+      rankAtStalk (R := S t) (S t ⊗[R] Q) =
+          rankAtStalk (R := S t) (S t ⊗[A] rankFiberModule R Q t.1.2) :=
+        (rankAtStalk_eq_of_equiv e).symm
+      _ = fun _ ↦ rankFiberRank R Q t.1.2 := by
+        funext p
+        rw [rankAtStalk_baseChange]
+        exact rankAtStalk_rankFiberModule R Q t.1.2 (p.comap (algebraMap A (S t)))
+  have hPQ_rank (t : T) :
+      rankAtStalk (R := S t) (S t ⊗[R] (P × Q)) =
+        fun _ ↦ rankFiberRank R (P × Q) t.2 := by
+    let A := rankFiberRing R (P × Q) t.2
+    let f : A →ₐ[R] S t := Ideal.Quotient.liftₐ
+      (Ideal.span {1 - rankFiberIdempotent R (P × Q) t.2}) (Algebra.ofId R (S t)) (by
+        intro a ha
+        obtain ⟨b, rfl⟩ := Ideal.mem_span_singleton'.mp ha
+        change algebraMap R (S t) (b * (1 - rankFiberIdempotent R (P × Q) t.2)) = 0
+        rw [map_mul, map_sub, map_one, hPQ_one t, sub_self, mul_zero])
+    let _ : Algebra A (S t) := f.toRingHom.toAlgebra
+    let _ : IsScalarTower R A (S t) := IsScalarTower.of_algHom f
+    let e : (S t ⊗[A] rankFiberModule R (P × Q) t.2) ≃ₗ[S t]
+        (S t ⊗[R] (P × Q)) :=
+      TensorProduct.AlgebraTensorModule.cancelBaseChange R A (S t) (S t) (P × Q)
+    calc
+      rankAtStalk (R := S t) (S t ⊗[R] (P × Q)) =
+          rankAtStalk (R := S t) (S t ⊗[A] rankFiberModule R (P × Q) t.2) :=
+        (rankAtStalk_eq_of_equiv e).symm
+      _ = fun _ ↦ rankFiberRank R (P × Q) t.2 := by
+        funext p
+        rw [rankAtStalk_baseChange]
+        exact rankAtStalk_rankFiberModule R (P × Q) t.2 (p.comap (algebraMap A (S t)))
+  let ringEquiv : R ≃ₐ[R] ∀ t : T, S t :=
+    AlgEquiv.ofBijective
+      (AlgHom.pi fun t ↦ Ideal.Quotient.mkₐ R (Ideal.span {1 - h t})) hh.bijective_pi
+  -- Reconstruct the two carriers with the coefficient on the left of each tensor.
+  let sourceEquiv :
+      (DeterminantLine R P ⊗[R] DeterminantLine R Q) ≃ₗ[R]
+        ∀ t : T, S t ⊗[R] (DeterminantLine R P ⊗[R] DeterminantLine R Q) :=
+    (TensorProduct.lid R (DeterminantLine R P ⊗[R] DeterminantLine R Q)).symm ≪≫ₗ
+      TensorProduct.AlgebraTensorModule.congr ringEquiv.toLinearEquiv
+        (LinearEquiv.refl R (DeterminantLine R P ⊗[R] DeterminantLine R Q)) ≪≫ₗ
+      TensorProduct.piLeft R (DeterminantLine R P ⊗[R] DeterminantLine R Q) S
+  let targetEquiv :
+      DeterminantLine R (P × Q) ≃ₗ[R] ∀ t : T, S t ⊗[R] DeterminantLine R (P × Q) :=
+    (TensorProduct.lid R (DeterminantLine R (P × Q))).symm ≪≫ₗ
+      TensorProduct.AlgebraTensorModule.congr ringEquiv.toLinearEquiv
+        (LinearEquiv.refl R (DeterminantLine R (P × Q))) ≪≫ₗ
+      TensorProduct.piLeft R (DeterminantLine R (P × Q)) S
+  have hdegree (t : T) [Nontrivial (S t)] :
+      rankFiberRank R (P × Q) t.2 =
+        rankFiberRank R P t.1.1 + rankFiberRank R Q t.1.2 := by
+    obtain ⟨p⟩ := (inferInstance : Nonempty (PrimeSpectrum (S t)))
+    let e : (S t ⊗[R] (P × Q)) ≃ₗ[S t]
+        (S t ⊗[R] P) × (S t ⊗[R] Q) :=
+      TensorProduct.prodRight R (S t) (S t) P Q
+    calc
+      rankFiberRank R (P × Q) t.2 =
+          rankAtStalk (R := S t) (S t ⊗[R] (P × Q)) p :=
+        (congrFun (hPQ_rank t) p).symm
+      _ = rankAtStalk (R := S t) ((S t ⊗[R] P) × (S t ⊗[R] Q)) p :=
+        congrFun (rankAtStalk_eq_of_equiv e) p
+      _ = rankAtStalk (R := S t) (S t ⊗[R] P) p +
+          rankAtStalk (R := S t) (S t ⊗[R] Q) p :=
+        congrFun (rankAtStalk_prod (S t ⊗[R] P) (S t ⊗[R] Q)) p
+      _ = rankFiberRank R P t.1.1 + rankFiberRank R Q t.1.2 := by
+        rw [hP_rank t, hQ_rank t]
+  have hzero (t : T) [Subsingleton (S t)] :
+      Nonempty ((S t ⊗[R] (DeterminantLine R P ⊗[R] DeterminantLine R Q)) ≃ₗ[S t]
+        (S t ⊗[R] DeterminantLine R (P × Q))) := by
+    let _ : Subsingleton (S t ⊗[R] (DeterminantLine R P ⊗[R] DeterminantLine R Q)) :=
+      Module.subsingleton (S t) (S t ⊗[R] (DeterminantLine R P ⊗[R] DeterminantLine R Q))
+    let _ : Subsingleton (S t ⊗[R] DeterminantLine R (P × Q)) :=
+      Module.subsingleton (S t) (S t ⊗[R] DeterminantLine R (P × Q))
+    exact ⟨LinearEquiv.ofSubsingleton _ _⟩
+  have hlocal (t : T) :
+      Nonempty ((S t ⊗[R] (DeterminantLine R P ⊗[R] DeterminantLine R Q)) ≃ₗ[S t]
+        (S t ⊗[R] DeterminantLine R (P × Q))) := by
+    rcases subsingleton_or_nontrivial (S t) with hs | hn
+    · let _ : Subsingleton (S t) := hs
+      exact hzero t
+    · let _ : Nontrivial (S t) := hn
+      obtain ⟨eP⟩ := determinantLine_component_baseChange (R := R) (P := P)
+        (S := S t) t.1.1 (hP_one t)
+      obtain ⟨eQ⟩ := determinantLine_component_baseChange (R := R) (P := Q)
+        (S := S t) t.1.2 (hQ_one t)
+      obtain ⟨ePQ⟩ := determinantLine_component_baseChange (R := R) (P := P × Q)
+        (S := S t) t.2 (hPQ_one t)
+      let n := rankFiberRank R P t.1.1
+      let m := rankFiberRank R Q t.1.2
+      let eProd : (S t ⊗[R] (P × Q)) ≃ₗ[S t]
+          (S t ⊗[R] P) × (S t ⊗[R] Q) :=
+        TensorProduct.prodRight R (S t) (S t) P Q
+      let eTop : (⋀[S t]^(n + m) ((S t ⊗[R] P) × (S t ⊗[R] Q))) ≃ₗ[S t]
+          (⋀[S t]^(n + m) (S t ⊗[R] (P × Q))) :=
+        LinearEquiv.ofBijective (exteriorPower.map (n + m) eProd.symm.toLinearMap)
+          ⟨exteriorPower.map_injective (n := n + m) eProd.toLinearMap
+              (LinearMap.ext fun x ↦ eProd.apply_symm_apply x),
+            exteriorPower.map_surjective (n := n + m) eProd.symm.surjective⟩
+      let eDegree : (⋀[S t]^(n + m) (S t ⊗[R] (P × Q))) ≃ₗ[S t]
+          (⋀[S t]^(rankFiberRank R (P × Q) t.2) (S t ⊗[R] (P × Q))) :=
+        LinearEquiv.ofEq
+          (ExteriorAlgebra.exteriorPower (S t) (n + m) (S t ⊗[R] (P × Q)))
+          (ExteriorAlgebra.exteriorPower (S t) (rankFiberRank R (P × Q) t.2)
+            (S t ⊗[R] (P × Q)))
+          (congrArg (fun d : ℕ ↦
+            ExteriorAlgebra.exteriorPower (S t) d (S t ⊗[R] (P × Q)))
+            (hdegree t).symm)
+      exact ⟨TensorProduct.AlgebraTensorModule.distribBaseChange R (S t)
+          (DeterminantLine R P) (DeterminantLine R Q) ≪≫ₗ
+        TensorProduct.congr eP eQ ≪≫ₗ
+        LinearEquiv.ofBijective
+          (exteriorPower.prodPairing (S t) (S t ⊗[R] P) (S t ⊗[R] Q) n m)
+          (exteriorPower.bijective_prodPairing_of_rankAtStalk_eq
+            (S t) (S t ⊗[R] P) (S t ⊗[R] Q) n m (hP_rank t) (hQ_rank t)) ≪≫ₗ
+        eTop ≪≫ₗ eDegree ≪≫ₗ ePQ.symm⟩
+  exact ⟨sourceEquiv ≪≫ₗ
+    LinearEquiv.piCongrRight (fun t ↦ (Classical.choice (hlocal t)).restrictScalars R) ≪≫ₗ
+    targetEquiv.symm⟩
 
 end Module

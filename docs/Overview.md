@@ -101,6 +101,40 @@ base change to `Rᵢ` recovers its top exterior component; the zero module has l
 isomorphic to `R`; and an invertible module has line isomorphic to itself. These
 laws return `Nonempty` isomorphism types, not chosen ordered or coherent maps.
 
+The supported-component extension
+`Module.determinantLine_component_baseChange` applies to any commutative
+`R`-algebra `S`. For finite projective `P`, an attained index
+`i : Module.rankFiberIndex R P` and the support condition
+`algebraMap R S (Module.rankFiberIdempotent R P i) = 1` give
+
+```lean
+Nonempty ((S ⊗[R] Module.DeterminantLine R P) ≃ₗ[S]
+  (⋀[S]^(Module.rankFiberRank R P i) (S ⊗[R] P)))
+```
+
+Here `⋀` denotes the homogeneous submodule `ExteriorAlgebra.exteriorPower`.
+The universes of `R`, `S` and `P` are independent. Neither ring is assumed
+nontrivial; `S` need not be flat or finite over `R`, and `P` need not be free or
+have constant rank. No scalar tower or output isomorphism is assumed, and `S`
+may be the zero ring. An index `i` must be supplied; when the spectrum of `R`
+is empty, the theorem does not assert that such an index exists. The conclusion
+asserts existence, not a chosen equivalence or a general comparison with
+`Module.DeterminantLine S (S ⊗[R] P)`. It supplies no coherence, descent,
+product law or Picard- or K-theoretic identification by itself.
+
+The product comparison `Module.determinantLine_prod` applies to two finite
+projective modules `P` and `Q` over the same arbitrary commutative ring `R`:
+
+```lean
+Nonempty ((Module.DeterminantLine R P ⊗[R] Module.DeterminantLine R Q) ≃ₗ[R]
+  Module.DeterminantLine R (P × Q))
+```
+
+The module universes are independent. Rank-zero and zero-ring cases are
+included; neither module needs constant rank. The comparison asserts existence
+of an isomorphism, without choosing a coherent determinant functor or identifying
+a Picard- or K-theoretic map.
+
 ### Duality, biduality and trace
 
 - **Duality and invertibility:** The [finite-projective dual](../ProjectiveModules/Dual/BaseChange.lean)

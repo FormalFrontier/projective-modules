@@ -9,8 +9,10 @@ import ProjectiveModules.ExteriorPower.Invertible
 import ProjectiveModules.ExteriorPower.StalkRank
 import ProjectiveModules.ExteriorPower.DeterminantLine
 import ProjectiveModules.Module.RankFiberDecomposition
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.Real.Basic
 import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.LinearAlgebra.StdBasis
 
@@ -168,5 +170,48 @@ private theorem integerPlane_rankFiberRing_flat
     (i : Module.rankFiberIndex ℤ (Fin 2 → ℤ)) :
     Module.Flat ℤ (Module.rankFiberRing ℤ (Fin 2 → ℤ) i) :=
   Module.rankFiberRing_flat ℤ (Fin 2 → ℤ) i
+
+/-- The rational line has a supported rank-one component after extension to the
+reals; both scalar-extended carriers are real lines. -/
+private theorem rationalLine_real_supportedComponent :
+    ∃ i : Module.rankFiberIndex ℚ ℚ,
+      algebraMap ℚ ℝ (Module.rankFiberIdempotent ℚ ℚ i) = 1 ∧
+      Module.rankFiberRank ℚ ℚ i = 1 ∧
+      Nonempty ((ℝ ⊗[ℚ] Module.DeterminantLine ℚ ℚ) ≃ₗ[ℝ] ℝ) ∧
+      Nonempty ((⋀[ℝ]^(Module.rankFiberRank ℚ ℚ i) (ℝ ⊗[ℚ] ℚ)) ≃ₗ[ℝ] ℝ) := by
+  classical
+  let i : Module.rankFiberIndex ℚ ℚ :=
+    Function.Fiber.mk (Module.rankLocallyConstant ℚ ℚ)
+      (Classical.choice (inferInstance : Nonempty (PrimeSpectrum ℚ)))
+  have hRank : ∀ p : PrimeSpectrum ℚ, Module.rankAtStalk (R := ℚ) ℚ p = 1 :=
+    fun p ↦ congrFun (Module.rankAtStalk_self (R := ℚ)) p
+  have hn : Module.rankFiberRank ℚ ℚ i = 1 :=
+    Module.rankFiberRank_eq_of_rankAtStalk_eq ℚ ℚ i hRank
+  refine ⟨i, ?_, hn, ?_, ?_⟩
+  · rw [Module.rankFiberIdempotent_eq_one_of_rankAtStalk_eq ℚ ℚ i hRank, map_one]
+  · obtain ⟨e⟩ := Module.determinantLine_invertibleModule ℚ ℚ
+    exact ⟨(e.baseChange ℚ ℝ).trans (TensorProduct.AlgebraTensorModule.rid ℚ ℝ ℝ)⟩
+  · rw [hn]
+    exact ⟨(exteriorPower.oneEquiv ℝ (ℝ ⊗[ℚ] ℚ)).trans
+      (TensorProduct.AlgebraTensorModule.rid ℚ ℝ ℝ)⟩
+
+/-- Supported scalar extension of the rational line recovers its degree-one
+homogeneous exterior power over the reals. -/
+private theorem rationalLine_real_component_baseChange :
+    Nonempty ((ℝ ⊗[ℚ] Module.DeterminantLine ℚ ℚ) ≃ₗ[ℝ]
+      (⋀[ℝ]^1 (ℝ ⊗[ℚ] ℚ))) := by
+  obtain ⟨i, hi, hn, _, _⟩ := rationalLine_real_supportedComponent
+  exact Eq.mp
+    (congrArg (fun n : ℕ =>
+      Nonempty ((ℝ ⊗[ℚ] Module.DeterminantLine ℚ ℚ) ≃ₗ[ℝ]
+        (⋀[ℝ]^n (ℝ ⊗[ℚ] ℚ)))) hn)
+    (Module.determinantLine_component_baseChange (R := ℚ) (P := ℚ) (S := ℝ) i hi)
+
+/-- The determinant line of two rational lines is the tensor product of their
+individual determinant lines. -/
+private theorem rationalLine_determinantLine_prod :
+    Nonempty ((Module.DeterminantLine ℚ ℚ ⊗[ℚ] Module.DeterminantLine ℚ ℚ) ≃ₗ[ℚ]
+      Module.DeterminantLine ℚ (ℚ × ℚ)) :=
+  Module.determinantLine_prod (R := ℚ) (P := ℚ) (Q := ℚ)
 
 end ProjectiveModulesTests.ExteriorPowerSupportClient
