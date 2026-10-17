@@ -49,6 +49,10 @@ examples and qualifications; links below go to the corresponding result families
   semirings, with no freeness or flatness assumption; on finite free modules over
   commutative rings it agrees with Mathlib's scalar-extension trace formula.
   Biduality and trace allow additive monoids; the commutator corollary needs additive groups.
+- **[Topologies on invertible modules](ProjectiveModules/Invertible/Topology.lean):**
+  a Hausdorff invertible topological vector space over a nontrivially normed field
+  has the module topology on its given space. No completeness of the field or
+  norm on the vector space is assumed; scalar and carrier universes are independent.
 - **[Partial trace](ProjectiveModules/Module/Trace/Partial.lean):** over a commutative
   semiring `R`, contraction in a finite-projective tensor factor `M` defines an
   `R`-linear operator from maps `M ⊗[R] N →ₗ[R] M ⊗[R] P` to maps `N →ₗ[R] P`.
@@ -343,6 +347,7 @@ aggregate import.
 | Area | Interfaces and scope |
 | --- | --- |
 | [Dual](ProjectiveModules/Dual/BaseChange.lean), [Contraction](ProjectiveModules/Contraction/BaseChange.lean), [Invertible](ProjectiveModules/Invertible/OfRankOne.lean) | Dual/evaluation base change, rank-one iff, scalar endomorphisms and finite-summand cancellation |
+| [Invertible module topologies](ProjectiveModules/Invertible/Topology.lean) | `Module.Invertible.isModuleTopology`: the given topology of a Hausdorff invertible topological vector space over a nontrivially normed field is its module topology, without field completeness |
 | [Bidual evaluation](ProjectiveModules/Module/Bidual.lean) | Ordinary-coefficient bidual equivalence for finite projective semiring modules; forward/inverse evaluation, naturality and coefficient-preserving commutative comparison |
 | [Exterior algebra](ProjectiveModules/ExteriorAlgebra/BaseChange.lean), [exterior powers](ProjectiveModules/ExteriorPower/DirectSum.lean) | Full algebra base change; projective powers, determinants/top powers and binary fixed-degree Sum Formula |
 | [Homogeneous exterior base change](ProjectiveModules/ExteriorPower/BaseChange.lean) | `ExteriorAlgebra.equivBaseChange_map_exteriorPower`: image equality with the scalar-extended homogeneous submodule, for arbitrary degree and independent ring/carrier universes |

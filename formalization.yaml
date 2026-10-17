@@ -429,6 +429,13 @@ status:
     - declaration: "Module.Invertible.nonempty_linearEquiv_of_fin_stabilization"
       file: "ProjectiveModules/Invertible/StableCancellation.lean"
       note: "Finite-free stabilization cancellation between invertible modules only."
+    - declaration: "Module.Invertible.isModuleTopology"
+      file: "ProjectiveModules/Invertible/Topology.lean"
+      note: >-
+        The given topology of a Hausdorff invertible topological vector space
+        over a nontrivially normed field is its module topology. Scalar and
+        carrier universes are independent; neither field completeness nor a
+        norm on the vector space is assumed.
     - declaration: "Module.Free.countableFinsuppEquivOfProdFiniteFinsuppEquiv"
       file: "ProjectiveModules/Free/CountableCancellation.lean"
       note: "Cancel a finite free summand in countably infinite free coordinates; not arbitrary cancellation."

@@ -125,6 +125,18 @@ private theorem evaluation_change {S : Type w} [CommRing S] [Algebra R S]
 
 end Commutative
 
+-- The regular line in a strictly higher carrier universe, with its existing topology and action.
+private theorem ulift_down_coordinate (κ : Type u) [NontriviallyNormedField κ] :
+    Continuous (ULift.moduleEquiv : ULift.{max u v + 1} κ ≃ₗ[κ] κ).toLinearMap ∧
+      (ULift.moduleEquiv : ULift.{max u v + 1} κ ≃ₗ[κ] κ) (ULift.up (1 : κ)) = 1 ∧
+      (ULift.moduleEquiv : ULift.{max u v + 1} κ ≃ₗ[κ] κ) (ULift.up (1 : κ)) ≠ 0 := by
+  let : Module.Invertible κ (ULift.{max u v + 1} κ) :=
+    Module.Invertible.congr
+      (ULift.moduleEquiv : ULift.{max u v + 1} κ ≃ₗ[κ] κ).symm
+  let : IsModuleTopology κ (ULift.{max u v + 1} κ) :=
+    Module.Invertible.isModuleTopology κ (ULift.{max u v + 1} κ)
+  exact ⟨IsModuleTopology.continuous_of_linearMap _, rfl, one_ne_zero⟩
+
 private theorem arbitrary_integer_finsupp_submodule
     (N : Submodule ℤ (ℕ →₀ ℤ)) : Module.CountablyGenerated ℤ N :=
   Module.CountablyGenerated.submodule_of_isNoetherianRing
