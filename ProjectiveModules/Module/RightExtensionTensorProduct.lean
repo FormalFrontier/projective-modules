@@ -7,6 +7,7 @@ module
 public import ProjectiveModules.Module.RightExtension
 public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.LinearAlgebra.TensorProduct.Map
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # Right scalar extension and commutative-base tensor products
@@ -34,11 +35,19 @@ For commutative `S`, a separate comparison lands in the right-module view of
 Mathlib's scalar-first `ModuleCat.extendScalars` object. Its characterization
 identifies the switch of factors with `TensorProduct.comm`.
 
+For commutative `R` and `S`, `oppositeScalarEquiv` instead compares directly
+with scalar extension along `RingHom.op φ`, retaining the given right-module
+actions. `tensorBaseChangeEquiv` distributes right extension over
+`M ⊗[Rᵐᵒᵖ] N`; its inverse combines the coefficients by ordinary multiplication
+in `S`. Both equivalences have forward and inverse pure-tensor formulas.
+
 ## Universes and scope
 
 The scalar universes `uR`, `uS` and source carrier universe `uM` are independent.
 Both one-step extension carriers live in `max uM uS`, independently of `uR`;
-these pointwise linear equivalences require no `ULift`. Morphism naturality
+these pointwise linear equivalences require no `ULift`. For source modules
+in independent universes `uM` and `uN`, the tensor base-change carriers live in
+`max uS uM uN`, with no contribution from `uR`. Morphism naturality
 uses the common carrier universe of `ModuleCat` morphisms. Packaging at a
 separately prescribed larger universe requires carrier lifts, for example
 `ModuleCat.uliftFunctor`. The tensor functor satisfies the categorical
@@ -51,15 +60,15 @@ algebraic K-theory is supplied here.
 This AI-assisted adaptation uses the right-extension and balanced-tensor
 universal properties originally formalized by Prism in this library and
 Lens's subsequent scalar-extension interfaces. The opposite scalar conversion,
-pure-tensor relations, tensor commutation, tensor maps and transport of module
-structures use Mathlib.
+pure-tensor relations, tensor commutation, tensor maps, target-linear tensor
+base change, tensor congruence and transport of module structures use Mathlib.
 The scalar-first categorical object and morphisms use Jujian Zhang's Mathlib
 change-of-rings formalization. No alternative tensor quotient is constructed.
 -/
 
 @[expose] public section
 
-universe uR uS uM
+universe uR uS uM uN
 
 open CategoryTheory
 open scoped TensorProduct
@@ -936,5 +945,212 @@ theorem extendScalarsLinearEquiv_naturality {M N : ModuleCat.{uM} Rᵐᵒᵖ}
             (extendScalarsLinearEquiv_eq_comm φ M x).symm))))
 
 end CommutativeTarget
+
+section OppositeBaseChange
+
+variable {R : Type uR} {S : Type uS} [CommRing R] [CommRing S]
+
+open scoped ChangeOfRings
+
+/-- Right scalar extension agrees with scalar-first extension along the opposite
+ring homomorphism. The coefficient module is restriction along `RingHom.op φ`,
+and the equivalence is linear over `Sᵐᵒᵖ`. No nontriviality or finiteness
+assumption is required. -/
+noncomputable def oppositeScalarEquiv (φ : R →+* S)
+    (M : ModuleCat.{uM} Rᵐᵒᵖ) :
+    Obj φ M ≃ₗ[Sᵐᵒᵖ] (ModuleCat.extendScalars (RingHom.op φ)).obj M := by
+  letI : Algebra Rᵐᵒᵖ Sᵐᵒᵖ := (RingHom.op φ).toAlgebra
+  -- Normalize the whole stored coefficient Module and tensor actions, not just SMul.
+  -- This is the original extendScalars carrier: both coefficient Modules reduce
+  -- to Module.compHom Sᵐᵒᵖ (RingHom.op φ).
+  change Obj φ M ≃ₗ[Sᵐᵒᵖ] Sᵐᵒᵖ ⊗[Rᵐᵒᵖ] M
+  let inclusion : M →ₛₗ[RingHom.op φ] Sᵐᵒᵖ ⊗[Rᵐᵒᵖ] M :=
+    { toFun := fun m ↦ (1 : Sᵐᵒᵖ) ⊗ₜ[Rᵐᵒᵖ] m
+      map_add' := fun m n ↦ TensorProduct.tmul_add _ m n
+      map_smul' := by
+        intro r m
+        change (1 : Sᵐᵒᵖ) ⊗ₜ[Rᵐᵒᵖ] (r • m) =
+          (RingHom.op φ r) • ((1 : Sᵐᵒᵖ) ⊗ₜ[Rᵐᵒᵖ] m)
+        calc
+          (1 : Sᵐᵒᵖ) ⊗ₜ[Rᵐᵒᵖ] (r • m) = (r • (1 : Sᵐᵒᵖ)) ⊗ₜ[Rᵐᵒᵖ] m :=
+            (TensorProduct.smul_tmul r (1 : Sᵐᵒᵖ) m).symm
+          _ = ((RingHom.op φ r) • (1 : Sᵐᵒᵖ)) ⊗ₜ[Rᵐᵒᵖ] m := rfl
+          _ = (RingHom.op φ r) • ((1 : Sᵐᵒᵖ) ⊗ₜ[Rᵐᵒᵖ] m) :=
+            (TensorProduct.smul_tmul' (RingHom.op φ r) (1 : Sᵐᵒᵖ) m).symm }
+  let forward : Obj φ M →ₗ[Sᵐᵒᵖ] Sᵐᵒᵖ ⊗[Rᵐᵒᵖ] M :=
+    fromSemilinear φ inclusion
+  have forward_tmul (m : M) (s : S) :
+      forward (tmul φ m s) = MulOpposite.op s ⊗ₜ[Rᵐᵒᵖ] m := by
+    rw [fromSemilinear_tmul]
+    change MulOpposite.op s • ((1 : Sᵐᵒᵖ) ⊗ₜ[Rᵐᵒᵖ] m) =
+      MulOpposite.op s ⊗ₜ[Rᵐᵒᵖ] m
+    rw [TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+  let pureInverse : Sᵐᵒᵖ →+ M →+ Obj φ M :=
+    { toFun := fun s ↦
+        { toFun := fun m ↦ tmul φ m (MulOpposite.unop s)
+          map_zero' := by
+            letI : Module R S := φ.toModule
+            exact BalancedTensorProduct.zero_tmul (MulOpposite.unop s)
+          map_add' := fun m n ↦ by
+            letI : Module R S := φ.toModule
+            exact BalancedTensorProduct.add_tmul m n (MulOpposite.unop s) }
+      map_zero' := by
+        apply AddMonoidHom.ext
+        intro m
+        letI : Module R S := φ.toModule
+        exact BalancedTensorProduct.tmul_zero m
+      map_add' := by
+        intro s t
+        apply AddMonoidHom.ext
+        intro m
+        letI : Module R S := φ.toModule
+        exact BalancedTensorProduct.tmul_add m (MulOpposite.unop s) (MulOpposite.unop t) }
+  have balanced (r : Rᵐᵒᵖ) (s : Sᵐᵒᵖ) (m : M) :
+      pureInverse (r • s) m = pureInverse s (r • m) := by
+    change tmul φ m (MulOpposite.unop s * φ (MulOpposite.unop r)) =
+      tmul φ (MulOpposite.op (MulOpposite.unop r) • m) (MulOpposite.unop s)
+    rw [smul_tmul, mul_comm]
+  let inverse : Sᵐᵒᵖ ⊗[Rᵐᵒᵖ] M →+ Obj φ M :=
+    TensorProduct.liftAddHom pureInverse balanced
+  have inverse_tmul (s : Sᵐᵒᵖ) (m : M) :
+      inverse (s ⊗ₜ[Rᵐᵒᵖ] m) = tmul φ m (MulOpposite.unop s) := rfl
+  have leftHom : inverse.comp forward.toAddMonoidHom = AddMonoidHom.id (Obj φ M) := by
+    letI : Module R S := φ.toModule
+    apply BalancedTensorProduct.hom_ext (R := R) (M := M) (N := S)
+    intro m s
+    change inverse (forward (tmul φ m s)) = tmul φ m s
+    exact (congrArg inverse (forward_tmul m s)).trans
+      (inverse_tmul (MulOpposite.op s) m)
+  exact
+    { toFun := forward
+      invFun := inverse
+      left_inv := fun x ↦ DFunLike.congr_fun leftHom x
+      right_inv := by
+        intro x
+        induction x using TensorProduct.inductionOn with
+        | tmul s m =>
+            change forward (inverse (s ⊗ₜ[Rᵐᵒᵖ] m)) = s ⊗ₜ[Rᵐᵒᵖ] m
+            exact (congrArg forward (inverse_tmul s m)).trans
+              (forward_tmul m (MulOpposite.unop s))
+        | add x y hx hy =>
+            change forward (inverse (x + y)) = x + y
+            exact (congrArg forward (inverse.map_add x y)).trans
+              ((forward.map_add (inverse x) (inverse y)).trans
+                (congrArg₂ (fun a b ↦ a + b) hx hy))
+      map_add' := forward.map_add
+      map_smul' := forward.map_smul' }
+
+/-- The inverse comparison restores the coefficient as an ordinary ring element. -/
+@[simp]
+theorem oppositeScalarEquiv_symm_tmul (φ : R →+* S)
+    (M : ModuleCat.{uM} Rᵐᵒᵖ) (m : M) (s : S) :
+    (oppositeScalarEquiv φ M).symm
+        (MulOpposite.op s ⊗ₜ[Rᵐᵒᵖ, RingHom.op φ] m) = tmul φ m s :=
+  rfl
+
+/-- The comparison puts the opposite coefficient first. -/
+@[simp]
+theorem oppositeScalarEquiv_tmul (φ : R →+* S)
+    (M : ModuleCat.{uM} Rᵐᵒᵖ) (m : M) (s : S) :
+    oppositeScalarEquiv φ M (tmul φ m s) =
+      MulOpposite.op s ⊗ₜ[Rᵐᵒᵖ, RingHom.op φ] m := by
+  apply (oppositeScalarEquiv φ M).symm.injective
+  rw [LinearEquiv.symm_apply_apply]
+  exact (oppositeScalarEquiv_symm_tmul φ M m s).symm
+
+/-- Right scalar extension distributes over the tensor product of the original
+right `R`-modules. This equivalence is linear over `Sᵐᵒᵖ`; the source modules
+may have independent carrier universes, and either scalar ring may be zero. -/
+noncomputable def tensorBaseChangeEquiv (φ : R →+* S)
+    (M : ModuleCat.{uM} Rᵐᵒᵖ) (N : ModuleCat.{uN} Rᵐᵒᵖ) :
+    Obj φ (M ⊗[Rᵐᵒᵖ] N) ≃ₗ[Sᵐᵒᵖ] Obj φ M ⊗[Sᵐᵒᵖ] Obj φ N := by
+  letI : Algebra Rᵐᵒᵖ Sᵐᵒᵖ := (RingHom.op φ).toAlgebra
+  exact (oppositeScalarEquiv φ (ModuleCat.of Rᵐᵒᵖ (M ⊗[Rᵐᵒᵖ] N))).trans
+    ((TensorProduct.AlgebraTensorModule.distribBaseChange Rᵐᵒᵖ Sᵐᵒᵖ M N).trans
+      (TensorProduct.congr (oppositeScalarEquiv φ M).symm
+        (oppositeScalarEquiv φ N).symm))
+
+/-- The coefficient can be placed in the first extended tensor factor. -/
+@[simp]
+theorem tensorBaseChangeEquiv_tmul (φ : R →+* S)
+    (M : ModuleCat.{uM} Rᵐᵒᵖ) (N : ModuleCat.{uN} Rᵐᵒᵖ)
+    (m : M) (n : N) (s : S) :
+    tensorBaseChangeEquiv φ M N (tmul φ (m ⊗ₜ[Rᵐᵒᵖ] n) s) =
+      tmul φ m s ⊗ₜ[Sᵐᵒᵖ] tmul φ n 1 := by
+  letI : Algebra Rᵐᵒᵖ Sᵐᵒᵖ := (RingHom.op φ).toAlgebra
+  -- Fix the scalar bridges and distribution map on the canonical tensor modules.
+  let eM : Obj φ M ≃ₗ[Sᵐᵒᵖ] Sᵐᵒᵖ ⊗[Rᵐᵒᵖ] M := oppositeScalarEquiv φ M
+  let eN : Obj φ N ≃ₗ[Sᵐᵒᵖ] Sᵐᵒᵖ ⊗[Rᵐᵒᵖ] N := oppositeScalarEquiv φ N
+  let eMN : Obj φ (M ⊗[Rᵐᵒᵖ] N) ≃ₗ[Sᵐᵒᵖ]
+      Sᵐᵒᵖ ⊗[Rᵐᵒᵖ] (M ⊗[Rᵐᵒᵖ] N) :=
+    oppositeScalarEquiv φ (ModuleCat.of Rᵐᵒᵖ (M ⊗[Rᵐᵒᵖ] N))
+  let d := TensorProduct.AlgebraTensorModule.distribBaseChange Rᵐᵒᵖ Sᵐᵒᵖ M N
+  let c := TensorProduct.congr eM.symm eN.symm
+  have hMN : eMN (tmul φ (m ⊗ₜ[Rᵐᵒᵖ] n) s) =
+      MulOpposite.op s ⊗ₜ[Rᵐᵒᵖ] (m ⊗ₜ[Rᵐᵒᵖ] n) :=
+    oppositeScalarEquiv_tmul φ (ModuleCat.of Rᵐᵒᵖ (M ⊗[Rᵐᵒᵖ] N)) (m ⊗ₜ n) s
+  have hM : eM.symm (MulOpposite.op s ⊗ₜ[Rᵐᵒᵖ] m) = tmul φ m s :=
+    oppositeScalarEquiv_symm_tmul φ M m s
+  have hN : eN.symm ((1 : Sᵐᵒᵖ) ⊗ₜ[Rᵐᵒᵖ] n) = tmul φ n 1 :=
+    oppositeScalarEquiv_symm_tmul φ N n 1
+  change c (d (eMN (tmul φ (m ⊗ₜ[Rᵐᵒᵖ] n) s))) = _
+  calc
+    c (d (eMN (tmul φ (m ⊗ₜ[Rᵐᵒᵖ] n) s))) =
+        c (d (MulOpposite.op s ⊗ₜ[Rᵐᵒᵖ] (m ⊗ₜ[Rᵐᵒᵖ] n))) :=
+      congrArg (fun x ↦ c (d x)) hMN
+    _ = c ((MulOpposite.op s ⊗ₜ[Rᵐᵒᵖ] m) ⊗ₜ[Sᵐᵒᵖ]
+        ((1 : Sᵐᵒᵖ) ⊗ₜ[Rᵐᵒᵖ] n)) :=
+      congrArg c (TensorProduct.AlgebraTensorModule.distribBaseChange_tmul
+        (R := Rᵐᵒᵖ) (A := Sᵐᵒᵖ) m n (MulOpposite.op s))
+    _ = eM.symm (MulOpposite.op s ⊗ₜ[Rᵐᵒᵖ] m) ⊗ₜ[Sᵐᵒᵖ]
+        eN.symm ((1 : Sᵐᵒᵖ) ⊗ₜ[Rᵐᵒᵖ] n) :=
+      TensorProduct.congr_tmul eM.symm eN.symm _ _
+    _ = tmul φ m s ⊗ₜ[Sᵐᵒᵖ] tmul φ n 1 :=
+      congrArg₂ (fun x y ↦ x ⊗ₜ[Sᵐᵒᵖ] y) hM hN
+
+/-- The inverse multiplies the two ordinary coefficients. -/
+@[simp]
+theorem tensorBaseChangeEquiv_symm_tmul (φ : R →+* S)
+    (M : ModuleCat.{uM} Rᵐᵒᵖ) (N : ModuleCat.{uN} Rᵐᵒᵖ)
+    (m : M) (n : N) (s t : S) :
+    (tensorBaseChangeEquiv φ M N).symm
+        (tmul φ m s ⊗ₜ[Sᵐᵒᵖ] tmul φ n t) =
+      tmul φ (m ⊗ₜ[Rᵐᵒᵖ] n) (s * t) := by
+  letI : Algebra Rᵐᵒᵖ Sᵐᵒᵖ := (RingHom.op φ).toAlgebra
+  let eM : Obj φ M ≃ₗ[Sᵐᵒᵖ] Sᵐᵒᵖ ⊗[Rᵐᵒᵖ] M := oppositeScalarEquiv φ M
+  let eN : Obj φ N ≃ₗ[Sᵐᵒᵖ] Sᵐᵒᵖ ⊗[Rᵐᵒᵖ] N := oppositeScalarEquiv φ N
+  let eMN : Obj φ (M ⊗[Rᵐᵒᵖ] N) ≃ₗ[Sᵐᵒᵖ]
+      Sᵐᵒᵖ ⊗[Rᵐᵒᵖ] (M ⊗[Rᵐᵒᵖ] N) :=
+    oppositeScalarEquiv φ (ModuleCat.of Rᵐᵒᵖ (M ⊗[Rᵐᵒᵖ] N))
+  let d := TensorProduct.AlgebraTensorModule.distribBaseChange Rᵐᵒᵖ Sᵐᵒᵖ M N
+  let c := TensorProduct.congr eM.symm eN.symm
+  have hM : eM (tmul φ m s) = MulOpposite.op s ⊗ₜ[Rᵐᵒᵖ] m :=
+    oppositeScalarEquiv_tmul φ M m s
+  have hN : eN (tmul φ n t) = MulOpposite.op t ⊗ₜ[Rᵐᵒᵖ] n :=
+    oppositeScalarEquiv_tmul φ N n t
+  have hop : MulOpposite.op s * MulOpposite.op t = MulOpposite.op (s * t) := by
+    change MulOpposite.op (t * s) = MulOpposite.op (s * t)
+    exact congrArg MulOpposite.op (mul_comm t s)
+  change eMN.symm (d.symm (c.symm (tmul φ m s ⊗ₜ[Sᵐᵒᵖ] tmul φ n t))) = _
+  calc
+    eMN.symm (d.symm (c.symm (tmul φ m s ⊗ₜ[Sᵐᵒᵖ] tmul φ n t))) =
+        eMN.symm (d.symm (eM (tmul φ m s) ⊗ₜ[Sᵐᵒᵖ] eN (tmul φ n t))) :=
+      congrArg (fun x ↦ eMN.symm (d.symm x))
+        (TensorProduct.congr_symm_tmul eM.symm eN.symm _ _)
+    _ = eMN.symm (d.symm ((MulOpposite.op s ⊗ₜ[Rᵐᵒᵖ] m) ⊗ₜ[Sᵐᵒᵖ]
+        (MulOpposite.op t ⊗ₜ[Rᵐᵒᵖ] n))) :=
+      congrArg (fun x ↦ eMN.symm (d.symm x))
+        (congrArg₂ (fun x y ↦ x ⊗ₜ[Sᵐᵒᵖ] y) hM hN)
+    _ = eMN.symm ((MulOpposite.op s * MulOpposite.op t) ⊗ₜ[Rᵐᵒᵖ]
+        (m ⊗ₜ[Rᵐᵒᵖ] n)) :=
+      congrArg eMN.symm (TensorProduct.AlgebraTensorModule.distribBaseChange_symm_tmul
+        (R := Rᵐᵒᵖ) (A := Sᵐᵒᵖ) m n (MulOpposite.op s) (MulOpposite.op t))
+    _ = eMN.symm (MulOpposite.op (s * t) ⊗ₜ[Rᵐᵒᵖ] (m ⊗ₜ[Rᵐᵒᵖ] n)) :=
+      congrArg (fun a ↦ eMN.symm (a ⊗ₜ[Rᵐᵒᵖ] (m ⊗ₜ[Rᵐᵒᵖ] n))) hop
+    _ = tmul φ (m ⊗ₜ[Rᵐᵒᵖ] n) (s * t) :=
+      oppositeScalarEquiv_symm_tmul φ (ModuleCat.of Rᵐᵒᵖ (M ⊗[Rᵐᵒᵖ] N))
+        (m ⊗ₜ[Rᵐᵒᵖ] n) (s * t)
+
+end OppositeBaseChange
 
 end ModuleCat.RightExtension
