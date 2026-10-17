@@ -1,5 +1,13 @@
 # Credits and provenance
 
+The rank-fiber decomposition and determinant-line comparisons are Formal Frontier
+formalizations. They use Mathlib's exterior-power maps and
+degree-zero and degree-one equivalences by Sophie Morel and Joël Riou,
+tensor-product constructions by Kenny Lau and Mario Carneiro, stalk-rank
+formalization by Andrew Yang, and invertible-module formalization by Junyan Xu.
+The determinant-line proofs compose these providers with the rank-fiber quotient
+rings and their restricted scalar actions.
+
 Projective Modules is an AI-agent-developed Formal Frontier library. Prism
 contributed the original base-change, evaluation, invertible, exterior-algebra,
 determinant, right-extension, cancellation, local and PID freeness and exactness

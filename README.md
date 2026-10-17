@@ -40,6 +40,12 @@ examples and qualifications; links below go to the corresponding result families
   rank is invertible, including degree zero and the zero ring.
   For a finite flat module, an exterior power vanishes when its degree strictly
   exceeds every stalk rank, without assuming global projectivity.
+- **[Determinant lines](docs/Overview.md#determinant-lines):** for finite projective
+  modules over arbitrary commutative rings, the dependent product of top exterior
+  powers over attained stalk-rank fibers is invertible. Rank zero, zero rings and
+  independent universes are included. Isomorphism invariance, rank-fiber recovery,
+  zero-module and invertible-module normalizations assert existence of linear
+  isomorphisms, not a chosen coherent family of maps.
 - **[Duality and trace](docs/Overview.md#duality-biduality-and-trace):** finite-projective
   dual/evaluation base change; rank-one invertibles including zero rings; cancellation
   only of common finite free summands. Finite-projective left-module biduality uses ordinary coefficients
@@ -357,6 +363,7 @@ aggregate import.
 | [Homogeneous exterior base change](ProjectiveModules/ExteriorPower/BaseChange.lean) | `ExteriorAlgebra.equivBaseChange_map_exteriorPower`: image equality with the scalar-extended homogeneous submodule, for arbitrary degree and independent ring/carrier universes |
 | [Invertible top exterior powers](ProjectiveModules/ExteriorPower/Invertible.lean) | `exteriorPower.invertible_of_rankAtStalk_eq`: the top exterior power of a finite projective module of constant stalk rank is invertible, without a nontrivial-ring hypothesis |
 | [Exterior vanishing](ProjectiveModules/ExteriorPower/StalkRank.lean) | `exteriorPower.subsingleton_of_rankAtStalk_lt`: an exterior power of a finite flat module vanishes above all stalk ranks, for arbitrary commutative rings and independent universes |
+| [Determinant lines](ProjectiveModules/ExteriorPower/DeterminantLine.lean) | `Module.DeterminantLine`: invertible for finite projective modules of variable stalk rank; linear-isomorphism invariance, rank-fiber recovery, zero and invertible-module comparisons as `Nonempty` isomorphisms |
 | [Free modules](ProjectiveModules/Free/CountableCancellation.lean), [infinite coordinates](ProjectiveModules/Free/InfiniteCoordinates.lean), [rank conditions](ProjectiveModules/Free/InvariantBasisNumber.lean) | Countable cancellation/absorption; finite stably-free semisimple endpoint; infinite basis cardinality and free-coordinate classification without IBN; semiring-homomorphism pullbacks of rank condition and IBN |
 | [Linear-map modules](ProjectiveModules/Free/LinearMap.lean) | Finite free semiring source and commuting target actions; independent freeness and finiteness conclusions for Hom over the outer semiring, with independent universes and chosen-basis inverse factorization |
 | [Free-word semirings](ProjectiveModules/Free/FreeWordAlgebra.lean) | Rank-two to rank-one left-linear injection by distinct right suffixes and strong-rank obstruction; arbitrary semiring coefficients and alphabet |

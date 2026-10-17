@@ -83,6 +83,24 @@ See [credits](CREDITS.md) for mathematical contributions and expression origins.
   projectivity or finite presentation is not assumed. The bound cannot be
   weakened to a non-strict inequality: the zeroth exterior power of the zero
   module over a nonzero field is the field itself.
+
+### Determinant lines
+
+For a finite projective module `P` over an arbitrary commutative ring `R`,
+[`Module.DeterminantLine R P`](../ProjectiveModules/ExteriorPower/DeterminantLine.lean)
+is the dependent product of the top exterior powers of `Rᵢ ⊗[R] P`, where `i`
+ranges over the attained stalk-rank fibers, `Rᵢ` is the corresponding rank-fiber
+quotient ring, and the exterior degree is that fiber's rank. Scalars act through
+these quotient rings. An attained rank-zero fiber contributes degree zero and is
+not omitted. Zero rings, empty spectra and independent ring/module universes are
+allowed; constant rank and freeness are not required.
+
+The determinant line is invertible. Four comparison laws assert existence of
+linear isomorphisms: isomorphic finite projective modules have isomorphic lines;
+base change to `Rᵢ` recovers its top exterior component; the zero module has line
+isomorphic to `R`; and an invertible module has line isomorphic to itself. These
+laws return `Nonempty` isomorphism types, not chosen ordered or coherent maps.
+
 ### Duality, biduality and trace
 
 - **Duality and invertibility:** The [finite-projective dual](../ProjectiveModules/Dual/BaseChange.lean)
