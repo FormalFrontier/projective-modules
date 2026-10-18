@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.LinearAlgebra.Pi
 public import Mathlib.RingTheory.Finiteness.Prod
 public import Mathlib.RingTheory.PicardGroup
-public import ProjectiveModules.Module.RankFiberDecomposition
+public import ProjectiveModules.Module.RankLocallyConstant
 public import ProjectiveModules.ExteriorPower.Invertible
 import ProjectiveModules.ExteriorPower.BaseChange
 import ProjectiveModules.ExteriorPower.ProdPairing
@@ -458,9 +458,8 @@ private def determinantLineCongrModelTransport
 theorem determinantLine_congr (Q : Type w) [AddCommGroup Q] [Module R Q]
     [Module.Finite R Q] [Module.Projective R Q] (f : P ≃ₗ[R] Q) :
     Nonempty (DeterminantLine R P ≃ₗ[R] DeterminantLine R Q) := by
-  have hrank : rankLocallyConstant R P = rankLocallyConstant R Q := by
-    ext p
-    exact congrFun (rankAtStalk_eq_of_equiv f) p
+  have hrank : rankLocallyConstant R P = rankLocallyConstant R Q :=
+    rankLocallyConstant_eq_of_equiv (R := R) (M := P) (N := Q) f
   have hdata :
       (⟨rankLocallyConstant R P, rankFiberIdempotent R P, rankFiberRank R P⟩ :
         determinantLineCongrData R) =

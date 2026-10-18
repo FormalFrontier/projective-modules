@@ -318,6 +318,15 @@ examples and qualifications; links below go to the corresponding result families
   the ring-module stable quotient is preadditive; Ext¹ detection needs `Small.{uM} R`.
   For commutative rings, finite projectives realize locally constant natural stalk
   ranks and decompose by rank fibers; classification is only for componentwise-free models.
+- **[Locally constant module rank](ProjectiveModules/Module/RankLocallyConstant.lean):**
+  `Module.rankLocallyConstant R M` assigns a locally constant natural-valued
+  function on `Spec R` to each finite projective left module over a commutative
+  ring. It is invariant under linear isomorphism, sends subsingleton modules to
+  zero and the regular module to one, adds under finite dependent products and
+  binary products, and multiplies under tensor products. Arbitrary commutative
+  algebra base change pulls this function back along the induced map on prime
+  spectra. Scalar, module and index universes are independent; empty products
+  and zero rings are included. These are module-level laws, not a class or K₀ map.
 - **[Free modules and summands](docs/Overview.md#free-modules-and-finite-summands):** Hom from finite free
   semiring sources to targets with commuting actions is free/finite when the target is, independently.
   Countably free modules absorb summands and cancel finite coordinates; semisimple
@@ -516,6 +525,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Semisimple coordinates and simple rows](ProjectiveModules/KTheory/SemisimpleEquivalence.lean) | `KTheory.matrixBlockModuleOfRingEquiv` restricts supported right rows along a chosen finite matrix decomposition; simple-module classification at arbitrary carrier universes, coefficient endomorphism rings, natural class coordinates, integer K₀ basis and block-size regular coordinates; `IsSemisimpleRing.matrixDivisionDecomposition_simple_basis` uses a decomposition chosen from Mathlib's Wedderburn–Artin theorem, including the empty outer family |
 | [K₀ scalar extension](ProjectiveModules/KTheory/ScalarExtension.lean) | Additive change-of-rings maps with arbitrary-carrier evaluation and whole-map identity/composition laws; independence of the homomorphism for division-ring sources and arbitrary ring targets |
 | [K₀ dimension](ProjectiveModules/KTheory/Rank.lean), [zero rings](ProjectiveModules/KTheory/ZeroRing.lean) | Dimension classifications of projective classes by ℕ and K₀ by ℤ over division rings, and bijectivity of division-ring scalar-extension maps; entire class/group collapse over subsingleton rings |
+| [Locally constant module rank](ProjectiveModules/Module/RankLocallyConstant.lean) | Characteristic laws for the existing `Module.rankLocallyConstant`: linear-isomorphism invariance, zero and regular-unit normalizations, finite dependent-product and binary-product addition, tensor multiplication and arbitrary-algebra pullback, including zero rings and empty indices |
 | [Rank realization](ProjectiveModules/Module/LocallyConstantRank.lean), [fibers](ProjectiveModules/Module/RankFiberDecomposition.lean), [component models](ProjectiveModules/Module/ComponentwiseFree.lean) | Locally constant ranks, commuting complete orthogonal Cartesian refinements over semirings, and conditional componentwise-free classification |
 | [PID](ProjectiveModules/Module/PID.lean), [Laurent](ProjectiveModules/Module/LaurentPolynomial.lean) | Arbitrary-rank commutative PID freeness; one-variable Laurent finite-projective freeness |
 

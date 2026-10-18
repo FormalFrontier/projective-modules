@@ -94,6 +94,7 @@ public import ProjectiveModules.Module.ProjectivePi
 public import ProjectiveModules.Module.QuotientHom
 public import ProjectiveModules.Module.SummandCancellation
 public import ProjectiveModules.Module.RankFiberDecomposition
+public import ProjectiveModules.Module.RankLocallyConstant
 public import ProjectiveModules.Module.RightEndomorphismMatrix
 public import ProjectiveModules.Module.Product
 public import ProjectiveModules.Module.RightProduct
