@@ -31,6 +31,21 @@ examples and qualifications; links below go to the corresponding result families
   commute across the families have a complete orthogonal Cartesian product family.
   All pairs are retained, including zero products; the two index universes are independent,
   and empty families and zero semirings are allowed.
+- **[Commuting idempotent endomorphisms](ProjectiveModules/Module/CommutingIdempotents.lean):**
+  over any semiring `R`, two commuting idempotent endomorphisms `p`, `q` of an
+  `R`-module `M` whose addition is a commutative group give
+  `LinearMap.commutingIdempotentsEquiv`, an `R`-linear equivalence from `M` to
+  the product of `p.range ⊓ q.range`, `p.range ⊓ q.ker`, `p.ker ⊓ q.range` and
+  `p.ker ⊓ q.ker`, in that order. Scalar and carrier universes are independent.
+- **[Finite simultaneous decomposition](ProjectiveModules/Module/CommutingProjections.lean):**
+  for any semiring `R`, additive commutative group `M` with an `R`-module structure,
+  finite index type `I`, and supplied pairwise commuting idempotent endomorphisms
+  `p : I → Module.End R M`, `LinearMap.commutingIdempotentsPiEquiv` identifies the
+  original `M` with the product of all Boolean-selected intersections of the original
+  ranges and kernels. Its components are the commuting products of `p i` or `1 - p i`,
+  and its inverse sums the block inclusions. Zero blocks and the empty constraint
+  family are retained; scalar, module and index universes are independent. No freeness,
+  finite generation, finite dimension or commutativity of `R` is assumed.
 - **[Exterior constructions](docs/Overview.md#exterior-constructions):** full exterior
   algebra commutes with arbitrary scalar extension, and its equivalence identifies
   homogeneous submodule images in every degree, without asserting a general tensor
@@ -462,9 +477,11 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Local projectives](ProjectiveModules/Module/LocalProjective.lean), [arbitrary local freeness](ProjectiveModules/Module/ArbitraryLocalProjectiveFree.lean), [local scalar interface](ProjectiveModules/Module/LocalRing.lean) | Finite, countable and arbitrary-rank right-module routes under proper-ideal/unit-complement hypotheses; `IsLocalRing` scalar formulation |
 | [Countably generated](ProjectiveModules/Module/CountablyGenerated.lean), [Noetherian submodules](ProjectiveModules/Module/CountablyGenerated/Noetherian.lean), [filtration](ProjectiveModules/Module/TransfiniteRangeBasis.lean) | Sequence-span predicate, submodule theorem, invariant countable supports and split-range assembly |
 | [Split kernels](ProjectiveModules/Module/ProjectiveKernel.lean) | Over a semiring `R`, with additive-group source `M` and additive-monoid target `A`, the imported `LinearMap.kerProdEquivOfRightInverse` gives `(ker f × A) ≃ₗ[R] M` for a specified linear section of `f : M →ₗ[R] A`; kernel projection/application and inclusion-retraction laws; independent finite-source and projective-source closure, without target finiteness or projectivity and with independent universes |
+| [Commuting idempotent endomorphisms](ProjectiveModules/Module/CommutingIdempotents.lean) | `LinearMap.commutingIdempotentsEquiv`: four range/kernel intersections for two commuting idempotents on an additive-commutative-group module over any semiring, with independent universes. Four `[simp]` coordinate equations apply `p * q`, `p * (1 - q)`, `(1 - p) * q` and `(1 - p) * (1 - q)`; the inverse `[simp]` equation sums the underlying components as `(a + b) + (c + d)` |
 | [Complements](ProjectiveModules/Module/ProjectiveComplement.lean) | Over a ring `R`, with additive-group modules `F`, `P` and projective target `P`, `Module.Projective.prodKerEquivOfSurjective` chooses a section of a surjection `f : F →ₗ[R] P` and gives `(P × ker f) ≃ₗ[R] F`; finite projective modules have finite complements in finite standard free modules |
 | [Injectivity](ProjectiveModules/Module/Injective.lean) | Finitely generated projective left modules over an arbitrary left self-injective ring are injective, with independent scalar and carrier universes |
 | [Right inverse defects](ProjectiveModules/Module/RightRegularDefect.lean), [Hom exactness](ProjectiveModules/Module/HomExact.lean) | Specified right regular decomposition and defect kernel over rings; additive Hom exactness over semirings |
+| [Finite commuting projections](ProjectiveModules/Module/CommutingProjections.lean) | `LinearMap.commutingIdempotentsPiEquiv`: simultaneous decomposition of the original module by a finite pairwise commuting idempotent family over a semiring, for an additive commutative group module; all original range/kernel intersections, Boolean product projectors, component action and inverse inclusion sum, including zero blocks and empty constraints |
 | [Finite dependent products](ProjectiveModules/Module/ProjectivePi.lean) | Canonical pointwise products of projective modules over any semiring are projective for a finite index, without finite generation of the factors and with independent universes |
 | [Finite dependent-product trace](ProjectiveModules/Module/Trace/Pi.lean) | Over a commutative semiring, arbitrary endomorphisms of finite dependent products of finite projective additive-commutative-monoid modules have the sum of their diagonal coordinate traces; `Finite` indices and independent scalar, index and carrier universes. For rectangular composites through another finite dependent product, sum the returning source-factor path traces; no finite generation or projectivity is required of the intermediate factors |
 | [Trace under scalar restriction](ProjectiveModules/Module/Trace/ScalarRestriction.lean) | Trace of an arbitrary endomorphism restricted through a finite-projective commutative-semiring tower; multiplication-map comparison with `Algebra.trace_trace` on successive finite free commutative-ring extensions |

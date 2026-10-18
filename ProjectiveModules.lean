@@ -69,7 +69,9 @@ public import ProjectiveModules.Module.CountableLocalProjective
 public import ProjectiveModules.Module.CountableLocalProjectiveFree
 public import ProjectiveModules.Module.CountablyGenerated
 public import ProjectiveModules.Module.CountablyGenerated.Noetherian
+public import ProjectiveModules.Module.CommutingProjections
 public import ProjectiveModules.Module.ComponentwiseFree
+public import ProjectiveModules.Module.CommutingIdempotents
 public import ProjectiveModules.Module.FiniteProjectiveHom
 public import ProjectiveModules.Module.FiniteStabilization
 public import ProjectiveModules.Module.HomExact
