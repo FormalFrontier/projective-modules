@@ -218,6 +218,12 @@ examples and qualifications; links below go to the corresponding result families
   with independent module-carrier universes. The generic ring lift and
   extensionality APIs apply to any target ring in an independent universe,
   including noncommutative and zero targets.
+- **[Scalar extension on tensor semirings](ProjectiveModules/KTheory/RingScalarExtension.lean):**
+  for any unital homomorphism of commutative rings, including zero rings,
+  `KTheory.ProjectiveClass.mapRingHom` enriches the additive class map to a semiring
+  homomorphism, with the same whole underlying additive map. It sends arbitrary-carrier
+  finite projective right-module classes to their right extensions and respects identity
+  and composition; scalar and carrier universes are independent.
 - **[K₀ trace naturality](ProjectiveModules/KTheory/TraceNaturality.lean):**
   for arbitrary rings `R`, `S` in independent universes and every unital
   `f : R →+* S`, `KTheory.K0.traceModCommutators_map` identifies trace after
@@ -477,6 +483,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Right-module K₀](ProjectiveModules/KTheory/K0.lean), [stabilization](ProjectiveModules/KTheory/Stabilization.lean) | Ring-sized projective class monoid and group completion; arbitrary-universe module generators, descent/universal properties, difference representatives and common finite-projective or finite-free stabilization |
 | [Tensor semiring](ProjectiveModules/KTheory/TensorProduct.lean) | Canonical commutative semiring on finite-projective right-module classes over commutative rings, including zero rings; direct-sum addition, tensor multiplication, regular unit and natural casts, with independent module-carrier universes |
 | [Tensor-product ring on K₀](ProjectiveModules/KTheory/Ring.lean) | Generic Grothendieck commutative ring on the existing K₀ group; bundled class ring homomorphism with the same whole additive map, regular unit, tensor-generator multiplication and regular-module cast formulas. The generic ring universal property permits arbitrary target rings and independent universes |
+| [Tensor-semiring scalar extension](ProjectiveModules/KTheory/RingScalarExtension.lean) | `ProjectiveClass.mapRingHom` for arbitrary unital commutative rings, including zero rings; whole additive-map compatibility, arbitrary-carrier module evaluation, identity and composition |
 | [Opposite-ring duality](ProjectiveModules/KTheory/Dual.lean) | Canonical additive equivalences of class monoids and K₀ over arbitrary rings; normalized right duals, inverse double-opposite transport, regular generators, completion squares and universal extension |
 | [Right-module Morita invariance](ProjectiveModules/KTheory/ModuleEquivalence.lean) | Additive equivalences of projective classes and K₀ along ordinary right-module category equivalences; independent scalar/carrier universes, arbitrary-carrier representative/lift evaluation, inverse, completion and coherence laws |
 | [Matrix classes and K₀](ProjectiveModules/KTheory/Matrix.lean) | Canonical additive equivalences for arbitrary rings and finite nonempty decidable indices; arbitrary-carrier right-row generators, supported inverse corners, index/height independence and completion compatibility |
@@ -584,3 +591,6 @@ interfaces and orthogonality-and-sum criterion.
 The tensor-product K₀ ring reuses this library's projective-class tensor semiring,
 Formal Frontier Group Theory's additive Grothendieck ring and universal property,
 and Alex J. Best and Yaël Dillies' Mathlib completion formalization.
+Scalar extension on the tensor semiring of projective classes descends these
+comparisons through the existing additive class maps, following Weibel's
+change-of-rings construction and Mathlib's bundled homomorphism interfaces.
