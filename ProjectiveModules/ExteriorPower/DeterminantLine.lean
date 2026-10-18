@@ -632,6 +632,18 @@ theorem determinantLine_component_baseChange (S : Type w) [CommRing S] [Algebra 
     rangeEquiv.trans imageEquiv.symm
   exact ⟨determinantEquiv.trans (carrierEquiv.trans (exteriorPowerCongr n moduleEquiv))⟩
 
+/-- Scalar extension supported on one rank fiber may be compared with any
+linearly equivalent module before taking its top exterior power. -/
+theorem determinantLine_component_baseChange_congr
+    (S : Type w) [CommRing S] [Algebra R S]
+    (i : rankFiberIndex R P) (hi : algebraMap R S (rankFiberIdempotent R P i) = 1)
+    {N : Type*} [AddCommGroup N] [Module S N]
+    (e : (S ⊗[R] P) ≃ₗ[S] N) :
+    Nonempty ((S ⊗[R] DeterminantLine R P) ≃ₗ[S]
+      (⋀[S]^(rankFiberRank R P i) N)) := by
+  obtain ⟨d⟩ := determinantLine_component_baseChange R P S i hi
+  exact ⟨d.trans (exteriorPowerCongr _ e)⟩
+
 private theorem rankFiberRank_eq_of_forall_rankAtStalk_eq (n : ℕ)
     (h : ∀ p : PrimeSpectrum R, rankAtStalk (R := R) P p = n)
     (i : rankFiberIndex R P) : rankFiberRank R P i = n := by

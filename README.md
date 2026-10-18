@@ -65,6 +65,14 @@ examples and qualifications; links below go to the corresponding result families
   to the homogeneous exterior power of `S ⊗[R] P` in that fiber's rank.
   The tensor product of the determinant lines of two finite projective modules
   is isomorphic to the determinant line of their product.
+- **[Determinant classes under scalar extension](ProjectiveModules/ExteriorPower/DeterminantLineBaseChange.lean):**
+  for arbitrary commutative rings `R`, `S`, a homomorphism `f : R →+* S` and a
+  finite projective right `R`-module `P`,
+  `ModuleCat.RightExtension.determinantLine_mk` identifies the Picard class over
+  `Sᵐᵒᵖ` of the determinant line of `ModuleCat.RightExtension.Obj f P` with
+  `CommRing.Pic.mapRingHom f.op` applied to the determinant class of `P` over
+  `Rᵐᵒᵖ`. Coefficient and carrier universes are independent; variable local rank,
+  rank zero and zero rings are allowed, with no flatness assumption on `S`.
 - **[K₀ determinant](ProjectiveModules/KTheory/Determinant.lean):** for every
   commutative ring `R`, `KTheory.K0.determinantHom R` is the surjective additive
   homomorphism from right-module K₀ to the additively written Picard group.
@@ -456,6 +464,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Invertible top exterior powers](ProjectiveModules/ExteriorPower/Invertible.lean) | `exteriorPower.invertible_of_rankAtStalk_eq`: the top exterior power of a finite projective module of constant stalk rank is invertible, without a nontrivial-ring hypothesis |
 | [Exterior vanishing](ProjectiveModules/ExteriorPower/StalkRank.lean) | `exteriorPower.subsingleton_of_rankAtStalk_lt`: an exterior power of a finite flat module vanishes above all stalk ranks, for arbitrary commutative rings and independent universes |
 | [Determinant lines](ProjectiveModules/ExteriorPower/DeterminantLine.lean) | `Module.DeterminantLine`: invertible for finite projective modules of variable stalk rank; linear-isomorphism invariance, rank-fiber recovery, product compatibility, zero and invertible-module comparisons as `Nonempty` isomorphisms |
+| [Determinant scalar extension](ProjectiveModules/ExteriorPower/DeterminantLineBaseChange.lean) | `ModuleCat.RightExtension.determinantLine_mk`: the determinant-line Picard class of a finite projective right module commutes with arbitrary ring-homomorphism scalar extension via the opposite homomorphism; no flatness or constant-rank hypothesis |
 | [Free modules](ProjectiveModules/Free/CountableCancellation.lean), [infinite coordinates](ProjectiveModules/Free/InfiniteCoordinates.lean), [rank conditions](ProjectiveModules/Free/InvariantBasisNumber.lean) | Countable cancellation/absorption; finite stably-free semisimple endpoint; infinite basis cardinality and free-coordinate classification without IBN; semiring-homomorphism pullbacks of rank condition and IBN |
 | [Linear-map modules](ProjectiveModules/Free/LinearMap.lean) | Finite free semiring source and commuting target actions; independent freeness and finiteness conclusions for Hom over the outer semiring, with independent universes and chosen-basis inverse factorization |
 | [Free-word semirings](ProjectiveModules/Free/FreeWordAlgebra.lean) | Rank-two to rank-one left-linear injection by distinct right suffixes and strong-rank obstruction; arbitrary semiring coefficients and alphabet |

@@ -20,6 +20,7 @@ public import ProjectiveModules.Dual.TensorProduct
 public import ProjectiveModules.ExteriorAlgebra.BaseChange
 public import ProjectiveModules.ExteriorPower.BaseChange
 public import ProjectiveModules.ExteriorPower.Determinant
+public import ProjectiveModules.ExteriorPower.DeterminantLineBaseChange
 public import ProjectiveModules.ExteriorPower.DirectSum
 public import ProjectiveModules.ExteriorPower.Invertible
 public import ProjectiveModules.ExteriorPower.ProdPairing
