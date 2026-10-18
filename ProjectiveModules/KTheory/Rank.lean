@@ -5,11 +5,13 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.KTheory.K0
+public import ProjectiveModules.KTheory.Ring
 public import ProjectiveModules.KTheory.ScalarExtension
 public import ProjectiveModules.Module.LocalRing
 public import ProjectiveModules.Module.PID
 public import ProjectiveModules.Module.RightExtensionFree
 public import Mathlib.Algebra.Field.Opposite
+public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Dimension.Constructions
@@ -58,6 +60,14 @@ scalar extension to the Jacobson residue division ring before taking dimension.
 Its module formula is a residue-module dimension, not source-ring finrank.
 For a commutative principal ideal domain, the corresponding scalar extension
 uses Mathlib's fraction field.
+
+For fields, commutative local rings and commutative principal ideal domains,
+these integer-valued additive equivalences are ring equivalences for tensor
+multiplication. Their entire underlying additive equivalences are unchanged.
+The inverse is the canonical integer cast, by the existing formula in terms of
+the regular right module. This proves multiplicativity without a new tensor-rank
+calculation. These hypotheses exclude the zero ring; the generic K₀ ring and
+scalar-extension constructions still include it.
 
 ## References and credits
 
@@ -837,5 +847,230 @@ theorem pidEquivInt_symm_one : (pidEquivInt R).symm 1 = of R Rᵐᵒᵖ := by
   rw [pidEquivInt_symm_apply, one_zsmul]
 
 end PrincipalIdealDomainIntegerEquivalence
+
+end KTheory.K0
+
+/-!
+## Integer-valued ring equivalences
+
+The inverse of each additive equivalence is integer multiplication of the
+regular generator, hence the canonical integer cast into the tensor-product
+ring. Multiplicativity follows from this inverse formula and `Int.cast_mul`.
+The construction uses Mathlib's `AddEquiv.toRingEquiv`, retaining the whole
+additive equivalence, including its inverse.
+-/
+
+namespace KTheory.K0
+
+private theorem map_mul_of_symm_intCast {A : Type u} [Ring A]
+    (e : A ≃+ ℤ) (h : ∀ z : ℤ, e.symm z = (z : A)) (x y : A) :
+    e (x * y) = e x * e y := by
+  have hx : (e x : A) = x := (h (e x)).symm.trans (e.symm_apply_apply x)
+  have hy : (e y : A) = y := (h (e y)).symm.trans (e.symm_apply_apply y)
+  apply e.symm.injective
+  calc
+    e.symm (e (x * y)) = x * y := e.symm_apply_apply _
+    _ = (e x : A) * (e y : A) := congrArg₂ (fun a b : A ↦ a * b) hx.symm hy.symm
+    _ = ((e x * e y : ℤ) : A) := (Int.cast_mul _ _).symm
+    _ = e.symm (e x * e y) := (h _).symm
+
+section FieldRingEquivalence
+
+variable (K : Type u) [hK : Field K]
+
+/-- The tensor-ring unit over a field has integer dimension one. -/
+@[simp]
+theorem finrankHom_one : finrankHom K (1 : K0 K) = 1 := by
+  rw [one_eq_of, finrankHom_of_self]
+
+/-- Integer dimension identifies the tensor-product ring K₀ of a field with
+`ℤ`. Its additive equivalence is `finrankEquiv`, and its inverse is integer
+multiplication of the regular right-module generator.
+See Weibel, *The K-book*, Chapter II, §2. -/
+noncomputable def finrankRingEquiv : K0 K ≃+* ℤ :=
+  AddEquiv.toRingEquiv (finrankEquiv K) (by
+    exact map_mul_of_symm_intCast (finrankEquiv K) fun z ↦
+      (finrankEquiv_symm_apply K z).trans (intCast_eq_zsmul K z).symm)
+
+/-- Forgetting multiplication retains the whole division-ring additive
+equivalence, with the field's original division-ring dictionary. -/
+@[simp]
+theorem finrankRingEquiv_toAddEquiv :
+    (finrankRingEquiv K).toAddEquiv = @finrankEquiv K hK.toDivisionRing := rfl
+
+/-- The whole additive map is the canonical integer dimension homomorphism. -/
+theorem finrankRingEquiv_toAddMonoidHom :
+    (finrankRingEquiv K).toAddMonoidHom = finrankHom K :=
+  finrankEquiv_toAddMonoidHom K
+
+/-- The ring equivalence evaluates by the integer dimension homomorphism. -/
+theorem finrankRingEquiv_apply (x : K0 K) :
+    finrankRingEquiv K x = finrankHom K x :=
+  finrankEquiv_apply K x
+
+/-- Integer dimension of a finite right-module generator over a field is its
+finrank, independently of its carrier universe. -/
+@[simp]
+theorem finrankRingEquiv_of_module (M : Type v) [AddCommGroup M]
+    [Module Kᵐᵒᵖ M] [Module.Finite Kᵐᵒᵖ M] :
+    finrankRingEquiv K (of K M) = (Module.finrank Kᵐᵒᵖ M : ℤ) :=
+  finrankEquiv_of_module K M
+
+/-- The inverse sends every integer to that multiple of the regular generator. -/
+theorem finrankRingEquiv_symm_apply (z : ℤ) :
+    (finrankRingEquiv K).symm z = z • of K Kᵐᵒᵖ :=
+  finrankEquiv_symm_apply K z
+
+/-- The inverse dimension equivalence is the canonical integer cast. -/
+@[simp]
+theorem finrankRingEquiv_symm_intCast (z : ℤ) :
+    (finrankRingEquiv K).symm z = (z : K0 K) :=
+  (finrankRingEquiv_symm_apply K z).trans (intCast_eq_zsmul K z).symm
+
+/-- The dimension ring equivalence sends an integer cast to that integer. -/
+@[simp]
+theorem finrankRingEquiv_intCast (z : ℤ) :
+    finrankRingEquiv K (z : K0 K) = z :=
+  map_intCast (finrankRingEquiv K) z
+
+/-- On projective-class generators the ring equivalence is the natural-valued
+class dimension equivalence followed by the integer cast. -/
+theorem finrankRingEquiv_ofClass (a : ProjectiveClass K) :
+    finrankRingEquiv K (ofClass K a) = (ProjectiveClass.finrankEquiv K a : ℤ) :=
+  finrankEquiv_ofClass K a
+
+/-- Restriction along group completion recovers class dimension followed by
+the canonical integer homomorphism. -/
+theorem finrankRingEquiv_comp_ofClass :
+    (finrankRingEquiv K).toAddMonoidHom.comp (ofClass K) =
+      (Int.ofNatHom : ℕ →+ ℤ).comp (ProjectiveClass.finrankHom K) := by
+  rw [finrankRingEquiv_toAddMonoidHom, finrankHom_comp_ofClass]
+
+end FieldRingEquivalence
+
+section LocalRingEquivalence
+
+variable (R : Type u) [hR : CommRing R] [hlocal : IsLocalRing R]
+
+/-- Canonical Jacobson-residue dimension identifies the tensor-product ring
+K₀ of a commutative local ring with `ℤ`. Its entire additive equivalence is
+`localEquivInt`, whose inverse is integer multiplication of the regular generator.
+See Weibel, *The K-book*, Chapter II, §2. -/
+noncomputable def localRingEquivInt : K0 R ≃+* ℤ :=
+  AddEquiv.toRingEquiv (localEquivInt R) (by
+    exact map_mul_of_symm_intCast (localEquivInt R) fun z ↦
+      (localEquivInt_symm_apply R z).trans (intCast_eq_zsmul R z).symm)
+
+/-- Forgetting multiplication retains the whole additive equivalence with the
+original underlying ring dictionary, including its noncommutative-ring API. -/
+@[simp]
+theorem localRingEquivInt_toAddEquiv :
+    (localRingEquivInt R).toAddEquiv = @localEquivInt R hR.toRing hlocal := rfl
+
+/-- The whole additive map is canonical Jacobson-residue dimension. -/
+theorem localRingEquivInt_toAddMonoidHom :
+    (localRingEquivInt R).toAddMonoidHom = localDimensionHom R :=
+  localEquivInt_toAddMonoidHom R
+
+/-- The ring equivalence evaluates by canonical Jacobson-residue dimension. -/
+theorem localRingEquivInt_apply (x : K0 R) :
+    localRingEquivInt R x = localDimensionHom R x :=
+  localEquivInt_apply R x
+
+/-- On finite projective right modules, the local ring equivalence gives the
+dimension of the residue module, not source-ring finrank. -/
+@[simp]
+theorem localRingEquivInt_of_module (M : Type v) [AddCommGroup M]
+    [Module Rᵐᵒᵖ M] [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M] :
+    localRingEquivInt R (of R M) =
+      (Module.finrank (R ⧸ Ring.jacobson R)ᵐᵒᵖ
+        (ModuleCat.RightExtension.Obj (Ideal.Quotient.mk (Ring.jacobson R)) M) : ℤ) :=
+  localEquivInt_of_module R M
+
+/-- The inverse sends every integer to that multiple of the regular generator. -/
+theorem localRingEquivInt_symm_apply (z : ℤ) :
+    (localRingEquivInt R).symm z = z • of R Rᵐᵒᵖ :=
+  localEquivInt_symm_apply R z
+
+/-- The inverse local ring equivalence is the canonical integer cast. -/
+@[simp]
+theorem localRingEquivInt_symm_intCast (z : ℤ) :
+    (localRingEquivInt R).symm z = (z : K0 R) :=
+  (localRingEquivInt_symm_apply R z).trans (intCast_eq_zsmul R z).symm
+
+/-- The local ring equivalence sends an integer cast to that integer. -/
+@[simp]
+theorem localRingEquivInt_intCast (z : ℤ) :
+    localRingEquivInt R (z : K0 R) = z :=
+  map_intCast (localRingEquivInt R) z
+
+end LocalRingEquivalence
+
+section PrincipalIdealDomainRingEquivalence
+
+variable (R : Type u) [hR : CommRing R] [hdomain : IsDomain R]
+  [hpid : IsPrincipalIdealRing R]
+
+/-- Fraction-field dimension identifies the tensor-product ring K₀ of a
+commutative principal ideal domain with `ℤ`. Its entire additive equivalence is
+`pidEquivInt`, whose inverse is integer multiplication of the regular generator.
+See Weibel, *The K-book*, Chapter II, §2. -/
+noncomputable def pidRingEquivInt : K0 R ≃+* ℤ :=
+  AddEquiv.toRingEquiv (pidEquivInt R) (by
+    exact map_mul_of_symm_intCast (pidEquivInt R) fun z ↦
+      (pidEquivInt_symm_apply R z).trans (intCast_eq_zsmul R z).symm)
+
+/-- Forgetting multiplication retains the entire original PID additive equivalence. -/
+@[simp]
+theorem pidRingEquivInt_toAddEquiv :
+    (pidRingEquivInt R).toAddEquiv = @pidEquivInt R hR hdomain hpid := rfl
+
+/-- The whole additive map is fraction-field extension followed by integer dimension. -/
+theorem pidRingEquivInt_toAddMonoidHom :
+    (pidRingEquivInt R).toAddMonoidHom =
+      (finrankHom (FractionRing R)).comp (map (algebraMap R (FractionRing R))) :=
+  pidEquivInt_toAddMonoidHom R
+
+/-- The PID ring equivalence evaluates by dimension after fraction-field extension. -/
+theorem pidRingEquivInt_apply (x : K0 R) :
+    pidRingEquivInt R x =
+      finrankHom (FractionRing R) (map (algebraMap R (FractionRing R)) x) :=
+  pidEquivInt_apply R x
+
+/-- On finite projective right modules, the PID ring equivalence gives the
+dimension of the fraction-field extension, independently of the carrier universe. -/
+@[simp]
+theorem pidRingEquivInt_of_module (M : Type v) [AddCommGroup M]
+    [Module Rᵐᵒᵖ M] [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M] :
+    pidRingEquivInt R (of R M) =
+      (Module.finrank (FractionRing R)ᵐᵒᵖ
+        (ModuleCat.RightExtension.Obj (algebraMap R (FractionRing R)) M) : ℤ) :=
+  pidEquivInt_of_module R M
+
+/-- On finite projective right modules over a PID, fraction-field dimension
+agrees with source-ring finrank. -/
+theorem pidRingEquivInt_of_module_finrank (M : Type v) [AddCommGroup M]
+    [Module Rᵐᵒᵖ M] [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M] :
+    pidRingEquivInt R (of R M) = (Module.finrank Rᵐᵒᵖ M : ℤ) :=
+  pidEquivInt_of_module_finrank R M
+
+/-- The inverse sends every integer to that multiple of the regular generator. -/
+theorem pidRingEquivInt_symm_apply (z : ℤ) :
+    (pidRingEquivInt R).symm z = z • of R Rᵐᵒᵖ :=
+  pidEquivInt_symm_apply R z
+
+/-- The inverse PID ring equivalence is the canonical integer cast. -/
+@[simp]
+theorem pidRingEquivInt_symm_intCast (z : ℤ) :
+    (pidRingEquivInt R).symm z = (z : K0 R) :=
+  (pidRingEquivInt_symm_apply R z).trans (intCast_eq_zsmul R z).symm
+
+/-- The PID ring equivalence sends an integer cast to that integer. -/
+@[simp]
+theorem pidRingEquivInt_intCast (z : ℤ) :
+    pidRingEquivInt R (z : K0 R) = z :=
+  map_intCast (pidRingEquivInt R) z
+
+end PrincipalIdealDomainRingEquivalence
 
 end KTheory.K0

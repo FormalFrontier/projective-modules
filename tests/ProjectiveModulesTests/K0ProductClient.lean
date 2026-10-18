@@ -213,8 +213,8 @@ private theorem class_rank_coordinates (n m : ℕ) :
   have obs := congrArg (fun p : ProjectiveClass ℚ × ProjectiveClass ℚ =>
     (ProjectiveClass.finrankHom ℚ p.1, ProjectiveClass.finrankHom ℚ p.2))
     (class_coordinates n m)
-  simpa only [map_nsmul, ProjectiveClass.finrankHom_of_self, nsmul_eq_mul, mul_one,
-    Nat.cast_id] using obs
+  simp only [map_nsmul, ProjectiveClass.finrankHom_of_self] at obs
+  simpa only [nsmul_eq_mul, mul_one, Nat.cast_id] using obs
 
 private theorem integer_coordinates (z t : ℤ) :
     (K0.map (RingHom.fst ℚ ℚ) (z • kL + t • kR),
@@ -227,8 +227,8 @@ private theorem integer_rank_coordinates (z t : ℤ) :
       K0.finrankHom ℚ (K0.map (RingHom.snd ℚ ℚ) (z • kL + t • kR))) = (z, t) := by
   have obs := congrArg (fun p : K0 ℚ × K0 ℚ =>
     (K0.finrankHom ℚ p.1, K0.finrankHom ℚ p.2)) (integer_coordinates z t)
-  simpa only [map_zsmul, K0.finrankHom_of_self, zsmul_eq_mul, mul_one,
-    Int.cast_id] using obs
+  simp only [map_zsmul, K0.finrankHom_of_self] at obs
+  simpa only [zsmul_eq_mul, mul_one, Int.cast_id] using obs
 
 private theorem signed_example :
     (K0.finrankHom ℚ (K0.map (RingHom.fst ℚ ℚ) ((-3 : ℤ) • kL + (2 : ℤ) • kR)),
@@ -240,8 +240,8 @@ private theorem negative_left_nonzero : (-3 : ℤ) • kL ≠ 0 := by
   have obs := congrArg (fun x => K0.finrankHom ℚ
     (K0.map (RingHom.fst ℚ ℚ) x)) h
   have bad : (-3 : ℤ) = 0 := by
-    simpa only [map_zsmul, k0_images.1, K0.finrankHom_of_self,
-      zsmul_eq_mul, mul_one, Int.cast_id, map_zero] using obs
+    simp only [map_zsmul, k0_images.1, K0.finrankHom_of_self, map_zero] at obs <;>
+      simpa only [zsmul_eq_mul, mul_one, Int.cast_id] using obs
   exact (by decide : (-3 : ℤ) ≠ 0) bad
 
 -- The complementary-span equivalence is used only for these selected modules.
@@ -654,7 +654,8 @@ private theorem signed_observations :
   simp only [map_add, map_zsmul, rational_k0_observations.1,
     rational_k0_observations.2.1, rational_k0_observations.2.2.1,
     rational_k0_observations.2.2.2, zsmul_zero, add_zero, zero_add,
-    K0.finrankHom_of_self, zsmul_eq_mul, mul_one, Int.cast_id]
+    K0.finrankHom_of_self] <;>
+    simp only [zsmul_eq_mul, mul_one, Int.cast_id]
 
 end LiftedScalars
 

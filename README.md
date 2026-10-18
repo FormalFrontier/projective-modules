@@ -241,6 +241,15 @@ examples and qualifications; links below go to the corresponding result families
   with independent module-carrier universes. The generic ring lift and
   extensionality APIs apply to any target ring in an independent universe,
   including noncommutative and zero targets.
+- **[Integer-rank ring equivalences](ProjectiveModules/KTheory/Rank.lean):** for
+  fields, commutative local rings and commutative principal ideal domains,
+  `KTheory.K0.finrankRingEquiv`, `localRingEquivInt` and `pidRingEquivInt` identify
+  the tensor-product K₀ ring with `ℤ`. Their entire underlying additive
+  equivalences are the existing dimension equivalences. Local dimension uses
+  the Jacobson residue field, and PID dimension uses the fraction field and
+  agrees with source-module finrank on finite projectives. Each inverse is the
+  canonical integer cast, equivalently `z ↦ z • [R]`. These hypotheses exclude
+  zero rings; the general K₀ ring construction above remains zero-inclusive.
 - **[Scalar extension on tensor semirings](ProjectiveModules/KTheory/RingScalarExtension.lean):**
   for any unital homomorphism of commutative rings, including zero rings,
   `KTheory.ProjectiveClass.mapRingHom` enriches the additive class map to a semiring
