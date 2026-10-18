@@ -8,6 +8,7 @@ import ProjectiveModules.KTheory.Rank
 import ProjectiveModules.KTheory.ScalarExtension
 import ProjectiveModules.KTheory.ZeroRing
 import ProjectiveModules.Module.RightExtensionIdeal
+import ProjectiveModulesTests.InfiniteProductRankClient
 import ProjectiveModulesTests.RightIdempotentExtensionClient
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Prod

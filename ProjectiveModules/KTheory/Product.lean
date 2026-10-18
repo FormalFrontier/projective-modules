@@ -13,7 +13,10 @@ import Mathlib.Algebra.Ring.ULift
 import Mathlib.GroupTheory.MonoidLocalization.Lemmas
 
 /-!
-# Finite product rings: projective classes and K₀
+# Product rings: projective classes and K₀
+
+Coordinate scalar extension defines `K0.piMap` for arbitrary families of rings.
+For a finite family, this is the forward map of `K0.piEquiv`.
 
 Coordinate scalar extension gives additive equivalences from the projective-class
 monoid and K₀ of a finite product ring to the products of the corresponding
@@ -443,11 +446,29 @@ section Pi
 
 variable {ι : Type uι} (Ri : ι → Type uR) [∀ i, Ring (Ri i)]
 
+/-- Coordinate scalar extension defines the comparison from K₀ of a product
+ring to the product of its factor K₀ groups, for an arbitrary index type. -/
+noncomputable def piMap : K0 (∀ i, Ri i) →+ (∀ i, K0 (Ri i)) :=
+  AddMonoidHom.pi (fun i ↦ map (Pi.evalRingHom Ri i))
+
+/-- The product comparison evaluates at a coordinate by scalar extension. -/
+@[simp]
+theorem piMap_apply (x : K0 (∀ i, Ri i)) (i : ι) :
+    piMap Ri x i = map (Pi.evalRingHom Ri i) x := by
+  rfl
+
+/-- Composing the product comparison with coordinate evaluation gives the
+corresponding scalar-extension homomorphism. -/
+theorem eval_comp_piMap (i : ι) :
+    (Pi.evalAddMonoidHom (fun j ↦ K0 (Ri j)) i).comp (piMap Ri) =
+      map (Pi.evalRingHom Ri i) := by
+  rfl
+
 /-- Coordinate scalar extension gives an additive equivalence from K₀ of a
 finite product ring to the product of the factor K₀ groups. -/
 noncomputable def piEquiv [Finite ι] : K0 (∀ i, Ri i) ≃+ (∀ i, K0 (Ri i)) :=
   AddEquiv.ofBijective
-    (AddMonoidHom.pi (fun i ↦ map (Pi.evalRingHom Ri i))) (by
+    (piMap Ri) (by
       let q (i : ι) : AddSubmonoid.LocalizationMap
           (⊤ : AddSubmonoid (ProjectiveClass (Ri i))) (K0 (Ri i)) :=
         AddLocalization.addMonoidOf (⊤ : AddSubmonoid (ProjectiveClass (Ri i)))
@@ -479,8 +500,7 @@ noncomputable def piEquiv [Finite ι] : K0 (∀ i, Ri i) ≃+ (∀ i, K0 (Ri i))
         qPi.ofAddEquivOfDom (k := ProjectiveClass.piEquiv Ri) htop
       let e : K0 (∀ i, Ri i) ≃+ (∀ i, K0 (Ri i)) :=
         AddLocalization.addEquivOfQuotient qA
-      have hforward : e.toAddMonoidHom =
-          AddMonoidHom.pi (fun i ↦ map (Pi.evalRingHom Ri i)) := by
+      have hforward : e.toAddMonoidHom = piMap Ri := by
         apply hom_ext_ofClass (∀ i, Ri i)
         intro a
         change e (ofClass (∀ i, Ri i) a) =

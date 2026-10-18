@@ -262,6 +262,13 @@ examples and qualifications; links below go to the corresponding result families
   right extension of scalars `K0.map f` with the induced additive map on
   commutator quotients applied to the source trace. No commutativity, flatness,
   injectivity or nontriviality hypothesis is required.
+- **[Product comparisons and uniform rank bounds](ProjectiveModules/KTheory/RankBound.lean):**
+  the [canonical additive comparison](ProjectiveModules/KTheory/Product.lean) maps
+  K₀ of any product of rings to the product of their K₀ groups. For every K₀ element
+  of an arbitrary ring `R` and any indexed family of unital maps `R →+* D i` to
+  possibly noncommutative division rings, one natural-number bound controls the
+  absolute values of all the integer ranks. For an infinite product of division
+  rings, the comparison is not surjective.
 - **[Local and PID K₀ calculations](ProjectiveModules/KTheory/Rank.lean):** for a
   possibly noncommutative local ring, `KTheory.K0.localEquivInt` identifies K₀ with ℤ
   by canonical Jacobson-residue dimension. For a commutative PID,
@@ -533,6 +540,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Matrix classes and K₀](ProjectiveModules/KTheory/Matrix.lean) | Canonical additive equivalences for arbitrary rings and finite nonempty decidable indices; arbitrary-carrier right-row generators, supported inverse corners, index/height independence and completion compatibility |
 | [Semisimple coordinates and simple rows](ProjectiveModules/KTheory/SemisimpleEquivalence.lean) | `KTheory.matrixBlockModuleOfRingEquiv` restricts supported right rows along a chosen finite matrix decomposition; simple-module classification at arbitrary carrier universes, coefficient endomorphism rings, natural class coordinates, integer K₀ basis and block-size regular coordinates; `IsSemisimpleRing.matrixDivisionDecomposition_simple_basis` uses a decomposition chosen from Mathlib's Wedderburn–Artin theorem, including the empty outer family |
 | [K₀ scalar extension](ProjectiveModules/KTheory/ScalarExtension.lean) | Additive change-of-rings maps with arbitrary-carrier evaluation and whole-map identity/composition laws; independence of the homomorphism for division-ring sources and arbitrary ring targets |
+| [Uniform rank bounds](ProjectiveModules/KTheory/RankBound.lean) | One absolute integer-rank bound for each K₀ element along any indexed unital maps from an arbitrary ring to division rings; non-surjectivity of the comparison for infinite products of division rings |
 | [K₀ dimension](ProjectiveModules/KTheory/Rank.lean), [zero rings](ProjectiveModules/KTheory/ZeroRing.lean) | Dimension classifications of projective classes by ℕ and K₀ by ℤ over division rings, and bijectivity of division-ring scalar-extension maps; entire class/group collapse over subsingleton rings |
 | [Locally constant module rank](ProjectiveModules/Module/RankLocallyConstant.lean) | Characteristic laws for the existing `Module.rankLocallyConstant`: linear-isomorphism invariance, zero and regular-unit normalizations, finite dependent-product and binary-product addition, tensor multiplication and arbitrary-algebra pullback, including zero rings and empty indices |
 | [Rank realization](ProjectiveModules/Module/LocallyConstantRank.lean), [fibers](ProjectiveModules/Module/RankFiberDecomposition.lean), [component models](ProjectiveModules/Module/ComponentwiseFree.lean) | Locally constant ranks, commuting complete orthogonal Cartesian refinements over semirings, and conditional componentwise-free classification |
