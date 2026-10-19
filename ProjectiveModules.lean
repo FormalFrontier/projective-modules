@@ -53,6 +53,7 @@ public import ProjectiveModules.KTheory.K0
 public import ProjectiveModules.KTheory.Matrix
 public import ProjectiveModules.KTheory.ModuleEquivalence
 public import ProjectiveModules.KTheory.Product
+public import ProjectiveModules.KTheory.ProductRing
 public import ProjectiveModules.KTheory.Rank
 public import ProjectiveModules.KTheory.Ring
 public import ProjectiveModules.KTheory.RingScalarExtension

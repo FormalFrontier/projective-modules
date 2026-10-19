@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 import ProjectiveModules.KTheory.Product
+import ProjectiveModules.KTheory.ProductRing
 import ProjectiveModules.KTheory.Rank
 import Mathlib.Algebra.Ring.Rat
 import Mathlib.Algebra.Ring.ULift
@@ -68,6 +69,22 @@ private abbrev kP := K0.of A P
 private abbrev kN := K0.of A N
 private abbrev positiveClasses := fun i => ProjectiveClass.of ℚ (positive i)
 private abbrev negativeClasses := fun i => ProjectiveClass.of ℚ (negative i)
+
+/-- The three-factor comparison sends the tensor unit to the coordinate units. -/
+private theorem unit_coordinates :
+    K0.piMap rings (1 : K0 A) = 1 :=
+  K0.piMap_one rings
+
+/-- Multiplication of the two product module classes is coordinatewise. -/
+private theorem multiplication_coordinates :
+    K0.piMap rings (kP * kN) = K0.piMap rings kP * K0.piMap rings kN :=
+  K0.piMap_mul rings kP kN
+
+/-- The regular opposite-ring module maps to the regular factor modules. -/
+private theorem regular_coordinates :
+    K0.piMap rings (K0.of A Aᵐᵒᵖ) =
+      fun _ : Fin 3 => K0.of ℚ ℚᵐᵒᵖ :=
+  K0.piMap_of_regular rings
 
 /-- Finite coordinate modules supply the prescribed natural and integer dimensions. -/
 private theorem coordinate_dimensions (n : ℕ) :

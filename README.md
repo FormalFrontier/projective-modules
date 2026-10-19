@@ -268,6 +268,14 @@ examples and qualifications; links below go to the corresponding result families
   homomorphism, with the same whole underlying additive map. It sends arbitrary-carrier
   finite projective right-module classes to their right extensions and respects identity
   and composition; scalar and carrier universes are independent.
+- **[Ring compatibility of the K₀ product comparison](ProjectiveModules/KTheory/ProductRing.lean):**
+  for any family of commutative rings, the original additive `KTheory.K0.piMap`
+  preserves the tensor unit and multiplication. Index and scalar universes are
+  independent; empty families and zero factors are allowed. The regular
+  right-module formula holds for arbitrary unital rings. Over `Bool → ℤ`,
+  the product of free factor modules of ranks one and zero is not free;
+  its K₀ class is idempotent and is the inverse image of the coordinate
+  idempotent under `KTheory.K0.piEquiv`.
 - **[K₀ trace naturality](ProjectiveModules/KTheory/TraceNaturality.lean):**
   for arbitrary rings `R`, `S` in independent universes and every unital
   `f : R →+* S`, `KTheory.K0.traceModCommutators_map` identifies trace after
@@ -545,6 +553,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Right regular module](ProjectiveModules/Module/RightRegular.lean) | Canonical opposite-scalar free and finite instances on the ordinary semiring carrier, including zero semirings |
 | [Right-module K₀](ProjectiveModules/KTheory/K0.lean), [stabilization](ProjectiveModules/KTheory/Stabilization.lean) | Ring-sized projective class monoid and group completion; arbitrary-universe module generators, descent/universal properties, difference representatives and common finite-projective or finite-free stabilization |
 | [Tensor semiring](ProjectiveModules/KTheory/TensorProduct.lean) | Canonical commutative semiring on finite-projective right-module classes over commutative rings, including zero rings; direct-sum addition, tensor multiplication, regular unit and natural casts, with independent module-carrier universes |
+| [Product comparison and tensor multiplication](ProjectiveModules/KTheory/ProductRing.lean) | Regular right-module formula for arbitrary unital rings; unit and multiplication for families of commutative rings, allowing empty families and zero factors, with independent index/scalar universes; a nonfree Bool-indexed integer corner with idempotent K₀ class |
 | [Tensor-product ring on K₀](ProjectiveModules/KTheory/Ring.lean) | Generic Grothendieck commutative ring on the existing K₀ group; bundled class ring homomorphism with the same whole additive map, regular unit, tensor-generator multiplication and regular-module cast formulas. The generic ring universal property permits arbitrary target rings and independent universes |
 | [Tensor-semiring scalar extension](ProjectiveModules/KTheory/RingScalarExtension.lean) | `ProjectiveClass.mapRingHom` for arbitrary unital commutative rings, including zero rings; whole additive-map compatibility, arbitrary-carrier module evaluation, identity and composition |
 | [Opposite-ring duality](ProjectiveModules/KTheory/Dual.lean) | Canonical additive equivalences of class monoids and K₀ over arbitrary rings; normalized right duals, inverse double-opposite transport, regular generators, completion squares and universal extension |
