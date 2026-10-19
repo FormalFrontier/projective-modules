@@ -79,6 +79,11 @@ examples and qualifications; links below go to the corresponding result families
   Its value on a finite projective module is its determinant-line class,
   transported from `Rᵐᵒᵖ` to `R`. This normalization determines it uniquely;
   carrier universes are independent and the zero ring is included.
+- **[K₀ determinant naturality](ProjectiveModules/KTheory/DeterminantNaturality.lean):**
+  for every unital homomorphism `f : R →+* S` of commutative rings in independent
+  universes, the additive determinant `K₀(R) → Additive (Pic R)` commutes with
+  K₀ scalar extension and Picard base change. This includes zero rings and
+  nonflat maps, with no constant-rank assumption.
 - **[Duality and trace](docs/Overview.md#duality-biduality-and-trace):** finite-projective
   dual/evaluation base change; rank-one invertibles including zero rings; cancellation
   only of common finite free summands. Finite-projective left-module biduality uses ordinary coefficients
@@ -224,6 +229,13 @@ examples and qualifications; links below go to the corresponding result families
   to any ring are independent of the scalar homomorphism. Zero-ring objects collapse.
   Isomorphism-invariant functions descend to class functions, and preservation of zero
   and direct sum bundles this descent as an additive map.
+- **[Invariant basis number and the regular K₀ class](ProjectiveModules/KTheory/InvariantBasisNumber.lean):**
+  for any ring `R`, possibly noncommutative and including zero rings,
+  `InvariantBasisNumber R` holds iff the integer orbit
+  `z ↦ z • K0.of R Rᵐᵒᵖ` is injective, equivalently the regular class has
+  infinite additive order: `addOrderOf (K0.of R Rᵐᵒᵖ) = 0`.
+  Here the regular right module has both scalar ring and carrier `Rᵐᵒᵖ`;
+  this is a condition on that single class, not torsion-freeness of all of `K0 R`.
 - **[Tensor semiring of projective classes](ProjectiveModules/KTheory/TensorProduct.lean):**
   for every commutative ring `R`, `ProjectiveClass R` has a canonical `CommSemiring`
   instance with direct-sum addition and tensor multiplication. On finite projective

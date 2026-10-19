@@ -46,7 +46,9 @@ public import ProjectiveModules.Invertible.OfRankOne
 public import ProjectiveModules.Invertible.StableCancellation
 public import ProjectiveModules.Invertible.Topology
 public import ProjectiveModules.KTheory.Determinant
+public import ProjectiveModules.KTheory.DeterminantNaturality
 public import ProjectiveModules.KTheory.Dual
+public import ProjectiveModules.KTheory.InvariantBasisNumber
 public import ProjectiveModules.KTheory.K0
 public import ProjectiveModules.KTheory.Matrix
 public import ProjectiveModules.KTheory.ModuleEquivalence
