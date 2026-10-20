@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+import ProjectiveModules.Examples.Products
 import ProjectiveModules.KTheory.Rank
 import ProjectiveModules.KTheory.ScalarExtension
 import ProjectiveModules.KTheory.ZeroRing

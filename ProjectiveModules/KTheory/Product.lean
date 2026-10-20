@@ -8,6 +8,9 @@ public import ProjectiveModules.KTheory.ScalarExtension
 public import ProjectiveModules.Module.RightProduct
 public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.Algebra.Ring.Prod
+import ProjectiveModules.Module.RightExtensionFree
+import ProjectiveModules.Module.ProjectiveComplement
+import ProjectiveModules.Module.RightEndomorphismMatrix
 import Mathlib.Algebra.Ring.Fin
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.GroupTheory.MonoidLocalization.Lemmas
@@ -15,8 +18,9 @@ import Mathlib.GroupTheory.MonoidLocalization.Lemmas
 /-!
 # Product rings: projective classes and K₀
 
-Coordinate scalar extension defines `K0.piMap` for arbitrary families of rings.
-For a finite family, this is the forward map of `K0.piEquiv`.
+Coordinate scalar extension defines `ProjectiveClass.piMap` and `K0.piMap`
+for arbitrary families of rings. For a finite family, these are the forward
+maps of `ProjectiveClass.piEquiv` and `K0.piEquiv`.
 
 Coordinate scalar extension gives additive equivalences from the projective-class
 monoid and K₀ of a finite product ring to the products of the corresponding
@@ -36,6 +40,8 @@ of zero and addition, and, for K₀, subtraction and integer scalar multiplicati
 
 ## References and credits
 
+* Weibel, *The K-book* (2013).
+
 * Mathlib's Pi and binary-product homomorphisms and additive equivalences.
 * Mathlib's additive Grothendieck group and arbitrary-family product localization.
 * Projective Modules' finite-projective classes, group-completion universal
@@ -53,6 +59,319 @@ namespace ProjectiveClass
 section Pi
 
 variable {ι : Type uι} (Ri : ι → Type uR) [∀ i, Ring (Ri i)]
+
+/-- Coordinate scalar extension on finite-projective right-module classes
+for an arbitrary family of rings. -/
+noncomputable def piMap :
+    ProjectiveClass (∀ i, Ri i) →+ (∀ i, ProjectiveClass (Ri i)) :=
+  AddMonoidHom.pi (fun i ↦ map (Pi.evalRingHom Ri i))
+
+/-- Evaluation of the coordinate map is scalar extension to that factor. -/
+@[simp]
+theorem piMap_apply (a : ProjectiveClass (∀ i, Ri i)) (i : ι) :
+    piMap Ri a i = map (Pi.evalRingHom Ri i) a := by
+  rfl
+
+/-- Coordinate evaluation composed with the whole coordinate map is the
+scalar-extension homomorphism to that factor. -/
+theorem piMap_eval (i : ι) :
+    (Pi.evalAddMonoidHom (fun j ↦ ProjectiveClass (Ri j)) i).comp
+        (piMap Ri) = map (Pi.evalRingHom Ri i) := by
+  rfl
+
+/-- A finite projective module in any carrier universe maps to the classes
+of its coordinate right scalar extensions. -/
+@[simp]
+theorem piMap_of (M : Type uM) [AddCommGroup M]
+    [Module (∀ i, Ri i)ᵐᵒᵖ M]
+    [Module.Finite (∀ i, Ri i)ᵐᵒᵖ M] [Module.Projective (∀ i, Ri i)ᵐᵒᵖ M]
+    (i : ι) :
+    piMap Ri (of (∀ i, Ri i) M) i =
+      of (Ri i) (ModuleCat.RightExtension.Obj (Pi.evalRingHom Ri i) M) := by
+  simpa only [piMap_apply] using map_of (Pi.evalRingHom Ri i) M
+
+/-- The scalar-self regular right-module class maps to the regular class
+at each coordinate. -/
+@[simp]
+theorem piMap_of_self (i : ι) :
+    piMap Ri (of (∀ j, Ri j) (∀ j, Ri j)ᵐᵒᵖ) i =
+      of (Ri i) (Ri i)ᵐᵒᵖ := by
+  simpa only [piMap_apply] using map_of_self (Pi.evalRingHom Ri i)
+
+/-- Finite-projective right-module classes over a product ring are
+determined by their coordinate scalar extensions. -/
+theorem piMap_injective : Function.Injective (piMap Ri) := by
+  classical
+  let R := ∀ i, Ri i
+  let E (M : ModuleCat.{max uι uR} Rᵐᵒᵖ) (i : ι) :=
+    ModuleCat.of (Ri i)ᵐᵒᵖ (ModuleCat.RightExtension.Obj (Pi.evalRingHom Ri i) M)
+  -- Assemble the extension/restriction units with the canonical product action.
+  let comparison (M : ModuleCat.{max uι uR} Rᵐᵒᵖ) :
+      M →ₗ[Rᵐᵒᵖ] ModuleCat.piRight Ri (E M) := by
+    letI : ∀ i, Module Rᵐᵒᵖ (E M i) := fun i =>
+      Module.compHom (E M i) (RingHom.op (Pi.evalRingHom Ri i))
+    exact LinearMap.pi fun i =>
+      (ModuleCat.RightExtension.HomEquiv.toRestriction
+        (Pi.evalRingHom Ri i) M (E M i) (ModuleCat.ofHom LinearMap.id)).hom
+  have comparison_apply (M : ModuleCat.{max uι uR} Rᵐᵒᵖ) (x : M) (i : ι) :
+      comparison M x i = ModuleCat.RightExtension.tmul (Pi.evalRingHom Ri i) x 1 := by
+    rfl
+  have naturality (A B : ModuleCat.{max uι uR} Rᵐᵒᵖ)
+      (g : A →ₗ[Rᵐᵒᵖ] B) (x : A) (i : ι) :
+      comparison B (g x) i =
+        ModuleCat.RightExtension.map (Pi.evalRingHom Ri i) g (comparison A x i) := by
+    simpa only [comparison_apply] using
+      (ModuleCat.RightExtension.map_tmul (Pi.evalRingHom Ri i) g x 1).symm
+  -- A fixed finite free module commutes with this product, even for infinite ι.
+  have free_bijective (n : ℕ) :
+      Function.Bijective (comparison (ModuleCat.of Rᵐᵒᵖ (Fin n → R))) := by
+    constructor
+    · intro x y h
+      funext j i
+      have hi := congrArg
+        (fun z : ModuleCat.piRight Ri (E (ModuleCat.of Rᵐᵒᵖ (Fin n → R))) =>
+          ModuleCat.RightExtension.rightFreeLinearEquiv
+            (Pi.evalRingHom Ri i) (Fin n) (z i) j) h
+      simpa only [comparison_apply,
+        ModuleCat.RightExtension.rightFreeLinearEquiv_tmul, mul_one,
+        Pi.evalRingHom_apply] using hi
+    · intro z
+      refine ⟨(fun j i => ModuleCat.RightExtension.rightFreeLinearEquiv
+        (Pi.evalRingHom Ri i) (Fin n) (z i) j), ?_⟩
+      funext i
+      apply (ModuleCat.RightExtension.rightFreeLinearEquiv
+        (Pi.evalRingHom Ri i) (Fin n)).injective
+      rw [comparison_apply, ModuleCat.RightExtension.rightFreeLinearEquiv_tmul]
+      funext j
+      exact mul_one _
+  -- Bijectivity passes to a specified finite-free retract by naturality.
+  have recover (M : ModuleCat.FiniteProjective.{max uι uR, max uι uR} Rᵐᵒᵖ) :
+      Function.Bijective (comparison M.obj) := by
+    obtain ⟨n, p₀, j₀, _, _, hp₀j₀⟩ :=
+      Module.Finite.exists_comp_eq_id_of_projective Rᵐᵒᵖ M
+    let coord := Module.rightFreeCoordEquiv R (Fin n)
+    let P := ModuleCat.of Rᵐᵒᵖ (Fin n → R)
+    let p : P →ₗ[Rᵐᵒᵖ] M.obj := p₀.comp coord.symm.toLinearMap
+    let j : M.obj →ₗ[Rᵐᵒᵖ] P := coord.toLinearMap.comp j₀
+    have hpj : p.comp j = LinearMap.id := by
+      apply LinearMap.ext
+      intro x
+      change p₀ (coord.symm (coord (j₀ x))) = x
+      rw [coord.symm_apply_apply]
+      exact DFunLike.congr_fun hp₀j₀ x
+    constructor
+    · intro x y h
+      have hj : j x = j y := (free_bijective n).1 (by
+        funext i
+        rw [naturality M.obj P j x i, naturality M.obj P j y i]
+        exact congrArg (ModuleCat.RightExtension.map (Pi.evalRingHom Ri i) j)
+          (congrFun h i))
+      exact (DFunLike.congr_fun hpj x).symm.trans
+        ((congrArg p hj).trans (DFunLike.congr_fun hpj y))
+    · intro z
+      let z' : ModuleCat.piRight Ri (E P) := fun i =>
+        ModuleCat.RightExtension.map (Pi.evalRingHom Ri i) j (z i)
+      obtain ⟨y, hy⟩ := (free_bijective n).2 z'
+      refine ⟨p y, ?_⟩
+      funext i
+      rw [naturality P M.obj p y i, congrFun hy i]
+      change ModuleCat.RightExtension.map (Pi.evalRingHom Ri i) p
+        (ModuleCat.RightExtension.map (Pi.evalRingHom Ri i) j (z i)) = z i
+      have hmap :
+          (ModuleCat.RightExtension.map (Pi.evalRingHom Ri i) p).comp
+            (ModuleCat.RightExtension.map (Pi.evalRingHom Ri i) j) = LinearMap.id := by
+        rw [← ModuleCat.RightExtension.map_comp, hpj, ModuleCat.RightExtension.map_id]
+      exact DFunLike.congr_fun hmap (z i)
+  intro a b
+  refine induction_on R a ?_
+  intro M
+  refine induction_on R b ?_
+  intro N h
+  apply (of_eq_iff R M N).2
+  have hi (i : ι) : Nonempty (E M.obj i ≃ₗ[(Ri i)ᵐᵒᵖ] E N.obj i) := by
+    apply (of_eq_iff (Ri i)
+      (ModuleCat.RightExtension.Obj (Pi.evalRingHom Ri i) M)
+      (ModuleCat.RightExtension.Obj (Pi.evalRingHom Ri i) N)).1
+    exact (piMap_of Ri M i).symm.trans
+      ((congrFun h i).trans (piMap_of Ri N i))
+  rcases (show Nonempty (∀ i, E M.obj i ≃ₗ[(Ri i)ᵐᵒᵖ] E N.obj i) from
+    ⟨fun i => Classical.choice (hi i)⟩) with ⟨e⟩
+  exact ⟨(LinearEquiv.ofBijective (comparison M.obj) (recover M)).trans
+    ((Module.piRightCongr Ri (fun i => E M.obj i) (fun i => E N.obj i) e).trans
+      (LinearEquiv.ofBijective (comparison N.obj) (recover N)).symm)⟩
+
+/-- A family of finite-projective right-module classes comes from the
+product ring exactly when it has complements to finite free modules with
+one common finite number of generators. -/
+theorem mem_range_piMap_iff (p : ∀ i, ProjectiveClass (Ri i)) :
+    p ∈ Set.range (piMap Ri) ↔
+      ∃ n : ℕ, ∀ i, ∃ q : ProjectiveClass (Ri i),
+        p i + q = n • of (Ri i) (Ri i)ᵐᵒᵖ := by
+  classical
+  constructor
+  · rintro ⟨a, rfl⟩
+    obtain ⟨M, rfl⟩ := of_surjective (∀ i, Ri i) a
+    obtain ⟨n, C, hCadd, hCmodule, hCfinite, ⟨e⟩⟩ :=
+      Module.Projective.exists_finite_complement_linearEquiv
+        (R := (∀ i, Ri i)ᵐᵒᵖ) (P := M)
+    letI : AddCommGroup C := hCadd
+    letI : Module (∀ i, Ri i)ᵐᵒᵖ C := hCmodule
+    letI : Module.Finite (∀ i, Ri i)ᵐᵒᵖ C := hCfinite
+    letI : Module.Projective (∀ i, Ri i)ᵐᵒᵖ (M × C) :=
+      Module.Projective.of_equiv' e.symm
+    letI : Module.Projective (∀ i, Ri i)ᵐᵒᵖ C :=
+      Module.Projective.of_split (LinearMap.inr (∀ i, Ri i)ᵐᵒᵖ M C)
+        (LinearMap.snd (∀ i, Ri i)ᵐᵒᵖ M C)
+        (LinearMap.snd_comp_inr (∀ i, Ri i)ᵐᵒᵖ M C)
+    have heq : of (∀ i, Ri i) M + of (∀ i, Ri i) C =
+        n • of (∀ i, Ri i) (∀ i, Ri i)ᵐᵒᵖ := by
+      calc
+        _ = of (∀ i, Ri i) (M × C) := (of_prod (∀ i, Ri i) M C).symm
+        _ = of (∀ i, Ri i) (Fin n → (∀ i, Ri i)ᵐᵒᵖ) :=
+          of_eq_of_equiv (∀ i, Ri i) _ e
+        _ = _ := of_fin_fun_eq_nsmul (∀ i, Ri i) n
+    refine ⟨n, ?_⟩
+    intro i
+    refine ⟨piMap Ri (of (∀ i, Ri i) C) i, ?_⟩
+    simpa only [piMap_apply, map_add, map_nsmul, map_of_self] using
+      congrArg (map (Pi.evalRingHom Ri i)) heq
+  · rintro ⟨n, h⟩
+    choose q hq using h
+    choose M hM using fun i ↦ of_surjective (Ri i) (p i)
+    choose N hN using fun i ↦ of_surjective (Ri i) (q i)
+    have hsplit : ∀ i, ∃ (r : (Fin n → Ri i) →ₗ[(Ri i)ᵐᵒᵖ] M i)
+        (j : M i →ₗ[(Ri i)ᵐᵒᵖ] (Fin n → Ri i)), r.comp j = LinearMap.id := by
+      intro i
+      have hMi : of (Ri i) (M i) = p i := hM i
+      have hNi : of (Ri i) (N i) = q i := hN i
+      have heq : of (Ri i) (M i × N i) = of (Ri i) (Fin n → (Ri i)ᵐᵒᵖ) := by
+        rw [of_prod, hMi, hNi, of_fin_fun_eq_nsmul]
+        exact hq i
+      obtain ⟨e⟩ := (of_eq_iff (Ri i) (M i × N i) (Fin n → (Ri i)ᵐᵒᵖ)).1 heq
+      let c := e.trans (Module.rightFreeCoordEquiv (Ri i) (Fin n))
+      let r : (Fin n → Ri i) →ₗ[(Ri i)ᵐᵒᵖ] M i :=
+        (LinearMap.fst (Ri i)ᵐᵒᵖ (M i) (N i)).comp c.symm.toLinearMap
+      let j : M i →ₗ[(Ri i)ᵐᵒᵖ] (Fin n → Ri i) :=
+        c.toLinearMap.comp (LinearMap.inl (Ri i)ᵐᵒᵖ (M i) (N i))
+      refine ⟨r, j, ?_⟩
+      apply LinearMap.ext
+      intro x
+      change (c.symm (c (x, 0))).1 = x
+      rw [c.symm_apply_apply]
+    choose rF jF hrFjF using hsplit
+    let dF (i : ι) : Module.End (Ri i)ᵐᵒᵖ (Fin n → Ri i) :=
+      (jF i).comp (rF i)
+    have hdF (i : ι) : (dF i).comp (dF i) = dF i := by
+      apply LinearMap.ext
+      intro x
+      change jF i (rF i (jF i (rF i x))) = jF i (rF i x)
+      exact congrArg (jF i) (DFunLike.congr_fun (hrFjF i) (rF i x))
+    let AF (i : ι) : Matrix (Fin n) (Fin n) (Ri i) :=
+      Module.rightEndomorphismMatrixEquiv (Ri i) (Fin n) (dF i)
+    let A : Matrix (Fin n) (Fin n) (∀ i, Ri i) := fun a b i ↦ AF i a b
+    have hAF (i : ι) : (Pi.evalRingHom Ri i).mapMatrix A = AF i := rfl
+    have hA : A * A = A := by
+      ext a b i
+      have hi : (Pi.evalRingHom Ri i).mapMatrix (A * A) =
+          (Pi.evalRingHom Ri i).mapMatrix A := by
+        rw [map_mul, hAF]
+        change Module.rightEndomorphismMatrixEquiv (Ri i) (Fin n) (dF i) *
+            Module.rightEndomorphismMatrixEquiv (Ri i) (Fin n) (dF i) =
+          Module.rightEndomorphismMatrixEquiv (Ri i) (Fin n) (dF i)
+        rw [← map_mul]
+        exact congrArg (Module.rightEndomorphismMatrixEquiv (Ri i) (Fin n)) (hdF i)
+      exact congrArg (fun B : Matrix (Fin n) (Fin n) (Ri i) ↦ B a b) hi
+    let d : Module.End (∀ i, Ri i)ᵐᵒᵖ (Fin n → ∀ i, Ri i) :=
+      (Module.rightEndomorphismMatrixEquiv (∀ i, Ri i) (Fin n)).symm A
+    have hdA : Module.rightEndomorphismMatrixEquiv (∀ i, Ri i) (Fin n) d = A :=
+      (Module.rightEndomorphismMatrixEquiv (∀ i, Ri i) (Fin n)).apply_symm_apply A
+    have hd : d.comp d = d := by
+      apply (Module.rightEndomorphismMatrixEquiv (∀ i, Ri i) (Fin n)).injective
+      change Module.rightEndomorphismMatrixEquiv (∀ i, Ri i) (Fin n) (d * d) =
+        Module.rightEndomorphismMatrixEquiv (∀ i, Ri i) (Fin n) d
+      rw [map_mul, hdA, hA]
+    let Q := LinearMap.range d
+    let j : Q →ₗ[(∀ i, Ri i)ᵐᵒᵖ] (Fin n → ∀ i, Ri i) := Q.subtype
+    let r : (Fin n → ∀ i, Ri i) →ₗ[(∀ i, Ri i)ᵐᵒᵖ] Q := d.rangeRestrict
+    have hjr : j.comp r = d := LinearMap.subtype_comp_rangeRestrict d
+    have hrj : r.comp j = LinearMap.id := by
+      apply LinearMap.ext
+      intro x
+      apply Subtype.ext
+      obtain ⟨z, hz⟩ := x.property
+      change d x.val = x.val
+      calc
+        d x.val = d (d z) := congrArg d hz.symm
+        _ = d z := DFunLike.congr_fun hd z
+        _ = x.val := hz
+    let : Module.Finite (∀ i, Ri i)ᵐᵒᵖ (Fin n → ∀ i, Ri i) :=
+      Module.Finite.equiv (Module.rightFreeCoordEquiv (∀ i, Ri i) (Fin n))
+    let : Module.Projective (∀ i, Ri i)ᵐᵒᵖ (Fin n → ∀ i, Ri i) :=
+      Module.Projective.of_equiv' (Module.rightFreeCoordEquiv (∀ i, Ri i) (Fin n))
+    let : Module.Finite (∀ i, Ri i)ᵐᵒᵖ Q :=
+      Module.Finite.of_surjective r (LinearMap.surjective_rangeRestrict d)
+    let : Module.Projective (∀ i, Ri i)ᵐᵒᵖ Q := Module.Projective.of_split j r hrj
+    refine ⟨of (∀ i, Ri i) Q, ?_⟩
+    funext i
+    let f := Pi.evalRingHom Ri i
+    have hds : Module.rightEndomorphismScalarExtension (∀ i, Ri i) (Fin n) f d =
+        dF i := by
+      apply (Module.rightEndomorphismMatrixEquiv (Ri i) (Fin n)).injective
+      rw [← Module.rightEndomorphismMatrixEquiv_scalarExtension (∀ i, Ri i) (Fin n) f d,
+        hdA]
+      exact hAF i
+    let c := ModuleCat.RightExtension.rightFreeLinearEquiv f (Fin n)
+    let J := ModuleCat.RightExtension.map f j
+    let B := ModuleCat.RightExtension.map f r
+    have hBJ : B.comp J = LinearMap.id := by
+      calc
+        B.comp J = ModuleCat.RightExtension.map f (r.comp j) :=
+          (ModuleCat.RightExtension.map_comp f j r).symm
+        _ = ModuleCat.RightExtension.map f LinearMap.id :=
+          congrArg (ModuleCat.RightExtension.map f) hrj
+        _ = LinearMap.id := ModuleCat.RightExtension.map_id f
+    have hJB : J.comp B = ModuleCat.RightExtension.map f d := by
+      calc
+        J.comp B = ModuleCat.RightExtension.map f (j.comp r) :=
+          (ModuleCat.RightExtension.map_comp f r j).symm
+        _ = ModuleCat.RightExtension.map f d :=
+          congrArg (ModuleCat.RightExtension.map f) hjr
+    have hconj : c.toLinearMap.comp ((J.comp B).comp c.symm.toLinearMap) = dF i := by
+      rw [hJB]
+      exact (Module.rightEndomorphismScalarExtension_eq_tensor
+        (∀ i, Ri i) (Fin n) f d).symm.trans hds
+    let alpha : ModuleCat.RightExtension.Obj f Q →ₗ[(Ri i)ᵐᵒᵖ] M i :=
+      (rF i).comp (c.toLinearMap.comp J)
+    let beta : M i →ₗ[(Ri i)ᵐᵒᵖ] ModuleCat.RightExtension.Obj f Q :=
+      B.comp (c.symm.toLinearMap.comp (jF i))
+    have hab : alpha.comp beta = LinearMap.id := by
+      apply LinearMap.ext
+      intro x
+      have hx : rF i (jF i x) = x := DFunLike.congr_fun (hrFjF i) x
+      have hc : c (J (B (c.symm (jF i x)))) = jF i (rF i (jF i x)) :=
+        DFunLike.congr_fun hconj (jF i x)
+      change rF i (c (J (B (c.symm (jF i x))))) = x
+      exact (congrArg (rF i) hc).trans
+        ((congrArg (fun z ↦ rF i (jF i z)) hx).trans hx)
+    have hba : beta.comp alpha = LinearMap.id := by
+      apply LinearMap.ext
+      intro z
+      have hz : B (J z) = z := DFunLike.congr_fun hBJ z
+      have hfix : jF i (rF i (c (J z))) = c (J z) := by
+        have hh := DFunLike.congr_fun hconj (c (J z))
+        change c (J (B (c.symm (c (J z))))) = jF i (rF i (c (J z))) at hh
+        rw [c.symm_apply_apply, hz] at hh
+        exact hh.symm
+      change B (c.symm (jF i (rF i (c (J z))))) = z
+      calc
+        B (c.symm (jF i (rF i (c (J z))))) = B (c.symm (c (J z))) :=
+          congrArg (fun w ↦ B (c.symm w)) hfix
+        _ = B (J z) := congrArg B (c.symm_apply_apply (J z))
+        _ = z := hz
+    let equiv : ModuleCat.RightExtension.Obj f Q ≃ₗ[(Ri i)ᵐᵒᵖ] M i :=
+      LinearEquiv.ofLinearMap alpha beta hab hba
+    change map f (of (∀ i, Ri i) Q) = p i
+    exact (map_of f Q).trans ((of_eq_of_equiv (Ri i) _ equiv).trans (hM i))
 
 /-- Coordinate scalar extension classifies finite projective right modules over
 a finite product ring, as an additive equivalence of their isomorphism classes. -/
@@ -112,6 +431,13 @@ theorem piEquiv_toAddMonoidHom :
     (piEquiv Ri).toAddMonoidHom =
       AddMonoidHom.pi (fun i ↦ map (Pi.evalRingHom Ri i)) := by
   rfl
+
+/-- The whole finite coordinate decomposition agrees with the arbitrary-family
+coordinate map. -/
+@[simp]
+theorem piEquiv_toAddMonoidHom_eq_piMap :
+    (piEquiv Ri).toAddMonoidHom = piMap Ri :=
+  piEquiv_toAddMonoidHom Ri
 
 /-- Composing the decomposition with coordinate evaluation gives the
 scalar-extension homomorphism for that coordinate. -/
