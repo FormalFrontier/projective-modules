@@ -33,6 +33,12 @@ open KTheory
 
 namespace ProjectiveModulesTests
 
+example (R : Type*) [Ring R] :
+    Function.Surjective (ProjectiveClass.map (RingHom.id R)) := by
+  apply ProjectiveClass.map_surjective_of_lift_idempotents (RingHom.id R)
+  intro n E hE
+  exact ⟨E, hE, rfl⟩
+
 local notation "π" => AlgHom.toRingHom (TrivSqZeroExt.fstHom ℤ ℤ ℤ)
 local notation "hπ" => (TrivSqZeroExt.fst_surjective : Function.Surjective π)
 local notation "hkerπ" =>
