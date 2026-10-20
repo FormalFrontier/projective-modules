@@ -17,10 +17,11 @@ the integer ranks of the images of any fixed K₀ element have a uniform absolut
 bound. Ranks are dimensions of right modules, with scalars `(D i)ᵐᵒᵖ`.
 The index type and the source and target ring universes are independent.
 
-For an infinite family of division rings, the canonical comparison from K₀ of
-the product ring to the product of the factor K₀ groups is not surjective.
-The uniform bound also allows empty index types; no description of the full
-image of the product comparison is asserted.
+For a family of division rings, the canonical comparison from K₀ of the product
+ring to the product of the factor K₀ groups is injective. Its image consists
+exactly of the families whose integer ranks admit one uniform absolute bound.
+The uniform bound also allows empty index types. For an infinite family, the
+comparison is not surjective.
 
 A finite projective and its finite projective complement form a finite free
 module. Right scalar extension to each division ring bounds each summand's
@@ -157,5 +158,83 @@ theorem not_surjective_piMap {I : Type uI} [Infinite I]
   rw [AddEquiv.apply_symm_apply, ht,
     abs_of_nonneg (Int.ofNat_nonneg (N + 1))] at h
   exact (Nat.not_succ_le_self N) (Int.ofNat_le.mp h)
+
+/-- Coordinate scalar extension on K₀ is injective for an arbitrary family of division rings.
+The factors need not be commutative. -/
+theorem piMap_injective {I : Type uI} (D : I → Type uD) [∀ i, DivisionRing (D i)] :
+    Function.Injective (piMap D) := by
+  intro x y hxy
+  have hzero : piMap D (x - y) = 0 := by
+    rw [map_sub, hxy, sub_self]
+  have hrep : ∃ a b : ProjectiveClass (∀ i, D i),
+      x - y = ofClass (∀ i, D i) a - ofClass (∀ i, D i) b := by
+    obtain ⟨P, Q, hPQ⟩ := K0.exists_sub (∀ i, D i) (x - y)
+    refine ⟨ProjectiveClass.of (∀ i, D i) P, ProjectiveClass.of (∀ i, D i) Q, ?_⟩
+    simpa only [K0.ofClass_of] using hPQ
+  obtain ⟨a, b, hab⟩ := hrep
+  have hab' : a = b := by
+    apply ProjectiveClass.piMap_injective D
+    funext i
+    apply (ProjectiveClass.finrankEquiv (D i)).injective
+    apply Int.ofNat_inj.mp
+    have hi : map (Pi.evalRingHom D i) (x - y) = 0 := congrFun hzero i
+    rw [hab, map_sub, map_ofClass, map_ofClass] at hi
+    simpa only [ProjectiveClass.piMap_apply, finrankEquiv_ofClass] using
+      congrArg (finrankEquiv (D i)) (sub_eq_zero.mp hi)
+  apply sub_eq_zero.mp
+  rw [hab, hab', sub_self]
+
+/-- A family of factor K₀ classes comes from the product exactly when its integer ranks
+admit one uniform absolute bound. -/
+theorem mem_range_piMap_iff {I : Type uI} (D : I → Type uD) [∀ i, DivisionRing (D i)]
+    (z : ∀ i, K0 (D i)) :
+    z ∈ Set.range (piMap D) ↔
+      ∃ n : ℕ, ∀ i : I, |finrankEquiv (D i) (z i)| ≤ (n : ℤ) := by
+  classical
+  constructor
+  · rintro ⟨x, rfl⟩
+    simpa only [piMap_apply] using
+      exists_uniform_abs_finrank_map_le D (fun i ↦ Pi.evalRingHom D i) x
+  · rintro ⟨N, hN⟩
+    have hshift : ∀ i, ∃ k : ℕ,
+        -(N : ℤ) + (k : ℤ) = finrankEquiv (D i) (z i) ∧ k ≤ N + N := by
+      intro i
+      refine Int.le.elim (abs_le.mp (hN i)).1 ?_
+      intro k hk
+      refine ⟨k, hk, Int.ofNat_le.mp ?_⟩
+      rw [Nat.cast_add]
+      calc
+        (k : ℤ) = (N : ℤ) + (-(N : ℤ) + (k : ℤ)) := by
+          rw [← add_assoc, add_neg_cancel, zero_add]
+        _ ≤ (N : ℤ) + (N : ℤ) :=
+          add_le_add (le_refl (N : ℤ)) (hk.le.trans (abs_le.mp (hN i)).2)
+    choose k hk using hshift
+    let p : ∀ i, ProjectiveClass (D i) :=
+      fun i ↦ k i • ProjectiveClass.of (D i) (D i)ᵐᵒᵖ
+    have hp : p ∈ Set.range (ProjectiveClass.piMap D) := by
+      apply (ProjectiveClass.mem_range_piMap_iff D p).2
+      refine ⟨N + N, fun i ↦ ⟨(N + N - k i) •
+        ProjectiveClass.of (D i) (D i)ᵐᵒᵖ, ?_⟩⟩
+      change k i • ProjectiveClass.of (D i) (D i)ᵐᵒᵖ +
+          (N + N - k i) • ProjectiveClass.of (D i) (D i)ᵐᵒᵖ =
+        (N + N) • ProjectiveClass.of (D i) (D i)ᵐᵒᵖ
+      rw [← add_nsmul, Nat.add_comm (k i) (N + N - k i),
+        Nat.sub_add_cancel (hk i).2]
+    obtain ⟨P, hP⟩ := hp
+    refine ⟨ofClass (∀ i, D i) P - N • ofClass (∀ i, D i)
+      (ProjectiveClass.of (∀ i, D i) (∀ i, D i)ᵐᵒᵖ), ?_⟩
+    funext i
+    apply (finrankEquiv (D i)).injective
+    have hPi : ProjectiveClass.map (Pi.evalRingHom D i) P = p i :=
+      (ProjectiveClass.piMap_apply D P i).symm.trans (congrFun hP i)
+    calc
+      _ = (k i : ℤ) - (N : ℤ) := by
+        rw [piMap_apply, map_sub, map_nsmul, map_ofClass, map_ofClass,
+          hPi, ProjectiveClass.map_of_self]
+        simp only [map_sub, map_nsmul, finrankEquiv_ofClass, p,
+          ProjectiveClass.finrankEquiv_apply,
+          ProjectiveClass.finrankHom_of_self, Nat.cast_one, nsmul_eq_mul, mul_one]
+      _ = -(N : ℤ) + (k i : ℤ) := by rw [sub_eq_add_neg, add_comm]
+      _ = _ := (hk i).1
 
 end KTheory.K0

@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 import ProjectiveModules.KTheory.Product
+import ProjectiveModules.KTheory.RankBound
 import Mathlib.Algebra.Field.Rat
 
 /-!
@@ -197,3 +198,40 @@ example {I : Type uI} (Ri : I → Type uR) [∀ i, Ring (Ri i)]
   · exact ⟨0, fun i => ⟨0, by simp⟩⟩
 
 end KTheory.ProjectiveClass
+
+/-!
+# Bounded signed classes over products of rational fields
+
+Examples of uniformly bounded signed K₀ families over products of rational fields.
+
+## References and credits
+
+* Projective Modules' classification of K₀ over division rings by integer rank.
+* Mathlib's finite-dimensional modules and rational field.
+-/
+
+namespace KTheory.K0
+
+private noncomputable def signedRationalClasses (i : ℕ) : K0 ℚ :=
+  (finrankEquiv ℚ).symm (if Even i then (-2 : ℤ) else 3)
+
+private theorem signedRationalClasses_bound (i : ℕ) :
+    |finrankEquiv ℚ (signedRationalClasses i)| ≤ (3 : ℤ) := by
+  by_cases hi : Even i <;> norm_num [signedRationalClasses, hi]
+
+example : signedRationalClasses 0 ≠ signedRationalClasses 1 := by
+  intro h
+  have hr := congrArg (finrankEquiv ℚ) h
+  norm_num [signedRationalClasses] at hr
+
+-- A nonconstant bounded signed family has a unique class over the product ring.
+example : ∃! x : K0 (ℕ → ℚ),
+    piMap (fun _ : ℕ => ℚ) x = signedRationalClasses := by
+  obtain ⟨x, hx⟩ :=
+    (mem_range_piMap_iff (fun _ : ℕ => ℚ) signedRationalClasses).2
+      ⟨3, signedRationalClasses_bound⟩
+  refine ⟨x, hx, ?_⟩
+  intro y hy
+  exact (piMap_injective (fun _ : ℕ => ℚ)) (hy.trans hx.symm)
+
+end KTheory.K0

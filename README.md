@@ -287,11 +287,13 @@ examples and qualifications; links below go to the corresponding result families
   injectivity or nontriviality hypothesis is required.
 - **[Product comparisons and uniform rank bounds](ProjectiveModules/KTheory/RankBound.lean):**
   the [canonical additive comparison](ProjectiveModules/KTheory/Product.lean) maps
-  K₀ of any product of rings to the product of their K₀ groups. For every K₀ element
-  of an arbitrary ring `R` and any indexed family of unital maps `R →+* D i` to
-  possibly noncommutative division rings, one natural-number bound controls the
-  absolute values of all the integer ranks. For an infinite product of division
-  rings, the comparison is not surjective.
+  K₀ of any product of rings to the product of their K₀ groups. For a family of
+  possibly noncommutative division rings, it is injective and its image consists
+  exactly of families whose integer ranks have one uniform absolute bound.
+  More generally, every K₀ element of an arbitrary ring `R` has uniformly bounded
+  absolute integer ranks under any indexed family of unital maps `R →+* D i` to
+  division rings. For an infinite product of division rings, the comparison is
+  not surjective.
 - **[Local and PID K₀ calculations](ProjectiveModules/KTheory/Rank.lean):** for a
   possibly noncommutative local ring, `KTheory.K0.localEquivInt` identifies K₀ with ℤ
   by canonical Jacobson-residue dimension. For a commutative PID,

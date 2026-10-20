@@ -55,6 +55,7 @@ public import ProjectiveModules.KTheory.ModuleEquivalence
 public import ProjectiveModules.KTheory.Product
 public import ProjectiveModules.KTheory.ProductRing
 public import ProjectiveModules.KTheory.Rank
+public import ProjectiveModules.KTheory.RankBound
 public import ProjectiveModules.KTheory.Ring
 public import ProjectiveModules.KTheory.RingScalarExtension
 public import ProjectiveModules.KTheory.ScalarExtension
