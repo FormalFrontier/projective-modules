@@ -118,6 +118,9 @@ public import ProjectiveModules.Module.Trace.BaseChange
 public import ProjectiveModules.Module.TransfiniteCoordinateFiltration
 public import ProjectiveModules.Module.TransfiniteRangeBasis
 public import ProjectiveModules.Order.CompactlyGenerated
+public import ProjectiveModules.KTheory.RankLocallyConstant
+public import ProjectiveModules.KTheory.RankLocallyConstantNaturality
+public import ProjectiveModules.KTheory.RankLocallyConstantRing
 
 /-!
 # Projective module interfaces
