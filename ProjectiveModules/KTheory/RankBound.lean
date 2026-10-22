@@ -120,14 +120,14 @@ theorem exists_uniform_abs_finrank_map_le
   constructor
   · calc
       -((m : ℤ) + (n : ℤ)) ≤ -(n : ℤ) :=
-        neg_le_neg (le_add_of_nonneg_left (Int.ofNat_nonneg m))
+        neg_le_neg (le_add_of_nonneg_left (Int.natCast_nonneg m))
       _ = (0 : ℤ) - (n : ℤ) := (zero_sub _).symm
-      _ ≤ (A : ℤ) - (B : ℤ) := sub_le_sub (Int.ofNat_nonneg A) hB
+      _ ≤ (A : ℤ) - (B : ℤ) := sub_le_sub (Int.natCast_nonneg A) hB
   · calc
       (A : ℤ) - (B : ℤ) ≤ (m : ℤ) - (0 : ℤ) :=
-        sub_le_sub hA (Int.ofNat_nonneg B)
+        sub_le_sub hA (Int.natCast_nonneg B)
       _ = (m : ℤ) := sub_zero _
-      _ ≤ (m : ℤ) + (n : ℤ) := le_add_of_nonneg_right (Int.ofNat_nonneg n)
+      _ ≤ (m : ℤ) + (n : ℤ) := le_add_of_nonneg_right (Int.natCast_nonneg n)
 
 /-- The K₀ comparison for an infinite product of division rings is not
 surjective onto the product of their K₀ groups.
@@ -156,7 +156,7 @@ theorem not_surjective_piMap {I : Type uI} [Infinite I]
   change |finrankEquiv (D (e (N + 1)))
     ((finrankEquiv (D (e (N + 1)))).symm (t (e (N + 1)) : ℤ))| ≤ (N : ℤ) at h
   rw [AddEquiv.apply_symm_apply, ht,
-    abs_of_nonneg (Int.ofNat_nonneg (N + 1))] at h
+    abs_of_nonneg (Int.natCast_nonneg (N + 1))] at h
   exact (Nat.not_succ_le_self N) (Int.ofNat_le.mp h)
 
 /-- Coordinate scalar extension on K₀ is injective for an arbitrary family of division rings.

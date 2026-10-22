@@ -122,6 +122,8 @@ theorem smul_tmul (r : R) (m : M) (n : N) :
 
 /-- A biadditive map which is balanced over `R`. -/
 structure BalancedMap (A : Type uA) [AddCommGroup A] where
+  /-- The underlying function of a balanced map. It preserves zero and addition in each
+  argument and satisfies `toFun (MulOpposite.op r • m) n = toFun m (r • n)`. -/
   toFun : M → N → A
   map_zero_left : ∀ n, toFun 0 n = 0
   map_add_left : ∀ m₁ m₂ n, toFun (m₁ + m₂) n = toFun m₁ n + toFun m₂ n

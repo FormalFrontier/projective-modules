@@ -70,7 +70,7 @@ noncomputable def restrictScalarsUliftIsoOfEquiv (e : R ≃+* S) :
 /-- The forward comparison applies the inverse ring equivalence under `ULift`. -/
 @[simp]
 theorem restrictScalarsUliftIsoOfEquiv_hom_apply (e : R ≃+* S) (x : ULift.{uR} S) :
-    (restrictScalarsUliftIsoOfEquiv e).hom x = ULift.up (e.symm x.down) :=
+    dsimp% (restrictScalarsUliftIsoOfEquiv e).hom x = ULift.up (e.symm x.down) :=
   rfl
 
 /-- The inverse comparison applies the ring equivalence under `ULift`. -/
@@ -90,11 +90,11 @@ variable {R S : Type uR} [Ring R] [Ring S]
 theorem restrictScalarsUliftIsoOfEquiv_hom_down (e : R ≃+* S) (x : ULift.{uR} S) :
     ((restrictScalarsUliftIsoOfEquiv e).hom x).down =
       (restrictScalarsIsoOfEquiv e).hom x.down := by
+  rcases x with ⟨s⟩
+  obtain ⟨r, rfl⟩ := e.surjective s
   calc
-    _ = e.symm x.down :=
-      congrArg (ULift.down : ULift.{uR} R → R)
-        (restrictScalarsUliftIsoOfEquiv_hom_apply e x)
-    _ = _ := (restrictScalarsIsoOfEquiv_hom_apply e x.down).symm
+    _ = r := by simp
+    _ = _ := by simp
 
 /-- In a common ring universe, the inverse lifted comparison agrees under
 `ULift.down` with the inverse regular-module comparison. -/

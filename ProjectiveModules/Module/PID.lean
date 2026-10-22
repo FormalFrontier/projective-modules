@@ -52,7 +52,8 @@ variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
 variable [AddCommGroup M] [Module R M]
 variable (b : Basis ι R M)
 
-local instance : LinearOrder ι := WellOrderingRel.isWellOrder.linearOrder
+/-- A linear order on the index type `ι`, induced by `WellOrderingRel`. -/
+local instance instLinearOrder : LinearOrder ι := WellOrderingRel.isWellOrder.linearOrder
 local instance : WellFoundedLT ι := ⟨WellOrderingRel.isWellOrder.wf⟩
 
 /-- Vectors whose basis coordinates strictly after `i` vanish. -/
