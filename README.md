@@ -15,6 +15,8 @@ examples and qualifications; links below go to the corresponding result families
   lift through surjective continuous linear maps over a semiring with a scalar
   topology. The target of the lift has continuous addition and scalar
   multiplication; the common codomain needs no continuity of its operations.
+  Conversely, testing all such continuous liftings detects algebraic projectivity
+  for any fixed source topology; with its given module topology this is an iff.
 - **[Coefficient products](docs/Overview.md#coefficient-products):** finite products of
   arbitrary rings reconstruct right modules and split finite-projective classes and K₀.
   For arbitrary families of rings, `ProjectiveClass.piMap` is injective; its image
