@@ -69,10 +69,10 @@ theorem exists_uniform_abs_finrank_map_le
         (R := Rᵐᵒᵖ) (P := P)
     letI : AddCommGroup C := hCadd
     letI : Module Rᵐᵒᵖ C := hCmodule
-    letI : Module.Finite Rᵐᵒᵖ C := hCfinite
-    letI : Module.Projective Rᵐᵒᵖ (P × C) :=
+    have : Module.Finite Rᵐᵒᵖ C := hCfinite
+    have : Module.Projective Rᵐᵒᵖ (P × C) :=
       Module.Projective.of_equiv' e.symm
-    letI : Module.Projective Rᵐᵒᵖ C :=
+    have : Module.Projective Rᵐᵒᵖ C :=
       Module.Projective.of_split (LinearMap.inr Rᵐᵒᵖ P C)
         (LinearMap.snd Rᵐᵒᵖ P C) (LinearMap.snd_comp_inr Rᵐᵒᵖ P C)
     have heq : ProjectiveClass.of R P + ProjectiveClass.of R C =

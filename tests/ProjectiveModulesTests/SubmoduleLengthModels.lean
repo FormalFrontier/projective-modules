@@ -79,14 +79,14 @@ theorem matrixFirstCoordinateLine_nonzero_proper :
     · simp [firstCoordinateLine, LinearMap.proj_apply]
     · intro h
       have hzero := congrFun h (0 : Fin 2)
-      simpa using hzero
+      simp at hzero
   have htop : firstCoordinateLine < ⊤ := by
     apply lt_top_iff_ne_top.mpr
     intro h
     have hmem : ![0, 1] ∈ firstCoordinateLine := by
       rw [h]
       exact Submodule.mem_top
-    simpa [firstCoordinateLine, LinearMap.proj_apply] using hmem
+    simp [firstCoordinateLine, LinearMap.proj_apply] at hmem
   let φ := ModuleCat.submoduleOrderIsoOfEquivalence matrixEquivalence
     (ModuleCat.of ℚ (Fin 2 → ℚ))
   change ⊥ < φ firstCoordinateLine ∧ φ firstCoordinateLine < ⊤

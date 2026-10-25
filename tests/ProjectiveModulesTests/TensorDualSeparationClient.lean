@@ -114,7 +114,7 @@ theorem nat_finsupp_tensor_point_equality_model :
             TensorProduct.dualDistrib ℕ (ℕ →₀ ℕ) (ℕ →₀ ℕ) (f ⊗ₜ[ℕ] g) u) ↔ t = u) ∧
       ((Finsupp.single 0 1 : ℕ →₀ ℕ) ⊗ₜ[ℕ] (Finsupp.single 0 1 : ℕ →₀ ℕ)) ≠
         ((Finsupp.single 1 1 : ℕ →₀ ℕ) ⊗ₜ[ℕ] (Finsupp.single 0 1 : ℕ →₀ ℕ)) := by
-  haveI : Module.Projective ℕ (ℕ →₀ ℕ) :=
+  have : Module.Projective ℕ (ℕ →₀ ℕ) :=
     Module.Projective.of_basis (Finsupp.basisSingleOne : Module.Basis ℕ ℕ (ℕ →₀ ℕ))
   have hpoints :
       ((Finsupp.single 0 1 : ℕ →₀ ℕ) ⊗ₜ[ℕ] (Finsupp.single 0 1 : ℕ →₀ ℕ)) ≠
@@ -125,7 +125,7 @@ theorem nat_finsupp_tensor_point_equality_model :
         ((Finsupp.lapply 0 : Module.Dual ℕ (ℕ →₀ ℕ)) ⊗ₜ[ℕ]
           (Finsupp.lapply 0 : Module.Dual ℕ (ℕ →₀ ℕ)))) h
     have hbad : (1 : ℕ) = 0 := by
-      simpa [TensorProduct.dualDistrib_apply, Finsupp.lapply_apply] using hcoord
+      simp [TensorProduct.dualDistrib_apply, Finsupp.lapply_apply] at hcoord
     exact Nat.one_ne_zero hbad
   refine ⟨inferInstance, Module.eval_apply_injective ℕ (V := ℕ →₀ ℕ), ?_, hpoints⟩
   intro t u

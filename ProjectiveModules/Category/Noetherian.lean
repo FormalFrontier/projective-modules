@@ -120,10 +120,10 @@ theorem isNoetherianRing_of_equivalence
     (e : ModuleCat.{vR} R ≌ ModuleCat.{max uS vS} S) :
     IsNoetherianRing R → IsNoetherianRing S := by
   intro hR
-  haveI : IsNoetherianRing R := hR
+  have : IsNoetherianRing R := hR
   let Y : ModuleCat.{max uS vS} S := ModuleCat.of S (ULift.{vS} S)
-  haveI : Module.Finite S Y := inferInstance
-  haveI : Module.Finite R (e.inverse.obj Y) :=
+  have : Module.Finite S Y := inferInstance
+  have : Module.Finite R (e.inverse.obj Y) :=
     (finite_iff_of_equivalence S R e.symm Y).mpr inferInstance
   have hGY : IsNoetherian R (e.inverse.obj Y) := inferInstance
   have hFGY : IsNoetherian S (e.functor.obj (e.inverse.obj Y)) :=

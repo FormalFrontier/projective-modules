@@ -40,8 +40,8 @@ example : ¬ InvariantBasisNumber (ZMod 1) ∧
     addOrderOf (of (ZMod 1) (ZMod 1)ᵐᵒᵖ) ≠ 0 := by
   have h : ¬ InvariantBasisNumber (ZMod 1) := by
     intro h
-    letI : InvariantBasisNumber (ZMod 1) := h
-    letI : Nontrivial (ZMod 1) := nontrivial_of_invariantBasisNumber (ZMod 1)
+    have : InvariantBasisNumber (ZMod 1) := h
+    have : Nontrivial (ZMod 1) := nontrivial_of_invariantBasisNumber (ZMod 1)
     exact zero_ne_one (Subsingleton.elim (0 : ZMod 1) 1)
   exact ⟨h,
     fun h' => h ((invariantBasisNumber_iff_injective_zmultiplesHom (ZMod 1)).mpr h'),

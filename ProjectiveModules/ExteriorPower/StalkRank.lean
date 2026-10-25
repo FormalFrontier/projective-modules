@@ -58,8 +58,8 @@ theorem subsingleton_of_rankAtStalk_lt
     (fun p ↦ LocalizedModule.mkLinearMap p.primeCompl (⋀[R]^k M))
   intro p hp
   let A := Localization.AtPrime p
-  haveI : Module.Flat R A := IsLocalization.flat A p.primeCompl
-  haveI : Module.Free A (A ⊗[R] M) := Module.free_of_flat_of_isLocalRing
+  have : Module.Flat R A := IsLocalization.flat A p.primeCompl
+  have : Module.Free A (A ⊗[R] M) := Module.free_of_flat_of_isLocalRing
   let e := (ExteriorAlgebra.equivBaseChange (R := R) (S := A) (M := M)).toLinearEquiv
   -- The image equality first identifies the two homogeneous submodules.
   let ep : (⋀[A]^k (A ⊗[R] M)) ≃ₗ[A] (⋀[R]^k M).baseChange A :=
@@ -73,10 +73,11 @@ theorem subsingleton_of_rankAtStalk_lt
     rw [← (LocalizedModule.equivTensorProduct p.primeCompl M).finrank_eq]
     exact h ⟨p, hp.isPrime⟩
   let b := Module.Free.chooseBasis A (A ⊗[R] M)
-  haveI : Subsingleton (⋀[A]^k (A ⊗[R] M)) :=
+  have : Subsingleton (⋀[A]^k (A ⊗[R] M)) :=
     subsingleton_of_span_eq_top_of_card_lt b b.span_eq k (by
       rw [← Module.finrank_eq_nat_card_basis b]
       exact hr)
-  exact ((LocalizedModule.equivTensorProduct p.primeCompl (⋀[R]^k M)).trans eE).injective.subsingleton
+  exact
+    ((LocalizedModule.equivTensorProduct p.primeCompl (⋀[R]^k M)).trans eE).injective.subsingleton
 
 end exteriorPower

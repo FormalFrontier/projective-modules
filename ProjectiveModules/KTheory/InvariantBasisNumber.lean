@@ -50,7 +50,7 @@ theorem invariantBasisNumber_iff_injective_zmultiplesHom (R : Type u) [Ring R] :
     ← injective_nsmul_iff_not_isOfFinAddOrder]
   constructor
   · intro hR
-    letI : InvariantBasisNumber R := hR
+    have : InvariantBasisNumber R := hR
     intro n m hnm
     obtain ⟨k, ⟨e⟩⟩ :=
       (of_eq_iff_exists_free_stabilizer R (Fin n → Rᵐᵒᵖ) (Fin m → Rᵐᵒᵖ)).mp

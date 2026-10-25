@@ -77,7 +77,7 @@ private theorem isNoetherian_int_and_intColumn_and_isNoetherianRing_intMatrix :
     IsNoetherian ℤ (ModuleCat.of ℤ ℤ) ∧
       IsNoetherian MatZ intColumn ∧ IsNoetherianRing MatZ := by
   refine ⟨inferInstance, ?_, ?_⟩
-  · letI hTower : IsScalarTower ℤ MatZ intColumn :=
+  · have hTower : IsScalarTower ℤ MatZ intColumn :=
       @AddCommGroup.intIsScalarTower MatZ intColumn _
         (ModuleCat.isAddCommGroup intColumn) (ModuleCat.isModule intColumn)
     exact @isNoetherian_of_tower ℤ MatZ intColumn
@@ -97,7 +97,8 @@ private theorem isNoetherian_int_and_intColumn_and_isNoetherianRing_intMatrix :
       Semiring.toModule _ hTower
       (inferInstance : IsNoetherian ℤ (Fin 2 → Fin 2 → ℤ))
 
-private theorem isNoetherianRing_int_and_infinite : IsNoetherianRing ℤ ∧ Infinite (ModuleCat.of ℤ ℤ) :=
+private theorem isNoetherianRing_int_and_infinite :
+    IsNoetherianRing ℤ ∧ Infinite (ModuleCat.of ℤ ℤ) :=
   ⟨inferInstance, inferInstance⟩
 
 local notation "E" => (fun a b : Fin 2 => Matrix.single a b (1 : ℤ))
@@ -135,7 +136,7 @@ local instance : Fintype binaryColumn :=
 open scoped Matrix.Module
 
 private theorem nontrivial_zmod_two : Nontrivial (ZMod 2) := by
-  haveI : Fact (1 < (2 : ℕ)) := ⟨by decide⟩
+  have : Fact (1 < (2 : ℕ)) := ⟨by decide⟩
   infer_instance
 
 private theorem binaryColumn_coe_eq : (binaryColumn : Type) = (Fin 2 → ZMod 2) := rfl
@@ -168,7 +169,7 @@ private theorem binaryMatrix_single_mul_noncommute_and_smul :
     E 0 0 * E 0 1 = E 0 1 ∧ E 0 1 * E 0 0 = 0 ∧
       E 0 1 ≠ 0 ∧ E 0 0 * E 0 1 ≠ E 0 1 * E 0 0 ∧
       ((E 0 1) • (Pi.single 1 (1 : ZMod 2) : binaryColumn)) 0 = 1 := by
-  haveI : Fact (1 < (2 : ℕ)) := ⟨by decide⟩
+  have : Fact (1 < (2 : ℕ)) := ⟨by decide⟩
   have hleft : E 0 0 * E 0 1 = E 0 1 := by
     simpa only [one_mul] using
       Matrix.single_mul_single_same (c := (1 : ZMod 2)) (0 : Fin 2) 0 1 1
@@ -224,7 +225,7 @@ private theorem isNoetherianRing_int_and_free_finsupp_not_isNoetherian :
     IsNoetherianRing ℤ ∧ Module.Free ℤ (ℕ →₀ ℤ) ∧ ¬ IsNoetherian ℤ (ℕ →₀ ℤ) := by
   refine ⟨inferInstance, inferInstance, ?_⟩
   intro h
-  haveI : IsNoetherian ℤ (ℕ →₀ ℤ) := h
+  have : IsNoetherian ℤ (ℕ →₀ ℤ) := h
   exact Module.not_finite_of_infinite_basis
     (Finsupp.basisSingleOne : Module.Basis ℕ ℤ (ℕ →₀ ℤ))
     (inferInstance : Module.Finite ℤ (ℕ →₀ ℤ))

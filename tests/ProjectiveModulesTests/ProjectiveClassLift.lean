@@ -40,7 +40,7 @@ example :
         ⟨fun ⟨g⟩ ↦ ⟨(ModuleCat.FiniteProjective.isoToLinearEquiv e).symm.trans g⟩,
           fun ⟨g⟩ ↦ ⟨(ModuleCat.FiniteProjective.isoToLinearEquiv e).trans g⟩⟩)
       0 := by
-  letI : Module.Finite PUnit.{1}ᵐᵒᵖ PUnit.{1} := Module.Finite.of_finite
+  have : Module.Finite PUnit.{1}ᵐᵒᵖ PUnit.{1} := Module.Finite.of_finite
   rw [← of_zero PUnit.{1} PUnit.{1},
     liftFunction_of_module PUnit.{1} PUnit.{1}
       (fun X : ModuleCat.FiniteProjective.{0, 0} PUnit.{1}ᵐᵒᵖ ↦

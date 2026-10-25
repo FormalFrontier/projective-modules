@@ -155,25 +155,25 @@ private def coefficientEquiv :
         rw [show rankFiberRingEquiv R P (e.symm a) = a from e.apply_symm_apply a] }
 
 instance instFinite : Module.Finite R (DeterminantLine R P) := by
-  letI : Module.Finite (∀ i : rankFiberIndex R P, rankFiberRing R P i)
+  have : Module.Finite (∀ i : rankFiberIndex R P, rankFiberRing R P i)
       (∀ i : rankFiberIndex R P, DeterminantLineComponent R P i) :=
     Module.finite_pi (rankFiberRing R P) (fun i ↦ ↥(DeterminantLineComponent R P i))
   let e := (rankFiberRingEquiv R P).toRingEquiv
-  letI : RingHomInvPair e.symm.toRingHom e.toRingHom :=
+  have : RingHomInvPair e.symm.toRingHom e.toRingHom :=
     RingHomInvPair.of_ringEquiv_symm e
-  letI : RingHomInvPair e.toRingHom e.symm.toRingHom :=
+  have : RingHomInvPair e.toRingHom e.symm.toRingHom :=
     RingHomInvPair.of_ringEquiv e
   exact Module.Finite.of_surjective (coefficientEquiv R P).toLinearMap
     (coefficientEquiv R P).surjective
 
 instance instProjective : Module.Projective R (DeterminantLine R P) := by
-  letI : Module.Projective (∀ i : rankFiberIndex R P, rankFiberRing R P i)
+  have : Module.Projective (∀ i : rankFiberIndex R P, rankFiberRing R P i)
       (∀ i : rankFiberIndex R P, DeterminantLineComponent R P i) :=
     Module.projective_pi (rankFiberRing R P) (fun i ↦ ↥(DeterminantLineComponent R P i))
   let e := (rankFiberRingEquiv R P).toRingEquiv
-  letI : RingHomInvPair e.symm.toRingHom e.toRingHom :=
+  have : RingHomInvPair e.symm.toRingHom e.toRingHom :=
     RingHomInvPair.of_ringEquiv_symm e
-  letI : RingHomInvPair e.toRingHom e.symm.toRingHom :=
+  have : RingHomInvPair e.toRingHom e.symm.toRingHom :=
     RingHomInvPair.of_ringEquiv e
   exact Module.Projective.of_equiv (coefficientEquiv R P)
 
@@ -231,11 +231,11 @@ theorem determinantLine_invertible : Module.Invertible R (DeterminantLine R P) :
     fun i ↦ ↥(DeterminantLineComponent R P i)
   let D := ∀ i : rankFiberIndex R P, Module.Dual (A i) (C i)
   let e := rankFiberRingEquiv R P
-  letI : ∀ i, Module.Invertible (A i) (C i) := fun i ↦
+  have : ∀ i, Module.Invertible (A i) (C i) := fun i ↦
     exteriorPower.invertible_of_rankAtStalk_eq (rankFiberRank R P i)
       (funext (rankAtStalk_rankFiberModule R P i))
   -- Surjective quotient maps identify the two balancing relations.
-  letI : ∀ i, TensorProduct.CompatibleSMul R (A i)
+  have : ∀ i, TensorProduct.CompatibleSMul R (A i)
       (Module.Dual (A i) (C i)) (C i) := fun i ↦ ⟨by
     intro a f m
     obtain ⟨r, hr⟩ := Ideal.Quotient.mk_surjective a
@@ -346,7 +346,7 @@ theorem determinantLine_invertible : Module.Invertible R (DeterminantLine R P) :
     rw [map_sum]
     simp_rw [hqinsert, hz]
     rw [← map_sum, LinearMap.sum_single_apply, e.symm_apply_apply]
-  letI : Module.Invertible R (∀ i, C i) :=
+  have : Module.Invertible R (∀ i, C i) :=
     Module.Invertible.right (LinearEquiv.ofBijective q ⟨hinjective, hsurjective⟩)
   exact Module.Invertible.congr (determinantLineInvertibleComponentsLinearEquiv R P)
 
@@ -587,8 +587,8 @@ theorem determinantLine_component_baseChange (S : Type w) [CommRing S] [Algebra 
   let q : rankFiberRing R P i →ₐ[R] S :=
     Ideal.Quotient.liftₐ _ (Algebra.ofId R S)
       (fun r hr ↦ RingHom.mem_ker.mp (hker hr))
-  letI : Algebra (rankFiberRing R P i) S := q.toRingHom.toAlgebra
-  letI : IsScalarTower R (rankFiberRing R P i) S := IsScalarTower.of_algHom q
+  let : Algebra (rankFiberRing R P i) S := q.toRingHom.toAlgebra
+  have : IsScalarTower R (rankFiberRing R P i) S := IsScalarTower.of_algHom q
   -- Recover the selected component before extending its coefficients to S.
   let componentEquiv := Classical.choice (determinantLine_component R P i)
   let determinantEquiv : S ⊗[R] DeterminantLine R P ≃ₗ[S]

@@ -190,8 +190,8 @@ theorem finitePresentation_of_equivalence
     Module.FinitePresentation R X →
       Module.FinitePresentation S (e.functor.obj X) := by
   intro hX
-  letI : Module.FinitePresentation R X := hX
-  letI : Module.Finite S (e.functor.obj X) :=
+  have : Module.FinitePresentation R X := hX
+  have : Module.Finite S (e.functor.obj X) :=
     (finite_iff_of_equivalence R S e X).mpr inferInstance
   obtain ⟨n, f, hf⟩ := Module.Finite.exists_fin' S (e.functor.obj X)
   -- The target height contains a finite free cover, without changing the source height.
@@ -199,25 +199,25 @@ theorem finitePresentation_of_equivalence
   let liftEquiv : P ≃ₗ[S] (Fin n → S) := ULift.moduleEquiv
   let p : P ⟶ e.functor.obj X := ofHom (f.comp liftEquiv.toLinearMap)
   have hp : Function.Surjective p.hom := hf.comp liftEquiv.surjective
-  letI : Epi p := (epi_iff_surjective p).mpr hp
-  letI : Module.FinitePresentation S P :=
+  have : Epi p := (epi_iff_surjective p).mpr hp
+  have : Module.FinitePresentation S P :=
     Module.FinitePresentation.of_equiv liftEquiv.symm
   let q : e.inverse.obj P ⟶ e.inverse.obj (e.functor.obj X) := e.inverse.map p
-  letI : Module.Finite R (e.inverse.obj P) :=
+  have : Module.Finite R (e.inverse.obj P) :=
     (finite_iff_of_equivalence S R e.symm P).mpr inferInstance
   let unitEquiv : X ≃ₗ[R] e.inverse.obj (e.functor.obj X) :=
     (e.unitIso.app X).toLinearEquiv
-  letI : Module.FinitePresentation R (e.inverse.obj (e.functor.obj X)) :=
+  have : Module.FinitePresentation R (e.inverse.obj (e.functor.obj X)) :=
     Module.FinitePresentation.of_equiv unitEquiv
   have hq : Function.Surjective q.hom := (epi_iff_surjective q).mp inferInstance
   have hkerq : q.hom.ker.FG := Module.FinitePresentation.fg_ker q.hom hq
   -- Concrete kernels exist at the original carrier height, even for a larger ring.
   letI : Limits.HasKernels (ModuleCat.{vR} R) := hasKernels_moduleCat
   letI : Limits.HasKernels (ModuleCat.{max uS vS} S) := hasKernels_moduleCat
-  letI : Module.Finite R q.hom.ker := Module.Finite.iff_fg.mpr hkerq
-  letI : Module.Finite R (Limits.kernel q : ModuleCat.{vR} R) :=
+  have : Module.Finite R q.hom.ker := Module.Finite.iff_fg.mpr hkerq
+  have : Module.Finite R (Limits.kernel q : ModuleCat.{vR} R) :=
     Module.Finite.equiv (kernelIsoKer q).toLinearEquiv.symm
-  letI : Module.Finite S (e.functor.obj (Limits.kernel q)) :=
+  have : Module.Finite S (e.functor.obj (Limits.kernel q)) :=
     (finite_iff_of_equivalence R S e (Limits.kernel q)).mpr inferInstance
   -- Kernel preservation followed by counit naturality identifies this with ker p.
   let i : e.functor.obj (Limits.kernel q) ≅ of S p.hom.ker :=
@@ -245,7 +245,7 @@ theorem finitePresentation_iff_of_equivalence
       Module.FinitePresentation R X := by
   constructor
   · intro hX
-    letI : Module.FinitePresentation R (e.inverse.obj (e.functor.obj X)) :=
+    have : Module.FinitePresentation R (e.inverse.obj (e.functor.obj X)) :=
       finitePresentation_of_equivalence S R e.symm (e.functor.obj X) hX
     let unitEquiv : e.inverse.obj (e.functor.obj X) ≃ₗ[R] X :=
       (e.unitIso.app X).toLinearEquiv.symm

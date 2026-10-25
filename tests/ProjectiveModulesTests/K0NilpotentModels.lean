@@ -59,7 +59,8 @@ private theorem dualNumber_int_projection_kills_nonzero_direction :
   rfl
 
 -- Both general bijectivity statements specialize to the same projection.
-private theorem dualNumber_int_projectiveClass_map_bijective : Function.Bijective (ProjectiveClass.map π) := by
+private theorem dualNumber_int_projectiveClass_map_bijective :
+    Function.Bijective (ProjectiveClass.map π) := by
   exact ProjectiveClass.map_bijective_of_surjective_of_isNilpotent_ker π hπ hkerπ
 
 private theorem dualNumber_int_K0_map_bijective : Function.Bijective (K0.map π) := by

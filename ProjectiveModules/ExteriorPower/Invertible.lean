@@ -39,8 +39,8 @@ theorem invertible_of_rankAtStalk_eq
   funext p
   let A := Localization.AtPrime p.asIdeal
   -- Flatness here is supplied by localization, not imposed on the theorem.
-  letI : Module.Flat R A := IsLocalization.flat A p.asIdeal.primeCompl
-  letI : Module.Free A (A ⊗[R] M) := Module.free_of_flat_of_isLocalRing
+  have : Module.Flat R A := IsLocalization.flat A p.asIdeal.primeCompl
+  have : Module.Free A (A ⊗[R] M) := Module.free_of_flat_of_isLocalRing
   let e := (ExteriorAlgebra.equivBaseChange (R := R) (S := A) (M := M)).toLinearEquiv
   -- First identify the image submodule; this alone is not a carrier equivalence.
   let ep : (⋀[A]^n (A ⊗[R] M)) ≃ₗ[A] (⋀[R]^n M).baseChange A :=

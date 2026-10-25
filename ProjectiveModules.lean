@@ -123,6 +123,7 @@ public import ProjectiveModules.Order.CompactlyGenerated
 public import ProjectiveModules.KTheory.RankLocallyConstant
 public import ProjectiveModules.KTheory.RankLocallyConstantNaturality
 public import ProjectiveModules.KTheory.RankLocallyConstantRing
+public import ProjectiveModules.Topology.Projective
 
 /-!
 # Projective module interfaces

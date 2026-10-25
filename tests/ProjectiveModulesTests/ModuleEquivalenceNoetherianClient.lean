@@ -60,7 +60,8 @@ open scoped Matrix.Module
 
 -- Object transport starts with the regular scalar module, not with an
 -- assumption about preservation or the target column.
-private theorem isNoetherianObject_intColumn_and_isNoetherian : IsNoetherianObject intColumn ∧ IsNoetherian MatZ intColumn := by
+private theorem isNoetherianObject_intColumn_and_isNoetherian :
+    IsNoetherianObject intColumn ∧ IsNoetherian MatZ intColumn := by
   have hZ : IsNoetherian ℤ (ModuleCat.of ℤ ℤ) := inferInstance
   have hX : IsNoetherianObject (ModuleCat.of ℤ ℤ) :=
     (ModuleCat.isNoetherianObject_iff _).mpr hZ
@@ -75,7 +76,7 @@ private theorem isNoetherian_intColumn : IsNoetherian MatZ intColumn :=
 -- Reflection uses the two-coordinate integer premise directly.
 private theorem isNoetherian_int_of_intColumn : IsNoetherian ℤ (ModuleCat.of ℤ ℤ) := by
   have hColumn : IsNoetherian MatZ intColumn := by
-    letI hTower : IsScalarTower ℤ MatZ intColumn :=
+    have hTower : IsScalarTower ℤ MatZ intColumn :=
       @AddCommGroup.intIsScalarTower MatZ intColumn _
         (ModuleCat.isAddCommGroup intColumn) (ModuleCat.isModule intColumn)
     exact @isNoetherian_of_tower ℤ MatZ intColumn
@@ -114,9 +115,10 @@ private theorem isNoetherianRing_int_of_intMatrix : IsNoetherianRing ℤ := by
 
 -- The counit comparison uses only the linear-equivalence Noetherian API
 -- and the integer-column premise, independently of categorical transport.
-private theorem isNoetherian_intColumn_counit : IsNoetherian MatZ ((eZ).functor.obj ((eZ).inverse.obj intColumn)) := by
+private theorem isNoetherian_intColumn_counit :
+    IsNoetherian MatZ ((eZ).functor.obj ((eZ).inverse.obj intColumn)) := by
   have hColumn : IsNoetherian MatZ intColumn := by
-    letI hTower : IsScalarTower ℤ MatZ intColumn :=
+    have hTower : IsScalarTower ℤ MatZ intColumn :=
       @AddCommGroup.intIsScalarTower MatZ intColumn _
         (ModuleCat.isAddCommGroup intColumn) (ModuleCat.isModule intColumn)
     exact @isNoetherian_of_tower ℤ MatZ intColumn
@@ -149,7 +151,8 @@ local instance : Fintype binaryColumn :=
 
 open scoped Matrix.Module
 
-private theorem isNoetherianObject_binaryColumn_and_isNoetherian : IsNoetherianObject binaryColumn ∧ IsNoetherian MatF binaryColumn := by
+private theorem isNoetherianObject_binaryColumn_and_isNoetherian :
+    IsNoetherianObject binaryColumn ∧ IsNoetherian MatF binaryColumn := by
   have hF : IsNoetherian (ZMod 2) (ModuleCat.of (ZMod 2) (ZMod 2)) :=
     isNoetherian_of_finite (ZMod 2) (ModuleCat.of (ZMod 2) (ZMod 2))
   have hX : IsNoetherianObject (ModuleCat.of (ZMod 2) (ZMod 2)) :=
@@ -163,7 +166,8 @@ private theorem isNoetherian_binaryColumn : IsNoetherian MatF binaryColumn :=
     (ModuleCat.of (ZMod 2) (ZMod 2))).mp
       (isNoetherian_of_finite (ZMod 2) (ModuleCat.of (ZMod 2) (ZMod 2)))
 
-private theorem isNoetherian_zmod_two_of_binaryColumn : IsNoetherian (ZMod 2) (ModuleCat.of (ZMod 2) (ZMod 2)) :=
+private theorem isNoetherian_zmod_two_of_binaryColumn :
+    IsNoetherian (ZMod 2) (ModuleCat.of (ZMod 2) (ZMod 2)) :=
   (ModuleCat.isNoetherian_iff_of_equivalence (ZMod 2) MatF eF
     (ModuleCat.of (ZMod 2) (ZMod 2))).mpr
       (isNoetherian_of_finite MatF binaryColumn)
@@ -180,7 +184,8 @@ private theorem isNoetherianRing_zmod_two_of_binaryMatrix : IsNoetherianRing (ZM
   (ModuleCat.isNoetherianRing_iff_of_equivalence.{0, 0, 0, 0}
     (ZMod 2) MatF eF).mpr (isNoetherian_of_finite MatF MatF)
 
-private theorem isNoetherian_binaryColumn_counit : IsNoetherian MatF ((eF).functor.obj ((eF).inverse.obj binaryColumn)) := by
+private theorem isNoetherian_binaryColumn_counit :
+    IsNoetherian MatF ((eF).functor.obj ((eF).inverse.obj binaryColumn)) := by
   have hColumn : IsNoetherian MatF binaryColumn :=
     isNoetherian_of_finite MatF binaryColumn
   let ε : (eF).functor.obj ((eF).inverse.obj binaryColumn) ≃ₗ[MatF] binaryColumn :=
@@ -198,7 +203,8 @@ private theorem isNoetherian_int_refl_obj : IsNoetherian ℤ
 
 -- The zero module exercises independent scalar and carrier universes. The
 -- given equivalence is not replaced by an equivalence of lifted categories.
-private theorem isNoetherian_punit_obj_and_isNoetherianObject (R : Type uR) (S : Type uS) [Ring R] [Ring S]
+private theorem isNoetherian_punit_obj_and_isNoetherianObject
+    (R : Type uR) (S : Type uS) [Ring R] [Ring S]
     (e : ModuleCat.{vR} R ≌ ModuleCat.{vS} S) :
     IsNoetherian S (e.functor.obj (ModuleCat.of R PUnit.{vR + 1})) ∧
       IsNoetherianObject (e.functor.obj (ModuleCat.of R PUnit.{vR + 1})) := by

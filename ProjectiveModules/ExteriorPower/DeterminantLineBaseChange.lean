@@ -73,10 +73,10 @@ theorem determinantLine_mk
         (Module.rankFiberRing B Q j) ⊗[B] Y) := by
     let C := Module.rankFiberRing B Q j
     letI : Algebra A C := ((algebraMap B C).comp f.op).toAlgebra
-    letI : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
+    have : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
     -- The coefficient action comes from the composite algebra; the module
     -- action is inherited by the quotient. Compare them through B.
-    letI := IsScalarTower.of_algebraMap_smul (R := A) (A := C) (M := C)
+    have := IsScalarTower.of_algebraMap_smul (R := A) (A := C) (M := C)
       (fun a c => by
         change algebraMap A C a * c = a • c
         rw [← IsScalarTower.algebraMap_smul B a c]
@@ -153,8 +153,8 @@ theorem determinantLine_mk
             Module.rankFiberRing B Q j)))
   let e : X ≃ₗ[B] Y :=
     dX.trans ((LinearEquiv.piCongrRight fun j ↦ (hcomponents j).some).trans dY.symm)
-  letI : Module.Invertible A L := Module.determinantLine_invertible A P
-  letI : Module.Invertible B Y := Module.determinantLine_invertible B Q
+  have : Module.Invertible A L := Module.determinantLine_invertible A P
+  have : Module.Invertible B Y := Module.determinantLine_invertible B Q
   -- The Picard map tensors its small representative, not definitionally `L`.
   -- Its representative equivalence supplies precisely the final bridge.
   change CommRing.Pic.mk B Y =

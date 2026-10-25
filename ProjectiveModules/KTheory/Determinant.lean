@@ -111,9 +111,9 @@ private theorem determinantClass_prod
       (Module.DeterminantLine Rᵐᵒᵖ P) (Module.DeterminantLine Rᵐᵒᵖ Q)
       _ _ _ _ _ (Module.determinantLine_invertible Rᵐᵒᵖ P)
         (Module.determinantLine_invertible Rᵐᵒᵖ Q)]
-    letI := Module.determinantLine_invertible Rᵐᵒᵖ P
-    letI := Module.determinantLine_invertible Rᵐᵒᵖ Q
-    letI := Module.determinantLine_invertible Rᵐᵒᵖ (P × Q)
+    have := Module.determinantLine_invertible Rᵐᵒᵖ P
+    have := Module.determinantLine_invertible Rᵐᵒᵖ Q
+    have := Module.determinantLine_invertible Rᵐᵒᵖ (P × Q)
     apply (@CommRing.Pic.mk_eq_mk_iff _ _ _ _ _ _ _ _ _ _).mpr
     obtain ⟨e⟩ := Module.determinantLine_prod Rᵐᵒᵖ P Q
     exact ⟨e.symm⟩
@@ -185,7 +185,7 @@ theorem determinantLine_pic_representative (ℓ : CommRing.Pic R) :
             (CommRing.Pic.mapRingHom (RingEquiv.toOpposite R).toRingHom ℓ)))) = ℓ := by
   let L := CommRing.Pic.AsModule
     (CommRing.Pic.mapRingHom (RingEquiv.toOpposite R).toRingHom ℓ)
-  letI : Module.Invertible Rᵐᵒᵖ (Module.DeterminantLine Rᵐᵒᵖ L) :=
+  have : Module.Invertible Rᵐᵒᵖ (Module.DeterminantLine Rᵐᵒᵖ L) :=
     Module.determinantLine_invertible Rᵐᵒᵖ L
   have hline : CommRing.Pic.mk Rᵐᵒᵖ (Module.DeterminantLine Rᵐᵒᵖ L) =
       CommRing.Pic.mapRingHom (RingEquiv.toOpposite R).toRingHom ℓ :=
@@ -222,7 +222,7 @@ example :
     CommRing.Pic.mapRingHom (RingEquiv.toOpposite ℚ).symm.toRingHom
       (@CommRing.Pic.mk ℚᵐᵒᵖ (Module.DeterminantLine ℚᵐᵒᵖ ℚᵐᵒᵖ)
         _ _ _ (Module.determinantLine_invertible ℚᵐᵒᵖ ℚᵐᵒᵖ)) = 1 := by
-  letI : Module.Invertible ℚᵐᵒᵖ (Module.DeterminantLine ℚᵐᵒᵖ ℚᵐᵒᵖ) :=
+  have : Module.Invertible ℚᵐᵒᵖ (Module.DeterminantLine ℚᵐᵒᵖ ℚᵐᵒᵖ) :=
     Module.determinantLine_invertible ℚᵐᵒᵖ ℚᵐᵒᵖ
   have hline : CommRing.Pic.mk ℚᵐᵒᵖ (Module.DeterminantLine ℚᵐᵒᵖ ℚᵐᵒᵖ) = 1 :=
     CommRing.Pic.mk_eq_one_iff.mpr

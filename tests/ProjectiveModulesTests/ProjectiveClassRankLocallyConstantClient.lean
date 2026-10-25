@@ -107,7 +107,7 @@ private theorem rankLocallyConstant_product_nonconstant :
 private theorem rankLocallyConstant_zeroRing :
     rankLocallyConstant (ZMod 1) (of (ZMod 1) (ZMod 1)ᵐᵒᵖ) = 0 ∧
       (0 : LocallyConstant (PrimeSpectrum (ZMod 1)) ℤ) = 1 := by
-  letI : Subsingleton (LocallyConstant (PrimeSpectrum (ZMod 1)) ℕ) :=
+  have : Subsingleton (LocallyConstant (PrimeSpectrum (ZMod 1)) ℕ) :=
     DFunLike.subsingleton_dom
   letI : Unique (LocallyConstant (PrimeSpectrum (ZMod 1)) ℤ) :=
     { default := 0

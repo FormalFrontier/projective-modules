@@ -146,15 +146,15 @@ theorem bool_int_corner_realization :
     funext b
     cases b <;> simp [e]
   · intro hfree
-    letI : Nontrivial P := by
+    have : Nontrivial P := by
       refine ⟨⟨ModuleCat.FiniteProjective.piMk (fun _ : Bool ↦ ℤ) Mi
         (fun _ _ ↦ 1), 0, ?_⟩⟩
       intro h
       have hi := congrArg (fun y : P ↦ y false (0 : Fin 1)) h
       change (1 : ℤᵐᵒᵖ) = 0 at hi
       exact one_ne_zero hi
-    letI : Module.Free (Bool → ℤ)ᵐᵒᵖ P := hfree
-    haveI : FaithfulSMul (Bool → ℤ)ᵐᵒᵖ P := inferInstance
+    have : Module.Free (Bool → ℤ)ᵐᵒᵖ P := hfree
+    have : FaithfulSMul (Bool → ℤ)ᵐᵒᵖ P := inferInstance
     have hzero :
         (MulOpposite.op (fun b : Bool ↦ if b then (1 : ℤ) else 0) :
           (Bool → ℤ)ᵐᵒᵖ) = 0 :=

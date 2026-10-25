@@ -92,18 +92,18 @@ def determinantClass : Prop := by
 example : determinantClass.{u, v, w} := by
   dsimp (config := { zeta := false }) only [determinantClass]
   intro e f
-  letI : RingHomInvPair e.toRingHom e.symm.toRingHom :=
+  have : RingHomInvPair e.toRingHom e.symm.toRingHom :=
     RingHomInvPair.of_ringEquiv e
-  letI : RingHomInvPair e.symm.toRingHom e.toRingHom :=
+  have : RingHomInvPair e.symm.toRingHom e.toRingHom :=
     RingHomInvPair.of_ringEquiv_symm e
   letI : Module (ULift.{u} ℤ)ᵐᵒᵖ (ULift.{w} ℤᵐᵒᵖ) :=
     Module.compHom _ e.symm.toRingHom
   let a : ℤᵐᵒᵖ ≃ₛₗ[e.toRingHom] ULift.{w} ℤᵐᵒᵖ :=
     { __ := (AddEquiv.ulift : ULift.{w} ℤᵐᵒᵖ ≃+ ℤᵐᵒᵖ).symm
       map_smul' _ _ := rfl }
-  letI : Module.Finite (ULift.{u} ℤ)ᵐᵒᵖ (ULift.{w} ℤᵐᵒᵖ) :=
+  have : Module.Finite (ULift.{u} ℤ)ᵐᵒᵖ (ULift.{w} ℤᵐᵒᵖ) :=
     Module.Finite.of_surjective a.toLinearMap a.surjective
-  letI : Module.Projective (ULift.{u} ℤ)ᵐᵒᵖ (ULift.{w} ℤᵐᵒᵖ) :=
+  have : Module.Projective (ULift.{u} ℤ)ᵐᵒᵖ (ULift.{w} ℤᵐᵒᵖ) :=
     Module.Projective.of_equiv a
   exact @RightExtension.determinantLine_mk _ _ _ _ f _ _ _ _ _
 
@@ -153,9 +153,9 @@ def determinantClass (b : Bool) : Prop := by
 example (b : Bool) : determinantClass b := by
   dsimp (config := { zeta := false }) only [determinantClass]
   intro Ri Mi
-  letI : Module.Finite (∀ c, Ri c)ᵐᵒᵖ (ModuleCat.piRight Ri Mi) :=
+  have : Module.Finite (∀ c, Ri c)ᵐᵒᵖ (ModuleCat.piRight Ri Mi) :=
     Module.finite_piRight Ri (fun c => Mi c)
-  letI : Module.Projective (∀ c, Ri c)ᵐᵒᵖ (ModuleCat.piRight Ri Mi) :=
+  have : Module.Projective (∀ c, Ri c)ᵐᵒᵖ (ModuleCat.piRight Ri Mi) :=
     Module.projective_piRight Ri (fun c => Mi c)
   exact @RightExtension.determinantLine_mk _ _ _ _ (Pi.evalRingHom Ri b) _ _ _ _ _
 

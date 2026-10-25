@@ -92,13 +92,13 @@ theorem bijective_prodPairing_of_rankAtStalk_eq
         calc
           j + a.1 = a.1 + j := Nat.add_comm _ _
           _ < i + j := Nat.add_lt_add_right hlt j
-      haveI : Subsingleton (⋀[R]^((i + j) - a.1) N) :=
+      have : Subsingleton (⋀[R]^((i + j) - a.1) N) :=
         subsingleton_of_rankAtStalk_lt (R := R) (M := N) _ (fun p ↦ by
           rw [hN]
           exact hdegree)
       exact inferInstance
     · exact (ha (Fin.ext heq)).elim
-    · haveI : Subsingleton (⋀[R]^a.1 M) :=
+    · have : Subsingleton (⋀[R]^a.1 M) :=
         subsingleton_of_rankAtStalk_lt (R := R) (M := M) _ (fun p ↦ by
           rw [hM]
           exact hgt)
@@ -115,7 +115,7 @@ theorem bijective_prodPairing_of_rankAtStalk_eq
       by_cases ha : a = t
       · subst a
         exact DirectSum.component.lof_self R t _
-      · haveI : Subsingleton (β a) := hother a ha
+      · have : Subsingleton (β a) := hother a ha
         exact Subsingleton.elim _ _
   let rightDegree : (⋀[R]^j N) ≃ₗ[R] ⋀[R]^((i + j) - i) N :=
     LinearEquiv.ofEq (ExteriorAlgebra.exteriorPower R j N)

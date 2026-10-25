@@ -51,6 +51,7 @@ private abbrev tensorComparison (φ : R →+* S)
     (M : ModuleCat.{uM} Rᵐᵒᵖ) (N : ModuleCat.{uN} Rᵐᵒᵖ) :=
   Obj φ (M ⊗[Rᵐᵒᵖ] N) ≃ₗ[Sᵐᵒᵖ] Obj φ M ⊗[Sᵐᵒᵖ] Obj φ N
 
+@[instance_reducible]
 private noncomputable def oppositeCoefficientModule (φ : R →+* S) : Module Rᵐᵒᵖ Sᵐᵒᵖ :=
   ((ModuleCat.restrictScalars (RingHom.op φ)).obj
     (ModuleCat.of Sᵐᵒᵖ Sᵐᵒᵖ)).isModule
@@ -59,6 +60,7 @@ private theorem oppositeCoefficientModule_eq_compHom (φ : R →+* S) :
     oppositeCoefficientModule φ = Module.compHom Sᵐᵒᵖ (RingHom.op φ) :=
   rfl
 
+@[instance_reducible]
 private def oppositeCoefficientAlgebra (φ : R →+* S) : Algebra Rᵐᵒᵖ Sᵐᵒᵖ :=
   (RingHom.op φ).toAlgebra
 

@@ -57,11 +57,11 @@ private theorem corner_nonzero : ∃ x : corner, x ≠ 0 := by
 
 private theorem corner_not_free : ¬ Module.Free rationalProductᵐᵒᵖ corner := by
   intro hfree
-  letI : Nontrivial corner := by
+  have : Nontrivial corner := by
     obtain ⟨x, hx⟩ := corner_nonzero
     exact ⟨⟨x, 0, hx⟩⟩
-  letI : Module.Free rationalProductᵐᵒᵖ corner := hfree
-  haveI : FaithfulSMul rationalProductᵐᵒᵖ corner := inferInstance
+  have : Module.Free rationalProductᵐᵒᵖ corner := hfree
+  have : FaithfulSMul rationalProductᵐᵒᵖ corner := inferInstance
   have hzero :
       (MulOpposite.op (fun b : Bool => if b then (0 : ℚ) else 1) :
         rationalProductᵐᵒᵖ) = 0 :=

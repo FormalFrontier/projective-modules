@@ -57,7 +57,7 @@ private theorem zmodTwo_two_smul_one :
 
 private theorem zmodTwo_not_projective : ¬ Module.Projective ℤ (ZMod 2) := by
   intro h
-  letI : Module.Projective ℤ (ZMod 2) := h
+  have : Module.Projective ℤ (ZMod 2) := h
   let q : ℤ →ₗ[ℤ] ZMod 2 := LinearMap.toSpanSingleton ℤ (ZMod 2) 1
   have hq : Function.Surjective q := by
     intro x
@@ -89,9 +89,9 @@ example : Module.Projective (ℤ × ℤ)
 
 example : Module.FinitePresentation (ℤ × ℤ)
     (Ideal.span {((1, 0) : ℤ × ℤ)}) := by
-  letI : Module.Projective (ℤ × ℤ) (Ideal.span {((1, 0) : ℤ × ℤ)}) :=
+  have : Module.Projective (ℤ × ℤ) (Ideal.span {((1, 0) : ℤ × ℤ)}) :=
     firstCoordinate_idempotent.projective_span
-  letI : Module.Finite (ℤ × ℤ) (Ideal.span {((1, 0) : ℤ × ℤ)}) :=
+  have : Module.Finite (ℤ × ℤ) (Ideal.span {((1, 0) : ℤ × ℤ)}) :=
     Module.Finite.of_fg (Submodule.fg_span_singleton ((1, 0) : ℤ × ℤ))
   exact Module.finitePresentation_of_projective _ _
 
@@ -108,7 +108,7 @@ example : Module.FinitePresentation ℤ (Fin 0 →₀ ℤ) := inferInstance
 example : Module.FinitePresentation (ZMod 1) (ZMod 1) := inferInstance
 
 example : Module.FinitePresentation ℤ (ULift.{1} (ZMod 2)) := by
-  letI : Module.FinitePresentation ℤ (ZMod 2) := zmodTwo_finitelyPresented
+  have : Module.FinitePresentation ℤ (ZMod 2) := zmodTwo_finitelyPresented
   exact Module.FinitePresentation.of_equiv
     (ULift.moduleEquiv : ULift.{1} (ZMod 2) ≃ₗ[ℤ] ZMod 2).symm
 
@@ -122,7 +122,7 @@ private theorem infiniteFree_not_finite : ¬ Module.Finite ℤ (ℕ →₀ ℤ) 
 
 example : ¬ Module.FinitePresentation ℤ (ℕ →₀ ℤ) := by
   intro h
-  letI : Module.FinitePresentation ℤ (ℕ →₀ ℤ) := h
+  have : Module.FinitePresentation ℤ (ℕ →₀ ℤ) := h
   exact infiniteFree_not_finite inferInstance
 
 section MatrixFinitePresentationConsumers
@@ -155,7 +155,7 @@ example :
 example : Module.FinitePresentation ℤ
     (intMatrixEquivalence.inverse.obj
       (intMatrixEquivalence.functor.obj zmodTwoModule)) := by
-  letI : Module.FinitePresentation ℤ zmodTwoModule := zmodTwo_finitelyPresented
+  have : Module.FinitePresentation ℤ zmodTwoModule := zmodTwo_finitelyPresented
   let unitEquiv : zmodTwoModule ≃ₗ[ℤ]
       intMatrixEquivalence.inverse.obj
         (intMatrixEquivalence.functor.obj zmodTwoModule) :=

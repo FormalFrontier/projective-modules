@@ -10,6 +10,11 @@ Maintained by the Formal Frontier source-maintainer team.
 The [mathematical overview](docs/Overview.md) gives detailed results, formulas,
 examples and qualifications; links below go to the corresponding result families.
 
+- **[Continuous projective lifting](ProjectiveModules/Topology/Projective.lean):**
+  continuous linear maps from a projective module carrying its module topology
+  lift through surjective continuous linear maps over a semiring with a scalar
+  topology. The target of the lift has continuous addition and scalar
+  multiplication; the common codomain needs no continuity of its operations.
 - **[Coefficient products](docs/Overview.md#coefficient-products):** finite products of
   arbitrary rings reconstruct right modules and split finite-projective classes and K₀.
   For arbitrary families of rings, `ProjectiveClass.piMap` is injective; its image
@@ -540,6 +545,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Complements](ProjectiveModules/Module/ProjectiveComplement.lean) | Over a ring `R`, with additive-group modules `F`, `P` and projective target `P`, `Module.Projective.prodKerEquivOfSurjective` chooses a section of a surjection `f : F →ₗ[R] P` and gives `(P × ker f) ≃ₗ[R] F`; finite projective modules have finite complements in finite standard free modules |
 | [Injectivity](ProjectiveModules/Module/Injective.lean) | Finitely generated projective left modules over an arbitrary left self-injective ring are injective, with independent scalar and carrier universes |
 | [Right inverse defects](ProjectiveModules/Module/RightRegularDefect.lean), [Hom exactness](ProjectiveModules/Module/HomExact.lean) | Specified right regular decomposition and defect kernel over rings; additive Hom exactness over semirings |
+| [Continuous projective lifting](ProjectiveModules/Topology/Projective.lean) | `ContinuousLinearMap.projective_lifting_property`: continuous linear lifts from projective modules with their module topology over a semiring with a scalar topology; continuous addition and scalar multiplication on the target of the lift, with no operation-continuity assumption on the common codomain |
 | [Finite commuting projections](ProjectiveModules/Module/CommutingProjections.lean) | `LinearMap.commutingIdempotentsPiEquiv`: simultaneous decomposition of the original module by a finite pairwise commuting idempotent family over a semiring, for an additive commutative group module; all original range/kernel intersections, Boolean product projectors, component action and inverse inclusion sum, including zero blocks and empty constraints |
 | [Finite dependent products](ProjectiveModules/Module/ProjectivePi.lean) | Canonical pointwise products of projective modules over any semiring are projective for a finite index, without finite generation of the factors and with independent universes |
 | [Finite dependent-product trace](ProjectiveModules/Module/Trace/Pi.lean) | Over a commutative semiring, arbitrary endomorphisms of finite dependent products of finite projective additive-commutative-monoid modules have the sum of their diagonal coordinate traces; `Finite` indices and independent scalar, index and carrier universes. For rectangular composites through another finite dependent product, sum the returning source-factor path traces; no finite generation or projectivity is required of the intermediate factors |

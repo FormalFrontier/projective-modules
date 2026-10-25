@@ -188,11 +188,11 @@ theorem coefficient_finite_projective :
 -- Only the three prerequisite properties are installed, not Hom finiteness.
 example : Module.Finite (ULift.{uS} IntMatrix)
     (matrixIdealSource.{uA, uM} →ₗ[(ULift.{uA} IntMatrix)ᵐᵒᵖ] ULift.{uN} IntMatrix) := by
-  letI : Module.Finite (ULift.{uA} IntMatrix)ᵐᵒᵖ matrixIdealSource.{uA, uM} :=
+  have : Module.Finite (ULift.{uA} IntMatrix)ᵐᵒᵖ matrixIdealSource.{uA, uM} :=
     matrixIdealSource_finite_projective.{uA, uM}.1
-  letI : Module.Projective (ULift.{uA} IntMatrix)ᵐᵒᵖ matrixIdealSource.{uA, uM} :=
+  have : Module.Projective (ULift.{uA} IntMatrix)ᵐᵒᵖ matrixIdealSource.{uA, uM} :=
     matrixIdealSource_finite_projective.{uA, uM}.2
-  letI : Module.Finite (ULift.{uS} IntMatrix) (ULift.{uN} IntMatrix) :=
+  have : Module.Finite (ULift.{uS} IntMatrix) (ULift.{uN} IntMatrix) :=
     coefficient_finite_projective.{uS, uN}.1
   exact inferInstance
 
@@ -313,11 +313,11 @@ theorem idealInclusion_movement :
 -- independent of the named-producer controls below.
 example : Module.Finite (ULift.{2} IntMatrix)
     (matrixIdealSource.{1, 0} →ₗ[(ULift.{1} IntMatrix)ᵐᵒᵖ] ULift.{3} IntMatrix) := by
-  letI : Module.Finite (ULift.{1} IntMatrix)ᵐᵒᵖ matrixIdealSource.{1, 0} :=
+  have : Module.Finite (ULift.{1} IntMatrix)ᵐᵒᵖ matrixIdealSource.{1, 0} :=
     matrixIdealSource_finite_projective.{1, 0}.1
-  letI : Module.Projective (ULift.{1} IntMatrix)ᵐᵒᵖ matrixIdealSource.{1, 0} :=
+  have : Module.Projective (ULift.{1} IntMatrix)ᵐᵒᵖ matrixIdealSource.{1, 0} :=
     matrixIdealSource_finite_projective.{1, 0}.2
-  letI : Module.Finite (ULift.{2} IntMatrix) (ULift.{3} IntMatrix) :=
+  have : Module.Finite (ULift.{2} IntMatrix) (ULift.{3} IntMatrix) :=
     coefficient_finite_projective.{2, 3}.1
   exact inferInstance
 
@@ -352,11 +352,11 @@ theorem higher_inner_scalar_control :
 -- and ask inference directly again, without a Hom-finite witness.
 example : Module.Finite (ULift.{1} IntMatrix)
     (matrixIdealSource.{0, 3} →ₗ[(ULift.{0} IntMatrix)ᵐᵒᵖ] ULift.{2} IntMatrix) := by
-  letI : Module.Finite (ULift.{0} IntMatrix)ᵐᵒᵖ matrixIdealSource.{0, 3} :=
+  have : Module.Finite (ULift.{0} IntMatrix)ᵐᵒᵖ matrixIdealSource.{0, 3} :=
     matrixIdealSource_finite_projective.{0, 3}.1
-  letI : Module.Projective (ULift.{0} IntMatrix)ᵐᵒᵖ matrixIdealSource.{0, 3} :=
+  have : Module.Projective (ULift.{0} IntMatrix)ᵐᵒᵖ matrixIdealSource.{0, 3} :=
     matrixIdealSource_finite_projective.{0, 3}.2
-  letI : Module.Finite (ULift.{1} IntMatrix) (ULift.{2} IntMatrix) :=
+  have : Module.Finite (ULift.{1} IntMatrix) (ULift.{2} IntMatrix) :=
     coefficient_finite_projective.{1, 2}.1
   exact inferInstance
 

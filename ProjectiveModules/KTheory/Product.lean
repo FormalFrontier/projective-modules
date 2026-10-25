@@ -216,10 +216,10 @@ theorem mem_range_piMap_iff (p : ∀ i, ProjectiveClass (Ri i)) :
         (R := (∀ i, Ri i)ᵐᵒᵖ) (P := M)
     letI : AddCommGroup C := hCadd
     letI : Module (∀ i, Ri i)ᵐᵒᵖ C := hCmodule
-    letI : Module.Finite (∀ i, Ri i)ᵐᵒᵖ C := hCfinite
-    letI : Module.Projective (∀ i, Ri i)ᵐᵒᵖ (M × C) :=
+    have : Module.Finite (∀ i, Ri i)ᵐᵒᵖ C := hCfinite
+    have : Module.Projective (∀ i, Ri i)ᵐᵒᵖ (M × C) :=
       Module.Projective.of_equiv' e.symm
-    letI : Module.Projective (∀ i, Ri i)ᵐᵒᵖ C :=
+    have : Module.Projective (∀ i, Ri i)ᵐᵒᵖ C :=
       Module.Projective.of_split (LinearMap.inr (∀ i, Ri i)ᵐᵒᵖ M C)
         (LinearMap.snd (∀ i, Ri i)ᵐᵒᵖ M C)
         (LinearMap.snd_comp_inr (∀ i, Ri i)ᵐᵒᵖ M C)
