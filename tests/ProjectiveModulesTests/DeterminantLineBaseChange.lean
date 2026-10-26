@@ -96,7 +96,7 @@ example : determinantClass.{u, v, w} := by
     RingHomInvPair.of_ringEquiv e
   have : RingHomInvPair e.symm.toRingHom e.toRingHom :=
     RingHomInvPair.of_ringEquiv_symm e
-  letI : Module (ULift.{u} ℤ)ᵐᵒᵖ (ULift.{w} ℤᵐᵒᵖ) :=
+  let : Module (ULift.{u} ℤ)ᵐᵒᵖ (ULift.{w} ℤᵐᵒᵖ) :=
     Module.compHom _ e.symm.toRingHom
   let a : ℤᵐᵒᵖ ≃ₛₗ[e.toRingHom] ULift.{w} ℤᵐᵒᵖ :=
     { __ := (AddEquiv.ulift : ULift.{w} ℤᵐᵒᵖ ≃+ ℤᵐᵒᵖ).symm

@@ -113,7 +113,7 @@ to the original element minus the chosen lift of its target coordinate. -/
     LinearEquiv.prodComm_apply, Prod.fst_swap, LinearMap.kerProdEquivOfRightInverse_symm_snd]
 
 /-- Projecting a split element to the target recovers its target coordinate. -/
-@[simp] theorem prodKerEquivOfSurjective_apply_fst [Module.Projective R P]
+theorem prodKerEquivOfSurjective_apply_fst [Module.Projective R P]
     (f : F →ₗ[R] P) (hf : Surjective f) (p : P) (k : LinearMap.ker f) :
     f ((prodKerEquivOfSurjective f hf) (p, k)) = p := by
   have h := prodKerEquivOfSurjective_symm_fst f hf
@@ -121,7 +121,7 @@ to the original element minus the chosen lift of its target coordinate. -/
   simpa only [LinearEquiv.symm_apply_apply] using h.symm
 
 /-- The kernel factor embeds in the domain by its original subtype map. -/
-@[simp] theorem prodKerEquivOfSurjective_apply_zero_snd [Module.Projective R P]
+theorem prodKerEquivOfSurjective_apply_zero_snd [Module.Projective R P]
     (f : F →ₗ[R] P) (hf : Surjective f) (k : LinearMap.ker f) :
     prodKerEquivOfSurjective f hf (0, k) = (k : F) := by
   rw [prodKerEquivOfSurjective_eq_prodComm_trans]

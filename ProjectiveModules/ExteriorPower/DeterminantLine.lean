@@ -221,7 +221,7 @@ private theorem determinantLineInvertible_projector_smul
   by_cases h : j = i
   · subst j
     simp
-  · simp [Pi.single_apply, h, Ne.symm h]
+  · simp [h]
 
 /-- A determinant line is an invertible module. -/
 theorem determinantLine_invertible : Module.Invertible R (DeterminantLine R P) := by
@@ -297,7 +297,7 @@ theorem determinantLine_invertible : Module.Invertible R (DeterminantLine R P) :
       by_cases h : j = i
       · subst j
         simp
-      · simp [Pi.single_apply, h, Ne.symm h]
+      · simp [h]
     · intro x y hx hy
       simp only [map_add, Pi.single_add, hx, hy]
   have hcontractproject (i : rankFiberIndex R P) (z : D ⊗[R] (∀ j, C j)) :
@@ -519,7 +519,7 @@ theorem determinantLine_component (i : rankFiberIndex R P) :
         by_cases h : j = i
         · subst j
           simp
-        · simp [Pi.single_apply, h, Ne.symm h]
+        · simp [h]
       map_smul' := by
         intro r y
         apply DeterminantLine.ext
@@ -528,7 +528,7 @@ theorem determinantLine_component (i : rankFiberIndex R P) :
         · subst j
           simpa only [DeterminantLine.component_ofComponents, RingHom.id_apply,
             DeterminantLine.component_smul, Pi.single_eq_same] using (hsmul r y).symm
-        · simp [Pi.single_apply, h, Ne.symm h] }
+        · simp [h] }
   let f : (rankFiberRing R P i) ⊗[R] DeterminantLine R P →ₗ[rankFiberRing R P i]
       DeterminantLineComponent R P i :=
     TensorProduct.AlgebraTensorModule.lift
@@ -552,7 +552,7 @@ theorem determinantLine_component (i : rankFiberIndex R P) :
     by_cases h : j = i
     · subst j
       simp [s, q]
-    · simp [s, Pi.single_apply, h, Ne.symm h]
+    · simp [s, h]
   have hleft : Function.LeftInverse g f := by
     intro z
     refine TensorProduct.inductionOn (motive := fun z ↦ g (f z) = z) z ?_ ?_

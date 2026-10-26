@@ -67,8 +67,8 @@ theorem exists_uniform_abs_finrank_map_le
     obtain ⟨m, C, hCadd, hCmodule, hCfinite, ⟨e⟩⟩ :=
       Module.Projective.exists_finite_complement_linearEquiv
         (R := Rᵐᵒᵖ) (P := P)
-    letI : AddCommGroup C := hCadd
-    letI : Module Rᵐᵒᵖ C := hCmodule
+    let : AddCommGroup C := hCadd
+    let : Module Rᵐᵒᵖ C := hCmodule
     have : Module.Finite Rᵐᵒᵖ C := hCfinite
     have : Module.Projective Rᵐᵒᵖ (P × C) :=
       Module.Projective.of_equiv' e.symm

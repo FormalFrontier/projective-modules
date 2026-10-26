@@ -94,14 +94,13 @@ theorem rightFreeFrom_apply (x : ι → S) :
     rightFreeFrom f ι x = ∑ i, tmul f (Pi.single i 1) (x i) := by
   simp [rightFreeFrom, Fintype.linearCombination_apply, tmul_smul]
 
-@[simp]
 theorem rightFreeTo_rightFreeFrom (x : ι → S) :
     rightFreeTo f ι (rightFreeFrom f ι x) = x := by
   rw [rightFreeFrom_apply, map_sum]
   ext j
   simp [rightFreeTo_tmul, Pi.single_apply]
 
-@[simp]
+@[simp↓]
 theorem rightFreeFrom_rightFreeTo (z : Obj f (ι → R)) :
     rightFreeFrom f ι (rightFreeTo f ι z) = z := by
   let _ : Module R S := f.toModule

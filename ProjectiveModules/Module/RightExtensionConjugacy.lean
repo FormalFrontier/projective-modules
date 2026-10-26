@@ -123,7 +123,6 @@ theorem innerLinearEquiv_symm :
 
 /-- Restriction of the inner comparison to one-generators is the semilinear map
 `m ↦ m ⊗_ψ u`. -/
-@[simp]
 theorem toSemilinear_innerLinearEquiv (m : M) :
     toSemilinear φ (innerLinearEquiv φ ψ u h M).toLinearMap m =
       tmul ψ m (u : S) := by
@@ -131,7 +130,6 @@ theorem toSemilinear_innerLinearEquiv (m : M) :
   simp only [LinearEquiv.coe_coe, innerLinearEquiv_tmul, mul_one]
 
 /-- The canonical semilinear generator is sent to the tensor with coefficient `u`. -/
-@[simp]
 theorem innerLinearEquiv_tmulOne (m : M) :
     innerLinearEquiv φ ψ u h M (tmulOne φ m) = tmul ψ m (u : S) := by
   rw [tmulOne_apply, innerLinearEquiv_tmul, mul_one]

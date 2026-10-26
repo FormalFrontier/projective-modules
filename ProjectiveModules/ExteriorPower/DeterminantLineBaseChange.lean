@@ -54,7 +54,7 @@ theorem determinantLine_mk
           _ _ _ (Module.determinantLine_invertible Rᵐᵒᵖ P)) := by
   classical
   -- The ordinary tensor endpoint uses the opposite homomorphism, not `f`.
-  letI : Algebra Rᵐᵒᵖ Sᵐᵒᵖ := f.op.toAlgebra
+  let : Algebra Rᵐᵒᵖ Sᵐᵒᵖ := f.op.toAlgebra
   let Q := Obj f P
   let A := Rᵐᵒᵖ
   let B := Sᵐᵒᵖ
@@ -72,7 +72,7 @@ theorem determinantLine_mk
       Nonempty ((Module.rankFiberRing B Q j) ⊗[B] X ≃ₗ[B]
         (Module.rankFiberRing B Q j) ⊗[B] Y) := by
     let C := Module.rankFiberRing B Q j
-    letI : Algebra A C := ((algebraMap B C).comp f.op).toAlgebra
+    let : Algebra A C := ((algebraMap B C).comp f.op).toAlgebra
     have : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
     -- The coefficient action comes from the composite algebra; the module
     -- action is inherited by the quotient. Compare them through B.

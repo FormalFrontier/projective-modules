@@ -65,7 +65,6 @@ noncomputable def ofClassRingHom : ProjectiveClass R →+* K0 R :=
   Algebra.GrothendieckAddGroup.ofRingHom (ProjectiveClass R)
 
 /-- Forgetting multiplication retains the entire additive completion map. -/
-@[simp]
 theorem ofClassRingHom_toAddMonoidHom :
     (ofClassRingHom R).toAddMonoidHom = ofClass R := rfl
 

@@ -567,6 +567,7 @@ private theorem exists_linearEquiv_matrixRow_restrictScalars (M : Type uM)
       map_smul' := fun a x ↦ e.map_smul (p a) x }
   exact ⟨i, ⟨(LinearEquiv.ofBijective f hf).trans eR⟩⟩
 
+omit [∀ i, Nonempty (κ i)] in
 private theorem matrixBlockModule_index_eq (M : Type uM) [AddCommGroup M]
     [Module (∀ j, Matrix (κ j) (κ j) (D j))ᵐᵒᵖ M] [Nontrivial M]
     (i j : ι)

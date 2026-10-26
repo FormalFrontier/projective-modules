@@ -7,7 +7,8 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules
-import ProjectiveModules.Module.ComponentwiseFreeExamples
+import ProjectiveModules.Module.ComponentwiseFree
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.RingTheory.PrincipalIdealDomain
 import ProjectiveModulesTests.TensorDualSeparationClient
@@ -19,10 +20,10 @@ import ProjectiveModulesTests.K0CompletionBijectivityClient
 # Ordinary aggregate-import regression clients
 
 The production API is consumed through `ProjectiveModules`, without `import all`.
-The second import deliberately brings the eight existing internal example proofs
-into the default test closure; it adds no production export. The rank-one
+The componentwise-free API is also imported directly from its defining module.
+Its examples are compiled separately as a root of the test library. The rank-one
 characterization is exposed here; the remaining private clients check explicit
-conclusions and boundary hypotheses, not full release verification.
+conclusions and boundary hypotheses.
 -/
 
 set_option warningAsError true
@@ -312,3 +313,39 @@ private theorem laurent_right (F : Type u) [Field F] (P : Type v) [AddCommGroup 
   LaurentPolynomial.op_module_free_of_finite_projective F P
 
 end ProjectiveModulesPublicAPIClient
+
+set_option pp.universes true in
+#check @AddEquiv.ofBijective_apply
+
+section
+set_option pp.universes true in
+#check @_root_.KTheory.ProjectiveClass.finrankEquiv_of_self
+set_option pp.universes true in
+#check @_root_.KTheory.K0.finrankEquiv_of_self
+set_option pp.universes true in
+#check @_root_.KTheory.K0.finrankRingEquiv_symm_intCast
+set_option pp.universes true in
+#check @_root_.KTheory.K0.finrankRingEquiv_intCast
+set_option pp.universes true in
+#check @_root_.KTheory.K0.localRingEquivInt_symm_intCast
+set_option pp.universes true in
+#check @_root_.KTheory.K0.localRingEquivInt_intCast
+set_option pp.universes true in
+#check @_root_.KTheory.K0.pidRingEquivInt_symm_intCast
+set_option pp.universes true in
+#check @_root_.KTheory.K0.pidRingEquivInt_intCast
+
+end
+
+section
+
+universe uDom uCod uHom
+
+example {M : Type uDom} {N : Type uCod} {F : Type uHom}
+    [Add M] [Add N] [FunLike F M N] [AddHomClass F M N]
+    (f : F) (hf : Function.Bijective (f : M → N)) :
+    (AddEquiv.ofBijective f hf).toEquiv.invFun =
+      Function.surjInv hf.surjective := by
+  rfl
+
+end

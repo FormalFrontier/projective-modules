@@ -242,8 +242,8 @@ private theorem negative_left_nonzero : (-3 : ℤ) • kL ≠ 0 := by
   have obs := congrArg (fun x => K0.finrankHom ℚ
     (K0.map (RingHom.fst ℚ ℚ) x)) h
   have bad : (-3 : ℤ) = 0 := by
-    simp only [map_zsmul, k0_images.1, K0.finrankHom_of_self, map_zero] at obs <;>
-      simpa only [zsmul_eq_mul, mul_one, Int.cast_id] using obs
+    simp only [map_zsmul, k0_images.1, K0.finrankHom_of_self, map_zero] at obs
+    simpa only [zsmul_eq_mul, mul_one, Int.cast_id] using obs
   exact (by decide : (-3 : ℤ) ≠ 0) bad
 
 -- The complementary-span equivalence is used only for these selected modules.
@@ -656,8 +656,8 @@ private theorem signed_observations :
   simp only [map_add, map_zsmul, rational_k0_observations.1,
     rational_k0_observations.2.1, rational_k0_observations.2.2.1,
     rational_k0_observations.2.2.2, zsmul_zero, add_zero, zero_add,
-    K0.finrankHom_of_self] <;>
-    simp only [zsmul_eq_mul, mul_one, Int.cast_id]
+    K0.finrankHom_of_self]
+  simp only [zsmul_eq_mul, mul_one, Int.cast_id]
 
 end LiftedScalars
 

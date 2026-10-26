@@ -60,7 +60,6 @@ noncomputable def rankLocallyConstant :
 
 /-- On a reference-category module, class rank is the pullback of its existing
 opposite-ring locally constant rank. -/
-@[simp]
 theorem rankLocallyConstant_of
     (X : ModuleCat.FiniteProjective.{uR, uR} Rᵐᵒᵖ) :
     rankLocallyConstant R (of R X) =
@@ -75,6 +74,7 @@ theorem rankLocallyConstant_of
 
 /-- Class rank evaluates on any carrier universe using the original module
 structure, rather than the chosen representative's carrier. -/
+@[simp]
 theorem rankLocallyConstant_of_module
     (M : Type uM) [AddCommGroup M] [Module Rᵐᵒᵖ M]
     [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M] :
@@ -91,7 +91,6 @@ theorem rankLocallyConstant_of_module
 
 /-- At a prime of `R`, class rank is the stalk rank of the original right
 module at the corresponding prime of `Rᵐᵒᵖ`. -/
-@[simp]
 theorem rankLocallyConstant_of_module_apply
     (M : Type uM) [AddCommGroup M] [Module Rᵐᵒᵖ M]
     [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M]

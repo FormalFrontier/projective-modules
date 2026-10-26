@@ -120,7 +120,6 @@ theorem traceModCommutators_of_module (M : Type uM) [AddCommGroup M]
 
 /-- The ordinary right regular module has identity trace the class of `1`.
 See Weibel, *The K-book*, §II.2, “Hattori–Stallings trace map”. -/
-@[simp]
 theorem traceModCommutators_of_self :
     traceModCommutators R (of R R) =
       QuotientAddGroup.mk' (Ring.additiveCommutators R) 1 := by
@@ -142,7 +141,6 @@ noncomputable def traceModCommutators :
 /-- On a completed projective class, the K₀ trace equals the class trace.
 This is the universal extension described in Weibel, *The K-book*, §II.2,
 “Hattori–Stallings trace map”. -/
-@[simp]
 theorem traceModCommutators_ofClass (a : ProjectiveClass R) :
     traceModCommutators R (ofClass R a) =
       ProjectiveClass.traceModCommutators R a := by

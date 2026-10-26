@@ -109,7 +109,7 @@ private theorem rankLocallyConstant_zeroRing :
       (0 : LocallyConstant (PrimeSpectrum (ZMod 1)) ℤ) = 1 := by
   have : Subsingleton (LocallyConstant (PrimeSpectrum (ZMod 1)) ℕ) :=
     DFunLike.subsingleton_dom
-  letI : Unique (LocallyConstant (PrimeSpectrum (ZMod 1)) ℤ) :=
+  let : Unique (LocallyConstant (PrimeSpectrum (ZMod 1)) ℤ) :=
     { default := 0
       uniq := fun _ ↦ LocallyConstant.ext fun p ↦ isEmptyElim p }
   exact ⟨Subsingleton.elim _ _, Subsingleton.elim _ _⟩

@@ -96,7 +96,6 @@ theorem rankLocallyConstantRingHom_apply (a : ProjectiveClass R) :
     rankLocallyConstantRingHom R a = rankLocallyConstant R a := rfl
 
 /-- The class-rank homomorphism on a module in any carrier universe. -/
-@[simp]
 theorem rankLocallyConstantRingHom_of_module
     (M : Type uM) [AddCommGroup M] [Module Rᵐᵒᵖ M]
     [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M] :
@@ -107,7 +106,6 @@ theorem rankLocallyConstantRingHom_of_module
   rankLocallyConstant_of_module R M
 
 /-- At a prime, the class-rank homomorphism is the original opposite-module stalk rank. -/
-@[simp]
 theorem rankLocallyConstantRingHom_of_module_apply
     (M : Type uM) [AddCommGroup M] [Module Rᵐᵒᵖ M]
     [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M] (p : PrimeSpectrum R) :
@@ -153,7 +151,6 @@ noncomputable def rankLocallyConstantRingHom :
       (ProjectiveClass.rankLocallyConstantRingHom R))
 
 /-- The whole additive projection is definitionally the additive universal lift. -/
-@[simp]
 theorem rankLocallyConstantRingHom_toAddMonoidHom :
     (rankLocallyConstantRingHom R).toAddMonoidHom =
       K0.lift R
@@ -161,7 +158,6 @@ theorem rankLocallyConstantRingHom_toAddMonoidHom :
           (ProjectiveClass.rankLocallyConstantRingHom R)).toAddMonoidHom) := rfl
 
 /-- On a class generator, K₀ rank is the canonical cast of its natural-valued rank. -/
-@[simp]
 theorem rankLocallyConstantRingHom_ofClass (a : ProjectiveClass R) :
     rankLocallyConstantRingHom R (ofClass R a) =
       LocallyConstant.mapRingHom (Nat.castRingHom ℤ)
@@ -192,7 +188,6 @@ theorem rankLocallyConstantRingHom_of
     ProjectiveClass.rankLocallyConstantRingHom_of_module]
 
 /-- Prime evaluation of K₀ rank is the canonical integer cast of the original stalk rank. -/
-@[simp]
 theorem rankLocallyConstantRingHom_of_apply
     (M : Type uM) [AddCommGroup M] [Module Rᵐᵒᵖ M]
     [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M] (p : PrimeSpectrum R) :

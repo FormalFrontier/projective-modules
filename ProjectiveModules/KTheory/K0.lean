@@ -158,9 +158,16 @@ theorem of_eq_of_equiv {N : Type w} [AddCommGroup N] [Module Rᵐᵒᵖ N]
   (of_eq_iff R M N).2 ⟨e⟩
 
 /-- Passing to the ring-universe representative does not change the class. -/
-@[simp]
+@[simp↓]
 theorem of_repr : of R (ModuleCat.FiniteProjective.repr Rᵐᵒᵖ M) = of R M :=
   of_eq_of_equiv R _ (ModuleCat.FiniteProjective.reprEquiv Rᵐᵒᵖ M)
+
+/-- Passing to the finite-module representative does not change the projective class. -/
+@[simp]
+theorem of_finite_repr :
+    @of R _ (Module.Finite.repr Rᵐᵒᵖ M) _ _ _
+      (Module.Projective.of_equiv' (Module.Finite.reprEquiv Rᵐᵒᵖ M).symm) = of R M :=
+  of_repr R M
 
 /-- A carrier lift does not change the isomorphism class. -/
 @[simp]
@@ -353,7 +360,6 @@ carrier universe. -/
 noncomputable def of : K0 R := ofClass R (ProjectiveClass.of R M)
 
 /-- The canonical completion map sends a module's isomorphism class to its K₀ generator. -/
-@[simp]
 theorem ofClass_of : ofClass R (ProjectiveClass.of R M) = of R M := rfl
 
 /-- Right-linear equivalence preserves the K₀ generator. The converse is not
@@ -393,7 +399,6 @@ theorem lift_symm_apply {G : Type w} [AddCommGroup G] (f : K0 R →+ G) :
     (lift R).symm f = f.comp (ofClass R) := rfl
 
 /-- The universal extension agrees with the given map on class generators. -/
-@[simp]
 theorem lift_ofClass {G : Type w} [AddCommGroup G]
     (f : ProjectiveClass R →+ G) (a : ProjectiveClass R) :
     lift R f (ofClass R a) = f a :=

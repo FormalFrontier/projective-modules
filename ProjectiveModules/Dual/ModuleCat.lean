@@ -103,7 +103,6 @@ theorem rightDual_map_hom {X Y : (ModuleCat.{uM} Rᵐᵒᵖ)ᵒᵖ} (h : X ⟶ Y
 
 /-- Applying a dual morphism and then evaluating is precomposition with the
 underlying right-module morphism. -/
-@[simp]
 theorem rightDual_map_apply {X Y : (ModuleCat.{uM} Rᵐᵒᵖ)ᵒᵖ} (h : X ⟶ Y)
     (f : (rightDual R).obj X) (y : Y.unop) :
     (rightDual R).map h f y = f (h.unop y) :=
@@ -161,7 +160,6 @@ def rightDualRestrictScalarsEquiv (M : ModuleCat.{uM} Rᵐᵒᵖ) :
         ((RingEquiv.opOp R).symm a) (show M →ₗ[Rᵐᵒᵖ] R from f)
 
 /-- The bundled coefficient comparison applies `op` to every value. -/
-@[simp]
 theorem rightDualRestrictScalarsEquiv_apply (M : ModuleCat.{uM} Rᵐᵒᵖ)
     (f : (ModuleCat.restrictScalars (RingEquiv.opOp R).symm.toRingHom).obj
       ((ModuleCat.rightDual R).obj (Opposite.op M))) (m : M) :
@@ -170,7 +168,6 @@ theorem rightDualRestrictScalarsEquiv_apply (M : ModuleCat.{uM} Rᵐᵒᵖ)
   LinearEquiv.rightDualOpposite_apply R M (show M →ₗ[Rᵐᵒᵖ] R from f) m
 
 /-- The inverse bundled coefficient comparison applies `unop` to every value. -/
-@[simp]
 theorem rightDualRestrictScalarsEquiv_symm_apply (M : ModuleCat.{uM} Rᵐᵒᵖ)
     (f : M →ₗ[Rᵐᵒᵖ] Rᵐᵒᵖ) (m : M) :
     (show M →ₗ[Rᵐᵒᵖ] R from (rightDualRestrictScalarsEquiv R M).symm f) m =

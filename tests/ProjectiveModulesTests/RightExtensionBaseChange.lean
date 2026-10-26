@@ -128,7 +128,7 @@ private noncomputable def punitTensorComparison
 
 private theorem punitUnit_eq_zero :
     tmul (punitHom.{uR, uS} R) (MulOpposite.op (1 : R)) (1 : PUnit.{uS + 1}) = 0 := by
-  letI : Subsingleton (Obj (punitHom.{uR, uS} R) Rᵐᵒᵖ) :=
+  let : Subsingleton (Obj (punitHom.{uR, uS} R) Rᵐᵒᵖ) :=
     Module.subsingleton (PUnit.{uS + 1})ᵐᵒᵖ _
   exact Subsingleton.elim _ _
 

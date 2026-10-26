@@ -215,7 +215,6 @@ theorem functor'_map_hom {M N : ModuleCat.{uM} Rᵐᵒᵖ} (g : M ⟶ N) :
 
 /-- Scalar extension of a categorical morphism acts on the first factor of a
 pure tensor. -/
-@[simp]
 theorem functor'_map_tmul {M N : ModuleCat.{uM} Rᵐᵒᵖ} (g : M ⟶ N) (m : M) (s : S) :
     (functor' f).map g (tmul f m s) = tmul f (g m) s :=
   map_tmul f g.hom m s

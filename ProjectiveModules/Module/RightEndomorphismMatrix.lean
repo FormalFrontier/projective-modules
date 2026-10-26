@@ -504,14 +504,13 @@ section SquareScalarExtension
 variable (R : Type uR) [Semiring R]
 variable (ι : Type uι) [Fintype ι]
 
-/-- The square specialization of specified finite right-free map transport. -/
-noncomputable def rightEndomorphismScalarExtension [DecidableEq ι]
+/-- The square specialization of specified finite right-free map transport.
+No coordinate equality decision is required. -/
+noncomputable def rightEndomorphismScalarExtension
     {S : Type uS} [Semiring S] (f : R →+* S)
     (g : Module.End Rᵐᵒᵖ (ι → R)) :
     Module.End Sᵐᵒᵖ (ι → S) :=
   rightFreeLinearMapScalarExtension R ι ι f g
-
-variable [DecidableEq ι]
 
 /-- The old square operation is the specialization of the rectangular one. -/
 theorem rightEndomorphismScalarExtension_eq_rightFreeLinearMapScalarExtension
@@ -519,6 +518,8 @@ theorem rightEndomorphismScalarExtension_eq_rightFreeLinearMapScalarExtension
     (g : Module.End Rᵐᵒᵖ (ι → R)) :
     rightEndomorphismScalarExtension R ι f g =
       rightFreeLinearMapScalarExtension R ι ι f g := rfl
+
+variable [DecidableEq ι]
 
 /-- Scalar extension of a finite free right-module endomorphism acts on a
 standard basis vector by applying the coefficient homomorphism coordinatewise. -/
@@ -564,6 +565,7 @@ theorem rightEndomorphismScalarExtension_eq_tensor
   ext y
   rfl
 
+omit [DecidableEq ι] in
 /-- Bijectivity of a finite free right-module endomorphism is reflected from
 its scalar extension to a quasi-regular quotient. -/
 theorem rightEndomorphism_bijective_of_quotientScalarExtension_bijective
@@ -572,6 +574,7 @@ theorem rightEndomorphism_bijective_of_quotientScalarExtension_bijective
     (hg : Bijective (rightEndomorphismScalarExtension R ι
       (Ideal.Quotient.mk I.asIdeal) g)) :
     Bijective g := by
+  classical
   apply rightEndomorphism_bijective_of_mapMatrix_quotient_isUnit
     R ι I hI g
   rw [rightEndomorphismMatrixEquiv_scalarExtension]

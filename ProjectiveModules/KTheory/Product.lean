@@ -81,7 +81,6 @@ theorem piMap_eval (i : ι) :
 
 /-- A finite projective module in any carrier universe maps to the classes
 of its coordinate right scalar extensions. -/
-@[simp]
 theorem piMap_of (M : Type uM) [AddCommGroup M]
     [Module (∀ i, Ri i)ᵐᵒᵖ M]
     [Module.Finite (∀ i, Ri i)ᵐᵒᵖ M] [Module.Projective (∀ i, Ri i)ᵐᵒᵖ M]
@@ -92,7 +91,6 @@ theorem piMap_of (M : Type uM) [AddCommGroup M]
 
 /-- The scalar-self regular right-module class maps to the regular class
 at each coordinate. -/
-@[simp]
 theorem piMap_of_self (i : ι) :
     piMap Ri (of (∀ j, Ri j) (∀ j, Ri j)ᵐᵒᵖ) i =
       of (Ri i) (Ri i)ᵐᵒᵖ := by
@@ -214,8 +212,8 @@ theorem mem_range_piMap_iff (p : ∀ i, ProjectiveClass (Ri i)) :
     obtain ⟨n, C, hCadd, hCmodule, hCfinite, ⟨e⟩⟩ :=
       Module.Projective.exists_finite_complement_linearEquiv
         (R := (∀ i, Ri i)ᵐᵒᵖ) (P := M)
-    letI : AddCommGroup C := hCadd
-    letI : Module (∀ i, Ri i)ᵐᵒᵖ C := hCmodule
+    let : AddCommGroup C := hCadd
+    let : Module (∀ i, Ri i)ᵐᵒᵖ C := hCmodule
     have : Module.Finite (∀ i, Ri i)ᵐᵒᵖ C := hCfinite
     have : Module.Projective (∀ i, Ri i)ᵐᵒᵖ (M × C) :=
       Module.Projective.of_equiv' e.symm
@@ -434,7 +432,6 @@ theorem piEquiv_toAddMonoidHom :
 
 /-- The whole finite coordinate decomposition agrees with the arbitrary-family
 coordinate map. -/
-@[simp]
 theorem piEquiv_toAddMonoidHom_eq_piMap :
     (piEquiv Ri).toAddMonoidHom = piMap Ri :=
   piEquiv_toAddMonoidHom Ri
@@ -454,7 +451,6 @@ theorem piEquiv_apply (a : ProjectiveClass (∀ i, Ri i)) (i : ι) :
 
 /-- A finite projective module in any carrier universe decomposes into the
 classes of its coordinate right scalar extensions. -/
-@[simp]
 theorem piEquiv_of_module (M : Type uM) [AddCommGroup M]
     [Module (∀ i, Ri i)ᵐᵒᵖ M]
     [Module.Finite (∀ i, Ri i)ᵐᵒᵖ M] [Module.Projective (∀ i, Ri i)ᵐᵒᵖ M]
@@ -645,7 +641,6 @@ theorem prodEquiv_apply (a : ProjectiveClass (R × S)) :
 
 /-- A finite projective module with an independent carrier universe gives the
 pair of classes of its two right scalar extensions. -/
-@[simp]
 theorem prodEquiv_of_module (M : Type uM) [AddCommGroup M] [Module (R × S)ᵐᵒᵖ M]
     [Module.Finite (R × S)ᵐᵒᵖ M] [Module.Projective (R × S)ᵐᵒᵖ M] :
     prodEquiv R S (of (R × S) M) =
@@ -865,7 +860,6 @@ theorem piEquiv_apply (z : K0 (∀ i, Ri i)) (i : ι) :
 
 /-- A finite projective module in any carrier universe decomposes into the K₀
 generators of its coordinate right scalar extensions. -/
-@[simp]
 theorem piEquiv_of_module (M : Type uM) [AddCommGroup M]
     [Module (∀ i, Ri i)ᵐᵒᵖ M]
     [Module.Finite (∀ i, Ri i)ᵐᵒᵖ M] [Module.Projective (∀ i, Ri i)ᵐᵒᵖ M]
@@ -903,7 +897,6 @@ theorem piEquiv_comp_ofClass :
 
 /-- On every class generator, decomposition commutes with group completion
 in each coordinate. -/
-@[simp]
 theorem piEquiv_ofClass (a : ProjectiveClass (∀ i, Ri i)) (i : ι) :
     piEquiv Ri (ofClass (∀ i, Ri i) a) i =
       ofClass (Ri i) (ProjectiveClass.piEquiv Ri a i) := by
@@ -1061,7 +1054,6 @@ theorem prodEquiv_apply (z : K0 (R × S)) :
 
 /-- A finite projective module in any carrier universe gives the pair of K₀
 generators of its two right scalar extensions. -/
-@[simp]
 theorem prodEquiv_of_module (M : Type uM) [AddCommGroup M] [Module (R × S)ᵐᵒᵖ M]
     [Module.Finite (R × S)ᵐᵒᵖ M] [Module.Projective (R × S)ᵐᵒᵖ M] :
     prodEquiv R S (of (R × S) M) =
@@ -1103,7 +1095,6 @@ theorem prodEquiv_comp_ofClass :
 
 /-- Decomposition commutes with group completion on every binary-product
 class generator. -/
-@[simp]
 theorem prodEquiv_ofClass (a : ProjectiveClass (R × S)) :
     prodEquiv R S (ofClass (R × S) a) =
       (ofClass R (ProjectiveClass.prodEquiv R S a).1,

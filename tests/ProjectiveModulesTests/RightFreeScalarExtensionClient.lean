@@ -32,6 +32,12 @@ namespace ProjectiveModulesTests.RightFreeScalarExtension
 
 open scoped Matrix
 
+-- The square specialization retains finite coordinates but needs no equality decision.
+example (R : Type*) [Semiring R] (S : Type*) [Semiring S]
+    (ι : Type*) [Fintype ι] (f : R →+* S) (g : Module.End Rᵐᵒᵖ (ι → R)) :
+    Module.rightEndomorphismScalarExtension R ι f g =
+      Module.rightFreeLinearMapScalarExtension R ι ι f g := rfl
+
 abbrev IntMatrices := Matrix (Fin 2) (Fin 2) ℤ
 abbrev ModFiveMatrices := Matrix (Fin 2) (Fin 2) (ZMod 5)
 abbrev NatMatrices := Matrix (Fin 2) (Fin 2) ℕ

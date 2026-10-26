@@ -57,7 +57,7 @@ private noncomputable def classLawSlots (R : Type uR) [CommRing R] :
       map_mul' := raw_mul }
 
 /-- SOURCE-ONLY rfl probe for retention of the WHOLE old function. -/
-private noncomputable def originalFunctionProbe (R : Type uR) [CommRing R]
+private theorem originalFunctionProbe (R : Type uR) [CommRing R]
     (raw_zero : KTheory.ProjectiveClass.rankLocallyConstant R 0 = 0)
     (raw_one : KTheory.ProjectiveClass.rankLocallyConstant R 1 = 1)
     (raw_add : ∀ a b : KTheory.ProjectiveClass R,
@@ -80,7 +80,7 @@ private noncomputable def completionTerm (R : Type uR) [CommRing R]
     ((LocallyConstant.mapRingHom (Nat.castRingHom ℤ)).comp q)
 
 /-- SOURCE-ONLY rfl probe for the WHOLE OLD additive lift, not pointwise equality. -/
-private noncomputable def oldAdditiveProjectionProbe (R : Type uR) [CommRing R]
+private theorem oldAdditiveProjectionProbe (R : Type uR) [CommRing R]
     (q : KTheory.ProjectiveClass R →+* LocallyConstant (PrimeSpectrum R) ℕ) :
     (completionTerm R q).toAddMonoidHom =
       KTheory.K0.lift R
@@ -214,7 +214,7 @@ private def emptySpectrumContract
     (q : KTheory.ProjectiveClass (ZMod 1) →+*
       LocallyConstant (PrimeSpectrum (ZMod 1)) ℕ)
     (rho : KTheory.K0 (ZMod 1) →+* LocallyConstant (PrimeSpectrum (ZMod 1)) ℤ) : Prop :=
-  (∀ p : PrimeSpectrum (ZMod 1), False) ∧
+  (∀ _p : PrimeSpectrum (ZMod 1), False) ∧
   (0 : LocallyConstant (PrimeSpectrum (ZMod 1)) ℕ) = 1 ∧
   (0 : LocallyConstant (PrimeSpectrum (ZMod 1)) ℤ) = 1 ∧
   q (KTheory.ProjectiveClass.of (ZMod 1) (ZMod 1)ᵐᵒᵖ) = 0 ∧

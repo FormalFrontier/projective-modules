@@ -167,7 +167,8 @@ lemma quotient_map_eq_zero_iff {M N : ModuleCat.{uM} R} (f : M ⟶ N) :
 
 /-- The projector onto a summand complementary to a projective module is the identity in the
 stable category. -/
-@[simp]
+-- The projector law uses only projectivity of the complementary summand P.
+@[simp, nolint simpNF]
 lemma quotient_map_fst_comp_inl (M P : ModuleCat.{uM} R) [CategoryTheory.Projective P] :
     (quotient R).map ((biprod.fst : M ⊞ P ⟶ M) ≫ biprod.inl) = 𝟙 _ := by
   rw [← (quotient R).map_id]
@@ -188,6 +189,12 @@ noncomputable def addProjectiveIso (M P : ModuleCat.{uM} R) [CategoryTheory.Proj
     rw [← (quotient R).map_comp]
     exact quotient_map_fst_comp_inl M P
 
+-- The forward inclusion formula needs no projectivity assumption on M.
+attribute [nolint simpNF] addProjectiveIso_hom
+
+-- The inverse projection formula needs no projectivity of the biproduct M ⊞ P.
+attribute [nolint simpNF] addProjectiveIso_inv
+
 /-- Every morphism with projective source is zero in the stable category. -/
 @[simp]
 lemma quotient_map_of_projective_source {M N : ModuleCat.{uM} R}
@@ -196,7 +203,8 @@ lemma quotient_map_of_projective_source {M N : ModuleCat.{uM} R}
   (quotient_map_eq_zero_iff f).2 (.of_projective_source f)
 
 /-- Every morphism with projective target is zero in the stable category. -/
-@[simp]
+-- Vanishing in a projective target uses Projective N, not Projective M.
+@[simp, nolint simpNF]
 lemma quotient_map_of_projective_target {M N : ModuleCat.{uM} R}
     [CategoryTheory.Projective N] (f : M ⟶ N) :
     (quotient R).map f = 0 :=

@@ -7,6 +7,14 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **Continuous kernel-product splitting.**
+  [`ContinuousLinearMap.exists_equiv_ker_prod`](ProjectiveModules/Topology/Splitting.lean)
+  splits a surjective continuous linear map as `M ≃L[R] (f.ker × N)`, with `f` as
+  its second coordinate. The scalar semiring has a given topology; the source is
+  an additive commutative group with continuous addition and scalar multiplication.
+  The target is an additive commutative monoid, projective with its given module
+  topology. No continuity assumptions on the target's operations are needed.
+
 The [mathematical overview](docs/Overview.md) gives detailed results, formulas,
 examples and qualifications; links below go to the corresponding result families.
 
@@ -580,7 +588,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Rank realization](ProjectiveModules/Module/LocallyConstantRank.lean), [fibers](ProjectiveModules/Module/RankFiberDecomposition.lean), [component models](ProjectiveModules/Module/ComponentwiseFree.lean) | Locally constant ranks, commuting complete orthogonal Cartesian refinements over semirings, and conditional componentwise-free classification |
 | [PID](ProjectiveModules/Module/PID.lean), [Laurent](ProjectiveModules/Module/LaurentPolynomial.lean) | Arbitrary-rank commutative PID freeness; one-variable Laurent finite-projective freeness |
 
-`ProjectiveModules/Module/ComponentwiseFreeExamples.lean` and
+`tests/ProjectiveModulesTests/ComponentwiseFreeClient.lean` and
 `tests/PublicAPIClient.lean` and
 `tests/ProjectiveModulesTests/InfiniteCoordinatesClient.lean` are regression
 clients, not modules of the
@@ -619,7 +627,7 @@ mathlib `83abb3e776bdefcbc447a1e44d0debe4010039e5`, GLG
 `c9705889a85f85cc89d92d21372bb9bc360162c8` and Stable Range
 [`c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e`](https://github.com/FormalFrontier/stable-range/commit/c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e),
 with Group Theory
-[`e217d21d8e1fa0d1613a7e9bfb035517b1b90d14`](https://github.com/FormalFrontier/group-theory/commit/e217d21d8e1fa0d1613a7e9bfb035517b1b90d14).
+[`f281c55aed3829a2d55f1d7cd35137ed15b125c3`](https://github.com/FormalFrontier/group-theory/commit/f281c55aed3829a2d55f1d7cd35137ed15b125c3).
 These three libraries declare the same mathlib revision and Lean `4.34.0-rc2`
 toolchain as this root.
 Dependencies are not vendored.
@@ -655,24 +663,24 @@ Focused modules list mathematical references and prior formalization APIs;
 
 Original Formal Frontier contributions are released under
 [Apache-2.0](LICENSE), with `Authors: Formal Frontier Agents` in Lean headers.
-AI agents developed and documented the library: Prism contributed the
-foundational mathematics and retained source-expression adaptations; other
-agents contributed the stable category, exterior Sum Formula, rank and
-componentwise-free constructions, semisimple endpoint, and the original
-Noetherian proof and clients; a separate agent contributed the Noetherian
-theorem’s library adaptation, public imports and adapted documentation.
+Formal Frontier AI agents developed and documented the library, including the
+foundational mathematics and retained source-expression adaptations, the
+stable category, exterior Sum Formula, rank and componentwise-free
+constructions, semisimple endpoint, and the original Noetherian proof and
+clients. Separate contributions include the Noetherian theorem’s library
+adaptation, public imports and adapted documentation.
 See [credits](docs/CREDITS.md)
 for truthful roles and provenance. These credits do not assign copyright
 ownership, assert human mathematical review or source-author endorsement,
 or relicense dependency code or Weibel’s book; no book text or PDF is shipped.
-The balanced-tensor and right-extension interfaces follow Prism's foundational
-formalization and its maintenance by Prism and Lens; Lens contributed the
+The balanced-tensor and right-extension interfaces follow Formal Frontier's
+foundational formalization and its maintenance; Formal Frontier contributed the
 identity/composition comparisons and their pointwise unit and associativity
 laws, using Mathlib's ring-homomorphism and linear-map interfaces.
 The commutative-base comparisons additionally reuse Mathlib's tensor
 universal property, commutation, tensor maps and module transport; their
 scalar-first target follows Jujian Zhang's Mathlib change-of-rings
-formalization. These tensor comparison interfaces were contributed by Lens.
+formalization. These tensor comparison interfaces were contributed by Formal Frontier.
 The commuting-idempotent refinement follows Andrew Yang's Mathlib idempotent-family
 interfaces and orthogonality-and-sum criterion.
 The tensor-product K₀ ring reuses this library's projective-class tensor semiring,

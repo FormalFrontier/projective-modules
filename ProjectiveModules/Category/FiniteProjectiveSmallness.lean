@@ -135,11 +135,9 @@ original module, in its independent carrier universe. -/
 noncomputable def reprEquiv : repr R P ≃ₗ[R] P :=
   Module.Finite.reprEquiv R P
 
-@[simp]
 theorem reprEquiv_apply (x : repr R P) :
     reprEquiv R P x = Module.Finite.reprEquiv R P x := rfl
 
-@[simp]
 theorem reprEquiv_symm_apply (x : P) :
     (reprEquiv R P).symm x = (Module.Finite.reprEquiv R P).symm x := rfl
 
@@ -151,12 +149,10 @@ isomorphism between their ring-universe representatives. -/
 noncomputable def reprIsoOfLinearEquiv (e : P ≃ₗ[R] Q) : repr R P ≅ repr R Q :=
   isoOfLinearEquiv ((reprEquiv R P).trans (e.trans (reprEquiv R Q).symm))
 
-@[simp]
 theorem reprIsoOfLinearEquiv_hom_apply (e : P ≃ₗ[R] Q) (x : repr R P) :
     homLinearEquiv R _ _ (reprIsoOfLinearEquiv R P Q e).hom x =
       (reprEquiv R Q).symm (e (reprEquiv R P x)) := rfl
 
-@[simp]
 theorem reprIsoOfLinearEquiv_inv_apply (e : P ≃ₗ[R] Q) (x : repr R Q) :
     homLinearEquiv R _ _ (reprIsoOfLinearEquiv R P Q e).inv x =
       (reprEquiv R P).symm (e.symm (reprEquiv R Q x)) := rfl
@@ -179,13 +175,11 @@ noncomputable def reprProdIso :
   isoOfLinearEquiv ((reprEquiv R (P × Q)).trans
     ((reprEquiv R P).symm.prodCongr (reprEquiv R Q).symm))
 
-@[simp]
 theorem reprProdIso_hom_apply (x : repr R (P × Q)) :
     homLinearEquiv R _ _ (reprProdIso R P Q).hom x =
       ((reprEquiv R P).symm (reprEquiv R (P × Q) x).1,
         (reprEquiv R Q).symm (reprEquiv R (P × Q) x).2) := rfl
 
-@[simp]
 theorem reprProdIso_inv_apply (x : repr R P × repr R Q) :
     homLinearEquiv R _ _ (reprProdIso R P Q).inv x =
       (reprEquiv R (P × Q)).symm (reprEquiv R P x.1, reprEquiv R Q x.2) := rfl
@@ -197,11 +191,9 @@ isomorphic object, not necessarily a definitionally equal one. -/
 noncomputable def reprIso (X : FiniteProjective.{u, u} R) : repr R X ≅ X :=
   isoOfLinearEquiv (reprEquiv R X)
 
-@[simp]
 theorem reprIso_hom (X : FiniteProjective.{u, u} R) :
     homLinearEquiv R _ _ (reprIso R X).hom = (reprEquiv R X).toLinearMap := rfl
 
-@[simp]
 theorem reprIso_inv (X : FiniteProjective.{u, u} R) :
     homLinearEquiv R _ _ (reprIso R X).inv = (reprEquiv R X).symm.toLinearMap := rfl
 
@@ -224,7 +216,6 @@ theorem reprZeroIso_hom_apply (Z : Type v) [AddCommGroup Z] [Module R Z]
     [Subsingleton Z] (x : repr R Z) :
     homLinearEquiv R _ _ (reprZeroIso R Z).hom x = PUnit.unit := rfl
 
-@[simp]
 theorem reprZeroIso_inv_apply (Z : Type v) [AddCommGroup Z] [Module R Z]
     [Subsingleton Z] (x : PUnit.{u + 1}) :
     homLinearEquiv R _ _ (reprZeroIso R Z).inv x = (reprEquiv R Z).symm 0 := rfl
@@ -243,13 +234,11 @@ noncomputable def reprULiftIso (P : Type v) [AddCommGroup P] [Module R P]
     repr R (ULift.{w} P) ≅ repr R P :=
   reprIsoOfLinearEquiv R (ULift.{w} P) P ULift.moduleEquiv
 
-@[simp]
 theorem reprULiftIso_hom_apply (P : Type v) [AddCommGroup P] [Module R P]
     [Module.Finite R P] [Module.Projective R P] (x : repr R (ULift.{w} P)) :
     homLinearEquiv R _ _ (reprULiftIso.{u, v, w} R P).hom x =
       (reprEquiv R P).symm (reprEquiv R (ULift.{w} P) x).down := rfl
 
-@[simp]
 theorem reprULiftIso_inv_apply (P : Type v) [AddCommGroup P] [Module R P]
     [Module.Finite R P] [Module.Projective R P] (x : repr R P) :
     homLinearEquiv R _ _ (reprULiftIso.{u, v, w} R P).inv x =

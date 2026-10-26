@@ -171,6 +171,8 @@ variable {A : Type u} [Ring A] {M : Type v} [AddCommGroup M] [Module A M]
 /-- The number of copies of the specified simple module in an isotypic
 semisimple module, measured by the rank of `Hom_A(S, M)` over `End_A(S)ᵐᵒᵖ`.
 The module action is precomposition. -/
+-- Simplicity and semisimplicity are the domain for counting copies of a fixed simple module.
+@[nolint unusedArguments]
 def multiplicity [IsSimpleModule A S] [IsSemisimpleModule A M]
     (_h : IsIsotypicOfType A M S) : Cardinal :=
   Module.rank (Module.End A S)ᵐᵒᵖ (S →ₗ[A] M)

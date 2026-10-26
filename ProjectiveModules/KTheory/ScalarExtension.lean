@@ -192,9 +192,9 @@ theorem map_surjective_of_lift_idempotents (f : R →+* S)
       d x.val = d (d z) := congrArg d hz.symm
       _ = d z := DFunLike.congr_fun hd z
       _ = x.val := hz
-  letI : Module.Finite Rᵐᵒᵖ Q :=
+  let : Module.Finite Rᵐᵒᵖ Q :=
     Module.Finite.of_surjective r (LinearMap.surjective_rangeRestrict d)
-  letI : Module.Projective Rᵐᵒᵖ Q := Module.Projective.of_split j r hrj
+  let : Module.Projective Rᵐᵒᵖ Q := Module.Projective.of_split j r hrj
   let c := ModuleCat.RightExtension.rightFreeLinearEquiv f (Fin n)
   let J := ModuleCat.RightExtension.map f j
   let B := ModuleCat.RightExtension.map f r
@@ -251,7 +251,7 @@ theorem map_surjective_of_lift_idempotents (f : R →+* S)
 
 /-- Scalar extension sends the scalar-self regular right-module class to the
 scalar-self regular right-module class of the target ring. -/
-@[simp]
+@[simp↓]
 theorem map_of_self (φ : R →+* S) :
     map φ (of R Rᵐᵒᵖ) = of S Sᵐᵒᵖ := by
   rw [map_of]
@@ -317,7 +317,6 @@ noncomputable def map (φ : R →+* S) : K0 R →+ K0 S :=
 
 /-- On every class generator, the K₀ scalar-extension map agrees with the
 scalar-extension map on finite-projective classes. -/
-@[simp]
 theorem map_ofClass (φ : R →+* S) (a : ProjectiveClass R) :
     map φ (ofClass R a) = ofClass S (ProjectiveClass.map φ a) :=
   lift_ofClass R ((ofClass S).comp (ProjectiveClass.map φ)) a
@@ -360,7 +359,7 @@ theorem map_of (φ : R →+* S) (M : Type uM) [AddCommGroup M] [Module Rᵐᵒ�
 
 /-- Scalar extension sends the scalar-self regular right-module K₀ generator
 to the corresponding generator over the target ring. -/
-@[simp]
+@[simp↓]
 theorem map_of_self (φ : R →+* S) :
     map φ (of R Rᵐᵒᵖ) = of S Sᵐᵒᵖ := by
   simpa only [ProjectiveClass.map_of_self, ofClass_of] using

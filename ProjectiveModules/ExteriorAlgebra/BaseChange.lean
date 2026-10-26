@@ -102,7 +102,7 @@ noncomputable def ofBaseChange :
       degreeOneToTensor (R := R) (S := S) x := by
   rw [toBaseChange, ExteriorAlgebra.lift_ι_apply]
 
-@[simp] theorem toBaseChange_ι_tmul (s : S) (m : M) :
+theorem toBaseChange_ι_tmul (s : S) (m : M) :
     toBaseChange (R := R) (S := S) (M := M)
         (ExteriorAlgebra.ι S (s ⊗ₜ[R] m)) =
       s ⊗ₜ[R] ExteriorAlgebra.ι R m := by

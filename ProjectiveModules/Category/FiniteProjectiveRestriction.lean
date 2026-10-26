@@ -73,7 +73,6 @@ theorem restrictScalars.smul_regular (r : R) (s : S) :
 
 /-- Restriction along the opposite homomorphism uses right multiplication on
 ordinary scalar elements. -/
-@[simp]
 theorem restrictScalars.unop_smul_op (r : R) (s : S) :
     MulOpposite.unop
       (@SMul.smul Rᵐᵒᵖ
@@ -107,7 +106,6 @@ theorem restrictScalars_carrier (M : FiniteProjective.{uS, uM} S) :
     ((restrictScalars φ hC).obj M : Type uM) = M := rfl
 
 /-- A restricted morphism has the same underlying function as its source. -/
-@[simp]
 theorem restrictScalars_map_apply {M N : FiniteProjective.{uS, uM} S}
     (f : M ⟶ N) (x : M) :
     ((restrictScalars φ hC).map f).hom x = f.hom x :=
@@ -132,13 +130,11 @@ noncomputable def restrictScalarsCompιIso :
     (fun M ↦ finiteProjective_restrictScalars φ hC M.obj M.property)
 
 /-- The forward underlying-functor comparison acts identically on elements. -/
-@[simp]
 theorem restrictScalarsCompιIso_hom_app_apply
     (M : FiniteProjective.{uS, uM} S) (x : M) :
     ((restrictScalarsCompιIso φ hC).hom.app M).hom x = x := rfl
 
 /-- The inverse underlying-functor comparison acts identically on elements. -/
-@[simp]
 theorem restrictScalarsCompιIso_inv_app_apply
     (M : FiniteProjective.{uS, uM} S) (x : M) :
     ((restrictScalarsCompιIso φ hC).inv.app M).hom x = x := rfl

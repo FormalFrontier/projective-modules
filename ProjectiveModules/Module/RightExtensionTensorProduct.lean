@@ -328,7 +328,6 @@ theorem tensorProductMap_apply {M N : ModuleCat.{uM} Rᵐᵒᵖ} (g : M ⟶ N)
           ((ModuleCat.restrictScalars φ).obj (ModuleCat.of S S)).isModule) x := rfl
 
 /-- Tensor extension applies the source morphism to the first factor. -/
-@[simp]
 theorem tensorProductMap_tmul {M N : ModuleCat.{uM} Rᵐᵒᵖ}
     (g : M ⟶ N) (m : M) (s : S) :
     tensorProductMap φ g (tensorProductTmul φ M m s) =
@@ -421,7 +420,6 @@ theorem tensorFunctor_map_apply {M N : ModuleCat.{uM} Rᵐᵒᵖ} (g : M ⟶ N)
   exact tensorProductMap_apply φ g x
 
 /-- Tensor extension applies the source morphism to the first factor. -/
-@[simp]
 theorem tensorFunctor_map_tmul {M N : ModuleCat.{uM} Rᵐᵒᵖ}
     (g : M ⟶ N) (m : M) (s : S) :
     (tensorFunctor φ).map g (tensorProductTmul φ M m s) =
@@ -431,7 +429,6 @@ theorem tensorFunctor_map_tmul {M N : ModuleCat.{uM} Rᵐᵒᵖ}
   exact tensorProductMap_tmul φ g m s
 
 /-- Tensor extension of the identity fixes every element of the tensor object. -/
-@[simp]
 theorem tensorFunctor_map_id_apply (M : ModuleCat.{uM} Rᵐᵒᵖ)
     (x : tensorProductObj φ M) :
     (tensorFunctor φ).map (𝟙 M) x = x := by
@@ -592,7 +589,6 @@ noncomputable def tensorProductLinearEquiv (M : ModuleCat.{uM} Rᵐᵒᵖ) :
         | add x y hx hy => rw [smul_add, forward.map_add, forward.map_add, hx, hy, smul_add] }
 
 /-- The comparison retains the module-first pure tensor and its coefficient. -/
-@[simp]
 theorem tensorProductLinearEquiv_tmul (M : ModuleCat.{uM} Rᵐᵒᵖ) (m : M) (s : S) :
     tensorProductLinearEquiv φ M (tmul φ m s) =
       tensorProductTmul φ M m s := by
@@ -604,7 +600,6 @@ theorem tensorProductLinearEquiv_tmul (M : ModuleCat.{uM} Rᵐᵒᵖ) (m : M) (s
 
 /-- The inverse comparison sends a Mathlib pure tensor to the corresponding
 balanced pure tensor. -/
-@[simp]
 theorem tensorProductLinearEquiv_symm_tmul (M : ModuleCat.{uM} Rᵐᵒᵖ)
     (m : M) (s : S) :
     (tensorProductLinearEquiv φ M).symm
@@ -790,7 +785,6 @@ noncomputable def extendScalarsLinearEquiv (M : ModuleCat.{uM} Rᵐᵒᵖ) :
 
 /-- The categorical comparison switches the factors, using Mathlib's
 specified homomorphism-induced coefficient action. -/
-@[simp]
 theorem extendScalarsLinearEquiv_tmul (M : ModuleCat.{uM} Rᵐᵒᵖ) (m : M) (s : S) :
     extendScalarsLinearEquiv φ M (tmul φ m s) =
       @TensorProduct.tmul R _
@@ -810,7 +804,6 @@ theorem extendScalarsLinearEquiv_tmul (M : ModuleCat.{uM} Rᵐᵒᵖ) (m : M) (s
     sourceRCat.isModule coefficientRCat.isModule m s
 
 /-- The inverse categorical comparison restores module-first order. -/
-@[simp]
 theorem extendScalarsLinearEquiv_symm_tmul (M : ModuleCat.{uM} Rᵐᵒᵖ)
     (m : M) (s : S) :
     (extendScalarsLinearEquiv φ M).symm
@@ -989,21 +982,21 @@ noncomputable def oppositeScalarEquiv (φ : R →+* S)
     { toFun := fun s ↦
         { toFun := fun m ↦ tmul φ m (MulOpposite.unop s)
           map_zero' := by
-            letI : Module R S := φ.toModule
+            let : Module R S := φ.toModule
             exact BalancedTensorProduct.zero_tmul (MulOpposite.unop s)
           map_add' := fun m n ↦ by
-            letI : Module R S := φ.toModule
+            let : Module R S := φ.toModule
             exact BalancedTensorProduct.add_tmul m n (MulOpposite.unop s) }
       map_zero' := by
         apply AddMonoidHom.ext
         intro m
-        letI : Module R S := φ.toModule
+        let : Module R S := φ.toModule
         exact BalancedTensorProduct.tmul_zero m
       map_add' := by
         intro s t
         apply AddMonoidHom.ext
         intro m
-        letI : Module R S := φ.toModule
+        let : Module R S := φ.toModule
         exact BalancedTensorProduct.tmul_add m (MulOpposite.unop s) (MulOpposite.unop t) }
   have balanced (r : Rᵐᵒᵖ) (s : Sᵐᵒᵖ) (m : M) :
       pureInverse (r • s) m = pureInverse s (r • m) := by
@@ -1015,7 +1008,7 @@ noncomputable def oppositeScalarEquiv (φ : R →+* S)
   have inverse_tmul (s : Sᵐᵒᵖ) (m : M) :
       inverse (s ⊗ₜ[Rᵐᵒᵖ] m) = tmul φ m (MulOpposite.unop s) := rfl
   have leftHom : inverse.comp forward.toAddMonoidHom = AddMonoidHom.id (Obj φ M) := by
-    letI : Module R S := φ.toModule
+    let : Module R S := φ.toModule
     apply BalancedTensorProduct.hom_ext (R := R) (M := M) (N := S)
     intro m s
     change inverse (forward (tmul φ m s)) = tmul φ m s
@@ -1077,7 +1070,7 @@ theorem tensorBaseChangeEquiv_tmul (φ : R →+* S)
     (m : M) (n : N) (s : S) :
     tensorBaseChangeEquiv φ M N (tmul φ (m ⊗ₜ[Rᵐᵒᵖ] n) s) =
       tmul φ m s ⊗ₜ[Sᵐᵒᵖ] tmul φ n 1 := by
-  letI : Algebra Rᵐᵒᵖ Sᵐᵒᵖ := (RingHom.op φ).toAlgebra
+  let : Algebra Rᵐᵒᵖ Sᵐᵒᵖ := (RingHom.op φ).toAlgebra
   -- Fix the scalar bridges and distribution map on the canonical tensor modules.
   let eM : Obj φ M ≃ₗ[Sᵐᵒᵖ] Sᵐᵒᵖ ⊗[Rᵐᵒᵖ] M := oppositeScalarEquiv φ M
   let eN : Obj φ N ≃ₗ[Sᵐᵒᵖ] Sᵐᵒᵖ ⊗[Rᵐᵒᵖ] N := oppositeScalarEquiv φ N
@@ -1116,7 +1109,7 @@ theorem tensorBaseChangeEquiv_symm_tmul (φ : R →+* S)
     (tensorBaseChangeEquiv φ M N).symm
         (tmul φ m s ⊗ₜ[Sᵐᵒᵖ] tmul φ n t) =
       tmul φ (m ⊗ₜ[Rᵐᵒᵖ] n) (s * t) := by
-  letI : Algebra Rᵐᵒᵖ Sᵐᵒᵖ := (RingHom.op φ).toAlgebra
+  let : Algebra Rᵐᵒᵖ Sᵐᵒᵖ := (RingHom.op φ).toAlgebra
   let eM : Obj φ M ≃ₗ[Sᵐᵒᵖ] Sᵐᵒᵖ ⊗[Rᵐᵒᵖ] M := oppositeScalarEquiv φ M
   let eN : Obj φ N ≃ₗ[Sᵐᵒᵖ] Sᵐᵒᵖ ⊗[Rᵐᵒᵖ] N := oppositeScalarEquiv φ N
   let eMN : Obj φ (M ⊗[Rᵐᵒᵖ] N) ≃ₗ[Sᵐᵒᵖ]

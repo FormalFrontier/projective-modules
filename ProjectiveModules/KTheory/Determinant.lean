@@ -197,7 +197,6 @@ theorem determinantLine_pic_representative (ℓ : CommRing.Pic R) :
 
 /-- An invertible representative of the forward opposite-ring Picard class maps
 back to the given Picard class under the determinant homomorphism. -/
-@[simp]
 theorem determinantHom_pic_representative (ℓ : CommRing.Pic R) :
     determinantHom R (KTheory.K0.of R
       (CommRing.Pic.AsModule

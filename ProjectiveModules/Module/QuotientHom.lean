@@ -88,7 +88,6 @@ theorem quotientHomEquivKer_apply (P : Submodule A M) (f : (M ⧸ P) →ₗ[A] C
 
 /-- The inverse quotient-Hom correspondence takes the value of the original map on each
 quotient representative. -/
-@[simp]
 theorem quotientHomEquivKer_symm_apply_mkQ (P : Submodule A M)
     (f : LinearMap.ker (LinearMap.lcomp S C P.subtype)) (x : M) :
     (P.quotientHomEquivKer (S := S)).symm f (P.mkQ x) = f.val x :=

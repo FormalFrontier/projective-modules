@@ -97,7 +97,6 @@ theorem topExteriorEquiv_apply (x : ⋀[R]^n M) :
     b.topExteriorEquiv x = b.topExteriorCoordinate x :=
   rfl
 
-@[simp]
 theorem topExteriorEquiv_wedge :
     b.topExteriorEquiv b.topExteriorWedge = 1 :=
   b.topExteriorCoordinate_wedge

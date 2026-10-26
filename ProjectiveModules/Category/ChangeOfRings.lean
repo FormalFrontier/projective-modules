@@ -74,7 +74,6 @@ theorem restrictScalarsUliftIsoOfEquiv_hom_apply (e : R ≃+* S) (x : ULift.{uR}
   rfl
 
 /-- The inverse comparison applies the ring equivalence under `ULift`. -/
-@[simp]
 theorem restrictScalarsUliftIsoOfEquiv_inv_apply (e : R ≃+* S) (x : ULift.{uS} R) :
     (restrictScalarsUliftIsoOfEquiv e).inv x = ULift.up (e x.down) :=
   rfl

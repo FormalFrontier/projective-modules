@@ -84,8 +84,12 @@ theorem piMap_mul (x y : K0 (∀ i, Ri i)) :
     intro a
     change F (ofClass (∀ i, Ri i) a) = _
     dsimp only [F]
-    rw [Algebra.GrothendieckAddGroup.liftRingHom_of,
-      RingHom.comp_apply, ofClassRingHom_apply,
+    rw [Algebra.GrothendieckAddGroup.liftRingHom_apply]
+    change lift (∀ i, Ri i) _ (ofClass (∀ i, Ri i) a) = _
+    rw [lift_ofClass]
+    change ((ofClassRingHom (Ri i)).comp
+      (ProjectiveClass.mapRingHom (Pi.evalRingHom Ri i))) a = _
+    rw [RingHom.comp_apply, ofClassRingHom_apply,
       ProjectiveClass.mapRingHom_apply, map_ofClass]
   have hmul : F.toAddMonoidHom (x * y) =
       F.toAddMonoidHom x * F.toAddMonoidHom y :=

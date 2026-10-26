@@ -128,9 +128,9 @@ theorem map_bijective_of_surjective_of_isNilpotent_ker
                   rw [Submodule.pow_succ, Submodule.mul_smul]
         apply (LinearMap.range_le_bot_iff (d ^ n)).mp
         simpa only [hJpow, Ideal.zero_eq_bot, Submodule.bot_smul] using hpow n
-      letI : Module Rᵐᵒᵖ (ModuleCat.RightExtension.Obj f P) :=
+      let : Module Rᵐᵒᵖ (ModuleCat.RightExtension.Obj f P) :=
         Module.compHom (ModuleCat.RightExtension.Obj f P) (RingHom.op f)
-      letI : Module Rᵐᵒᵖ (ModuleCat.RightExtension.Obj f Q) :=
+      let : Module Rᵐᵒᵖ (ModuleCat.RightExtension.Obj f Q) :=
         Module.compHom (ModuleCat.RightExtension.Obj f Q) (RingHom.op f)
       let tauP : P →ₗ[Rᵐᵒᵖ] ModuleCat.RightExtension.Obj f P :=
         { toFun := ModuleCat.RightExtension.tmulOne f
@@ -233,7 +233,6 @@ noncomputable def equivOfSurjectiveOfIsNilpotentKer :
     (map_bijective_of_surjective_of_isNilpotent_ker f hf hker)
 
 /-- The whole forward additive homomorphism is the scalar-extension map. -/
-@[simp]
 theorem equivOfSurjectiveOfIsNilpotentKer_toAddMonoidHom :
     (equivOfSurjectiveOfIsNilpotentKer f hf hker).toAddMonoidHom = map f := by
   rfl
@@ -246,7 +245,6 @@ theorem equivOfSurjectiveOfIsNilpotentKer_apply (x : ProjectiveClass R) :
 
 /-- On a finite projective module in any carrier universe, the equivalence
 returns the class of its right scalar extension. -/
-@[simp]
 theorem equivOfSurjectiveOfIsNilpotentKer_of (M : Type v)
     [AddCommGroup M] [Module Rᵐᵒᵖ M]
     [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M] :
@@ -307,7 +305,6 @@ noncomputable def equivOfSurjectiveOfIsNilpotentKer : K0 R ≃+ K0 S :=
     (map_bijective_of_surjective_of_isNilpotent_ker f hf hker)
 
 /-- The whole forward additive homomorphism is the K₀ scalar-extension map. -/
-@[simp]
 theorem equivOfSurjectiveOfIsNilpotentKer_toAddMonoidHom :
     (equivOfSurjectiveOfIsNilpotentKer f hf hker).toAddMonoidHom = map f := by
   rfl
@@ -320,7 +317,6 @@ theorem equivOfSurjectiveOfIsNilpotentKer_apply (x : K0 R) :
 
 /-- On a class generator, the K₀ equivalence is induced by the equivalence on
 finite-projective classes. -/
-@[simp]
 theorem equivOfSurjectiveOfIsNilpotentKer_ofClass (x : ProjectiveClass R) :
     equivOfSurjectiveOfIsNilpotentKer f hf hker (ofClass R x) =
       ofClass S (ProjectiveClass.equivOfSurjectiveOfIsNilpotentKer f hf hker x) := by
@@ -329,7 +325,6 @@ theorem equivOfSurjectiveOfIsNilpotentKer_ofClass (x : ProjectiveClass R) :
 
 /-- On a finite projective module in any carrier universe, the equivalence
 returns the K₀ generator of its right scalar extension. -/
-@[simp]
 theorem equivOfSurjectiveOfIsNilpotentKer_of (M : Type v)
     [AddCommGroup M] [Module Rᵐᵒᵖ M]
     [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M] :

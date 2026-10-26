@@ -339,8 +339,9 @@ noncomputable def componentwiseFreeModelRefineLeftEquiv
         rw [← Finset.sum_mul, he.complete, one_mul])
 
 /-- On a nonzero common idempotent corner, equal stalk ranks identify the
-two displayed finite ranks; on the zero corner both blocks are zero. -/
-noncomputable def componentBlockEquiv {I J : Type*} [Fintype I] [Fintype J]
+two displayed finite ranks; on the zero corner both blocks are zero.
+The index types `I` and `J` need not be finite. -/
+noncomputable def componentBlockEquiv {I J : Type*}
     (e : I → R) (n : I → ℕ) (d : J → R) (m : J → ℕ)
     (hrank : ∀ i j, e i * d j ≠ 0 → n i = m j) (i : I) (j : J) :
     (Fin (n i) → Ideal.span {e i * d j}) ≃ₗ[R]
@@ -355,9 +356,10 @@ noncomputable def componentBlockEquiv {I J : Type*} [Fintype I] [Fintype J]
       (fun _ : Fin (m j) ↦ Ideal.span {e i * d j})
       (finCongr (hrank i j hzero))
 
-/-- Compare the two orderings of a common orthogonal refinement. -/
+/-- Compare the two orderings of a common orthogonal refinement.
+The index types `I` and `J` need not be finite. -/
 noncomputable def componentRefinementComparisonEquiv
-    {I J : Type*} [Fintype I] [Fintype J]
+    {I J : Type*}
     (e : I → R) (n : I → ℕ) (d : J → R) (m : J → ℕ)
     (hrank : ∀ i j, e i * d j ≠ 0 → n i = m j) :
     ((i : I) → Fin (n i) → (j : J) → Ideal.span {e i * d j}) ≃ₗ[R]

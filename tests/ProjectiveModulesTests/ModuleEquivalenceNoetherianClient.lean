@@ -105,7 +105,7 @@ private theorem isNoetherianRing_intMatrix : IsNoetherianRing MatZ :=
 -- The reflected ring premise has four integer coordinates, not two.
 private theorem isNoetherianRing_int_of_intMatrix : IsNoetherianRing ℤ := by
   have hMat : IsNoetherianRing MatZ := by
-    letI : Module MatZ MatZ := Semiring.toModule
+    let : Module MatZ MatZ := Semiring.toModule
     have hTower : IsScalarTower ℤ MatZ MatZ := AddCommGroup.intIsScalarTower
     exact @isNoetherian_of_tower ℤ MatZ MatZ _ _ _ _
       Semiring.toModule _ hTower

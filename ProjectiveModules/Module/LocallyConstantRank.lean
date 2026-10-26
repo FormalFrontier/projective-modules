@@ -184,12 +184,10 @@ lemma spanProdEquiv_apply (he : IsIdempotentElem e)
     he.spanProdEquiv x = (x.1 : R) + (x.2 : R) := rfl
 
 /-- On the first summand the complementary-ideal equivalence is inclusion. -/
-@[simp]
 lemma spanProdEquiv_apply_left (he : IsIdempotentElem e) (x : Ideal.span {e}) :
     he.spanProdEquiv (x, 0) = (x : R) := by simp
 
 /-- On the second summand the complementary-ideal equivalence is inclusion. -/
-@[simp]
 lemma spanProdEquiv_apply_right (he : IsIdempotentElem e) (x : Ideal.span {1 - e}) :
     he.spanProdEquiv (0, x) = (x : R) := by simp
 
@@ -199,12 +197,10 @@ lemma spanProdEquiv_symm_apply (he : IsIdempotentElem e) (r : R) :
     he.spanProdEquiv.symm r = (spanProjection e r, spanProjection (1 - e) r) := rfl
 
 /-- The first inverse coordinate has underlying scalar `r * e`. -/
-@[simp]
 lemma spanProdEquiv_symm_apply_fst (he : IsIdempotentElem e) (r : R) :
     ((he.spanProdEquiv.symm r).1 : R) = r * e := by simp
 
 /-- The second inverse coordinate has underlying scalar `r * (1 - e)`. -/
-@[simp]
 lemma spanProdEquiv_symm_apply_snd (he : IsIdempotentElem e) (r : R) :
     ((he.spanProdEquiv.symm r).2 : R) = r * (1 - e) := by simp
 

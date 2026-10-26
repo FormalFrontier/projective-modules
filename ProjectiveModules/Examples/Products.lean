@@ -4,16 +4,16 @@ Authors: Formal Frontier Agents
 -/
 module
 
-import ProjectiveModules.KTheory.Product
+public import ProjectiveModules.KTheory.Product
 import ProjectiveModules.KTheory.RankBound
-import Mathlib.Algebra.Field.Rat
+public import Mathlib.Algebra.Field.Rat
 
 /-!
 # A corner module over a product ring
 
 The two rational factors have ranks zero and one. Their coefficient product is
-nonzero and finite projective, and its complementary corner completes it to one
-copy of the regular right module. Its coordinate classes lie in the image of
+nonzero and finite projective but not free, and its complementary corner completes
+it to one copy of the regular right module. Its coordinate classes lie in the image of
 `KTheory.ProjectiveClass.piMap` without invoking an arbitrary-product image theorem.
 
 ## References and credits
@@ -27,35 +27,43 @@ copy of the regular right module. Its coordinate classes lie in the image of
 
 universe uI uR
 
-namespace KTheory.ProjectiveClass
+namespace ModuleCat.FiniteProjective.RationalProductCorner
 
-private abbrev rationalFamily (_ : Bool) := ℚ
+/-- The two rational coefficient rings. -/
+public abbrev rationalFamily (_ : Bool) : Type := ℚ
 
-private abbrev rationalProduct := Bool → ℚ
+/-- The product of the two rational coefficient rings. -/
+public abbrev rationalProduct : Type := Bool → ℚ
 
 -- These are the original right-factor module dictionaries, not modules over ℚ
 -- substituted for modules over ℚᵐᵒᵖ using commutativity.
-private noncomputable def cornerFactors :
+/-- The zero right module at `false` and the regular right module at `true`. -/
+public noncomputable def cornerFactors :
     Bool → ModuleCat.FiniteProjective ℚᵐᵒᵖ
   | false => ModuleCat.FiniteProjective.of ℚᵐᵒᵖ (Fin 0 → ℚᵐᵒᵖ)
   | true => ModuleCat.FiniteProjective.of ℚᵐᵒᵖ ℚᵐᵒᵖ
 
-private noncomputable def corner : ModuleCat.FiniteProjective rationalProductᵐᵒᵖ :=
+/-- The finite projective right module with coordinate ranks zero and one. -/
+public noncomputable def corner :
+    ModuleCat.FiniteProjective rationalProductᵐᵒᵖ :=
   ModuleCat.FiniteProjective.pi rationalFamily cornerFactors
 
-private noncomputable def cornerComplement :
+/-- The complementary corner, obtained by reversing the two coordinates. -/
+public noncomputable def cornerComplement :
     ModuleCat.FiniteProjective rationalProductᵐᵒᵖ :=
   ModuleCat.FiniteProjective.pi rationalFamily (fun b => cornerFactors (!b))
 
 -- The carrier is the ordinary dependent function carrier. At true it contains 1.
-private theorem corner_nonzero : ∃ x : corner, x ≠ 0 := by
+/-- The corner contains a nonzero element in its `true` coordinate. -/
+public theorem corner_nonzero : ∃ x : corner, x ≠ 0 := by
   refine ⟨ModuleCat.FiniteProjective.piMk rationalFamily cornerFactors
     (fun b => match b with | false => 0 | true => (1 : ℚᵐᵒᵖ)), ?_⟩
   intro hx
   have h : (1 : ℚᵐᵒᵖ) = 0 := congrArg (fun y : corner => y true) hx
   exact one_ne_zero h
 
-private theorem corner_not_free : ¬ Module.Free rationalProductᵐᵒᵖ corner := by
+/-- The rational product corner is not free as a right module. -/
+public theorem corner_not_free : ¬ Module.Free rationalProductᵐᵒᵖ corner := by
   intro hfree
   have : Nontrivial corner := by
     obtain ⟨x, hx⟩ := corner_nonzero
@@ -84,6 +92,12 @@ private theorem corner_not_free : ¬ Module.Free rationalProductᵐᵒᵖ corner
   have h := congrArg (fun a : rationalProductᵐᵒᵖ => a.unop false) hzero
   change (1 : ℚ) = 0 at h
   exact one_ne_zero h
+
+end ModuleCat.FiniteProjective.RationalProductCorner
+
+namespace KTheory.ProjectiveClass
+
+open ModuleCat.FiniteProjective.RationalProductCorner
 
 private def coordinateRank : Bool → ℕ
   | false => 0
@@ -157,15 +171,26 @@ private theorem corner_bound :
   funext b
   simpa only [Pi.add_apply, piMap_of_self, one_nsmul] using uniform_one b
 
+end KTheory.ProjectiveClass
+
+namespace ModuleCat.FiniteProjective.RationalProductCorner
+
 -- This is a proposition about the two specified module carriers; no equivalence
 -- is selected to manufacture a module or any of its dictionaries.
-private theorem corner_finite_free_summand :
+/-- The two complementary corners form one regular right-module summand. -/
+public theorem corner_finite_free_summand :
     Nonempty ((corner × cornerComplement) ≃ₗ[rationalProductᵐᵒᵖ]
       (Fin 1 → rationalProductᵐᵒᵖ)) := by
-  apply (of_eq_iff rationalProduct (corner × cornerComplement)
+  apply (KTheory.ProjectiveClass.of_eq_iff rationalProduct (corner × cornerComplement)
     (Fin 1 → rationalProductᵐᵒᵖ)).1
-  rw [of_prod, of_fin_fun_eq_nsmul]
-  exact corner_bound
+  rw [KTheory.ProjectiveClass.of_prod, KTheory.ProjectiveClass.of_fin_fun_eq_nsmul]
+  exact KTheory.ProjectiveClass.corner_bound
+
+end ModuleCat.FiniteProjective.RationalProductCorner
+
+namespace KTheory.ProjectiveClass
+
+open ModuleCat.FiniteProjective.RationalProductCorner
 
 -- A positive image witness is the class of the specified module, not an inverse
 -- of an arbitrary-product classification statement.

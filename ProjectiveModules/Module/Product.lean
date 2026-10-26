@@ -36,10 +36,10 @@ private def doubleOppositeEquiv
     (R : Type uR) (M : Type uM) [Semiring R] [AddCommMonoid M] [Module R M] :
     letI : Module Rᵐᵒᵖᵐᵒᵖ M :=
       Module.compHom M (RingEquiv.opOp R).symm.toRingHom
-    letI opOpInvPair :
+    letI _opOpInvPair :
         RingHomInvPair (RingEquiv.opOp R).toRingHom (RingEquiv.opOp R).symm.toRingHom :=
       RingHomInvPair.of_ringEquiv (RingEquiv.opOp R)
-    letI opOpInvPairSymm :
+    letI _opOpInvPairSymm :
         RingHomInvPair (RingEquiv.opOp R).symm.toRingHom (RingEquiv.opOp R).toRingHom :=
       RingHomInvPair.of_ringEquiv_symm (RingEquiv.opOp R)
     LinearEquiv (RingEquiv.opOp R).toRingHom
@@ -78,11 +78,11 @@ private def doubleOppositePiEquiv :
     letI : Module (∀ i, (Ri i)ᵐᵒᵖ)ᵐᵒᵖ (∀ i, Mi i) :=
       piRightModule (fun i => (Ri i)ᵐᵒᵖ) Mi
     letI : Module (∀ i, Ri i) (∀ i, Mi i) := Pi.module'
-    letI piInvPair :
+    letI _piInvPair :
         RingHomInvPair (doubleOppositePiRingEquiv Ri).toRingHom
           (doubleOppositePiRingEquiv Ri).symm.toRingHom :=
       RingHomInvPair.of_ringEquiv (doubleOppositePiRingEquiv Ri)
-    letI piInvPairSymm :
+    letI _piInvPairSymm :
         RingHomInvPair (doubleOppositePiRingEquiv Ri).symm.toRingHom
           (doubleOppositePiRingEquiv Ri).toRingHom :=
       RingHomInvPair.of_ringEquiv_symm (doubleOppositePiRingEquiv Ri)
@@ -116,13 +116,13 @@ private def doubleOppositePiEquiv :
 product of its coefficient semirings, with the pointwise left action. -/
 theorem finite_pi [_root_.Finite ι] [∀ i, Module.Finite (Ri i) (Mi i)] :
     Module.Finite (∀ i, Ri i) (∀ i, Mi i) := by
-  letI : ∀ i, Module (Ri i)ᵐᵒᵖᵐᵒᵖ (Mi i) := fun i =>
+  let : ∀ i, Module (Ri i)ᵐᵒᵖᵐᵒᵖ (Mi i) := fun i =>
     Module.compHom (Mi i) (RingEquiv.opOp (Ri i)).symm.toRingHom
-  letI : ∀ i, Module.Finite (Ri i)ᵐᵒᵖᵐᵒᵖ (Mi i) := fun i => by
-    letI opOpInvPair :
+  let : ∀ i, Module.Finite (Ri i)ᵐᵒᵖᵐᵒᵖ (Mi i) := fun i => by
+    let opOpInvPair :
         RingHomInvPair (RingEquiv.opOp (Ri i)).toRingHom (RingEquiv.opOp (Ri i)).symm.toRingHom :=
       RingHomInvPair.of_ringEquiv (RingEquiv.opOp (Ri i))
-    letI opOpInvPairSymm :
+    let opOpInvPairSymm :
         RingHomInvPair (RingEquiv.opOp (Ri i)).symm.toRingHom (RingEquiv.opOp (Ri i)).toRingHom :=
       RingHomInvPair.of_ringEquiv_symm (RingEquiv.opOp (Ri i))
     exact @Module.Finite.of_surjective (Ri i) (Mi i) _ _ inferInstance
@@ -131,15 +131,15 @@ theorem finite_pi [_root_.Finite ι] [∀ i, Module.Finite (Ri i) (Mi i)] :
       (RingEquiv.opOp (Ri i)).toRingHom inferInstance
       (doubleOppositeEquiv (Ri i) (Mi i)).toLinearMap
       (doubleOppositeEquiv (Ri i) (Mi i)).surjective
-  letI : Module (∀ i, (Ri i)ᵐᵒᵖ)ᵐᵒᵖ (∀ i, Mi i) :=
+  let : Module (∀ i, (Ri i)ᵐᵒᵖ)ᵐᵒᵖ (∀ i, Mi i) :=
     piRightModule (fun i => (Ri i)ᵐᵒᵖ) Mi
-  letI : Module.Finite (∀ i, (Ri i)ᵐᵒᵖ)ᵐᵒᵖ (∀ i, Mi i) :=
+  let : Module.Finite (∀ i, (Ri i)ᵐᵒᵖ)ᵐᵒᵖ (∀ i, Mi i) :=
     finite_piRight (fun i => (Ri i)ᵐᵒᵖ) Mi
-  letI piInvPair :
+  let piInvPair :
       RingHomInvPair (doubleOppositePiRingEquiv Ri).toRingHom
         (doubleOppositePiRingEquiv Ri).symm.toRingHom :=
     RingHomInvPair.of_ringEquiv (doubleOppositePiRingEquiv Ri)
-  letI piInvPairSymm :
+  let piInvPairSymm :
       RingHomInvPair (doubleOppositePiRingEquiv Ri).symm.toRingHom
         (doubleOppositePiRingEquiv Ri).toRingHom :=
     RingHomInvPair.of_ringEquiv_symm (doubleOppositePiRingEquiv Ri)
@@ -155,13 +155,13 @@ theorem finite_pi [_root_.Finite ι] [∀ i, Module.Finite (Ri i) (Mi i)] :
 coefficient semirings, with the pointwise left action. -/
 theorem projective_pi [_root_.Finite ι] [∀ i, Module.Projective (Ri i) (Mi i)] :
     Module.Projective (∀ i, Ri i) (∀ i, Mi i) := by
-  letI : ∀ i, Module (Ri i)ᵐᵒᵖᵐᵒᵖ (Mi i) := fun i =>
+  let : ∀ i, Module (Ri i)ᵐᵒᵖᵐᵒᵖ (Mi i) := fun i =>
     Module.compHom (Mi i) (RingEquiv.opOp (Ri i)).symm.toRingHom
-  letI : ∀ i, Module.Projective (Ri i)ᵐᵒᵖᵐᵒᵖ (Mi i) := fun i => by
-    letI opOpInvPair :
+  let : ∀ i, Module.Projective (Ri i)ᵐᵒᵖᵐᵒᵖ (Mi i) := fun i => by
+    let opOpInvPair :
         RingHomInvPair (RingEquiv.opOp (Ri i)).toRingHom (RingEquiv.opOp (Ri i)).symm.toRingHom :=
       RingHomInvPair.of_ringEquiv (RingEquiv.opOp (Ri i))
-    letI opOpInvPairSymm :
+    let opOpInvPairSymm :
         RingHomInvPair (RingEquiv.opOp (Ri i)).symm.toRingHom (RingEquiv.opOp (Ri i)).toRingHom :=
       RingHomInvPair.of_ringEquiv_symm (RingEquiv.opOp (Ri i))
     exact @Module.Projective.of_equiv (Ri i) (Ri i)ᵐᵒᵖᵐᵒᵖ _ _
@@ -170,15 +170,15 @@ theorem projective_pi [_root_.Finite ι] [∀ i, Module.Projective (Ri i) (Mi i)
       (RingEquiv.opOp (Ri i)).toRingHom
       (RingEquiv.opOp (Ri i)).symm.toRingHom inferInstance inferInstance
       (doubleOppositeEquiv (Ri i) (Mi i)) inferInstance
-  letI : Module (∀ i, (Ri i)ᵐᵒᵖ)ᵐᵒᵖ (∀ i, Mi i) :=
+  let : Module (∀ i, (Ri i)ᵐᵒᵖ)ᵐᵒᵖ (∀ i, Mi i) :=
     piRightModule (fun i => (Ri i)ᵐᵒᵖ) Mi
-  letI : Module.Projective (∀ i, (Ri i)ᵐᵒᵖ)ᵐᵒᵖ (∀ i, Mi i) :=
+  let : Module.Projective (∀ i, (Ri i)ᵐᵒᵖ)ᵐᵒᵖ (∀ i, Mi i) :=
     projective_piRight (fun i => (Ri i)ᵐᵒᵖ) Mi
-  letI piInvPair :
+  let piInvPair :
       RingHomInvPair (doubleOppositePiRingEquiv Ri).toRingHom
         (doubleOppositePiRingEquiv Ri).symm.toRingHom :=
     RingHomInvPair.of_ringEquiv (doubleOppositePiRingEquiv Ri)
-  letI piInvPairSymm :
+  let piInvPairSymm :
       RingHomInvPair (doubleOppositePiRingEquiv Ri).symm.toRingHom
         (doubleOppositePiRingEquiv Ri).toRingHom :=
     RingHomInvPair.of_ringEquiv_symm (doubleOppositePiRingEquiv Ri)

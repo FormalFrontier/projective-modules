@@ -91,7 +91,7 @@ private theorem isNoetherian_int_and_intColumn_and_isNoetherianRing_intMatrix :
       (@AddCommGroup.toIntModule intColumn (ModuleCat.isAddCommGroup intColumn))
       hTower
       (inferInstance : IsNoetherian ℤ (Fin 2 → ModuleCat.of ℤ ℤ))
-  · letI : Module MatZ MatZ := Semiring.toModule
+  · let : Module MatZ MatZ := Semiring.toModule
     have hTower : IsScalarTower ℤ MatZ MatZ := AddCommGroup.intIsScalarTower
     exact @isNoetherian_of_tower ℤ MatZ MatZ _ _ _ _
       Semiring.toModule _ hTower

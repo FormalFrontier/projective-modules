@@ -65,13 +65,11 @@ theorem freeMonoidAugmentation_single (w : FreeMonoid α) (k : K) :
   simp only [freeMonoidAugmentation, liftNCRingHom_single, RingHom.id_apply]
 
 /-- The zero-generator augmentation fixes constant monomials. -/
-@[simp]
 theorem freeMonoidAugmentation_single_one (k : K) :
     freeMonoidAugmentation K α (single 1 k) = k := by
   rw [freeMonoidAugmentation_single, map_one, mul_one]
 
 /-- The zero-generator augmentation kills letter monomials with any coefficient. -/
-@[simp]
 theorem freeMonoidAugmentation_single_of (a : α) (k : K) :
     freeMonoidAugmentation K α (single (FreeMonoid.of a) k) = 0 := by
   rw [freeMonoidAugmentation_single, FreeMonoid.lift_eval_of, mul_zero]

@@ -98,14 +98,12 @@ theorem mapRight_comp (f : N →ₗ[R] N') (g : N' →ₗ[R] N'') :
   intro m n
   rfl
 
-@[simp]
 theorem mapLeft_mapLeft (f : M →ₗ[Rᵐᵒᵖ] M') (g : M' →ₗ[Rᵐᵒᵖ] M'')
     (z : BalancedTensorProduct R M N) :
     mapLeft (N := N) g (mapLeft (N := N) f z) =
       mapLeft (N := N) (g.comp f) z := by
   exact DFunLike.congr_fun (mapLeft_comp f g).symm z
 
-@[simp]
 theorem mapRight_mapRight (f : N →ₗ[R] N') (g : N' →ₗ[R] N'')
     (z : BalancedTensorProduct R M N) :
     mapRight (M := M) g (mapRight (M := M) f z) =
@@ -190,7 +188,6 @@ theorem freeToFinsupp_tmul (x : ι →₀ Rᵐᵒᵖ) (n : N) :
       Finsupp.liftAddHom (fun i ↦ freeCoefficient i n) x :=
   lift_tmul _ _ _
 
-@[simp]
 theorem freeToFinsupp_single_tmul (i : ι) (r : Rᵐᵒᵖ) (n : N) :
     freeToFinsupp (R := R) (N := N) (Finsupp.single i r ⊗ᵇ[R] n) =
       Finsupp.single i (MulOpposite.unop r • n) := by

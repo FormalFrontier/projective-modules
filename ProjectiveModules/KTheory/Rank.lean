@@ -212,7 +212,6 @@ theorem of_eq_finrankEquiv_symm (M : Type v) [AddCommGroup M] [Module Kᵐᵒᵖ
   exact ((finrankEquiv K).symm_apply_apply (of K M)).symm
 
 /-- The dimension equivalence sends the regular right-module class to one. -/
-@[simp]
 theorem finrankEquiv_of_self : finrankEquiv K (of K Kᵐᵒᵖ) = 1 := by
   rw [finrankEquiv_apply, finrankHom_of_self]
 
@@ -241,7 +240,6 @@ theorem finrankHom_eq_lift :
       lift K ((Int.ofNatHom : ℕ →+ ℤ).comp (ProjectiveClass.finrankHom K)) := rfl
 
 /-- On class generators, integer dimension agrees with natural dimension. -/
-@[simp]
 theorem finrankHom_ofClass (a : ProjectiveClass K) :
     finrankHom K (ofClass K a) = (ProjectiveClass.finrankHom K a : ℤ) := by
   rw [finrankHom_eq_lift, lift_ofClass, AddMonoidHom.comp_apply]
@@ -377,7 +375,6 @@ theorem finrankEquiv_symm_natCast (n : ℕ) :
     map_nsmul, ofClass_of]
 
 /-- The dimension equivalence sends the regular right-module generator to one. -/
-@[simp]
 theorem finrankEquiv_of_self : finrankEquiv K (of K Kᵐᵒᵖ) = 1 := by
   rw [finrankEquiv_apply, finrankHom_of_self]
 
@@ -439,7 +436,6 @@ variable {A : Type uA} [Ring A] {D : Type uD} [DivisionRing D]
 
 /-- Scalar extension to a division ring sends the regular right-module K₀
 generator to an element of integer dimension one. -/
-@[simp]
 theorem K0.finrankHom_map_of_self (φ : A →+* D) :
     K0.finrankHom D (K0.map φ (K0.of A Aᵐᵒᵖ)) = 1 := by
   rw [K0.map_of_self, K0.finrankHom_of_self]
@@ -746,7 +742,7 @@ theorem localEquivInt_of_module (M : Type v) [AddCommGroup M]
   rw [localEquivInt_apply, localDimensionHom_of_module]
 
 /-- The local K₀ equivalence sends the regular right-module generator to one. -/
-@[simp]
+@[simp↓]
 theorem localEquivInt_of_self : localEquivInt R (of R Rᵐᵒᵖ) = 1 := by
   rw [localEquivInt_apply, localDimensionHom_of_self]
 
@@ -828,7 +824,6 @@ theorem pidEquivInt_of_module_finrank (M : Type v) [AddCommGroup M]
   rw [pidEquivInt_of_module, eF.finrank_eq, Module.finrank_fin_fun]
 
 /-- The PID K₀ equivalence sends the regular right-module generator to one. -/
-@[simp]
 theorem pidEquivInt_of_self : pidEquivInt R (of R Rᵐᵒᵖ) = 1 := by
   rw [pidEquivInt_apply, map_of_self, finrankHom_of_self]
 
@@ -894,7 +889,6 @@ noncomputable def finrankRingEquiv : K0 K ≃+* ℤ :=
 
 /-- Forgetting multiplication retains the whole division-ring additive
 equivalence, with the field's original division-ring dictionary. -/
-@[simp]
 theorem finrankRingEquiv_toAddEquiv :
     (finrankRingEquiv K).toAddEquiv = @finrankEquiv K hK.toDivisionRing := rfl
 
@@ -922,13 +916,11 @@ theorem finrankRingEquiv_symm_apply (z : ℤ) :
   finrankEquiv_symm_apply K z
 
 /-- The inverse dimension equivalence is the canonical integer cast. -/
-@[simp]
 theorem finrankRingEquiv_symm_intCast (z : ℤ) :
     (finrankRingEquiv K).symm z = (z : K0 K) :=
   (finrankRingEquiv_symm_apply K z).trans (intCast_eq_zsmul K z).symm
 
 /-- The dimension ring equivalence sends an integer cast to that integer. -/
-@[simp]
 theorem finrankRingEquiv_intCast (z : ℤ) :
     finrankRingEquiv K (z : K0 K) = z :=
   map_intCast (finrankRingEquiv K) z
@@ -963,7 +955,6 @@ noncomputable def localRingEquivInt : K0 R ≃+* ℤ :=
 
 /-- Forgetting multiplication retains the whole additive equivalence with the
 original underlying ring dictionary, including its noncommutative-ring API. -/
-@[simp]
 theorem localRingEquivInt_toAddEquiv :
     (localRingEquivInt R).toAddEquiv = @localEquivInt R hR.toRing hlocal := rfl
 
@@ -993,13 +984,11 @@ theorem localRingEquivInt_symm_apply (z : ℤ) :
   localEquivInt_symm_apply R z
 
 /-- The inverse local ring equivalence is the canonical integer cast. -/
-@[simp]
 theorem localRingEquivInt_symm_intCast (z : ℤ) :
     (localRingEquivInt R).symm z = (z : K0 R) :=
   (localRingEquivInt_symm_apply R z).trans (intCast_eq_zsmul R z).symm
 
 /-- The local ring equivalence sends an integer cast to that integer. -/
-@[simp]
 theorem localRingEquivInt_intCast (z : ℤ) :
     localRingEquivInt R (z : K0 R) = z :=
   map_intCast (localRingEquivInt R) z
@@ -1021,7 +1010,6 @@ noncomputable def pidRingEquivInt : K0 R ≃+* ℤ :=
       (pidEquivInt_symm_apply R z).trans (intCast_eq_zsmul R z).symm)
 
 /-- Forgetting multiplication retains the entire original PID additive equivalence. -/
-@[simp]
 theorem pidRingEquivInt_toAddEquiv :
     (pidRingEquivInt R).toAddEquiv = @pidEquivInt R hR hdomain hpid := rfl
 
@@ -1060,13 +1048,11 @@ theorem pidRingEquivInt_symm_apply (z : ℤ) :
   pidEquivInt_symm_apply R z
 
 /-- The inverse PID ring equivalence is the canonical integer cast. -/
-@[simp]
 theorem pidRingEquivInt_symm_intCast (z : ℤ) :
     (pidRingEquivInt R).symm z = (z : K0 R) :=
   (pidRingEquivInt_symm_apply R z).trans (intCast_eq_zsmul R z).symm
 
 /-- The PID ring equivalence sends an integer cast to that integer. -/
-@[simp]
 theorem pidRingEquivInt_intCast (z : ℤ) :
     pidRingEquivInt R (z : K0 R) = z :=
   map_intCast (pidRingEquivInt R) z

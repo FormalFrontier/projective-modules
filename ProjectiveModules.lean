@@ -124,6 +124,7 @@ public import ProjectiveModules.KTheory.RankLocallyConstant
 public import ProjectiveModules.KTheory.RankLocallyConstantNaturality
 public import ProjectiveModules.KTheory.RankLocallyConstantRing
 public import ProjectiveModules.Topology.Projective
+public import ProjectiveModules.Topology.Splitting
 
 /-!
 # Projective module interfaces

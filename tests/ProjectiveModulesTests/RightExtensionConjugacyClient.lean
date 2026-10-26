@@ -636,10 +636,14 @@ private theorem observe_action_q (r : R0) (s : Shat.{b}) :
     observe_q.{a,b,c}, unop_op, map_mul, coefficient_down.{a,b},
     dR.{a}.apply_symm_apply]
 
+-- The conjugacy API retains explicit .{a,b,c} at the common carrier universe max c b.
+set_option linter.checkUnivs false in
 /-- The two extensions have exactly the universe `max c b`, independent of
 how high the source ring was lifted. -/
 abbrev SourceObj : Type (max c b) := Obj φhat.{a,b} Mhat.{c}
 
+-- The conjugacy API retains explicit .{a,b,c} at the common carrier universe max c b.
+set_option linter.checkUnivs false in
 /-- The target extension has the same independently computed carrier universe. -/
 abbrev TargetObj : Type (max c b) := Obj ψhat.{a,b} Mhat.{c}
 

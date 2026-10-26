@@ -212,8 +212,8 @@ theorem finitePresentation_of_equivalence
   have hq : Function.Surjective q.hom := (epi_iff_surjective q).mp inferInstance
   have hkerq : q.hom.ker.FG := Module.FinitePresentation.fg_ker q.hom hq
   -- Concrete kernels exist at the original carrier height, even for a larger ring.
-  letI : Limits.HasKernels (ModuleCat.{vR} R) := hasKernels_moduleCat
-  letI : Limits.HasKernels (ModuleCat.{max uS vS} S) := hasKernels_moduleCat
+  let : Limits.HasKernels (ModuleCat.{vR} R) := hasKernels_moduleCat
+  let : Limits.HasKernels (ModuleCat.{max uS vS} S) := hasKernels_moduleCat
   have : Module.Finite R q.hom.ker := Module.Finite.iff_fg.mpr hkerq
   have : Module.Finite R (Limits.kernel q : ModuleCat.{vR} R) :=
     Module.Finite.equiv (kernelIsoKer q).toLinearEquiv.symm

@@ -55,6 +55,8 @@ theorem projective_lifting_property
 
 end ContinuousLinearMap
 
+-- The given `tM` and `tN` are implicit in continuous linear maps and continuity constraints.
+set_option linter.unusedVariables false in
 /-- Continuous lifting detects algebraic projectivity without a module-topology
 assumption on the original source. Lift targets in `Type (max uR uP)` and common
 codomains in `Type uP` suffice. -/
@@ -73,10 +75,10 @@ theorem Module.Projective.of_continuous_lifting_property
   apply Module.Projective.of_lifting_property''
   intro f hf
   -- Only fresh copies receive indiscrete topologies; original R and P stay fixed.
-  letI tM : TopologicalSpace (ULift.{0} (P →₀ R)) := ⊤
-  letI tN : TopologicalSpace (ULift.{0} P) := ⊤
-  letI cM : ContinuousAdd (ULift.{0} (P →₀ R)) := ⟨continuous_top⟩
-  letI sM : ContinuousSMul R (ULift.{0} (P →₀ R)) := ⟨continuous_top⟩
+  let tM : TopologicalSpace (ULift.{0} (P →₀ R)) := ⊤
+  let tN : TopologicalSpace (ULift.{0} P) := ⊤
+  let cM : ContinuousAdd (ULift.{0} (P →₀ R)) := ⟨continuous_top⟩
+  let sM : ContinuousSMul R (ULift.{0} (P →₀ R)) := ⟨continuous_top⟩
   let eM : ULift.{0} (P →₀ R) ≃ₗ[R] (P →₀ R) := ULift.moduleEquiv
   let eN : ULift.{0} P ≃ₗ[R] P := ULift.moduleEquiv
   let f' : ULift.{0} (P →₀ R) →L[R] ULift.{0} P :=
@@ -98,6 +100,8 @@ theorem Module.Projective.of_continuous_lifting_property
   apply eN.symm.injective
   exact DFunLike.congr_fun hl x
 
+-- The given `tM` and `tN` are implicit in continuous linear maps and continuity constraints.
+set_option linter.unusedVariables false in
 /-- For the given module topology on the original source, algebraic projectivity
 is equivalent to continuous lifting along all surjections in the indicated
 lift-target and common-codomain universes. -/
@@ -115,7 +119,7 @@ theorem Module.projective_iff_continuous_lifting_property
           ∃ l : P →L[R] M, f.comp l = g := by
   constructor
   · intro hP
-    letI : Module.Projective R P := hP
+    let : Module.Projective R P := hP
     intro M N _ _ _ _ _ _ _ _ f g hf
     exact ContinuousLinearMap.projective_lifting_property f g hf
   · intro h

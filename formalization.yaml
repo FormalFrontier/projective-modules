@@ -164,7 +164,7 @@ related_formalizations:
   - id: "docs/CREDITS.md"
     relationship: "other"
     note: >-
-      The credits distinguish Prism's original-project Lean expression
+      The credits distinguish Formal Frontier's original-project Lean expression
       adaptations from separately authored mathematics. Expression overlap
       alone establishes neither copying direction nor source coverage.
   - id: "ProjectiveModules/ExteriorPower/DirectSum.lean"
@@ -496,9 +496,9 @@ status:
         free-word semiring fails the strong rank condition: transport the pair
         injection to a Fin 1 codomain and contradict the strong-rank bound
         2 ≤ 1. Mathlib's free-algebra contrast is credited there to T. Y. Lam.
-        The rational-Boolean private client separately obtains rank condition
-        and invariant basis number by augmentation; these positive properties
-        are not asserted for every coefficient semiring. This entry asserts
+        In the rational-Boolean case, rank condition and invariant basis number
+        follow separately by augmentation; these positive properties are not
+        asserted for every coefficient semiring. This entry asserts
         neither source correspondence nor whole-book coverage.
     - declaration: "MonoidAlgebra.freeMonoidAugmentation"
       file: "ProjectiveModules/Free/FreeWordAugmentation.lean"
@@ -1167,7 +1167,7 @@ status:
         give a projection M → ker r. Its underlying value is x - i (r x).
         Scalar and both carrier universes are independent; no finiteness,
         projectivity, freeness, Noetherian, commutativity or Small premise.
-        The projection follows Prism's formalization and uses Mathlib's
+        The projection follows Formal Frontier's formalization and uses Mathlib's
         linear-map and kernel APIs.
     - declaration: "LinearMap.splitKernelProjection_apply"
       file: "ProjectiveModules/Module/ProjectiveKernel.lean"
@@ -1377,12 +1377,12 @@ automation:
     - method: "agent"
       framework: "AI agents using Lean and Lake"
       tool_setup: >-
-        Formal Frontier AI agents used Lean and mathlib APIs, compiler feedback
-        and tactics. Prism contributed original results; separately authored
-        mathematics and expression adaptations are credited in docs/CREDITS.md.
+        Formal Frontier AI agents contributed Lean code and documentation using
+        mathlib. Separately authored mathematics and expression adaptations are
+        credited in docs/CREDITS.md.
       prompting_notes: >-
-        Prompts emphasized exact hypotheses, handedness, independent universes
-        and reusable mathematical APIs.
+        AI assistance focused on exact hypotheses, handedness, independent
+        universes and reusable mathematical APIs.
   notes: >-
     Code and documentation include AI-agent contributions. AI generation
     alone establishes no originality, proof correctness or rights clearance.
@@ -1426,11 +1426,9 @@ fidelity:
 review:
   status: "agent-reviewed"
   notes: >-
-    Mathematical content has received independent AI-agent review. Acceptance
-    requires an applicable pinned build and complete transitive standard-axiom
-    checks including private declarations; those checks do not establish
-    source correspondence or rights clearance. This metadata is not itself
-    acceptance evidence. No human review, book-author endorsement or
+    Independent AI-agent review is reported. This metadata is not acceptance,
+    build or axiom-check evidence and establishes neither source correspondence
+    nor rights clearance. No human review, book-author endorsement or
     complete-book formalization is claimed.
 
 acknowledgements: >-
@@ -1442,21 +1440,21 @@ acknowledgements: >-
   relicense third-party expression.
   Weibel's Definition I.1.2 motivates finite-free kernel splitting; the more
   general kernel interfaces also use Mathlib's stably-free and matrix APIs and
-  Prism's (Formal Frontier) finite stable presentation and projective splitting
+  Formal Frontier's finite stable presentation and projective splitting
   formalization. Right-extension comparisons and their pointwise unit and
   associativity laws use the balanced-tensor/right-extension formalization
-  contributed by Prism and maintained by Prism and Lens, the comparison
-  interfaces contributed by Lens, and Mathlib's ring-homomorphism and
+  contributed and maintained by Formal Frontier, the comparison
+  interfaces contributed by Formal Frontier, and Mathlib's ring-homomorphism and
   linear-map interfaces. Projective-class descent and stabilization follow
   the object-class and group-completion approach in Formal Frontier's Algebraic
   Direct Limits formalization without depending on that library. The K₀
   construction reuses Mathlib's skeleton, resizing, monoidal, additive
   Grothendieck group, localization and dimension APIs.
-  The commutative-base tensor comparisons contributed by Lens reuse
+  The commutative-base tensor comparisons contributed by Formal Frontier reuse
   Mathlib's tensor universal property, commutation, tensor maps and module
   transport; the scalar-first target follows Jujian Zhang's Mathlib
   change-of-rings formalization.
-  The module-category equivalence interface contributed by Lens uses
+  The module-category equivalence interface contributed by Formal Frontier uses
   Mathlib's subobject formalizations by Markus Himmel, Bhavik Mehta and Kim
   Morrison, categorical projectivity by Markus Himmel and Kim Morrison,
   and finiteness/compact-submodule formalization by Johan Commelin. The
