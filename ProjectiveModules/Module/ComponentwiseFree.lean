@@ -41,7 +41,7 @@ public section
 open Function Set
 open CategoryTheory
 
-universe u v w
+universe u v w uR uI uJ
 
 namespace CompleteOrthogonalIdempotents
 
@@ -338,10 +338,11 @@ noncomputable def componentwiseFreeModelRefineLeftEquiv
       (orthogonalIdempotents_mul_right he.toOrthogonalIdempotents (hd.idem j)) (by
         rw [← Finset.sum_mul, he.complete, one_mul])
 
-/-- On a nonzero common idempotent corner, equal stalk ranks identify the
-two displayed finite ranks; on the zero corner both blocks are zero.
-The index types `I` and `J` need not be finite. -/
-noncomputable def componentBlockEquiv {I J : Type*}
+/-- Reindex blocks supported on `e i * d j` using their conditional rank equality.
+If the product vanishes, both blocks are zero; otherwise coordinates are transported
+along `finCongr (hrank i j h)`. The index families need not be finite. -/
+noncomputable def componentBlockEquiv {R : Type uR} [Semiring R]
+    {I : Type uI} {J : Type uJ}
     (e : I → R) (n : I → ℕ) (d : J → R) (m : J → ℕ)
     (hrank : ∀ i j, e i * d j ≠ 0 → n i = m j) (i : I) (j : J) :
     (Fin (n i) → Ideal.span {e i * d j}) ≃ₗ[R]
@@ -355,6 +356,63 @@ noncomputable def componentBlockEquiv {I J : Type*}
   · exact LinearEquiv.piCongrLeft R
       (fun _ : Fin (m j) ↦ Ideal.span {e i * d j})
       (finCongr (hrank i j hzero))
+
+/-- For a nonzero supporting product, forward application reindexes by the inverse rank
+equivalence. -/
+theorem componentBlockEquiv_apply_of_ne_zero {R : Type uR} [Semiring R]
+    {I : Type uI} {J : Type uJ}
+    (e : I → R) (n : I → ℕ) (d : J → R) (m : J → ℕ)
+    (hrank : ∀ i j, e i * d j ≠ 0 → n i = m j) (i : I) (j : J)
+    (h : e i * d j ≠ 0) (v : Fin (n i) → Ideal.span {e i * d j}) (k : Fin (m j)) :
+    componentBlockEquiv e n d m hrank i j v k =
+      v ((finCongr (hrank i j h)).symm k) := by
+  classical
+  have hinv (w : Fin (m j) → Ideal.span {e i * d j}) (l : Fin (n i)) :
+      (componentBlockEquiv e n d m hrank i j).symm w l =
+        w ((finCongr (hrank i j h)) l) := by
+    simp only [componentBlockEquiv, dite_eq_right h]
+    rfl
+  have hcoord := hinv (componentBlockEquiv e n d m hrank i j v)
+    ((finCongr (hrank i j h)).symm k)
+  simpa only [LinearEquiv.symm_apply_apply, Equiv.apply_symm_apply] using hcoord.symm
+
+/-- For a nonzero supporting product, inverse application reindexes by the rank equivalence. -/
+theorem componentBlockEquiv_symm_apply_of_ne_zero {R : Type uR} [Semiring R]
+    {I : Type uI} {J : Type uJ}
+    (e : I → R) (n : I → ℕ) (d : J → R) (m : J → ℕ)
+    (hrank : ∀ i j, e i * d j ≠ 0 → n i = m j) (i : I) (j : J)
+    (h : e i * d j ≠ 0) (w : Fin (m j) → Ideal.span {e i * d j}) (l : Fin (n i)) :
+    (componentBlockEquiv e n d m hrank i j).symm w l =
+      w ((finCongr (hrank i j h)) l) := by
+  classical
+  simp only [componentBlockEquiv, dite_eq_right h]
+  rfl
+
+/-- For a zero supporting product, every forward output is the zero function, regardless of
+ranks. -/
+theorem componentBlockEquiv_apply_of_eq_zero {R : Type uR} [Semiring R]
+    {I : Type uI} {J : Type uJ}
+    (e : I → R) (n : I → ℕ) (d : J → R) (m : J → ℕ)
+    (hrank : ∀ i j, e i * d j ≠ 0 → n i = m j) (i : I) (j : J)
+    (h : e i * d j = 0) (v : Fin (n i) → Ideal.span {e i * d j}) :
+    componentBlockEquiv e n d m hrank i j v = 0 := by
+  have : Subsingleton (Ideal.span {e i * d j}) := by
+    rw [Ideal.span_singleton_eq_bot.mpr h]
+    infer_instance
+  exact Subsingleton.elim _ _
+
+/-- For a zero supporting product, every inverse output is the zero function, regardless of
+ranks. -/
+theorem componentBlockEquiv_symm_apply_of_eq_zero {R : Type uR} [Semiring R]
+    {I : Type uI} {J : Type uJ}
+    (e : I → R) (n : I → ℕ) (d : J → R) (m : J → ℕ)
+    (hrank : ∀ i j, e i * d j ≠ 0 → n i = m j) (i : I) (j : J)
+    (h : e i * d j = 0) (w : Fin (m j) → Ideal.span {e i * d j}) :
+    (componentBlockEquiv e n d m hrank i j).symm w = 0 := by
+  have : Subsingleton (Ideal.span {e i * d j}) := by
+    rw [Ideal.span_singleton_eq_bot.mpr h]
+    infer_instance
+  exact Subsingleton.elim _ _
 
 /-- Compare the two orderings of a common orthogonal refinement.
 The index types `I` and `J` need not be finite. -/

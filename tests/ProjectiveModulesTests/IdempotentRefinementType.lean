@@ -94,3 +94,51 @@ private theorem emptyRefinement_complete :
     CompleteOrthogonalIdempotents
       (fun ij : Fin 0 × Fin 0 ↦ emptyIdempotents ij.1 * emptyIdempotents ij.2) :=
   CompleteOrthogonalIdempotents.of_subsingleton
+
+-- Infinite index families over a non-ring semiring, with a nonzero rank-two block.
+example (i : ℕ) (j : ℤ) :
+    let E := Module.componentBlockEquiv (fun _ : ℕ ↦ (1 : ℕ)) (fun _ ↦ 2)
+      (fun _ : ℤ ↦ 1) (fun _ ↦ 2) (fun _ _ _ ↦ rfl) i j
+    let v : Fin 2 → Ideal.span ({1} : Set ℕ) :=
+      fun _ ↦ ⟨1, Ideal.subset_span (by simp)⟩
+    E v = v ∧ v ≠ 0 ∧ E.symm v = v := by
+  dsimp only
+  refine ⟨?_, ?_, ?_⟩
+  · funext k
+    simpa using Module.componentBlockEquiv_apply_of_ne_zero
+      (fun _ : ℕ ↦ (1 : ℕ)) (fun _ ↦ 2) (fun _ : ℤ ↦ 1) (fun _ ↦ 2)
+      (fun _ _ _ ↦ rfl) i j (by simp) (fun _ ↦ ⟨1, Ideal.subset_span (by simp)⟩) k
+  · intro h
+    have hk := congrArg
+      (fun w : Fin 2 → Ideal.span ({1} : Set ℕ) ↦ (w 0 : ℕ)) h
+    simp at hk
+  · funext k
+    simpa using Module.componentBlockEquiv_symm_apply_of_ne_zero
+      (fun _ : ℕ ↦ (1 : ℕ)) (fun _ ↦ 2) (fun _ : ℤ ↦ 1) (fun _ ↦ 2)
+      (fun _ _ _ ↦ rfl) i j (by simp) (fun _ ↦ ⟨1, Ideal.subset_span (by simp)⟩) k
+
+-- Nonzero orthogonal factors allow unequal ranks; both whole output blocks vanish.
+example
+    (v : Fin 1 → Ideal.span ({((1, 0) : ℤ × ℤ) * (0, 1)} : Set (ℤ × ℤ)))
+    (w : Fin 2 → Ideal.span ({((1, 0) : ℤ × ℤ) * (0, 1)} : Set (ℤ × ℤ))) :
+    let E := Module.componentBlockEquiv (fun _ : Unit ↦ ((1, 0) : ℤ × ℤ))
+      (fun _ ↦ 1) (fun _ : Unit ↦ (0, 1)) (fun _ ↦ 2)
+      (by intro _ _ h; exact (h (by ext <;> simp)).elim) () ()
+    ((1, 0) : ℤ × ℤ) ≠ 0 ∧ ((0, 1) : ℤ × ℤ) ≠ 0 ∧ E v = 0 ∧ E.symm w = 0 := by
+  dsimp only
+  refine ⟨by simp, by simp, ?_, ?_⟩
+  · exact Module.componentBlockEquiv_apply_of_eq_zero
+      (fun _ : Unit ↦ ((1, 0) : ℤ × ℤ)) (fun _ ↦ 1)
+      (fun _ : Unit ↦ (0, 1)) (fun _ ↦ 2)
+      (by intro _ _ h; exact (h (by ext <;> simp)).elim) () () (by ext <;> simp) v
+  · exact Module.componentBlockEquiv_symm_apply_of_eq_zero
+      (fun _ : Unit ↦ ((1, 0) : ℤ × ℤ)) (fun _ ↦ 1)
+      (fun _ : Unit ↦ (0, 1)) (fun _ ↦ 2)
+      (by intro _ _ h; exact (h (by ext <;> simp)).elim) () () (by ext <;> simp) w
+
+-- Rank-zero blocks retain the usual inverse API without a positivity hypothesis.
+example :
+    let E := Module.componentBlockEquiv (fun _ : Unit ↦ (1 : ℕ)) (fun _ ↦ 0)
+      (fun _ : Unit ↦ 1) (fun _ ↦ 0) (fun _ _ _ ↦ rfl) () ()
+    E.symm (E 0) = 0 := by
+  exact LinearEquiv.symm_apply_apply _ _
