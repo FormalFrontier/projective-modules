@@ -128,40 +128,26 @@ theorem map_bijective_of_surjective_of_isNilpotent_ker
                   rw [Submodule.pow_succ, Submodule.mul_smul]
         apply (LinearMap.range_le_bot_iff (d ^ n)).mp
         simpa only [hJpow, Ideal.zero_eq_bot, Submodule.bot_smul] using hpow n
-      let : Module Rᵐᵒᵖ (ModuleCat.RightExtension.Obj f P) :=
-        Module.compHom (ModuleCat.RightExtension.Obj f P) (RingHom.op f)
-      let : Module Rᵐᵒᵖ (ModuleCat.RightExtension.Obj f Q) :=
-        Module.compHom (ModuleCat.RightExtension.Obj f Q) (RingHom.op f)
-      let tauP : P →ₗ[Rᵐᵒᵖ] ModuleCat.RightExtension.Obj f P :=
-        { toFun := ModuleCat.RightExtension.tmulOne f
-          map_add' := (ModuleCat.RightExtension.tmulOne f).map_add
-          map_smul' := (ModuleCat.RightExtension.tmulOne f).map_smulₛₗ }
-      let tauQ : Q →ₗ[Rᵐᵒᵖ] ModuleCat.RightExtension.Obj f Q :=
-        { toFun := ModuleCat.RightExtension.tmulOne f
-          map_add' := (ModuleCat.RightExtension.tmulOne f).map_add
-          map_smul' := (ModuleCat.RightExtension.tmulOne f).map_smulₛₗ }
-      let eR : ModuleCat.RightExtension.Obj f P →ₗ[Rᵐᵒᵖ]
-          ModuleCat.RightExtension.Obj f Q :=
-        { toFun := e
-          map_add' := e.map_add
-          map_smul' := fun r x => e.map_smul (RingHom.op f r) x }
-      let eiR : ModuleCat.RightExtension.Obj f Q →ₗ[Rᵐᵒᵖ]
-          ModuleCat.RightExtension.Obj f P :=
-        { toFun := e.symm
-          map_add' := e.symm.map_add
-          map_smul' := fun r x => e.symm.map_smul (RingHom.op f r) x }
-      obtain ⟨u, hu⟩ := Module.projective_lifting_property tauQ (eR.comp tauP)
-        (ModuleCat.RightExtension.tmulOne_surjective (M := Q) f hf)
-      obtain ⟨v, hv⟩ := Module.projective_lifting_property tauP (eiR.comp tauQ)
-        (ModuleCat.RightExtension.tmulOne_surjective (M := P) f hf)
+      obtain ⟨u, hu⟩ :=
+        ModuleCat.RightExtension.map_surjective_of_surjective f hf e.toLinearMap
+      obtain ⟨v, hv⟩ :=
+        ModuleCat.RightExtension.map_surjective_of_surjective f hf e.symm.toLinearMap
       have hu' (p : P) : ModuleCat.RightExtension.tmulOne f (u p) =
           e (ModuleCat.RightExtension.tmulOne f p) := by
-        exact congrArg
-          (fun g : P →ₗ[Rᵐᵒᵖ] ModuleCat.RightExtension.Obj f Q => g p) hu
+        simpa [ModuleCat.RightExtension.tmulOne_apply,
+          ModuleCat.RightExtension.map_tmul] using
+          congrArg
+            (fun g : ModuleCat.RightExtension.Obj f P →ₗ[Sᵐᵒᵖ]
+                ModuleCat.RightExtension.Obj f Q =>
+              g (ModuleCat.RightExtension.tmulOne f p)) hu
       have hv' (q : Q) : ModuleCat.RightExtension.tmulOne f (v q) =
           e.symm (ModuleCat.RightExtension.tmulOne f q) := by
-        exact congrArg
-          (fun g : Q →ₗ[Rᵐᵒᵖ] ModuleCat.RightExtension.Obj f P => g q) hv
+        simpa [ModuleCat.RightExtension.tmulOne_apply,
+          ModuleCat.RightExtension.map_tmul] using
+          congrArg
+            (fun g : ModuleCat.RightExtension.Obj f Q →ₗ[Sᵐᵒᵖ]
+                ModuleCat.RightExtension.Obj f P =>
+              g (ModuleCat.RightExtension.tmulOne f q)) hv
       let dP : Module.End Rᵐᵒᵖ P := v.comp u - LinearMap.id
       let dQ : Module.End Rᵐᵒᵖ Q := u.comp v - LinearMap.id
       have hdPzero (p : P) : ModuleCat.RightExtension.tmulOne f (dP p) = 0 := by

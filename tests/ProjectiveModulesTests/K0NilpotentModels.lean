@@ -91,6 +91,33 @@ private theorem dualNumber_int_K0_regular_generator :
       ((ModuleCat.RightExtension.rightFreeLinearEquiv π PUnit.{1}).trans
         (LinearEquiv.funUnique PUnit.{1} ℤᵐᵒᵖ ℤ)))
 
+-- A Hom lift sends the standard regular/free generator to twice that generator.
+private theorem dualNumber_int_hom_lift_generator_two :
+    let e :=
+      (ModuleCat.RightExtension.mapLinearEquiv π
+        (LinearEquiv.funUnique PUnit.{1} (DualNumber ℤ)ᵐᵒᵖ (DualNumber ℤ)).symm).trans
+        ((ModuleCat.RightExtension.rightFreeLinearEquiv π PUnit.{1}).trans
+          (LinearEquiv.funUnique PUnit.{1} ℤᵐᵒᵖ ℤ))
+    ∃ l : DualNumber ℤ →ₗ[(DualNumber ℤ)ᵐᵒᵖ] DualNumber ℤ,
+      e (ModuleCat.RightExtension.map π l (e.symm (1 : ℤ))) = 2 := by
+  let e :=
+    (ModuleCat.RightExtension.mapLinearEquiv π
+      (LinearEquiv.funUnique PUnit.{1} (DualNumber ℤ)ᵐᵒᵖ (DualNumber ℤ)).symm).trans
+      ((ModuleCat.RightExtension.rightFreeLinearEquiv π PUnit.{1}).trans
+        (LinearEquiv.funUnique PUnit.{1} ℤᵐᵒᵖ ℤ))
+  change ∃ l : DualNumber ℤ →ₗ[(DualNumber ℤ)ᵐᵒᵖ] DualNumber ℤ,
+    e (ModuleCat.RightExtension.map π l (e.symm (1 : ℤ))) = 2
+  obtain ⟨l, hl⟩ :=
+    ModuleCat.RightExtension.map_surjective_of_surjective π hπ
+      ((2 : ℕ) • (LinearMap.id :
+        ModuleCat.RightExtension.Obj π (DualNumber ℤ) →ₗ[ℤᵐᵒᵖ]
+          ModuleCat.RightExtension.Obj π (DualNumber ℤ)))
+  refine ⟨l, ?_⟩
+  rw [hl]
+  change e ((2 : ℕ) • e.symm (1 : ℤ)) = 2
+  rw [two_nsmul, e.map_add]
+  exact congrArg (fun z : ℤ => z + z) (e.apply_symm_apply (1 : ℤ))
+
 -- The same construction also includes the zero-ring boundary.
 private theorem dualNumber_punit_K0_zero :
     K0.equivOfSurjectiveOfIsNilpotentKer

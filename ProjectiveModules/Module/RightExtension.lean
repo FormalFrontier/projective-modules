@@ -292,6 +292,40 @@ theorem tmulOne_surjective (hf : Function.Surjective f) :
       obtain ⟨n, rfl⟩ := hy
       exact ⟨m + n, (tmulOne f).map_add m n⟩
 
+/-- Scalar extension along a surjective ring homomorphism is surjective on Hom
+out of a projective right module, without any finite-generation hypothesis.
+
+The proof uses Mathlib's projective lifting theorem of Kevin Buzzard and
+Antoine Labelle. -/
+theorem map_surjective_of_surjective [Module.Projective Rᵐᵒᵖ M]
+    (hf : Function.Surjective f) :
+    Function.Surjective
+      (map f : (M →ₗ[Rᵐᵒᵖ] N) → (Obj f M →ₗ[Sᵐᵒᵖ] Obj f N)) := by
+  intro g
+  let : Module Rᵐᵒᵖ (Obj f M) := Module.compHom (Obj f M) (RingHom.op f)
+  let : Module Rᵐᵒᵖ (Obj f N) := Module.compHom (Obj f N) (RingHom.op f)
+  let tauM : M →ₗ[Rᵐᵒᵖ] Obj f M :=
+    { toFun := tmulOne f
+      map_add' := (tmulOne f).map_add
+      map_smul' := (tmulOne f).map_smulₛₗ }
+  let tauN : N →ₗ[Rᵐᵒᵖ] Obj f N :=
+    { toFun := tmulOne f
+      map_add' := (tmulOne f).map_add
+      map_smul' := (tmulOne f).map_smulₛₗ }
+  let gR : Obj f M →ₗ[Rᵐᵒᵖ] Obj f N :=
+    { toFun := g
+      map_add' := g.map_add
+      map_smul' := fun r x => g.map_smul (RingHom.op f r) x }
+  obtain ⟨l, hl⟩ := Module.projective_lifting_property tauN (gR.comp tauM)
+    (tmulOne_surjective (M := N) f hf)
+  refine ⟨l, ?_⟩
+  apply LinearMap.ext
+  intro x
+  obtain ⟨m, rfl⟩ := tmulOne_surjective (M := M) f hf x
+  change map f l (tmul f m 1) = g (tmul f m 1)
+  rw [map_tmul]
+  exact congrArg (fun h : M →ₗ[Rᵐᵒᵖ] Obj f N => h m) hl
+
 /-- The additive homomorphism induced by a semilinear map from the original
 right module. This is an implementation detail of `fromSemilinear`. -/
 def fromSemilinearAddHom (h : M →ₛₗ[RingHom.op f] X) : Obj f M →+ X := by
