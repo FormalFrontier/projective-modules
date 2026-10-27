@@ -71,6 +71,21 @@ theorem mem_oppositeIdeal_iff (I : Ideal R) [I.IsTwoSided] (r : R) :
     Ideal.mem_toTwoSided]
   simp
 
+/-- Taking the opposite ideal of a kernel gives the kernel of the opposite
+homomorphism. -/
+theorem oppositeIdeal_ker {S : Type uS} [Semiring S] (f : R →+* S) :
+    oppositeIdeal (RingHom.ker f) = RingHom.ker (RingHom.op f) := by
+  ext r
+  induction r using MulOpposite.rec' with
+  | _ r =>
+      rw [mem_oppositeIdeal_iff]
+      change f r = 0 ↔ MulOpposite.op (f r) = 0
+      constructor
+      · intro h
+        exact congrArg MulOpposite.op h
+      · intro h
+        exact congrArg MulOpposite.unop h
+
 section IdealQuotient
 
 variable {M : Type uM} [AddCommGroup M] [Module Rᵐᵒᵖ M]
