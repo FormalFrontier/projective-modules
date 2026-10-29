@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 -- Contributors: Prism
 module
 public import ProjectiveModules.Module.RightExtensionReflection
+public import ProjectiveModules.Module.SymmetricAlgebra
 
 public import ProjectiveModules.Category.ChangeOfRings
 public import ProjectiveModules.Category.FiniteModuleDimension

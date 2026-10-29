@@ -17,7 +17,10 @@ Maintained by the Formal Frontier source-maintainer team.
   with no finiteness or projectivity premise. For two identity maps, the left
   map is bijective and the class of `(x, y)` is represented by `x - y`. Commuting
   squares induce maps on both quotient constructions, compatible with the left maps
-  and projections and respecting identities and composition.
+  and projections and respecting identities and composition. Surjective coordinate
+  maps induce surjective quotient maps. With a surjective common-source map,
+  injective or bijective coordinate maps induce injective or bijective maps,
+  respectively.
 
 - **Continuous kernel-product splitting.**
   [`ContinuousLinearMap.exists_equiv_ker_prod`](ProjectiveModules/Topology/Splitting.lean)

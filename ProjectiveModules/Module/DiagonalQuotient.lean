@@ -30,7 +30,10 @@ For the pair of identity maps on any module, the left map is bijective, and the 
 of `(x, y)` is the image of `x - y`. The ring need not be commutative or nontrivial,
 and the scalar ring and all modules have independent universes. Commuting squares induce
 maps on diagonal quotients and product cokernels. These respect the left maps and the
-projections, and satisfy the identity and composition laws.
+projections, and satisfy the identity and composition laws. Surjective coordinate maps
+make both induced maps surjective. If the common-source map is surjective,
+injective or bijective coordinate maps induce injective or bijective quotient maps,
+respectively.
 
 ## Implementation notes
 
@@ -351,6 +354,38 @@ theorem cokernelProdMap_unique
       (M' ⧸ LinearMap.range f') × (N' ⧸ LinearMap.range g') => k (m, n))
     (ha.trans (cokernelProdMap_comp_mkQ f g f' g' h u v hf hg).symm)
 
+/-- Surjective coordinate maps induce a surjective map on diagonal quotients. -/
+theorem map_surjective
+    (f : X →ₗ[S] M) (g : X →ₗ[S] N)
+    (f' : X' →ₗ[S] M') (g' : X' →ₗ[S] N')
+    (h : X →ₗ[S] X') (u : M →ₗ[S] M') (v : N →ₗ[S] N')
+    (hf : u.comp f = f'.comp h) (hg : v.comp g = g'.comp h)
+    (hu : Function.Surjective u) (hv : Function.Surjective v) :
+    Function.Surjective (LinearMap.DiagonalQuotient.map f g f' g' h u v hf hg) := by
+  intro z
+  obtain ⟨⟨m', n'⟩, rfl⟩ := (LinearMap.range (f'.prod g')).mkQ_surjective z
+  obtain ⟨m, rfl⟩ := hu m'
+  obtain ⟨n, rfl⟩ := hv n'
+  refine ⟨Submodule.Quotient.mk (m, n), ?_⟩
+  simpa only [Submodule.mkQ_apply] using map_mk f g f' g' h u v hf hg m n
+
+/-- Surjective coordinate maps induce a surjective map on the product of cokernels. -/
+theorem cokernelProdMap_surjective
+    (f : X →ₗ[S] M) (g : X →ₗ[S] N)
+    (f' : X' →ₗ[S] M') (g' : X' →ₗ[S] N')
+    (h : X →ₗ[S] X') (u : M →ₗ[S] M') (v : N →ₗ[S] N')
+    (hf : u.comp f = f'.comp h) (hg : v.comp g = g'.comp h)
+    (hu : Function.Surjective u) (hv : Function.Surjective v) :
+    Function.Surjective
+      (LinearMap.DiagonalQuotient.cokernelProdMap f g f' g' h u v hf hg) := by
+  rintro ⟨qm', qn'⟩
+  obtain ⟨m', rfl⟩ := (LinearMap.range f').mkQ_surjective qm'
+  obtain ⟨n', rfl⟩ := (LinearMap.range g').mkQ_surjective qn'
+  obtain ⟨m, rfl⟩ := hu m'
+  obtain ⟨n, rfl⟩ := hv n'
+  refine ⟨(Submodule.Quotient.mk m, Submodule.Quotient.mk n), ?_⟩
+  simpa only [Submodule.mkQ_apply] using cokernelProdMap_mk f g f' g' h u v hf hg m n
+
 /-- The left maps commute with a pair of commuting squares. -/
 theorem map_comp_left :
     (map f g f' g' h u v hf hg).comp (left f g) = (left f' g').comp h := by
@@ -403,6 +438,105 @@ theorem projection_comp_map :
       (Submodule.Quotient.mk m, Submodule.Quotient.mk n)
   exact cokernelProdMap_mk f g f g (LinearMap.id : X →ₗ[S] X)
     (LinearMap.id : M →ₗ[S] M) (LinearMap.id : N →ₗ[S] N) rfl rfl m n
+
+/-- Injective coordinate maps and a surjective common-source map induce an injective map
+on diagonal quotients. -/
+theorem map_injective
+    (f : X →ₗ[S] M) (g : X →ₗ[S] N)
+    (f' : X' →ₗ[S] M') (g' : X' →ₗ[S] N')
+    (h : X →ₗ[S] X') (u : M →ₗ[S] M') (v : N →ₗ[S] N')
+    (hf : u.comp f = f'.comp h) (hg : v.comp g = g'.comp h)
+    (hu : Function.Injective u) (hv : Function.Injective v)
+    (hh : Function.Surjective h) :
+    Function.Injective (LinearMap.DiagonalQuotient.map f g f' g' h u v hf hg) := by
+  intro a b hab
+  obtain ⟨⟨m₁, n₁⟩, rfl⟩ := (LinearMap.range (f.prod g)).mkQ_surjective a
+  obtain ⟨⟨m₂, n₂⟩, rfl⟩ := (LinearMap.range (f.prod g)).mkQ_surjective b
+  simp only [Submodule.mkQ_apply, map_mk, Submodule.Quotient.eq] at hab
+  rcases hab with ⟨x', hx'⟩
+  obtain ⟨x, rfl⟩ := hh x'
+  change (Submodule.Quotient.mk (m₁, n₁) :
+    (M × N) ⧸ LinearMap.range (f.prod g)) = Submodule.Quotient.mk (m₂, n₂)
+  rw [Submodule.Quotient.eq]
+  refine ⟨x, ?_⟩
+  apply Prod.ext
+  · change f x = m₁ - m₂
+    apply hu
+    rw [map_sub]
+    exact (congrArg (fun k : X →ₗ[S] M' => k x) hf).trans
+      (congrArg Prod.fst hx')
+  · change g x = n₁ - n₂
+    apply hv
+    rw [map_sub]
+    exact (congrArg (fun k : X →ₗ[S] N' => k x) hg).trans
+      (congrArg Prod.snd hx')
+
+/-- Injective coordinate maps and a surjective common-source map induce an injective map
+on the product of cokernels. -/
+theorem cokernelProdMap_injective
+    (f : X →ₗ[S] M) (g : X →ₗ[S] N)
+    (f' : X' →ₗ[S] M') (g' : X' →ₗ[S] N')
+    (h : X →ₗ[S] X') (u : M →ₗ[S] M') (v : N →ₗ[S] N')
+    (hf : u.comp f = f'.comp h) (hg : v.comp g = g'.comp h)
+    (hu : Function.Injective u) (hv : Function.Injective v)
+    (hh : Function.Surjective h) :
+    Function.Injective
+      (LinearMap.DiagonalQuotient.cokernelProdMap f g f' g' h u v hf hg) := by
+  rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ hab
+  obtain ⟨m₁, rfl⟩ := (LinearMap.range f).mkQ_surjective a₁
+  obtain ⟨n₁, rfl⟩ := (LinearMap.range g).mkQ_surjective b₁
+  obtain ⟨m₂, rfl⟩ := (LinearMap.range f).mkQ_surjective a₂
+  obtain ⟨n₂, rfl⟩ := (LinearMap.range g).mkQ_surjective b₂
+  simp only [Submodule.mkQ_apply, cokernelProdMap_mk] at hab
+  have hm : (Submodule.Quotient.mk (u m₁) : M' ⧸ LinearMap.range f') =
+      Submodule.Quotient.mk (u m₂) := congrArg Prod.fst hab
+  have hn : (Submodule.Quotient.mk (v n₁) : N' ⧸ LinearMap.range g') =
+      Submodule.Quotient.mk (v n₂) := congrArg Prod.snd hab
+  rw [Submodule.Quotient.eq] at hm hn
+  rcases hm with ⟨x', hx'⟩
+  rcases hn with ⟨y', hy'⟩
+  obtain ⟨x, rfl⟩ := hh x'
+  obtain ⟨y, rfl⟩ := hh y'
+  apply Prod.ext
+  · change (Submodule.Quotient.mk m₁ : M ⧸ LinearMap.range f) = Submodule.Quotient.mk m₂
+    rw [Submodule.Quotient.eq]
+    refine ⟨x, ?_⟩
+    apply hu
+    rw [map_sub]
+    exact (congrArg (fun k : X →ₗ[S] M' => k x) hf).trans hx'
+  · change (Submodule.Quotient.mk n₁ : N ⧸ LinearMap.range g) = Submodule.Quotient.mk n₂
+    rw [Submodule.Quotient.eq]
+    refine ⟨y, ?_⟩
+    apply hv
+    rw [map_sub]
+    exact (congrArg (fun k : X →ₗ[S] N' => k y) hg).trans hy'
+
+/-- Bijective coordinate maps and a surjective common-source map induce a bijection
+on diagonal quotients. -/
+theorem map_bijective
+    (f : X →ₗ[S] M) (g : X →ₗ[S] N)
+    (f' : X' →ₗ[S] M') (g' : X' →ₗ[S] N')
+    (h : X →ₗ[S] X') (u : M →ₗ[S] M') (v : N →ₗ[S] N')
+    (hf : u.comp f = f'.comp h) (hg : v.comp g = g'.comp h)
+    (hu : Function.Bijective u) (hv : Function.Bijective v)
+    (hh : Function.Surjective h) :
+    Function.Bijective (LinearMap.DiagonalQuotient.map f g f' g' h u v hf hg) := by
+  exact ⟨map_injective f g f' g' h u v hf hg hu.1 hv.1 hh,
+    map_surjective f g f' g' h u v hf hg hu.2 hv.2⟩
+
+/-- Bijective coordinate maps and a surjective common-source map induce a bijection
+on the product of cokernels. -/
+theorem cokernelProdMap_bijective
+    (f : X →ₗ[S] M) (g : X →ₗ[S] N)
+    (f' : X' →ₗ[S] M') (g' : X' →ₗ[S] N')
+    (h : X →ₗ[S] X') (u : M →ₗ[S] M') (v : N →ₗ[S] N')
+    (hf : u.comp f = f'.comp h) (hg : v.comp g = g'.comp h)
+    (hu : Function.Bijective u) (hv : Function.Bijective v)
+    (hh : Function.Surjective h) :
+    Function.Bijective
+      (LinearMap.DiagonalQuotient.cokernelProdMap f g f' g' h u v hf hg) := by
+  exact ⟨cokernelProdMap_injective f g f' g' h u v hf hg hu.1 hv.1 hh,
+    cokernelProdMap_surjective f g f' g' h u v hf hg hu.2 hv.2⟩
 
 variable {X'' : Type uX''} {M'' : Type uM''} {N'' : Type uN''}
 variable [AddCommGroup X''] [AddCommGroup M''] [AddCommGroup N'']
