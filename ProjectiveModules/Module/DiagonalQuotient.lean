@@ -23,6 +23,8 @@ kernel of the projection.
 * `LinearMap.DiagonalQuotient.projection`: the map to the product of range quotients.
 * `LinearMap.DiagonalQuotient.map`: the map on diagonal quotients induced by commuting squares.
 * `LinearMap.DiagonalQuotient.cokernelProdMap`: the corresponding map on product cokernels.
+* `LinearMap.DiagonalQuotient.congr`: transport by coordinate equivalences carrying the
+  relation range exactly onto the target relation range.
 * `LinearMap.DiagonalQuotient.quotientKerEquiv`: the canonical identification of
   `X ⧸ (ker f ⊔ ker g)` with the kernel of the projection.
 
@@ -34,6 +36,10 @@ projections, and satisfy the identity and composition laws. Surjective coordinat
 make both induced maps surjective. If the common-source map is surjective,
 injective or bijective coordinate maps induce injective or bijective quotient maps,
 respectively.
+Coordinate equivalences transporting the relation range give a presentation equivalence,
+with componentwise forward and inverse representative formulas. For commuting squares its
+underlying linear map is the induced quotient map; surjectivity of the common-source map
+is sufficient to establish the required relation-range equality.
 
 ## Implementation notes
 
@@ -588,5 +594,86 @@ theorem cokernelProdMap_comp :
       (Submodule.Quotient.mk m, Submodule.Quotient.mk n)) = _
   simp only [Submodule.mkQ_apply, cokernelProdMap_mk]
   rfl
+
+end LinearMap.DiagonalQuotient
+
+namespace LinearMap.DiagonalQuotient
+
+universe uX' uM' uN'
+
+variable {S : Type uS} [Ring S]
+variable {X : Type uX} {M : Type uM} {N : Type uN}
+variable {X' : Type uX'} {M' : Type uM'} {N' : Type uN'}
+variable [AddCommGroup X] [AddCommGroup M] [AddCommGroup N]
+variable [AddCommGroup X'] [AddCommGroup M'] [AddCommGroup N']
+variable [Module S X] [Module S M] [Module S N]
+variable [Module S X'] [Module S M'] [Module S N']
+variable (f : X →ₗ[S] M) (g : X →ₗ[S] N)
+variable (f' : X' →ₗ[S] M') (g' : X' →ₗ[S] N')
+/-- Commuting squares with a surjective common-source map transport the diagonal relation
+range onto the target diagonal relation range under the product of the coordinate maps. -/
+theorem map_range_prod (h : X →ₗ[S] X') (u0 : M →ₗ[S] M') (v0 : N →ₗ[S] N')
+    (hf : u0.comp f = f'.comp h) (hg : v0.comp g = g'.comp h)
+    (hh : Function.Surjective h) :
+    (LinearMap.range (f.prod g)).map (u0.prodMap v0) =
+      LinearMap.range (f'.prod g') := by
+  apply le_antisymm
+  · intro z hz
+    rcases Submodule.mem_map.mp hz with ⟨p, hp, rfl⟩
+    rcases hp with ⟨x, rfl⟩
+    refine ⟨h x, ?_⟩
+    rw [LinearMap.prodMap_apply]
+    apply Prod.ext
+    · exact (congrArg (fun k : X →ₗ[S] M' => k x) hf).symm
+    · exact (congrArg (fun k : X →ₗ[S] N' => k x) hg).symm
+  · rintro _ ⟨x', rfl⟩
+    obtain ⟨x, rfl⟩ := hh x'
+    apply Submodule.mem_map.mpr
+    refine ⟨(f.prod g) x, ⟨x, rfl⟩, ?_⟩
+    rw [LinearMap.prodMap_apply]
+    apply Prod.ext
+    · exact congrArg (fun k : X →ₗ[S] M' => k x) hf
+    · exact congrArg (fun k : X →ₗ[S] N' => k x) hg
+
+variable (u : M ≃ₗ[S] M') (v : N ≃ₗ[S] N')
+variable (he : (LinearMap.range (f.prod g)).map
+    (u.prodCongr v : (M × N) →ₗ[S] (M' × N')) = LinearMap.range (f'.prod g'))
+
+/-- Transport of the diagonal quotient by a product equivalence preserving its relation range. -/
+def congr :
+    ((M × N) ⧸ LinearMap.range (f.prod g)) ≃ₗ[S]
+      (M' × N') ⧸ LinearMap.range (f'.prod g') :=
+  Submodule.Quotient.equiv (LinearMap.range (f.prod g)) (LinearMap.range (f'.prod g'))
+    (u.prodCongr v) he
+
+/-- The presentation equivalence applies the coordinate equivalences to a representative. -/
+@[simp] theorem congr_mk (m : M) (n : N) :
+    congr f g f' g' u v he (Submodule.Quotient.mk (m, n)) =
+      Submodule.Quotient.mk (u m, v n) := by
+  simp only [congr, Submodule.Quotient.equiv_apply, Submodule.mapQ_apply,
+    LinearEquiv.coe_prodCongr, LinearMap.prodMap_apply, LinearEquiv.coe_coe]
+
+/-- The inverse presentation equivalence applies the inverse coordinate equivalences. -/
+@[simp] theorem congr_symm_mk (m' : M') (n' : N') :
+    (congr f g f' g' u v he).symm (Submodule.Quotient.mk (m', n')) =
+      Submodule.Quotient.mk (u.symm m', v.symm n') := by
+  simp only [congr, Submodule.Quotient.equiv_symm, Submodule.Quotient.equiv_apply,
+    Submodule.mapQ_apply, LinearEquiv.prodCongr_symm, LinearEquiv.coe_prodCongr,
+    LinearMap.prodMap_apply, LinearEquiv.coe_coe]
+
+/-- For commuting squares, the presentation equivalence has the induced quotient map
+as its underlying linear map. -/
+theorem congr_toLinearMap (h : X →ₗ[S] X')
+    (hf : u.toLinearMap.comp f = f'.comp h)
+    (hg : v.toLinearMap.comp g = g'.comp h) :
+    (congr f g f' g' u v he).toLinearMap =
+      map f g f' g' h u.toLinearMap v.toLinearMap hf hg := by
+  apply map_unique f g f' g' h u.toLinearMap v.toLinearMap hf hg
+  apply LinearMap.ext
+  rintro ⟨m, n⟩
+  change congr f g f' g' u v he ((LinearMap.range (f.prod g)).mkQ (m, n)) =
+    (LinearMap.range (f'.prod g')).mkQ (u.toLinearMap.prodMap v.toLinearMap (m, n))
+  simpa only [Submodule.mkQ_apply, LinearMap.prodMap_apply, LinearEquiv.coe_toLinearMap] using
+    congr_mk f g f' g' u v he m n
 
 end LinearMap.DiagonalQuotient

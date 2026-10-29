@@ -21,6 +21,10 @@ Maintained by the Formal Frontier source-maintainer team.
   maps induce surjective quotient maps. With a surjective common-source map,
   injective or bijective coordinate maps induce injective or bijective maps,
   respectively.
+  Coordinate linear equivalences carrying the relation range onto the target range
+  induce an equivalence of presentations, with componentwise forward and inverse
+  formulas. It agrees with the induced quotient map for commuting squares; a
+  surjective common-source map supplies the relation-range equality.
 
 - **Continuous kernel-product splitting.**
   [`ContinuousLinearMap.exists_equiv_ker_prod`](ProjectiveModules/Topology/Splitting.lean)
