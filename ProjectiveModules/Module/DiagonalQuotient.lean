@@ -21,12 +21,16 @@ kernel of the projection.
 
 * `LinearMap.DiagonalQuotient.left`: the map `x ↦ [(f x, 0)]`.
 * `LinearMap.DiagonalQuotient.projection`: the map to the product of range quotients.
+* `LinearMap.DiagonalQuotient.map`: the map on diagonal quotients induced by commuting squares.
+* `LinearMap.DiagonalQuotient.cokernelProdMap`: the corresponding map on product cokernels.
 * `LinearMap.DiagonalQuotient.quotientKerEquiv`: the canonical identification of
   `X ⧸ (ker f ⊔ ker g)` with the kernel of the projection.
 
 For the pair of identity maps on any module, the left map is bijective, and the class
 of `(x, y)` is the image of `x - y`. The ring need not be commutative or nontrivial,
-and the scalar ring and the three modules have independent universes.
+and the scalar ring and all modules have independent universes. Commuting squares induce
+maps on diagonal quotients and product cokernels. These respect the left maps and the
+projections, and satisfy the identity and composition laws.
 
 ## Implementation notes
 
@@ -235,5 +239,220 @@ theorem left_id_bijective :
       (LinearMap.range
         ((LinearMap.id : X →ₗ[S] X).prod (LinearMap.id : X →ₗ[S] X))).mkQ_surjective z
     exact ⟨x - y, left_id_sub (S := S) x y⟩
+
+end LinearMap.DiagonalQuotient
+
+namespace LinearMap.DiagonalQuotient
+
+universe uX' uM' uN' uX'' uM'' uN''
+
+variable {S : Type uS} [Ring S]
+variable {X : Type uX} {M : Type uM} {N : Type uN}
+variable {X' : Type uX'} {M' : Type uM'} {N' : Type uN'}
+variable [AddCommGroup X] [AddCommGroup M] [AddCommGroup N]
+variable [AddCommGroup X'] [AddCommGroup M'] [AddCommGroup N']
+variable [Module S X] [Module S M] [Module S N]
+variable [Module S X'] [Module S M'] [Module S N']
+variable (f : X →ₗ[S] M) (g : X →ₗ[S] N)
+variable (f' : X' →ₗ[S] M') (g' : X' →ₗ[S] N')
+variable (h : X →ₗ[S] X') (u : M →ₗ[S] M') (v : N →ₗ[S] N')
+variable (hf : u.comp f = f'.comp h) (hg : v.comp g = g'.comp h)
+
+/-- A pair of commuting squares induces a linear map on the diagonal range quotients. -/
+def map :
+    ((M × N) ⧸ LinearMap.range (f.prod g)) →ₗ[S]
+      (M' × N') ⧸ LinearMap.range (f'.prod g') :=
+  (LinearMap.range (f.prod g)).liftQ
+    ((LinearMap.range (f'.prod g')).mkQ.comp (u.prodMap v)) (by
+      rintro _ ⟨x, rfl⟩
+      change (LinearMap.range (f'.prod g')).mkQ (u (f x), v (g x)) = 0
+      rw [Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero]
+      refine ⟨h x, ?_⟩
+      apply Prod.ext
+      · exact (congrArg (fun k : X →ₗ[S] M' => k x) hf).symm
+      · exact (congrArg (fun k : X →ₗ[S] N' => k x) hg).symm)
+
+/-- A pair of commuting squares induces the product map on the two range quotients. -/
+def cokernelProdMap :
+    (M ⧸ LinearMap.range f) × (N ⧸ LinearMap.range g) →ₗ[S]
+      (M' ⧸ LinearMap.range f') × (N' ⧸ LinearMap.range g') :=
+  ((LinearMap.range f).liftQ ((LinearMap.range f').mkQ.comp u) (by
+    rintro _ ⟨x, rfl⟩
+    change (LinearMap.range f').mkQ (u (f x)) = 0
+    rw [Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero]
+    exact ⟨h x, (congrArg (fun k : X →ₗ[S] M' => k x) hf).symm⟩)).prodMap
+      ((LinearMap.range g).liftQ ((LinearMap.range g').mkQ.comp v) (by
+        rintro _ ⟨x, rfl⟩
+        change (LinearMap.range g').mkQ (v (g x)) = 0
+        rw [Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero]
+        exact ⟨h x, (congrArg (fun k : X →ₗ[S] N' => k x) hg).symm⟩))
+
+/-- The induced diagonal-quotient map applies the two maps to a representative. -/
+@[simp] theorem map_mk (m : M) (n : N) :
+    map f g f' g' h u v hf hg (Submodule.Quotient.mk (m, n)) =
+      Submodule.Quotient.mk (u m, v n) := by
+  simp only [map, Submodule.liftQ_apply]
+  change (LinearMap.range (f'.prod g')).mkQ ((u.prodMap v) (m, n)) = _
+  simp only [LinearMap.prodMap_apply, Submodule.mkQ_apply]
+
+/-- The induced product-cokernel map applies each map to its representative. -/
+@[simp] theorem cokernelProdMap_mk (m : M) (n : N) :
+    cokernelProdMap f g f' g' h u v hf hg
+        (Submodule.Quotient.mk m, Submodule.Quotient.mk n) =
+      (Submodule.Quotient.mk (u m), Submodule.Quotient.mk (v n)) := by
+  simp only [cokernelProdMap, LinearMap.prodMap_apply, Submodule.liftQ_apply]
+  change ((LinearMap.range f').mkQ (u m), (LinearMap.range g').mkQ (v n)) = _
+  simp only [Submodule.mkQ_apply]
+
+/-- The diagonal-quotient map descends the product map followed by the quotient map. -/
+theorem map_comp_mkQ :
+    (map f g f' g' h u v hf hg).comp (LinearMap.range (f.prod g)).mkQ =
+      (LinearMap.range (f'.prod g')).mkQ.comp (u.prodMap v) := by
+  exact Submodule.liftQ_mkQ _ _ _
+
+/-- The product-cokernel map descends the coordinate maps to the two quotient factors. -/
+theorem cokernelProdMap_comp_mkQ :
+    (cokernelProdMap f g f' g' h u v hf hg).comp
+        ((LinearMap.range f).mkQ.prodMap (LinearMap.range g).mkQ) =
+      ((LinearMap.range f').mkQ.comp u).prodMap ((LinearMap.range g').mkQ.comp v) := by
+  apply LinearMap.ext
+  intro p
+  rcases p with ⟨m, n⟩
+  exact cokernelProdMap_mk f g f' g' h u v hf hg m n
+
+/-- The representative formula uniquely determines the diagonal-quotient map. -/
+theorem map_unique
+    (a : ((M × N) ⧸ LinearMap.range (f.prod g)) →ₗ[S]
+      (M' × N') ⧸ LinearMap.range (f'.prod g'))
+    (ha : a.comp (LinearMap.range (f.prod g)).mkQ =
+      (LinearMap.range (f'.prod g')).mkQ.comp (u.prodMap v)) :
+    a = map f g f' g' h u v hf hg := by
+  apply LinearMap.ext
+  intro z
+  obtain ⟨p, rfl⟩ := (LinearMap.range (f.prod g)).mkQ_surjective z
+  exact congrArg
+    (fun k : (M × N) →ₗ[S] (M' × N') ⧸ LinearMap.range (f'.prod g') => k p)
+    (ha.trans (map_comp_mkQ f g f' g' h u v hf hg).symm)
+
+/-- The representative formula uniquely determines the product-cokernel map. -/
+theorem cokernelProdMap_unique
+    (a : (M ⧸ LinearMap.range f) × (N ⧸ LinearMap.range g) →ₗ[S]
+      (M' ⧸ LinearMap.range f') × (N' ⧸ LinearMap.range g'))
+    (ha : a.comp ((LinearMap.range f).mkQ.prodMap (LinearMap.range g).mkQ) =
+      ((LinearMap.range f').mkQ.comp u).prodMap ((LinearMap.range g').mkQ.comp v)) :
+    a = cokernelProdMap f g f' g' h u v hf hg := by
+  apply LinearMap.ext
+  intro z
+  rcases z with ⟨qm, qn⟩
+  obtain ⟨m, rfl⟩ := (LinearMap.range f).mkQ_surjective qm
+  obtain ⟨n, rfl⟩ := (LinearMap.range g).mkQ_surjective qn
+  exact congrArg
+    (fun k : (M × N) →ₗ[S]
+      (M' ⧸ LinearMap.range f') × (N' ⧸ LinearMap.range g') => k (m, n))
+    (ha.trans (cokernelProdMap_comp_mkQ f g f' g' h u v hf hg).symm)
+
+/-- The left maps commute with a pair of commuting squares. -/
+theorem map_comp_left :
+    (map f g f' g' h u v hf hg).comp (left f g) = (left f' g').comp h := by
+  ext1 x
+  change map f g f' g' h u v hf hg (left f g x) = left f' g' (h x)
+  have hfx : u (f x) = f' (h x) :=
+    congrArg (fun k : X →ₗ[S] M' => k x) hf
+  rw [left_apply, map_mk, left_apply, map_zero, hfx]
+
+/-- The projections commute with the induced diagonal-quotient and product-cokernel maps. -/
+theorem projection_comp_map :
+    (projection f' g').comp (map f g f' g' h u v hf hg) =
+      (cokernelProdMap f g f' g' h u v hf hg).comp (projection f g) := by
+  apply LinearMap.ext
+  intro z
+  obtain ⟨⟨m, n⟩, rfl⟩ := (LinearMap.range (f.prod g)).mkQ_surjective z
+  change projection f' g' (map f g f' g' h u v hf hg (Submodule.Quotient.mk (m, n))) =
+    cokernelProdMap f g f' g' h u v hf hg (projection f g (Submodule.Quotient.mk (m, n)))
+  rw [map_mk, projection_mk, projection_mk, cokernelProdMap_mk]
+
+/-- Identity commuting squares induce the identity on the diagonal quotient. -/
+@[simp] theorem map_id :
+    map f g f g (LinearMap.id : X →ₗ[S] X)
+        (LinearMap.id : M →ₗ[S] M) (LinearMap.id : N →ₗ[S] N) rfl rfl =
+      (LinearMap.id : ((M × N) ⧸ LinearMap.range (f.prod g)) →ₗ[S]
+        (M × N) ⧸ LinearMap.range (f.prod g)) := by
+  apply LinearMap.ext
+  intro z
+  obtain ⟨⟨m, n⟩, rfl⟩ := (LinearMap.range (f.prod g)).mkQ_surjective z
+  change map f g f g (LinearMap.id : X →ₗ[S] X)
+    (LinearMap.id : M →ₗ[S] M) (LinearMap.id : N →ₗ[S] N) rfl rfl
+    (Submodule.Quotient.mk (m, n)) = Submodule.Quotient.mk (m, n)
+  exact map_mk f g f g (LinearMap.id : X →ₗ[S] X)
+    (LinearMap.id : M →ₗ[S] M) (LinearMap.id : N →ₗ[S] N) rfl rfl m n
+
+/-- Identity commuting squares induce the identity on the product of the two cokernels. -/
+@[simp] theorem cokernelProdMap_id :
+    cokernelProdMap f g f g (LinearMap.id : X →ₗ[S] X)
+        (LinearMap.id : M →ₗ[S] M) (LinearMap.id : N →ₗ[S] N) rfl rfl =
+      (LinearMap.id : (M ⧸ LinearMap.range f) × (N ⧸ LinearMap.range g) →ₗ[S]
+        (M ⧸ LinearMap.range f) × (N ⧸ LinearMap.range g)) := by
+  apply LinearMap.ext
+  intro p
+  rcases p with ⟨a, b⟩
+  obtain ⟨m, rfl⟩ := (LinearMap.range f).mkQ_surjective a
+  obtain ⟨n, rfl⟩ := (LinearMap.range g).mkQ_surjective b
+  change cokernelProdMap f g f g (LinearMap.id : X →ₗ[S] X)
+    (LinearMap.id : M →ₗ[S] M) (LinearMap.id : N →ₗ[S] N) rfl rfl
+    (Submodule.Quotient.mk m, Submodule.Quotient.mk n) =
+      (Submodule.Quotient.mk m, Submodule.Quotient.mk n)
+  exact cokernelProdMap_mk f g f g (LinearMap.id : X →ₗ[S] X)
+    (LinearMap.id : M →ₗ[S] M) (LinearMap.id : N →ₗ[S] N) rfl rfl m n
+
+variable {X'' : Type uX''} {M'' : Type uM''} {N'' : Type uN''}
+variable [AddCommGroup X''] [AddCommGroup M''] [AddCommGroup N'']
+variable [Module S X''] [Module S M''] [Module S N'']
+variable (f'' : X'' →ₗ[S] M'') (g'' : X'' →ₗ[S] N'')
+variable (h' : X' →ₗ[S] X'') (u' : M' →ₗ[S] M'') (v' : N' →ₗ[S] N'')
+variable (hf' : u'.comp f' = f''.comp h') (hg' : v'.comp g' = g''.comp h')
+
+/-- Composing commuting squares composes their induced diagonal-quotient maps. -/
+theorem map_comp :
+    (map f' g' f'' g'' h' u' v' hf' hg').comp (map f g f' g' h u v hf hg) =
+      map f g f'' g'' (h'.comp h) (u'.comp u) (v'.comp v)
+        (by
+          ext x
+          exact (congrArg u' (congrArg (fun k : X →ₗ[S] M' => k x) hf)).trans
+            (congrArg (fun k : X' →ₗ[S] M'' => k (h x)) hf'))
+        (by
+          ext x
+          exact (congrArg v' (congrArg (fun k : X →ₗ[S] N' => k x) hg)).trans
+            (congrArg (fun k : X' →ₗ[S] N'' => k (h x)) hg')) := by
+  apply LinearMap.ext
+  intro z
+  obtain ⟨⟨m, n⟩, rfl⟩ := (LinearMap.range (f.prod g)).mkQ_surjective z
+  change map f' g' f'' g'' h' u' v' hf' hg'
+    (map f g f' g' h u v hf hg (Submodule.Quotient.mk (m, n))) = _
+  simp only [Submodule.mkQ_apply, map_mk]
+  rfl
+
+/-- Composing commuting squares composes their induced product-cokernel maps. -/
+theorem cokernelProdMap_comp :
+    (cokernelProdMap f' g' f'' g'' h' u' v' hf' hg').comp
+        (cokernelProdMap f g f' g' h u v hf hg) =
+      cokernelProdMap f g f'' g'' (h'.comp h) (u'.comp u) (v'.comp v)
+        (by
+          ext x
+          exact (congrArg u' (congrArg (fun k : X →ₗ[S] M' => k x) hf)).trans
+            (congrArg (fun k : X' →ₗ[S] M'' => k (h x)) hf'))
+        (by
+          ext x
+          exact (congrArg v' (congrArg (fun k : X →ₗ[S] N' => k x) hg)).trans
+            (congrArg (fun k : X' →ₗ[S] N'' => k (h x)) hg')) := by
+  apply LinearMap.ext
+  intro p
+  rcases p with ⟨a, b⟩
+  obtain ⟨m, rfl⟩ := (LinearMap.range f).mkQ_surjective a
+  obtain ⟨n, rfl⟩ := (LinearMap.range g).mkQ_surjective b
+  change cokernelProdMap f' g' f'' g'' h' u' v' hf' hg'
+    (cokernelProdMap f g f' g' h u v hf hg
+      (Submodule.Quotient.mk m, Submodule.Quotient.mk n)) = _
+  simp only [Submodule.mkQ_apply, cokernelProdMap_mk]
+  rfl
 
 end LinearMap.DiagonalQuotient

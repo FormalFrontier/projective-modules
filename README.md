@@ -15,7 +15,9 @@ Maintained by the Formal Frontier source-maintainer team.
   equivalence from `X ⧸ (ker f ⊔ ker g)` to the projection kernel. Scalar and
   module universes are independent; noncommutative and zero rings are allowed,
   with no finiteness or projectivity premise. For two identity maps, the left
-  map is bijective and the class of `(x, y)` is represented by `x - y`.
+  map is bijective and the class of `(x, y)` is represented by `x - y`. Commuting
+  squares induce maps on both quotient constructions, compatible with the left maps
+  and projections and respecting identities and composition.
 
 - **Continuous kernel-product splitting.**
   [`ContinuousLinearMap.exists_equiv_ker_prod`](ProjectiveModules/Topology/Splitting.lean)
