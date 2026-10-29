@@ -7,6 +7,16 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **[Diagonal quotients of module products](ProjectiveModules/Module/DiagonalQuotient.lean).**
+  For linear maps `f : X →ₗ[S] M` and `g : X →ₗ[S] N` over any ring `S`, the
+  canonical map from `(M × N) ⧸ range (f.prod g)` onto
+  `(M ⧸ range f) × (N ⧸ range g)` has kernel the image of `x ↦ [(f x, 0)]`.
+  The latter map has kernel `ker f ⊔ ker g`, giving the canonical linear
+  equivalence from `X ⧸ (ker f ⊔ ker g)` to the projection kernel. Scalar and
+  module universes are independent; noncommutative and zero rings are allowed,
+  with no finiteness or projectivity premise. For two identity maps, the left
+  map is bijective and the class of `(x, y)` is represented by `x - y`.
+
 - **Continuous kernel-product splitting.**
   [`ContinuousLinearMap.exists_equiv_ker_prod`](ProjectiveModules/Topology/Splitting.lean)
   splits a surjective continuous linear map as `M ≃L[R] (f.ker × N)`, with `f` as
@@ -34,6 +44,18 @@ examples and qualifications; links below go to the corresponding result families
   empty families and zero rings are included, and no class cancellation is assumed.
   Finite families of left modules over semirings are finitely generated or projective
   over the coefficient product when the factors are, with the canonical pointwise action.
+- **[Finite free K₀ denominators](ProjectiveModules/KTheory/FiniteFree.lean):** over any
+  ring `R`, the finite free right-module classes `[Fin n → Rᵐᵒᵖ]` are cofinal under
+  addition in `ProjectiveClass R`. Every element of `K0 R` is the class of a finite
+  projective right module minus one of these finite free classes. Zero rings are
+  included; neither cancellation nor invariant basis number is assumed.
+- **[Reduced K₀ and stable freeness](ProjectiveModules/KTheory/Reduced.lean):** over any
+  ring `R`, the additive quotient of `K0 R` by integer multiples of the regular
+  right-module class has the universal property for additive maps killing that class.
+  Every reduced class has a finite projective representative. A finite projective
+  right module has zero reduced class exactly when it becomes finite free after
+  adding a finite free module, with independent carrier universes and no rank or
+  invariant basis number assumption. This is an additive quotient, not a quotient ring.
 - **[Noetherian and PID freeness](docs/Overview.md#noetherian-submodules-and-pid-freeness):**
   over a left-Noetherian, possibly noncommutative ring, submodules of sequence-spanned
   modules are sequence-spanned, with independent universes and no ambient Noetherian,
@@ -627,7 +649,7 @@ mathlib `83abb3e776bdefcbc447a1e44d0debe4010039e5`, GLG
 `c9705889a85f85cc89d92d21372bb9bc360162c8` and Stable Range
 [`c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e`](https://github.com/FormalFrontier/stable-range/commit/c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e),
 with Group Theory
-[`f281c55aed3829a2d55f1d7cd35137ed15b125c3`](https://github.com/FormalFrontier/group-theory/commit/f281c55aed3829a2d55f1d7cd35137ed15b125c3).
+[`1ac70ea29b47262c6d365a89007bb5b1d5a1651a`](https://github.com/FormalFrontier/group-theory/commit/1ac70ea29b47262c6d365a89007bb5b1d5a1651a).
 These three libraries declare the same mathlib revision and Lean `4.34.0-rc2`
 toolchain as this root.
 Dependencies are not vendored.

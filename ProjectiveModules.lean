@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 -/
 -- Contributors: Prism
 module
+public import ProjectiveModules.Module.RightExtensionReflection
 
 public import ProjectiveModules.Category.ChangeOfRings
 public import ProjectiveModules.Category.FiniteModuleDimension
@@ -14,6 +15,7 @@ public import ProjectiveModules.Category.FiniteProjectiveSmallness
 public import ProjectiveModules.Category.Free
 public import ProjectiveModules.Category.ModuleEquivalence
 public import ProjectiveModules.Category.Stable
+public import ProjectiveModules.CategoryTheory.FunctorIsoLifting
 public import ProjectiveModules.Contraction.BaseChange
 public import ProjectiveModules.Dual.ModuleCat
 public import ProjectiveModules.Dual.Quotient
@@ -49,6 +51,7 @@ public import ProjectiveModules.Invertible.Topology
 public import ProjectiveModules.KTheory.Determinant
 public import ProjectiveModules.KTheory.DeterminantNaturality
 public import ProjectiveModules.KTheory.Dual
+public import ProjectiveModules.KTheory.FiniteFree
 public import ProjectiveModules.KTheory.InvariantBasisNumber
 public import ProjectiveModules.KTheory.K0
 public import ProjectiveModules.KTheory.Matrix
@@ -57,6 +60,7 @@ public import ProjectiveModules.KTheory.Product
 public import ProjectiveModules.KTheory.ProductRing
 public import ProjectiveModules.KTheory.Rank
 public import ProjectiveModules.KTheory.RankBound
+public import ProjectiveModules.KTheory.Reduced
 public import ProjectiveModules.KTheory.Ring
 public import ProjectiveModules.KTheory.RingScalarExtension
 public import ProjectiveModules.KTheory.ScalarExtension
@@ -79,6 +83,7 @@ public import ProjectiveModules.Module.CountablyGenerated.Noetherian
 public import ProjectiveModules.Module.CommutingProjections
 public import ProjectiveModules.Module.ComponentwiseFree
 public import ProjectiveModules.Module.CommutingIdempotents
+public import ProjectiveModules.Module.DiagonalQuotient
 public import ProjectiveModules.Module.FiniteProjectiveHom
 public import ProjectiveModules.Module.FiniteStabilization
 public import ProjectiveModules.Module.HomExact
@@ -86,6 +91,7 @@ public import ProjectiveModules.Module.Injective
 public import ProjectiveModules.Module.InvariantSupportedProjection
 public import ProjectiveModules.Module.IsotypicMultiplicity
 public import ProjectiveModules.Module.MatrixRow
+public import ProjectiveModules.Module.NilpotentEndomorphism
 public import ProjectiveModules.Module.ScalarRank
 public import ProjectiveModules.Module.LaurentPolynomial
 public import ProjectiveModules.Module.LocalProjective
