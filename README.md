@@ -77,6 +77,17 @@ Maintained by the Formal Frontier source-maintainer team.
   obtains such an equivalence from the projective lifting property.
   The common target needs no additive inverses; all universes are independent.
 
+- **[Intrinsic Euler classes](ProjectiveModules/KTheory/Presentation.lean).**
+  `KTheory.K0.eulerClass` assigns an intrinsic K₀ class to a finitely presented right
+  module over any ring when some finite-free cover has projective kernel.
+  Every surjection from a finite projective module then has finite projective kernel
+  and computes the class as source minus kernel. Finite projective modules recover
+  their existing K₀ classes;
+  zero and same-scalar linear equivalence are respected. Finite generators-and-relations
+  presentations with projective kernel supply the construction without independent
+  relations or a free-kernel assumption. Targets need not be projective, scalar and
+  carrier universes are independent, and zero rings are allowed.
+
 - **Continuous kernel-product splitting.**
   [`ContinuousLinearMap.exists_equiv_ker_prod`](ProjectiveModules/Topology/Splitting.lean)
   splits a surjective continuous linear map as `M ≃L[R] (f.ker × N)`, with `f` as
