@@ -27,6 +27,8 @@ kernel of the projection.
   relation range exactly onto the target relation range.
 * `LinearMap.DiagonalQuotient.quotientKerEquiv`: the canonical identification of
   `X ⧸ (ker f ⊔ ker g)` with the kernel of the projection.
+* `LinearMap.DiagonalQuotient.quotientKerMap`: the induced map on the source kernel-sum quotients.
+* `LinearMap.DiagonalQuotient.kerMap`: the induced map on the projection kernels.
 
 For the pair of identity maps on any module, the left map is bijective, and the class
 of `(x, y)` is the image of `x - y`. The ring need not be commutative or nontrivial,
@@ -41,6 +43,16 @@ with componentwise forward and inverse representative formulas. For commuting sq
 underlying linear map is the induced quotient map; surjectivity of the common-source map
 is sufficient to establish the required relation-range equality.
 
+For arbitrary commuting squares, `quotientKerMap_mk` and `kerMap_coe` describe the
+source-quotient and projection-kernel maps on representatives and ambient values.
+The determining properties `quotientKerMap_unique` and `kerMap_unique` characterize
+these maps by composition with the source quotient map and the target kernel inclusion,
+respectively. With `θ = quotientKerEquiv f g`, `θ' = quotientKerEquiv f' g'`,
+`h̄ = quotientKerMap f g f' g' h u v hf hg` and `κ = kerMap f g f' g' h u v hf hg`,
+`kerMap_comp_quotientKerEquiv` states the equality of linear maps
+`κ.comp θ.toLinearMap = θ'.toLinearMap.comp h̄`. This naturality uses the characteristic
+API without unfolding either induced map, and requires no injectivity or surjectivity.
+
 ## Implementation notes
 
 The canonical maps use the stock submodule quotient maps and quotient descent. The
@@ -52,6 +64,10 @@ submodules.
 * Mathlib's product, submodule-quotient and first-isomorphism APIs in
   `Mathlib.LinearAlgebra.Prod`, `Mathlib.LinearAlgebra.Quotient.Basic`, and
   `Mathlib.LinearAlgebra.Isomorphisms`.
+* Mathlib's kernel, restriction and extensionality APIs in
+  `Mathlib.Algebra.Module.Submodule.Ker`, `Mathlib.Algebra.Module.Submodule.LinearMap`,
+  and `Mathlib.Algebra.Module.LinearMap.Defs`, and its linear-equivalence coercion API
+  in `Mathlib.Algebra.Module.Equiv.Defs`.
 -/
 
 @[expose] public section
@@ -675,5 +691,145 @@ theorem congr_toLinearMap (h : X →ₗ[S] X')
     (LinearMap.range (f'.prod g')).mkQ (u.toLinearMap.prodMap v.toLinearMap (m, n))
   simpa only [Submodule.mkQ_apply, LinearMap.prodMap_apply, LinearEquiv.coe_toLinearMap] using
     congr_mk f g f' g' u v he m n
+
+end LinearMap.DiagonalQuotient
+
+namespace LinearMap.DiagonalQuotient
+
+universe uX' uM' uN'
+
+variable {S : Type uS} [Ring S]
+variable {X : Type uX} {M : Type uM} {N : Type uN}
+variable {X' : Type uX'} {M' : Type uM'} {N' : Type uN'}
+variable [AddCommGroup X] [AddCommGroup M] [AddCommGroup N]
+variable [AddCommGroup X'] [AddCommGroup M'] [AddCommGroup N']
+variable [Module S X] [Module S M] [Module S N]
+variable [Module S X'] [Module S M'] [Module S N']
+variable (f : X →ₗ[S] M) (g : X →ₗ[S] N)
+variable (f' : X' →ₗ[S] M') (g' : X' →ₗ[S] N')
+variable (h : X →ₗ[S] X') (u : M →ₗ[S] M') (v : N →ₗ[S] N')
+variable (hf : u.comp f = f'.comp h) (hg : v.comp g = g'.comp h)
+
+/-- The source map descends to the quotients by the sums of the two kernels. -/
+def quotientKerMap :
+    (X ⧸ (LinearMap.ker f ⊔ LinearMap.ker g)) →ₗ[S]
+      X' ⧸ (LinearMap.ker f' ⊔ LinearMap.ker g') :=
+  (LinearMap.ker f ⊔ LinearMap.ker g).mapQ
+    (LinearMap.ker f' ⊔ LinearMap.ker g') h (by
+      refine sup_le ?_ ?_
+      · intro x hx
+        apply Submodule.mem_comap.mpr
+        apply (le_sup_left : LinearMap.ker f' ≤ LinearMap.ker f' ⊔ LinearMap.ker g')
+        apply LinearMap.mem_ker.mpr
+        have hx0 : f x = 0 := LinearMap.mem_ker.mp hx
+        have hfx : u (f x) = f' (h x) :=
+          congrArg (fun k : X →ₗ[S] M' => k x) hf
+        rw [← hfx, hx0, map_zero]
+      · intro x hx
+        apply Submodule.mem_comap.mpr
+        apply (le_sup_right : LinearMap.ker g' ≤ LinearMap.ker f' ⊔ LinearMap.ker g')
+        apply LinearMap.mem_ker.mpr
+        have hx0 : g x = 0 := LinearMap.mem_ker.mp hx
+        have hgx : v (g x) = g' (h x) :=
+          congrArg (fun k : X →ₗ[S] N' => k x) hg
+        rw [← hgx, hx0, map_zero])
+
+/-- The induced diagonal-quotient map restricts to the kernels of the projections. -/
+def kerMap :
+    LinearMap.ker (projection f g) →ₗ[S] LinearMap.ker (projection f' g') :=
+  (LinearMap.DiagonalQuotient.map f g f' g' h u v hf hg).restrict (by
+    intro z hz
+    apply LinearMap.mem_ker.mpr
+    have hz0 : projection f g z = 0 := LinearMap.mem_ker.mp hz
+    have hcomm :
+        projection f' g' (LinearMap.DiagonalQuotient.map f g f' g' h u v hf hg z) =
+          cokernelProdMap f g f' g' h u v hf hg (projection f g z) :=
+      congrArg
+        (fun k : ((M × N) ⧸ LinearMap.range (f.prod g)) →ₗ[S]
+          (M' ⧸ LinearMap.range f') × (N' ⧸ LinearMap.range g') => k z)
+        (projection_comp_map f g f' g' h u v hf hg)
+    rw [hcomm, hz0, map_zero])
+
+/-- The induced source quotient map sends the class of `x` to the class of `h x`. -/
+@[simp] theorem quotientKerMap_mk (x : X) :
+    quotientKerMap f g f' g' h u v hf hg (Submodule.Quotient.mk x) =
+      Submodule.Quotient.mk (h x) := by
+  unfold quotientKerMap
+  exact Submodule.mapQ_apply _ _ _ _
+
+/-- A linear map of the source quotients agreeing with `h` after the quotient maps
+is the induced source quotient map. -/
+theorem quotientKerMap_unique
+    (l : (X ⧸ (LinearMap.ker f ⊔ LinearMap.ker g)) →ₗ[S]
+      X' ⧸ (LinearMap.ker f' ⊔ LinearMap.ker g'))
+    (H : l.comp (LinearMap.ker f ⊔ LinearMap.ker g).mkQ =
+      (LinearMap.ker f' ⊔ LinearMap.ker g').mkQ.comp h) :
+    l = quotientKerMap f g f' g' h u v hf hg := by
+  apply LinearMap.ext
+  intro q
+  obtain ⟨x, rfl⟩ := (LinearMap.ker f ⊔ LinearMap.ker g).mkQ_surjective q
+  have hx :
+      l ((LinearMap.ker f ⊔ LinearMap.ker g).mkQ x) =
+        (LinearMap.ker f' ⊔ LinearMap.ker g').mkQ (h x) :=
+    congrArg
+      (fun k : X →ₗ[S] X' ⧸ (LinearMap.ker f' ⊔ LinearMap.ker g') => k x) H
+  simpa only [Submodule.mkQ_apply, quotientKerMap_mk] using hx
+
+/-- The induced map on projection kernels has the prescribed ambient value. -/
+@[simp] theorem kerMap_coe (z : LinearMap.ker (projection f g)) :
+    (kerMap f g f' g' h u v hf hg z :
+      (M' × N') ⧸ LinearMap.range (f'.prod g')) =
+    map f g f' g' h u v hf hg
+      (z : (M × N) ⧸ LinearMap.range (f.prod g)) := by
+  unfold kerMap
+  exact LinearMap.coe_restrict_apply _ z
+
+/-- Ambient composition with the kernel inclusion determines the induced kernel map. -/
+theorem kerMap_unique
+    (k : LinearMap.ker (projection f g) →ₗ[S] LinearMap.ker (projection f' g'))
+    (H : (LinearMap.ker (projection f' g')).subtype.comp k =
+      (map f g f' g' h u v hf hg).domRestrict (LinearMap.ker (projection f g))) :
+    k = kerMap f g f' g' h u v hf hg := by
+  apply LinearMap.ext
+  intro z
+  apply Subtype.ext
+  calc
+    (k z : (M' × N') ⧸ LinearMap.range (f'.prod g')) =
+        (map f g f' g' h u v hf hg).domRestrict
+          (LinearMap.ker (projection f g)) z :=
+      congrArg
+        (fun l : LinearMap.ker (projection f g) →ₗ[S]
+          (M' × N') ⧸ LinearMap.range (f'.prod g') => l z) H
+    _ = map f g f' g' h u v hf hg
+        (z : (M × N) ⧸ LinearMap.range (f.prod g)) :=
+      LinearMap.domRestrict_apply _ _ z
+    _ = (kerMap f g f' g' h u v hf hg z :
+        (M' × N') ⧸ LinearMap.range (f'.prod g')) :=
+      (kerMap_coe f g f' g' h u v hf hg z).symm
+
+/-- The canonical equivalence from the source kernel-sum quotient to the projection
+kernel is natural for arbitrary commuting maps. -/
+theorem kerMap_comp_quotientKerEquiv :
+    (kerMap f g f' g' h u v hf hg).comp (quotientKerEquiv f g).toLinearMap =
+      (quotientKerEquiv f' g').toLinearMap.comp
+        (quotientKerMap f g f' g' h u v hf hg) := by
+  apply LinearMap.ext
+  intro q
+  obtain ⟨x, rfl⟩ := (LinearMap.ker f ⊔ LinearMap.ker g).mkQ_surjective q
+  apply Subtype.ext
+  change (kerMap f g f' g' h u v hf hg
+      ((quotientKerEquiv f g).toLinearMap
+        ((LinearMap.ker f ⊔ LinearMap.ker g).mkQ x)) :
+      (M' × N') ⧸ LinearMap.range (f'.prod g')) =
+    ((quotientKerEquiv f' g').toLinearMap
+      (quotientKerMap f g f' g' h u v hf hg
+        ((LinearMap.ker f ⊔ LinearMap.ker g).mkQ x)) :
+      (M' × N') ⧸ LinearMap.range (f'.prod g'))
+  rw [kerMap_coe]
+  simp only [LinearEquiv.coe_toLinearMap, Submodule.mkQ_apply,
+    quotientKerEquiv_mk, quotientKerMap_mk]
+  exact congrArg
+    (fun l : X →ₗ[S] (M' × N') ⧸ LinearMap.range (f'.prod g') => l x)
+    (map_comp_left f g f' g' h u v hf hg)
 
 end LinearMap.DiagonalQuotient

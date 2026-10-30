@@ -25,6 +25,13 @@ Maintained by the Formal Frontier source-maintainer team.
   induce an equivalence of presentations, with componentwise forward and inverse
   formulas. It agrees with the induced quotient map for commuting squares; a
   surjective common-source map supplies the relation-range equality.
+  Arbitrary commuting squares also induce `quotientKerMap` on the source kernel-sum
+  quotients and `kerMap` on the projection kernels. Their characteristic formulas
+  `quotientKerMap_mk` and `kerMap_coe`, together with `quotientKerMap_unique` and
+  `kerMap_unique`, determine them by quotient composition and ambient inclusion.
+  The canonical kernel equivalence is natural for these maps:
+  `kerMap_comp_quotientKerEquiv` is an equality of linear maps, proved through the
+  characteristic API, with no injectivity or surjectivity assumption.
 
 - **Continuous kernel-product splitting.**
   [`ContinuousLinearMap.exists_equiv_ker_prod`](ProjectiveModules/Topology/Splitting.lean)
@@ -104,6 +111,28 @@ examples and qualifications; links below go to the corresponding result families
   rank is invertible, including degree zero and the zero ring.
   For a finite flat module, an exterior power vanishes when its degree strictly
   exceeds every stalk rank, without assuming global projectivity.
+- **[Exterior contractions](ProjectiveModules/ExteriorPower/Contraction.lean):** over any
+  commutative ring, contraction by a linear functional restricts to consecutive exterior
+  powers and is natural under every module map, with pullback of the functional.
+  The [contraction calculus](ProjectiveModules/ExteriorAlgebra/Contraction.lean) includes
+  uniqueness, the product rule twisted by the grade involution, and Cartan's identity.
+  A vector and functional pairing to one give a contracting identity.
+- **[Unimodular contraction](ProjectiveModules/ExteriorAlgebra/ContractionExactness.lean):**
+  for every quadratic form over a commutative ring, contraction by a surjective covector
+  has range equal to its kernel. A vector pairing to one gives a
+  [linear splitting](ProjectiveModules/ExteriorAlgebra/ContractionSplitting.lean) into two
+  copies of that kernel, with explicit forward and inverse formulas. Left multiplication
+  squares to the quadratic value, not necessarily to zero; no invertibility of two,
+  finiteness or freeness is required.
+- **[Naturality of cycle splittings](ProjectiveModules/ExteriorAlgebra/ContractionNaturality.lean):**
+  a quadratic-form-preserving linear map restricts to contraction kernels. Pulling back
+  the covector and mapping the unit-pairing vector makes the splitting commute with
+  the Clifford map, using the same induced cycle map on both product factors.
+  No injectivity is needed; for zero quadratic forms every linear map qualifies.
+- **[Right modules over contraction cycles](ProjectiveModules/ExteriorAlgebra/ContractionRightModule.lean):**
+  for any covector the contraction kernel is a unital subalgebra `B`.
+  A vector paired to one upgrades the same cycle-product splitting to `Bᵐᵒᵖ`-linearity
+  for right multiplication, preserving the coordinates, inverse and base-ring action.
 - **[Determinant lines](docs/Overview.md#determinant-lines):** for finite projective
   modules over arbitrary commutative rings, the dependent product of top exterior
   powers over attained stalk-rank fibers is invertible. Rank zero, zero rings and
@@ -556,6 +585,10 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Invertible module topologies and continuous endomorphisms](ProjectiveModules/Invertible/Topology.lean) | `Module.Invertible.isModuleTopology` identifies the given module topology; `ContinuousLinearMap.scalarEndEquiv` identifies the scalar field with continuous endomorphisms in bounded convergence. Hausdorff invertible topological vector spaces over nontrivially normed fields, with independent scalar/carrier universes and no completeness, norm or chosen frame |
 | [Bidual evaluation](ProjectiveModules/Module/Bidual.lean) | Ordinary-coefficient bidual equivalence for finite projective semiring modules; forward/inverse evaluation, naturality and coefficient-preserving commutative comparison |
 | [Exterior algebra](ProjectiveModules/ExteriorAlgebra/BaseChange.lean), [exterior powers](ProjectiveModules/ExteriorPower/DirectSum.lean) | Full algebra base change; projective powers, determinants/top powers and binary fixed-degree Sum Formula |
+| [Contraction calculus](ProjectiveModules/ExteriorAlgebra/Contraction.lean), [exterior contractions](ProjectiveModules/ExteriorPower/Contraction.lean) | `CliffordAlgebra.contractLeft_mul`, `ExteriorAlgebra.map_contractLeft`, `exteriorPower.contractLeft`: twisted product rule, arbitrary-map naturality and canonical consecutive-degree restrictions, with square-zero and anticommutation in every characteristic |
+| [Unimodular contraction](ProjectiveModules/ExteriorAlgebra/ContractionExactness.lean), [cycle splitting](ProjectiveModules/ExteriorAlgebra/ContractionSplitting.lean) | `CliffordAlgebra.range_contractLeft_eq_ker_of_surjective`, `CliffordAlgebra.contractLeftKerProdEquiv`: exactness under surjectivity and a two-kernel linear decomposition from a unit-pairing vector, for arbitrary quadratic forms |
+| [Cycle-map naturality](ProjectiveModules/ExteriorAlgebra/ContractionNaturality.lean) | `CliffordAlgebra.contractLeftKerMap`, `CliffordAlgebra.contractLeftKerProdEquiv_map`: functorial maps on contraction kernels and naturality of both splitting coordinates under quadratic-form-preserving linear maps, without injectivity |
+| [Cycle subalgebras and right modules](ProjectiveModules/ExteriorAlgebra/ContractionRightModule.lean) | `CliffordAlgebra.contractLeftKerSubalgebra`, `CliffordAlgebra.contractLeftKerProdEquivRight`: cycle subalgebras for arbitrary covectors and right-linear refinements of unimodular contraction splittings, recovering the base-ring splitting by restriction of scalars |
 | [Homogeneous exterior base change](ProjectiveModules/ExteriorPower/BaseChange.lean) | `ExteriorAlgebra.equivBaseChange_map_exteriorPower`: image equality with the scalar-extended homogeneous submodule, for arbitrary degree and independent ring/carrier universes |
 | [Invertible top exterior powers](ProjectiveModules/ExteriorPower/Invertible.lean) | `exteriorPower.invertible_of_rankAtStalk_eq`: the top exterior power of a finite projective module of constant stalk rank is invertible, without a nontrivial-ring hypothesis |
 | [Exterior vanishing](ProjectiveModules/ExteriorPower/StalkRank.lean) | `exteriorPower.subsingleton_of_rankAtStalk_lt`: an exterior power of a finite flat module vanishes above all stalk ranks, for arbitrary commutative rings and independent universes |

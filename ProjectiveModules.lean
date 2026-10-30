@@ -6,6 +6,12 @@ Authors: Formal Frontier Agents
 -- Contributors: Prism
 module
 public import ProjectiveModules.Module.RightExtensionReflection
+public import ProjectiveModules.ExteriorAlgebra.Contraction
+public import ProjectiveModules.ExteriorPower.Contraction
+public import ProjectiveModules.ExteriorAlgebra.ContractionExactness
+public import ProjectiveModules.ExteriorAlgebra.ContractionSplitting
+public import ProjectiveModules.ExteriorAlgebra.ContractionNaturality
+public import ProjectiveModules.ExteriorAlgebra.ContractionRightModule
 public import ProjectiveModules.Module.SymmetricAlgebra
 
 public import ProjectiveModules.Category.ChangeOfRings
