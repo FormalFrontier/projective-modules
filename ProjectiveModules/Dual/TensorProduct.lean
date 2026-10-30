@@ -6,10 +6,10 @@ module
 
 public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 /-!
-# Rank-one dual forms detect equality and zero in tensors
-# Dual tensor separation and canonical tensor–Hom injectivity
+# Dual tensor separation and injectivity reflection
 
 Over a commutative semiring, products of linear forms detect zero in `M ⊗[R] N`
 when `M` is projective and the canonical evaluation pairing `Module.Dual.eval R N`
@@ -38,6 +38,21 @@ Over a commutative semiring, the canonical map `dualTensorHom R M N` from
 is projective. Both modules may be additive commutative monoids of arbitrary rank;
 no projectivity of `M` or finite-generation assumption is required.
 
+Tensoring with a module `P` with faithful scalar action reflects injectivity of
+`f : M →ₗ[R] N` whenever the canonical dual evaluation on `M` is injective.
+Projective domains satisfy this condition by Mathlib's `Module.eval_apply_injective`.
+The coefficient module need not be flat, and the domain and codomain need not be
+finitely generated. Applying this reflection to `Finsupp.linearCombination` shows
+that injectivity of the tensor-valued finite-support `P`-coefficient relation map
+of an arbitrary family implies its `R`-linear independence.
+
+The reflection proof compares pairs using each dual form and the tensor right
+unitor, then uses faithfulness of the scalar action. It uses no subtraction or
+preservation of injectivity. Faithful action alone does not suffice for arbitrary
+domains: over `ℤ`, tensoring the zero map `ZMod 2 → 0` with `ℚ` makes it injective.
+Nor does faithful action imply preservation: for `P = ℤ × ZMod 2`, tensoring
+multiplication by two on `ℤ` is not injective. These results are reflection only.
+
 ## References
 
 - Mathlib's Contraction formalization by Oliver Nash and Antoine Labelle
@@ -47,13 +62,19 @@ no projectivity of `M` or finite-generation assumption is required.
   (`Mathlib.RingTheory.Finiteness.Finsupp`).
 - Mathlib's projective-module formalization by Kevin Buzzard and Antoine Labelle
   (`Mathlib.Algebra.Module.Projective`), used for the canonical free-module splitting.
+- Mathlib's dual formalization by Johan Commelin, Fabian Glöckle and Kyle Miller
+  (`Mathlib.LinearAlgebra.Dual.Lemmas`), including projective dual-evaluation injectivity.
+- Mathlib's tensor maps and unitors by Kenny Lau and Mario Carneiro, and its
+  Finsupp/direct-sum formalizations by Johannes Hölzl and Antoine Chambert-Loir.
+  Injectivity reflection uses these canonical maps; the family application uses
+  `TensorProduct.finsuppScalarRight` rather than a new free-module identification.
 -/
 
 @[expose] public section
 
 open scoped TensorProduct
 
-universe uR uM uN
+universe uR uP uM uN uι
 
 namespace TensorProduct
 
@@ -237,3 +258,74 @@ theorem dualTensorHom_injective_of_projective_right
     _ = s.comp (dualTensorHom R M N y) := congrArg (fun f => s.comp f) h
     _ = dualTensorHom R M (N →₀ R) (s.lTensor (Module.Dual R M) y) :=
       (LinearMap.congr_fun (dualTensorHom_comp_lTensor (M := M) s) y).symm
+
+namespace LinearMap
+
+/-- Tensoring with a module with faithful scalar action reflects injectivity when
+linear forms separate pairs of points in the domain. Neither flatness of the
+coefficient module nor finite generation of any module is required. -/
+theorem injective_of_lTensor_injective_of_eval_injective
+    {R : Type uR} {P : Type uP} {M : Type uM} {N : Type uN}
+    [CommSemiring R]
+    [AddCommMonoid P] [AddCommMonoid M] [AddCommMonoid N]
+    [Module R P] [Module R M] [Module R N] [FaithfulSMul R P]
+    (hM : Function.Injective (Module.Dual.eval R M))
+    (f : M →ₗ[R] N) (hf : Function.Injective (f.lTensor P)) :
+    Function.Injective f := by
+  intro x y hxy
+  apply hM
+  apply LinearMap.ext
+  intro φ
+  change φ x = φ y
+  apply eq_of_smul_eq_smul (α := P)
+  intro p
+  have ht : p ⊗ₜ[R] x = p ⊗ₜ[R] y := by
+    apply hf
+    simpa only [lTensor_tmul] using congrArg (fun n => p ⊗ₜ[R] n) hxy
+  have hφ := congrArg (fun t => TensorProduct.rid R P (φ.lTensor P t)) ht
+  simpa only [lTensor_tmul, TensorProduct.rid_tmul] using hφ
+
+/-- Tensoring with a module with faithful scalar action reflects injectivity of
+maps from projective modules of arbitrary rank. The dual-separation hypothesis
+is supplied by Mathlib's projective dual-evaluation injectivity theorem. -/
+theorem injective_of_lTensor_injective_of_projective
+    {R : Type uR} {P : Type uP} {M : Type uM} {N : Type uN}
+    [CommSemiring R]
+    [AddCommMonoid P] [AddCommMonoid M] [AddCommMonoid N]
+    [Module R P] [Module R M] [Module R N] [FaithfulSMul R P]
+    [Module.Projective R M]
+    (f : M →ₗ[R] N) (hf : Function.Injective (f.lTensor P)) :
+    Function.Injective f := by
+  exact f.injective_of_lTensor_injective_of_eval_injective
+    (Module.eval_apply_injective R (V := M)) hf
+
+end LinearMap
+
+/-- If the tensor-valued finite-support `P`-coefficient relation map of a family
+is injective and the scalar action on `P` is faithful, the family is linearly
+independent over `R`. The index type is arbitrary, and no flatness assumption
+on `P` or finiteness assumption on the family is needed. -/
+theorem linearIndependent_of_injective_sum_tmul
+    {R : Type uR} {P : Type uP} {N : Type uN} {ι : Type uι}
+    [CommSemiring R] [AddCommMonoid P] [AddCommMonoid N]
+    [Module R P] [Module R N] [FaithfulSMul R P]
+    (v : ι → N)
+    (hv : Function.Injective
+      (Finsupp.lsum R (fun i => (TensorProduct.mk R P N).flip (v i)))) :
+    LinearIndependent R v := by
+  classical
+  let e := TensorProduct.finsuppScalarRight R R P ι
+  -- Compare the relation map with tensoring the scalar linear-combination map.
+  have hcomp : ((Finsupp.linearCombination R v).lTensor P).comp e.symm.toLinearMap =
+      Finsupp.lsum R (fun i => (TensorProduct.mk R P N).flip (v i)) := by
+    apply Finsupp.lhom_ext
+    intro i p
+    simp [e, Finsupp.lsum_single]
+  rw [linearIndependent_iff_injective_finsuppLinearCombination]
+  apply LinearMap.injective_of_lTensor_injective_of_projective (P := P)
+  intro x y hxy
+  apply e.injective
+  apply hv
+  rw [← hcomp]
+  simpa only [LinearMap.comp_apply, LinearEquiv.coe_coe,
+    LinearEquiv.symm_apply_apply] using hxy

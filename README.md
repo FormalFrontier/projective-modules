@@ -263,6 +263,15 @@ examples and qualifications; links below go to the corresponding result families
   commutative monoids, independent scalar/carrier universes and arbitrary rank
   are allowed; ordinary point injectivity on `N`, not merely zero detection,
   is the hypothesis of the general criterion.
+- **[Faithful tensor injectivity reflection](ProjectiveModules/Dual/TensorProduct.lean):**
+  over a commutative semiring `R`, tensoring with a module `P` with faithful scalar
+  action reflects injectivity of maps `M →ₗ[R] N` when `Module.Dual.eval R M` is
+  injective, in particular when `M` is projective. The additive structures may be
+  commutative monoids, all scalar/carrier universes are independent, and no module
+  needs finite generation. Neither flatness of `P` nor any condition on `N` is
+  required. For any indexed family `v : ι → N`, injectivity of the finite-support
+  relation map `a ↦ a.sum (fun i p => p ⊗ₜ[R] v i)` with coefficients in such a `P` implies
+  `LinearIndependent R v`. This is reflection only, not preservation of injectivity.
 - **[Canonical tensor–Hom injectivity](ProjectiveModules/Dual/TensorProduct.lean):** over a
   commutative semiring `R`, the canonical map `Module.Dual R M ⊗[R] N →ₗ[R] M →ₗ[R] N`
   is injective when the output `N` is projective. Both modules are additive commutative

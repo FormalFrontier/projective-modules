@@ -282,6 +282,25 @@ status:
     identity/composition coherence or compatibility with carrier lifts.
 
   main_results:
+    - declaration: "LinearMap.injective_of_lTensor_injective_of_eval_injective"
+      file: "ProjectiveModules/Dual/TensorProduct.lean"
+      note: >-
+        Tensoring with a module with faithful scalar action reflects injectivity
+        for maps whose domain has injective canonical dual evaluation, over a
+        commutative semiring with additive commutative monoids and independent
+        scalar/carrier universes. No flatness or finite generation is assumed.
+    - declaration: "LinearMap.injective_of_lTensor_injective_of_projective"
+      file: "ProjectiveModules/Dual/TensorProduct.lean"
+      note: >-
+        Projective-source specialization using Mathlib's existing dual-evaluation
+        injectivity theorem, with arbitrary rank and unrestricted codomain.
+    - declaration: "linearIndependent_of_injective_sum_tmul"
+      file: "ProjectiveModules/Dual/TensorProduct.lean"
+      note: >-
+        Injectivity of the tensor-valued finite-support relation map with
+        coefficients in a module with faithful scalar action implies linear
+        independence of the original arbitrarily indexed family. No flatness
+        or finite-index assumption is required.
     - declaration: "LinearMap.traceOfFiniteProjective"
       file: "ProjectiveModules/Module/Trace/Basic.lean"
       note: "Linear contraction trace over a commutative semiring, for finite projective additive-commutative-monoid modules; no freeness or additive inverses."
