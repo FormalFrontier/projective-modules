@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 -- Contributors: Prism
 module
 public import ProjectiveModules.KTheory.OrthogonalDecomposition
+public import ProjectiveModules.KTheory.CommutingIdempotents
 public import ProjectiveModules.KTheory.CochainEulerCharacteristic
 public import ProjectiveModules.Module.RightExtensionReflection
 public import ProjectiveModules.ExteriorAlgebra.Contraction
@@ -97,6 +98,7 @@ public import ProjectiveModules.Module.CountablyGenerated
 public import ProjectiveModules.Module.CountablyGenerated.Noetherian
 public import ProjectiveModules.Module.CommutingProjections
 public import ProjectiveModules.Module.ComponentwiseFree
+public import ProjectiveModules.Module.CommutingIdempotentRanges
 public import ProjectiveModules.Module.CommutingIdempotents
 public import ProjectiveModules.Module.DiagonalQuotient
 public import ProjectiveModules.Module.DiagonalQuotientSplitting

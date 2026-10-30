@@ -156,6 +156,14 @@ examples and qualifications; links below go to the corresponding result families
   `LinearMap.commutingIdempotentsEquiv`, an `R`-linear equivalence from `M` to
   the product of `p.range ⊓ q.range`, `p.range ⊓ q.ker`, `p.ker ⊓ q.range` and
   `p.ker ⊓ q.ker`, in that order. Scalar and carrier universes are independent.
+- **[Inclusion-exclusion for commuting ranges](ProjectiveModules/KTheory/CommutingIdempotents.lean):**
+  over an arbitrary ring, commuting idempotents on a finite projective right module
+  have finite projective ranges, intersection and sum. Their original `K₀` classes
+  satisfy `[range e] + [range f] = [range e ⊓ range f] + [range e ⊔ range f]`.
+  The ambient additive monoid and scalar action are retained; no group or extra
+  finite-projectivity premise is supplied. The underlying range identities and
+  projectivity results hold over semiring scalars, with an additive group required
+  for the results about the sum.
 - **[Finite simultaneous decomposition](ProjectiveModules/Module/CommutingProjections.lean):**
   for any semiring `R`, additive commutative group `M` with an `R`-module structure,
   finite index type `I`, and supplied pairwise commuting idempotent endomorphisms
