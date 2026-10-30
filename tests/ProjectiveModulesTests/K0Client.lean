@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.KTheory.K0
+import ProjectiveModules.KTheory.InvariantBasisNumber
 import ProjectiveModules.Module.LocallyConstantRank
 import ProjectiveModules.Module.RightExtension
 import ProjectiveModules.Module.RightRegular
@@ -33,6 +34,19 @@ universe u v w
 open CategoryTheory KTheory ModuleCat
 
 namespace ProjectiveModulesTests.K0Client
+
+-- Splitting a finite rank into two ranks splits its K₀ class additively.
+example (R : Type u) [Ring R] (m n : ℕ) :
+    K0.of R (Fin (m + n) → Rᵐᵒᵖ) =
+      K0.of R (Fin m → Rᵐᵒᵖ) + K0.of R (Fin n → Rᵐᵒᵖ) := by
+  simp only [K0.of_fin_fun_eq_nsmul, add_nsmul]
+
+-- Opposite-ring IBN changes only the criterion, not the cyclic map into K₀(R).
+example (R : Type u) [Ring R] :
+    Function.Injective (zmultiplesHom (K0 R) (K0.of R Rᵐᵒᵖ)) ↔
+      InvariantBasisNumber Rᵐᵒᵖ :=
+  (K0.invariantBasisNumber_iff_injective_zmultiplesHom R).symm.trans
+    MulOpposite.invariantBasisNumber_iff.symm
 
 -- The ordinary regular right-module carrier and its scalar-self presentation
 -- give the same generator even after an independent carrier lift and a zero sum.

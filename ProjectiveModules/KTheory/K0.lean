@@ -362,6 +362,13 @@ noncomputable def of : K0 R := ofClass R (ProjectiveClass.of R M)
 /-- The canonical completion map sends a module's isomorphism class to its K₀ generator. -/
 theorem ofClass_of : ofClass R (ProjectiveClass.of R M) = of R M := rfl
 
+/-- The K₀ class of a finite free right module is the corresponding natural
+multiple of the regular right-module class. -/
+theorem of_fin_fun_eq_nsmul (n : ℕ) :
+    of R (Fin n → Rᵐᵒᵖ) = n • of R Rᵐᵒᵖ := by
+  simpa only [map_nsmul, ofClass_of] using
+    congrArg (ofClass R) (ProjectiveClass.of_fin_fun_eq_nsmul R n)
+
 /-- Right-linear equivalence preserves the K₀ generator. The converse is not
 asserted: equality after group completion is weaker than module isomorphism. -/
 theorem of_eq_of_equiv {N : Type w} [AddCommGroup N] [Module Rᵐᵒᵖ N]

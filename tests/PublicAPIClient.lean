@@ -314,29 +314,6 @@ private theorem laurent_right (F : Type u) [Field F] (P : Type v) [AddCommGroup 
 
 end ProjectiveModulesPublicAPIClient
 
-set_option pp.universes true in
-#check @AddEquiv.ofBijective_apply
-
-section
-set_option pp.universes true in
-#check @_root_.KTheory.ProjectiveClass.finrankEquiv_of_self
-set_option pp.universes true in
-#check @_root_.KTheory.K0.finrankEquiv_of_self
-set_option pp.universes true in
-#check @_root_.KTheory.K0.finrankRingEquiv_symm_intCast
-set_option pp.universes true in
-#check @_root_.KTheory.K0.finrankRingEquiv_intCast
-set_option pp.universes true in
-#check @_root_.KTheory.K0.localRingEquivInt_symm_intCast
-set_option pp.universes true in
-#check @_root_.KTheory.K0.localRingEquivInt_intCast
-set_option pp.universes true in
-#check @_root_.KTheory.K0.pidRingEquivInt_symm_intCast
-set_option pp.universes true in
-#check @_root_.KTheory.K0.pidRingEquivInt_intCast
-
-end
-
 section
 
 universe uDom uCod uHom

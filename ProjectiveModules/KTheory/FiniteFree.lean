@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import ProjectiveModules.KTheory.ScalarExtension
 public import ProjectiveModules.KTheory.Stabilization
 import GroupTheory.MonoidLocalization.GrothendieckGroup
 import ProjectiveModules.KTheory.Product
@@ -16,6 +17,10 @@ additive monoid `KTheory.ProjectiveClass R`: every projective class has a comple
 to one of these classes. Consequently, every element of `KTheory.K0 R` is the class
 of a finite projective right module minus the class of a finite free right module.
 
+Scalar extension has cofinal image on projective classes: every target class has a
+complement whose sum is extended from a finite free source module. Consequently,
+injectivity of the projective-class map implies injectivity of the induced K₀ map.
+
 The finite projective representative uses `ModuleCat.FiniteProjective` in the
 universe of the coefficient ring, as in `KTheory.K0.exists_sub`. The class maps
 also accept modules in independent carrier universes. No cancellation of
@@ -24,7 +29,7 @@ projective classes, invariant basis number or nontriviality of the ring is assum
 
 @[expose] public section
 
-universe u
+universe u v
 
 namespace KTheory
 
@@ -44,6 +49,15 @@ theorem exists_add_eq_free (c : ProjectiveClass R) :
   obtain ⟨d, hd⟩ := hn ()
   exact ⟨n, d, hd.trans (of_fin_fun_eq_nsmul R n).symm⟩
 
+variable {R} {S : Type v} [Ring S]
+
+/-- Every target projective class has a complement whose sum is extended from the source. -/
+theorem exists_add_eq_map (φ : R →+* S) (c : ProjectiveClass S) :
+    ∃ (d : ProjectiveClass S) (a : ProjectiveClass R), c + d = map φ a := by
+  obtain ⟨n, d, hd⟩ := exists_add_eq_free S c
+  refine ⟨d, of R (Fin n → Rᵐᵒᵖ), ?_⟩
+  simpa only [of_fin_fun_eq_nsmul, map_nsmul, map_of_self] using hd
+
 end ProjectiveClass
 
 namespace K0
@@ -61,6 +75,25 @@ theorem exists_sub_free (z : K0 R) :
   have hrep : z = ofClass R (ProjectiveClass.of R P) -
       ofClass R (ProjectiveClass.of R (Fin n → Rᵐᵒᵖ)) := hc
   simpa only [ofClass_of] using hrep
+
+variable {R} {S : Type v} [Ring S]
+
+/-- Injectivity on projective classes implies injectivity on K₀ under scalar extension. -/
+theorem map_injective (φ : R →+* S) (h : Function.Injective (ProjectiveClass.map φ)) :
+    Function.Injective (map φ) := by
+  have hmap : map φ =
+      Algebra.GrothendieckAddGroup.lift ((ofClass S).comp (ProjectiveClass.map φ)) := by
+    apply hom_ext_ofClass R
+    intro a
+    rw [map_ofClass]
+    exact (Algebra.GrothendieckAddGroup.lift_of
+      ((ofClass S).comp (ProjectiveClass.map φ)) a).symm
+  rw [hmap]
+  apply Algebra.GrothendieckAddGroup.lift_of_comp_injective_of_cofinal
+    (ProjectiveClass.map φ) h
+  intro c
+  obtain ⟨d, a, ha⟩ := ProjectiveClass.exists_add_eq_map φ c
+  exact ⟨a, d, ha⟩
 
 end K0
 

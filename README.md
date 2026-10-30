@@ -40,6 +40,16 @@ Maintained by the Formal Frontier source-maintainer team.
   relating projectivity of the diagonal quotient to that of the source kernel-sum quotient.
   These results are exported by `import ProjectiveModules`.
 
+- **[Schanuel kernel comparison](ProjectiveModules/Module/KernelComparison.lean).**
+  Over any semiring, supplied lifts between two linear maps from additive
+  commutative groups to a common additive commutative monoid give
+  `(ker p × Q) ≃ₗ[R] (ker q × P)`, with formulas retaining both lifts.
+  The core needs neither surjectivity nor projectivity. For surjections from
+  projective source modules, the
+  [projective presentation theorem](ProjectiveModules/Module/ProjectiveKernelComparison.lean)
+  obtains such an equivalence from the projective lifting property.
+  The common target needs no additive inverses; all universes are independent.
+
 - **Continuous kernel-product splitting.**
   [`ContinuousLinearMap.exists_equiv_ker_prod`](ProjectiveModules/Topology/Splitting.lean)
   splits a surjective continuous linear map as `M ≃L[R] (f.ker × N)`, with `f` as
