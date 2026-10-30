@@ -75,6 +75,7 @@ public import ProjectiveModules.KTheory.Reduced
 public import ProjectiveModules.KTheory.Ring
 public import ProjectiveModules.KTheory.RingScalarExtension
 public import ProjectiveModules.KTheory.ScalarExtension
+public import ProjectiveModules.KTheory.ShortExact
 public import ProjectiveModules.KTheory.Nilpotent
 public import ProjectiveModules.KTheory.Stabilization
 public import ProjectiveModules.KTheory.TensorProduct
@@ -95,6 +96,7 @@ public import ProjectiveModules.Module.CommutingProjections
 public import ProjectiveModules.Module.ComponentwiseFree
 public import ProjectiveModules.Module.CommutingIdempotents
 public import ProjectiveModules.Module.DiagonalQuotient
+public import ProjectiveModules.Module.DiagonalQuotientSplitting
 public import ProjectiveModules.Module.FiniteProjectiveHom
 public import ProjectiveModules.Module.FiniteStabilization
 public import ProjectiveModules.Module.HomExact

@@ -32,6 +32,13 @@ Maintained by the Formal Frontier source-maintainer team.
   The canonical kernel equivalence is natural for these maps:
   `kerMap_comp_quotientKerEquiv` is an equality of linear maps, proved through the
   characteristic API, with no injectivity or surjectivity assumption.
+  If the product of the two range quotients is projective,
+  [projective splitting](ProjectiveModules/Module/DiagonalQuotientSplitting.lean) gives
+  `exists_section` and `exists_equiv_prod`: the diagonal quotient splits as the product
+  of `X ⧸ (ker f ⊔ ker g)` and the two range quotients, with both the projection and
+  canonical kernel inclusion respected. The same hypothesis gives `projective_iff`,
+  relating projectivity of the diagonal quotient to that of the source kernel-sum quotient.
+  These results are exported by `import ProjectiveModules`.
 
 - **Continuous kernel-product splitting.**
   [`ContinuousLinearMap.exists_equiv_ker_prod`](ProjectiveModules/Topology/Splitting.lean)
