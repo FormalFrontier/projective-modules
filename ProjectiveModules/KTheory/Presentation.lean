@@ -28,6 +28,12 @@ Euler class. Stock presentations by finitely many generators and relations
 supply the construction when their kernel is projective, without requiring
 independent relations.
 
+In a short exact sequence, if both endpoints are finitely presented and admit
+finite-free covers with projective kernels, the middle module has both properties
+as well. Its intrinsic Euler class is the sum of the endpoint Euler classes.
+The proof lifts the right cover and uses the split kernel row of the resulting
+coproduct cover; the original target additive and module structures are retained.
+
 The ring may be noncommutative or zero, and scalar and carrier universes are
 independent. No target projectivity or free-kernel hypothesis is imposed.
 Naturality under arbitrary underived scalar extension is not asserted.
@@ -42,7 +48,7 @@ Naturality under arbitrary underived scalar extension is not asserted.
 
 @[expose] public section
 
-universe uR uP uQ uM uN uG uRel
+universe uR uP uQ uM uN uG uRel u₁ u₂ u₃
 
 namespace KTheory.K0
 
@@ -323,5 +329,103 @@ theorem eulerClass_eq_of_equiv
       (eulerClass_eq_sub_ker_of_surjective R N hN q hq).symm
 
 end Equivalence
+
+end KTheory.K0
+
+namespace KTheory.K0
+
+section ShortExact
+
+variable (R : Type uR) [ringR : Ring R]
+variable (M₁ : Type u₁) [addM₁ : AddCommMonoid M₁] [moduleM₁ : Module Rᵐᵒᵖ M₁]
+variable (M₂ : Type u₂) [addM₂ : AddCommMonoid M₂] [moduleM₂ : Module Rᵐᵒᵖ M₂]
+variable (M₃ : Type u₃) [addM₃ : AddCommMonoid M₃] [moduleM₃ : Module Rᵐᵒᵖ M₃]
+
+/-- In a short exact sequence whose endpoints are finitely presented and admit
+finite-free covers with projective kernels, the middle module has both properties
+and its intrinsic Euler class is the sum of the endpoint classes.
+
+Both middle certificates are conclusions, and all three Euler classes use the
+original additive and module structures. The endpoint targets need not be
+projective, and the sequence need not split. This is the length-one case of
+additivity of Euler classes of finite projective resolutions; see Weibel,
+*The K-book* (2013). -/
+theorem exists_eulerClass_eq_add_of_exact
+    (i : M₁ →ₗ[Rᵐᵒᵖ] M₂) (j : M₂ →ₗ[Rᵐᵒᵖ] M₃) :
+    Function.Injective i →
+    Function.Exact i j →
+    Function.Surjective j →
+    ∀ (hFP₁ : Module.FinitePresentation Rᵐᵒᵖ M₁)
+      (hFP₃ : Module.FinitePresentation Rᵐᵒᵖ M₃)
+      (hcover₁ : ∃ (n : ℕ) (π : (Fin n → Rᵐᵒᵖ) →ₗ[Rᵐᵒᵖ] M₁),
+        Function.Surjective π ∧ Module.Projective Rᵐᵒᵖ π.ker)
+      (hcover₃ : ∃ (n : ℕ) (π : (Fin n → Rᵐᵒᵖ) →ₗ[Rᵐᵒᵖ] M₃),
+        Function.Surjective π ∧ Module.Projective Rᵐᵒᵖ π.ker),
+      ∃ (hFP₂ : Module.FinitePresentation Rᵐᵒᵖ M₂),
+        ∃ (hcover₂ : ∃ (n : ℕ) (π : (Fin n → Rᵐᵒᵖ) →ₗ[Rᵐᵒᵖ] M₂),
+          Function.Surjective π ∧ Module.Projective Rᵐᵒᵖ π.ker),
+          @eulerClass R ringR M₂ addM₂ moduleM₂ hFP₂ hcover₂ =
+            @eulerClass R ringR M₁ addM₁ moduleM₁ hFP₁ hcover₁ +
+              @eulerClass R ringR M₃ addM₃ moduleM₃ hFP₃ hcover₃ := by
+  intro hi hij hj hFP₁ hFP₃ hcover₁ hcover₃
+  let : Module.FinitePresentation Rᵐᵒᵖ M₁ := hFP₁
+  let : Module.FinitePresentation Rᵐᵒᵖ M₃ := hFP₃
+  have hcover₁' := hcover₁
+  have hcover₃' := hcover₃
+  obtain ⟨n₁, p₁, hp₁, hk₁⟩ := hcover₁'
+  obtain ⟨n₃, p₃, hp₃, hk₃⟩ := hcover₃'
+  let : Module.Finite Rᵐᵒᵖ p₁.ker := Module.FinitePresentation.finite_ker p₁ hp₁
+  let : Module.Finite Rᵐᵒᵖ p₃.ker := Module.FinitePresentation.finite_ker p₃ hp₃
+  let : Module.Projective Rᵐᵒᵖ p₁.ker := hk₁
+  let : Module.Projective Rᵐᵒᵖ p₃.ker := hk₃
+  obtain ⟨ell, hℓ⟩ := Module.projective_lifting_property j p₃ hj
+  let q : ((Fin n₁ → Rᵐᵒᵖ) × (Fin n₃ → Rᵐᵒᵖ)) →ₗ[Rᵐᵒᵖ] M₂ :=
+    (i.comp p₁).coprod ell
+  have hq : Function.Surjective q :=
+    LinearMap.surjective_coprod_comp_of_exact_of_addCommGroup_right
+      i j p₁ p₃ ell hij hℓ hp₁ hp₃
+  obtain ⟨e⟩ := LinearMap.nonempty_kerCoprodEquiv_of_projective
+    i j p₁ p₃ ell hi hij hℓ hp₁
+  let : Module.Finite Rᵐᵒᵖ q.ker := Module.Finite.equiv e
+  let : Module.Projective Rᵐᵒᵖ q.ker := Module.Projective.of_equiv' e
+  obtain ⟨hFP₂, hcover₂⟩ :=
+    finitePresentation_and_exists_projective_ker_free_cover R q hq
+  refine ⟨hFP₂, hcover₂, ?_⟩
+  let : Module.FinitePresentation Rᵐᵒᵖ M₂ := hFP₂
+  have hker : of R q.ker = of R p₁.ker + of R p₃.ker := by
+    calc
+      of R q.ker = of R (p₁.ker × p₃.ker) := (of_eq_of_equiv R _ e).symm
+      _ = of R p₁.ker + of R p₃.ker := of_prod R _ _
+  rw [eulerClass_eq_sub_ker_of_surjective R M₂ hcover₂ q hq,
+    eulerClass_eq_sub_ker_of_surjective R M₁ hcover₁ p₁ hp₁,
+    eulerClass_eq_sub_ker_of_surjective R M₃ hcover₃ p₃ hp₃, hker, of_prod]
+  exact add_sub_add_comm _ _ _ _
+
+/-- In a short exact sequence, finite presentation together with a finite-free
+cover having projective kernel is closed under extensions. Both properties of
+the original middle module are derived from the endpoint hypotheses.
+
+This is the length-one case of extension closure for finite projective
+resolutions; see Weibel, *The K-book* (2013). -/
+theorem finitePresentation_and_exists_projective_ker_free_cover_of_exact
+    (i : M₁ →ₗ[Rᵐᵒᵖ] M₂) (j : M₂ →ₗ[Rᵐᵒᵖ] M₃) :
+    Function.Injective i →
+    Function.Exact i j →
+    Function.Surjective j →
+    Module.FinitePresentation Rᵐᵒᵖ M₁ →
+    Module.FinitePresentation Rᵐᵒᵖ M₃ →
+    (∃ (n : ℕ) (π : (Fin n → Rᵐᵒᵖ) →ₗ[Rᵐᵒᵖ] M₁),
+      Function.Surjective π ∧ Module.Projective Rᵐᵒᵖ π.ker) →
+    (∃ (n : ℕ) (π : (Fin n → Rᵐᵒᵖ) →ₗ[Rᵐᵒᵖ] M₃),
+      Function.Surjective π ∧ Module.Projective Rᵐᵒᵖ π.ker) →
+    Module.FinitePresentation Rᵐᵒᵖ M₂ ∧
+      ∃ (n : ℕ) (π : (Fin n → Rᵐᵒᵖ) →ₗ[Rᵐᵒᵖ] M₂),
+        Function.Surjective π ∧ Module.Projective Rᵐᵒᵖ π.ker := by
+  intro hi hij hj hFP₁ hFP₃ hcover₁ hcover₃
+  obtain ⟨hFP₂, hcover₂, _⟩ := exists_eulerClass_eq_add_of_exact R M₁ M₂ M₃ i j
+    hi hij hj hFP₁ hFP₃ hcover₁ hcover₃
+  exact ⟨hFP₂, hcover₂⟩
+
+end ShortExact
 
 end KTheory.K0

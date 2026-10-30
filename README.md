@@ -100,6 +100,14 @@ Maintained by the Formal Frontier source-maintainer team.
   presentations with projective kernel supply the construction without independent
   relations or a free-kernel assumption. Targets need not be projective, scalar and
   carrier universes are independent, and zero rings are allowed.
+  In a short exact sequence with finitely presented endpoints admitting such
+  covers, `KTheory.K0.exists_eulerClass_eq_add_of_exact` derives finite presentation
+  and cover eligibility of the original middle module, together with
+  `χ(M₂) = χ(M₁) + χ(M₃)`. The separate closure theorem
+  `KTheory.K0.finitePresentation_and_exists_projective_ker_free_cover_of_exact`
+  exposes the middle certificates. The sequence need not split and none of the
+  three targets is assumed projective; their original additive-monoid and module
+  structures are retained.
 
 - **Continuous kernel-product splitting.**
   [`ContinuousLinearMap.exists_equiv_ker_prod`](ProjectiveModules/Topology/Splitting.lean)
