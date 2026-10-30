@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 -/
 -- Contributors: Prism
 module
+public import ProjectiveModules.KTheory.CochainEulerCharacteristic
 public import ProjectiveModules.Module.RightExtensionReflection
 public import ProjectiveModules.ExteriorAlgebra.Contraction
 public import ProjectiveModules.ExteriorPower.Contraction
@@ -13,6 +14,7 @@ public import ProjectiveModules.ExteriorAlgebra.ContractionSplitting
 public import ProjectiveModules.ExteriorAlgebra.ContractionNaturality
 public import ProjectiveModules.ExteriorAlgebra.ContractionRightModule
 public import ProjectiveModules.Module.SymmetricAlgebra
+public import ProjectiveModules.Module.SymmetricPower
 
 public import ProjectiveModules.Category.ChangeOfRings
 public import ProjectiveModules.Category.FiniteModuleDimension
@@ -28,10 +30,12 @@ public import ProjectiveModules.Dual.ModuleCat
 public import ProjectiveModules.Dual.Quotient
 public import ProjectiveModules.Dual.TensorProduct
 public import ProjectiveModules.ExteriorAlgebra.BaseChange
+public import ProjectiveModules.ExteriorPower.AlternatingForms
 public import ProjectiveModules.ExteriorPower.BaseChange
 public import ProjectiveModules.ExteriorPower.Determinant
 public import ProjectiveModules.ExteriorPower.DeterminantLineBaseChange
 public import ProjectiveModules.ExteriorPower.DirectSum
+public import ProjectiveModules.ExteriorPower.Duality
 public import ProjectiveModules.ExteriorPower.Invertible
 public import ProjectiveModules.ExteriorPower.ProdPairing
 public import ProjectiveModules.ExteriorPower.Projective

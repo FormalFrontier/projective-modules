@@ -65,6 +65,14 @@ examples and qualifications; links below go to the corresponding result families
   addition in `ProjectiveClass R`. Every element of `K0 R` is the class of a finite
   projective right module minus one of these finite free classes. Zero rings are
   included; neither cancellation nor invariant basis number is assumed.
+- **[Euler characteristics](ProjectiveModules/KTheory/CochainEulerCharacteristic.lean):**
+  finite alternating sums of finite-projective right-module classes in the existing
+  `K0 R` are independent of the finite support, and additive on degreewise products.
+  For finitely supported acyclic cochain complexes, the even and odd term-class
+  sums agree already in `ProjectiveClass R`, giving zero Euler characteristic.
+  Supports mean that the original modules vanish outside the chosen finite set;
+  arbitrary finite truncations need not be supports. Arbitrary rings, including
+  noncommutative rings and zero rings, are allowed; no cancellation is assumed.
 - **[Reduced K₀ and stable freeness](ProjectiveModules/KTheory/Reduced.lean):** over any
   ring `R`, the additive quotient of `K0 R` by integer multiples of the regular
   right-module class has the universal property for additive maps killing that class.
@@ -109,6 +117,10 @@ examples and qualifications; links below go to the corresponding result families
   is natural for module maps; projective exterior powers and determinants are also
   provided. The top exterior power of a finite projective module of constant stalk
   rank is invertible, including degree zero and the zero ring.
+  The determinant pairing identifies exterior powers of the dual of a finite projective
+  module with duals of its exterior powers, in every degree over any commutative ring.
+  This identification is natural for ordinary module maps and also gives a canonical
+  equivalence with alternating scalar-valued forms.
   For a finite flat module, an exterior power vanishes when its degree strictly
   exceeds every stalk rank, without assuming global projectivity.
 - **[Exterior contractions](ProjectiveModules/ExteriorPower/Contraction.lean):** over any
@@ -585,6 +597,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Invertible module topologies and continuous endomorphisms](ProjectiveModules/Invertible/Topology.lean) | `Module.Invertible.isModuleTopology` identifies the given module topology; `ContinuousLinearMap.scalarEndEquiv` identifies the scalar field with continuous endomorphisms in bounded convergence. Hausdorff invertible topological vector spaces over nontrivially normed fields, with independent scalar/carrier universes and no completeness, norm or chosen frame |
 | [Bidual evaluation](ProjectiveModules/Module/Bidual.lean) | Ordinary-coefficient bidual equivalence for finite projective semiring modules; forward/inverse evaluation, naturality and coefficient-preserving commutative comparison |
 | [Exterior algebra](ProjectiveModules/ExteriorAlgebra/BaseChange.lean), [exterior powers](ProjectiveModules/ExteriorPower/DirectSum.lean) | Full algebra base change; projective powers, determinants/top powers and binary fixed-degree Sum Formula |
+| [Exterior duality](ProjectiveModules/ExteriorPower/Duality.lean), [alternating forms](ProjectiveModules/ExteriorPower/AlternatingForms.lean) | Canonical determinant-pairing equivalence in every degree for finite projective modules over arbitrary commutative rings; ordinary-map naturality, inverse formulas along retractions and alternating-form representation, with independent universes |
 | [Contraction calculus](ProjectiveModules/ExteriorAlgebra/Contraction.lean), [exterior contractions](ProjectiveModules/ExteriorPower/Contraction.lean) | `CliffordAlgebra.contractLeft_mul`, `ExteriorAlgebra.map_contractLeft`, `exteriorPower.contractLeft`: twisted product rule, arbitrary-map naturality and canonical consecutive-degree restrictions, with square-zero and anticommutation in every characteristic |
 | [Unimodular contraction](ProjectiveModules/ExteriorAlgebra/ContractionExactness.lean), [cycle splitting](ProjectiveModules/ExteriorAlgebra/ContractionSplitting.lean) | `CliffordAlgebra.range_contractLeft_eq_ker_of_surjective`, `CliffordAlgebra.contractLeftKerProdEquiv`: exactness under surjectivity and a two-kernel linear decomposition from a unit-pairing vector, for arbitrary quadratic forms |
 | [Cycle-map naturality](ProjectiveModules/ExteriorAlgebra/ContractionNaturality.lean) | `CliffordAlgebra.contractLeftKerMap`, `CliffordAlgebra.contractLeftKerProdEquiv_map`: functorial maps on contraction kernels and naturality of both splitting coordinates under quadratic-form-preserving linear maps, without injectivity |
