@@ -327,6 +327,14 @@ examples and qualifications; links below go to the corresponding result families
   is injective when the output `N` is projective. Both modules are additive commutative
   monoids with independent scalar and carrier universes; neither needs finite generation,
   and no projectivity of `M` is assumed.
+- **[Tensoring semilinear Hom](ProjectiveModules/TensorProduct/Hom.lean):** for a
+  homomorphism `σ : R →+* S` of commutative semirings, the canonical map
+  `(L →ₛₗ[σ] M) ⊗[S] N →ₗ[S] L →ₛₗ[σ] M ⊗[S] N` is bijective when only `N`
+  is finite projective over `S`. The source `L` and Hom target `M` are arbitrary
+  additive commutative monoids with independent universes. Naturality in all three
+  modules needs no finiteness or projectivity; the left unitor identifies the dual
+  specialization with `dualTensorHom`. These are semiring and semilinear
+  generalizations of the tensor–Hom comparison.
 - **[Trace under scalar restriction](ProjectiveModules/Module/Trace/ScalarRestriction.lean):**
   for a commutative-semiring algebra `R → A`, with `A` finite projective over
   `R` and an additive-commutative-monoid module `M` finite projective over `A`,
@@ -696,7 +704,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 
 | Area | Interfaces and scope |
 | --- | --- |
-| [Dual](ProjectiveModules/Dual/BaseChange.lean), [Contraction](ProjectiveModules/Contraction/BaseChange.lean), [Invertible](ProjectiveModules/Invertible/OfRankOne.lean) | Dual/evaluation base change, rank-one iff, scalar endomorphisms and finite-summand cancellation |
+| [Dual](ProjectiveModules/Dual/BaseChange.lean), [Contraction](ProjectiveModules/Contraction/BaseChange.lean), [Invertible](ProjectiveModules/Invertible/OfRankOne.lean), [Tensor–Hom](ProjectiveModules/TensorProduct/Hom.lean) | Dual/evaluation base change, rank-one iff, scalar endomorphisms, finite-summand cancellation and tensoring semilinear Hom |
 | [Invertible module topologies and continuous endomorphisms](ProjectiveModules/Invertible/Topology.lean) | `Module.Invertible.isModuleTopology` identifies the given module topology; `ContinuousLinearMap.scalarEndEquiv` identifies the scalar field with continuous endomorphisms in bounded convergence. Hausdorff invertible topological vector spaces over nontrivially normed fields, with independent scalar/carrier universes and no completeness, norm or chosen frame |
 | [Bidual evaluation](ProjectiveModules/Module/Bidual.lean) | Ordinary-coefficient bidual equivalence for finite projective semiring modules; forward/inverse evaluation, naturality and coefficient-preserving commutative comparison |
 | [Exterior algebra](ProjectiveModules/ExteriorAlgebra/BaseChange.lean), [exterior powers](ProjectiveModules/ExteriorPower/DirectSum.lean) | Full algebra base change; projective powers, determinants/top powers and binary fixed-degree Sum Formula |
