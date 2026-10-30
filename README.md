@@ -7,6 +7,23 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **[Quotients by an intersection and a sum](ProjectiveModules/Module/QuotientIntersection.lean).**
+  For submodules `U,V` of a module `M` over any ring `S`, `diagonal` maps
+  `M ⧸ (U ⊓ V)` to `(M ⧸ U) × (M ⧸ V)` by the two quotient factor maps, and
+  `difference` maps a pair represented by `(x,y)` to `[x-y]` modulo `U ⊔ V`.
+  The diagonal–difference sequence is short exact. If the sum quotient is projective,
+  the [splitting criteria](ProjectiveModules/Module/QuotientIntersectionSplitting.lean)
+  `finite_iff` and `projective_iff` characterize finite generation and projectivity of
+  the intersection quotient by the corresponding property of both individual quotients.
+  The [right-module K₀ theorem](ProjectiveModules/KTheory/QuotientIntersection.lean)
+  `KTheory.K0.of_quotientInf_add_quotientSup` derives finite generation and projectivity
+  of the intersection quotient, finite generation of the sum quotient, and the equality
+  `[M ⧸ (U ⊓ V)] + [M ⧸ (U ⊔ V)] = [M ⧸ U] + [M ⧸ V]` in `KTheory.K0 R`.
+  Its only property premises are finite generation and projectivity of each individual
+  quotient and projectivity of the sum quotient over `Rᵐᵒᵖ`.
+  No finiteness or projectivity of `M` is required. Scalar and module
+  universes are independent, with noncommutative and zero rings allowed.
+
 - **[Diagonal quotients of module products](ProjectiveModules/Module/DiagonalQuotient.lean).**
   For linear maps `f : X →ₗ[S] M` and `g : X →ₗ[S] N` over any ring `S`, the
   canonical map from `(M × N) ⧸ range (f.prod g)` onto

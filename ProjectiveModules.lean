@@ -70,6 +70,7 @@ public import ProjectiveModules.KTheory.Matrix
 public import ProjectiveModules.KTheory.ModuleEquivalence
 public import ProjectiveModules.KTheory.Product
 public import ProjectiveModules.KTheory.ProductRing
+public import ProjectiveModules.KTheory.QuotientIntersection
 public import ProjectiveModules.KTheory.Rank
 public import ProjectiveModules.KTheory.RankBound
 public import ProjectiveModules.KTheory.Reduced
@@ -121,6 +122,8 @@ public import ProjectiveModules.Module.ProjectiveKernelComparison
 public import ProjectiveModules.KTheory.Presentation
 public import ProjectiveModules.Module.ProjectivePi
 public import ProjectiveModules.Module.QuotientHom
+public import ProjectiveModules.Module.QuotientIntersection
+public import ProjectiveModules.Module.QuotientIntersectionSplitting
 public import ProjectiveModules.Module.SummandCancellation
 public import ProjectiveModules.Module.RankFiberDecomposition
 public import ProjectiveModules.Module.RankLocallyConstant

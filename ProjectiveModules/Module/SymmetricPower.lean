@@ -9,7 +9,7 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorPower.Symmetric
+public import ProjectiveModules.Module.SymmetricPower.Basic
 public import ProjectiveModules.Module.PiTensorProduct
 
 /-!
