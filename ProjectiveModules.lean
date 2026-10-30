@@ -96,6 +96,7 @@ public import ProjectiveModules.Module.CountableLocalProjective
 public import ProjectiveModules.Module.CountableLocalProjectiveFree
 public import ProjectiveModules.Module.CountablyGenerated
 public import ProjectiveModules.Module.CountablyGenerated.Noetherian
+public import ProjectiveModules.Module.CommutingProducts
 public import ProjectiveModules.Module.CommutingProjections
 public import ProjectiveModules.Module.ComponentwiseFree
 public import ProjectiveModules.Module.CommutingIdempotentRanges
