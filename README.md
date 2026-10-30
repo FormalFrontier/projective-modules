@@ -67,6 +67,19 @@ Maintained by the Formal Frontier source-maintainer team.
   for the canonical projection and for the product of cokernels.
   All these results are exported by `import ProjectiveModules`.
 
+- **[Kernel row of a lifted coproduct](ProjectiveModules/Module/KernelCoprod.lean).**
+  For a supplied lift `ell` with `j.comp ell = p''` and `j.comp i = 0`, the
+  kernel of `(i.comp p').coprod ell` lies in a canonical row from `ker p'` to
+  `ker p''`. Over any semiring and additive commutative monoids, its first map
+  is injective and the row is exact if `i` is injective. If the source of `p'`
+  has additive inverses, bottom exactness and surjectivity of `p'` make the
+  kernel projection onto. For injective `i`, a supplied section gives a product
+  linear equivalence without bottom exactness or cover surjectivity;
+  projectivity of `ker p''` supplies such a section when the projection is onto.
+  Neither cover source needs to be projective, and the right source and all
+  targets may be nongroups.
+  Import `ProjectiveModules.Module.KernelCoprod` directly.
+
 - **[Schanuel kernel comparison](ProjectiveModules/Module/KernelComparison.lean).**
   Over any semiring, supplied lifts between two linear maps from additive
   commutative groups to a common additive commutative monoid give

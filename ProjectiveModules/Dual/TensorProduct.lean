@@ -7,6 +7,7 @@ module
 public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import Mathlib.LinearAlgebra.Projection
 
 /-!
 # Dual tensor separation and injectivity reflection
@@ -53,6 +54,14 @@ domains: over `ℤ`, tensoring the zero map `ZMod 2 → 0` with `ℚ` makes it i
 Nor does faithful action imply preservation: for `P = ℤ × ZMod 2`, tensoring
 multiplication by two on `ℤ` is not injective. These results are reflection only.
 
+For a module `N` whose canonical dual evaluation is injective, tensoring with a
+faithful coefficient module `P` is injective on the linear Hom space `M →ₗ[R] N`.
+Here separation is required of the target, rather than of the source. Projective
+targets satisfy this condition. The resulting equality criterion detects whether
+an arbitrary map lands in the range of an idempotent endomorphism by testing the
+corresponding tensor composition equation. These results require neither flatness
+of `P` nor finite generation, additive inverses or nontriviality.
+
 ## References
 
 - Mathlib's Contraction formalization by Oliver Nash and Antoine Labelle
@@ -77,6 +86,25 @@ open scoped TensorProduct
 universe uR uP uM uN uι
 
 namespace TensorProduct
+
+/-- If dual evaluation on `N` is injective, equality after tensoring with every
+point of a faithful module implies equality in `N`. No flatness or additive
+inverses are required. -/
+theorem eq_of_forall_tmul_eq_of_eval_injective
+    {R : Type uR} {P : Type uP} {N : Type uN}
+    [CommSemiring R] [AddCommMonoid P] [AddCommMonoid N]
+    [Module R P] [Module R N] [FaithfulSMul R P]
+    (hN : Function.Injective (Module.Dual.eval R N))
+    {x y : N} (h : ∀ p : P, p ⊗ₜ[R] x = p ⊗ₜ[R] y) :
+    x = y := by
+  apply hN
+  apply LinearMap.ext
+  intro φ
+  change φ x = φ y
+  apply eq_of_smul_eq_smul (α := P)
+  intro p
+  have hφ := congrArg (fun t => TensorProduct.rid R P (φ.lTensor P t)) (h p)
+  simpa only [LinearMap.lTensor_tmul, TensorProduct.rid_tmul] using hφ
 
 /-- A tensor with projective first factor vanishes exactly when every rank-one product
 of linear forms vanishes on it, provided the canonical dual evaluation on the second
@@ -261,6 +289,57 @@ theorem dualTensorHom_injective_of_projective_right
 
 namespace LinearMap
 
+section
+
+variable {R : Type uR} {P : Type uP} {M : Type uM} {N : Type uN}
+variable [CommSemiring R]
+variable [AddCommMonoid P] [AddCommMonoid M] [AddCommMonoid N]
+variable [Module R P] [Module R M] [Module R N] [FaithfulSMul R P]
+
+/-- Tensoring with a faithful module is injective on the linear Hom space when
+canonical dual evaluation on the target is injective. The source is arbitrary. -/
+theorem lTensorHom_injective_of_eval_injective
+    (hN : Function.Injective (Module.Dual.eval R N)) :
+    Function.Injective
+      (LinearMap.lTensorHom (R := R) (N := M) (P := N) P) := by
+  intro f g hfg
+  ext x
+  apply TensorProduct.eq_of_forall_tmul_eq_of_eval_injective (P := P) hN
+  intro p
+  simpa only [coe_lTensorHom, lTensor_tmul] using
+    LinearMap.congr_fun hfg (p ⊗ₜ[R] x)
+
+/-- Tensoring arbitrary maps into a dual-separated target with a faithful module
+reflects their equality. -/
+theorem lTensor_inj_of_eval_injective
+    (hN : Function.Injective (Module.Dual.eval R N))
+    {f g : M →ₗ[R] N} :
+    f.lTensor P = g.lTensor P ↔ f = g := by
+  rw [← coe_lTensorHom]
+  exact (lTensorHom_injective_of_eval_injective hN).eq_iff
+
+/-- Tensoring with a faithful module is injective on the linear Hom space into a
+projective target, without any projectivity assumption on the source. -/
+theorem lTensorHom_injective_of_projective
+    [Module.Projective R N] :
+    Function.Injective
+      (LinearMap.lTensorHom (R := R) (N := M) (P := N) P) := by
+  exact lTensorHom_injective_of_eval_injective (Module.eval_apply_injective R (V := N))
+
+/-- A map into a dual-separated module lands in the range of an idempotent exactly
+when its tensoring with a faithful module is fixed by the tensored idempotent.
+The range criterion uses Mathlib's `IsIdempotentElem.comp_eq_right_iff`. -/
+theorem lTensor_comp_eq_self_iff_range_le
+    (hN : Function.Injective (Module.Dual.eval R N))
+    {e : Module.End R N} (he : IsIdempotentElem e)
+    (f : M →ₗ[R] N) :
+    (e.lTensor P).comp (f.lTensor P) = f.lTensor P ↔
+      LinearMap.range f ≤ LinearMap.range e := by
+  rw [← lTensor_comp, lTensor_inj_of_eval_injective hN]
+  exact IsIdempotentElem.comp_eq_right_iff he f
+
+end
+
 /-- Tensoring with a module with faithful scalar action reflects injectivity when
 linear forms separate pairs of points in the domain. Neither flatness of the
 coefficient module nor finite generation of any module is required. -/
@@ -273,17 +352,10 @@ theorem injective_of_lTensor_injective_of_eval_injective
     (f : M →ₗ[R] N) (hf : Function.Injective (f.lTensor P)) :
     Function.Injective f := by
   intro x y hxy
-  apply hM
-  apply LinearMap.ext
-  intro φ
-  change φ x = φ y
-  apply eq_of_smul_eq_smul (α := P)
+  apply TensorProduct.eq_of_forall_tmul_eq_of_eval_injective (P := P) hM
   intro p
-  have ht : p ⊗ₜ[R] x = p ⊗ₜ[R] y := by
-    apply hf
-    simpa only [lTensor_tmul] using congrArg (fun n => p ⊗ₜ[R] n) hxy
-  have hφ := congrArg (fun t => TensorProduct.rid R P (φ.lTensor P t)) ht
-  simpa only [lTensor_tmul, TensorProduct.rid_tmul] using hφ
+  apply hf
+  simpa only [lTensor_tmul] using congrArg (fun n => p ⊗ₜ[R] n) hxy
 
 /-- Tensoring with a module with faithful scalar action reflects injectivity of
 maps from projective modules of arbitrary rank. The dual-separation hypothesis

@@ -8,6 +8,7 @@ public import Mathlib.Algebra.Module.Projective
 public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.RingTheory.Finiteness.Prod
 public import ProjectiveModules.Module.KernelComparison
+public import ProjectiveModules.Module.KernelCoprod
 
 /-!
 # Kernel comparison for projective presentations
