@@ -6,6 +6,8 @@ module
 
 public import ProjectiveModules.Module.DiagonalQuotient
 public import Mathlib.Algebra.Module.Projective
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Finiteness.Prod
 public import StableRange.Module.SplitSurjective
 
 /-!
@@ -20,6 +22,8 @@ The two splitting statements assert existence, without choosing a canonical spli
 Under the same projectivity hypothesis, the diagonal quotient is projective if and only if
 `X ⧸ (LinearMap.ker f ⊔ LinearMap.ker g)` is projective. This criterion uses stability of
 projectivity under linear equivalences, products and retracts.
+The same splitting gives `finite_iff`: the diagonal quotient is finitely generated exactly
+when both the source kernel-sum quotient and the product of cokernels are finitely generated.
 The scalar ring may be noncommutative or zero, and the modules have independent universes.
 
 ## References
@@ -33,6 +37,8 @@ The scalar ring may be noncommutative or zero, and the modules have independent 
 * Mathlib's product transport, inclusion and projection interfaces in
   `Mathlib.LinearAlgebra.Prod`, and its linear-equivalence identity, composition and inverse
   characteristics in `Mathlib.Algebra.Module.Equiv.Defs`.
+* Mathlib's finite-generation transport and product interfaces in
+  `Mathlib.RingTheory.Finiteness.Basic` and `Mathlib.RingTheory.Finiteness.Prod`.
 * Mathlib's linear-map extensionality interface in
   `Mathlib.Algebra.Module.LinearMap.Defs`.
 -/
@@ -133,5 +139,29 @@ theorem projective_iff
   · intro hK
     have : Module.Projective S (X ⧸ (LinearMap.ker f ⊔ LinearMap.ker g)) := hK
     refine Module.Projective.of_equiv' e.symm
+
+/-- If the product of cokernels is projective, the diagonal quotient is finitely generated
+if and only if the source kernel-sum quotient and the product of cokernels are both
+finitely generated. -/
+theorem finite_iff
+    [Module.Projective S ((M ⧸ LinearMap.range f) × (N ⧸ LinearMap.range g))] :
+    Module.Finite S ((M × N) ⧸ LinearMap.range (f.prod g)) ↔
+      Module.Finite S (X ⧸ (LinearMap.ker f ⊔ LinearMap.ker g)) ∧
+        Module.Finite S ((M ⧸ LinearMap.range f) × (N ⧸ LinearMap.range g)) := by
+  obtain ⟨e, _, _⟩ := exists_equiv_prod f g
+  constructor
+  · intro hD
+    have hProd := (Module.Finite.equiv_iff e).mp hD
+    constructor
+    · exact Module.Finite.of_surjective (hM := hProd)
+        (LinearMap.fst S (X ⧸ (LinearMap.ker f ⊔ LinearMap.ker g))
+          ((M ⧸ LinearMap.range f) × (N ⧸ LinearMap.range g)))
+        (fun k => ⟨(k, 0), by simp only [LinearMap.fst_apply]⟩)
+    · exact Module.Finite.of_surjective (hM := hProd)
+        (LinearMap.snd S (X ⧸ (LinearMap.ker f ⊔ LinearMap.ker g))
+          ((M ⧸ LinearMap.range f) × (N ⧸ LinearMap.range g)))
+        (fun z => ⟨(0, z), by simp only [LinearMap.snd_apply]⟩)
+  · rintro ⟨hK, hE⟩
+    exact (Module.Finite.equiv_iff e).mpr (Module.Finite.prod (hM := hK) (hN := hE))
 
 end LinearMap.DiagonalQuotient

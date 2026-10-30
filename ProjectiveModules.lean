@@ -61,6 +61,7 @@ public import ProjectiveModules.Invertible.StableCancellation
 public import ProjectiveModules.Invertible.Topology
 public import ProjectiveModules.KTheory.Determinant
 public import ProjectiveModules.KTheory.DeterminantNaturality
+public import ProjectiveModules.KTheory.DiagonalQuotient
 public import ProjectiveModules.KTheory.Dual
 public import ProjectiveModules.KTheory.FiniteFree
 public import ProjectiveModules.KTheory.InvariantBasisNumber
@@ -117,6 +118,7 @@ public import ProjectiveModules.Module.ProjectiveComplement
 public import ProjectiveModules.Module.ProjectiveKernel
 public import ProjectiveModules.Module.KernelComparison
 public import ProjectiveModules.Module.ProjectiveKernelComparison
+public import ProjectiveModules.KTheory.Presentation
 public import ProjectiveModules.Module.ProjectivePi
 public import ProjectiveModules.Module.QuotientHom
 public import ProjectiveModules.Module.SummandCancellation

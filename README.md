@@ -37,8 +37,18 @@ Maintained by the Formal Frontier source-maintainer team.
   `exists_section` and `exists_equiv_prod`: the diagonal quotient splits as the product
   of `X ⧸ (ker f ⊔ ker g)` and the two range quotients, with both the projection and
   canonical kernel inclusion respected. The same hypothesis gives `projective_iff`,
-  relating projectivity of the diagonal quotient to that of the source kernel-sum quotient.
-  These results are exported by `import ProjectiveModules`.
+  relating projectivity of the diagonal quotient to that of the source kernel-sum quotient,
+  and `finite_iff`, characterizing finite generation by finite generation of both product
+  factors.
+  For right-linear maps, [K₀ additivity](ProjectiveModules/KTheory/DiagonalQuotient.lean)
+  is proved by `KTheory.K0.of_diagonalQuotient`:
+  `[D] = ([K] + [M ⧸ range f]) + [N ⧸ range g]`, where
+  `D = (M × N) ⧸ range (f.prod g)` and `K = X ⧸ (ker f ⊔ ker g)`. Only the three
+  right-hand modules need be finitely generated and projective over `Rᵐᵒᵖ`; no such
+  hypothesis on `X`, `M`, `N`, or `D` is required. The ring may be noncommutative or zero,
+  and the four carrier universes are independent. The proof uses short-exact additivity
+  for the canonical projection and for the product of cokernels.
+  All these results are exported by `import ProjectiveModules`.
 
 - **[Schanuel kernel comparison](ProjectiveModules/Module/KernelComparison.lean).**
   Over any semiring, supplied lifts between two linear maps from additive
