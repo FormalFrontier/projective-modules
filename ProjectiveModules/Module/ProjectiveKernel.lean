@@ -9,9 +9,10 @@ module
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.RingTheory.Finiteness.Basic
 public import StableRange.Module.SplitSurjective
+public import Mathlib.LinearAlgebra.Projection
 
 /-!
-# Kernels of split linear maps
+# Projective summands and kernels of split linear maps
 
 A section of a linear map gives a projection onto its kernel. This projection
 retracts the kernel inclusion. A split kernel is finite when the source is
@@ -19,13 +20,17 @@ finite, and projective when the source is projective. These independent closure
 statements require no finiteness or projectivity assumption on the target.
 Only the source needs additive inverses; the target may be an additive monoid.
 
+The range of an idempotent endomorphism of a projective module is projective,
+using Mathlib's projection onto its original range. This range closure needs
+only a semiring and an additive monoid.
+
 The splitting and projective-retract arguments use Mathlib's projective-module
 API. The split-kernel projection and retraction formalization follow the earlier
 work of Prism in Formal Frontier.
 
 ## References
 
-* Mathlib, `Mathlib.Algebra.Module.Projective`,
+* Mathlib, `Mathlib.LinearAlgebra.Projection`, `Mathlib.Algebra.Module.Projective`,
   `Mathlib.Algebra.Module.Submodule.Range`, and
   `Mathlib.RingTheory.Finiteness.Basic`.
 * Prism (Formal Frontier), split-kernel projections and projective complements.
@@ -136,3 +141,19 @@ theorem projective_splitKernel
     (splitKernelProjection_comp_subtype i r h)
 
 end LinearMap
+
+namespace Module.Projective
+
+/-- The range of an idempotent endomorphism of a projective module is projective. -/
+theorem range_of_isIdempotentElem
+    {S : Type uR} [Semiring S]
+    {P : Type uM} [AddCommMonoid P] [Module S P]
+    [Module.Projective S P]
+    (e : Module.End S P) (he : IsIdempotentElem e) :
+    Module.Projective S e.range := by
+  have hproj : LinearMap.IsProj e.range e :=
+    (LinearMap.isProj_range_iff_isIdempotentElem e).mpr he
+  apply Module.Projective.of_split e.range.subtype hproj.codRestrict
+  exact LinearMap.ext fun x => hproj.codRestrict_apply_cod x
+
+end Module.Projective

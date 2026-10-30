@@ -6,13 +6,16 @@ module
 
 public import ProjectiveModules.KTheory.ScalarExtension
 public import ProjectiveModules.Module.RightProduct
+public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.Algebra.Ring.Prod
+import ProjectiveModules.Module.ProjectivePi
 import ProjectiveModules.Module.RightExtensionFree
 import ProjectiveModules.Module.ProjectiveComplement
 import ProjectiveModules.Module.RightEndomorphismMatrix
 import Mathlib.Algebra.Ring.Fin
 import Mathlib.Algebra.Ring.ULift
+import Mathlib.Data.Fintype.BigOperators
 import Mathlib.GroupTheory.MonoidLocalization.Lemmas
 
 /-!
@@ -1153,3 +1156,57 @@ end Prod
 end K0
 
 end KTheory
+
+universe uP
+
+open scoped BigOperators
+
+namespace KTheory.K0
+
+/-- The class of a finite dependent product of right modules is the sum of its classes.
+The finite and projective structures on the product are consequences of those on the factors. -/
+theorem of_pi (R : Type uR) [Ring R]
+    {ι : Type uι} [Fintype ι] (M : ι → Type uP)
+    [∀ i, AddCommMonoid (M i)] [μ : ∀ i, Module Rᵐᵒᵖ (M i)]
+    [hfinite : ∀ i, Module.Finite Rᵐᵒᵖ (M i)]
+    [hprojective : ∀ i, Module.Projective Rᵐᵒᵖ (M i)] :
+    ∃ hfinitePi : Module.Finite Rᵐᵒᵖ (∀ i, M i),
+      ∃ hprojectivePi : Module.Projective Rᵐᵒᵖ (∀ i, M i),
+        @of R _ (∀ i, M i) (Module.addCommMonoidToAddCommGroup Rᵐᵒᵖ)
+            inferInstance hfinitePi hprojectivePi =
+          ∑ i, @of R _ (M i) (Module.addCommMonoidToAddCommGroup Rᵐᵒᵖ)
+            (μ i) (hfinite i) (hprojective i) := by
+  classical
+  have h : ∀ (κ : Type uι) [Fintype κ] (N : κ → Type uP)
+      [∀ i, AddCommGroup (N i)] [∀ i, Module Rᵐᵒᵖ (N i)]
+      [∀ i, Module.Finite Rᵐᵒᵖ (N i)] [∀ i, Module.Projective Rᵐᵒᵖ (N i)],
+      of R (∀ i, N i) = ∑ i, of R (N i) := by
+    intro κ _
+    refine Fintype.induction_empty_option
+      (P := fun (κ : Type uι) [Fintype κ] ↦
+        ∀ (N : κ → Type uP) [∀ i, AddCommGroup (N i)] [∀ i, Module Rᵐᵒᵖ (N i)]
+          [∀ i, Module.Finite Rᵐᵒᵖ (N i)] [∀ i, Module.Projective Rᵐᵒᵖ (N i)],
+          of R (∀ i, N i) = ∑ i, of R (N i)) ?_ ?_ ?_ κ
+    · intro α β _ e ih
+      let : Fintype α := @Fintype.ofEquiv α β ‹_› e.symm
+      intro N _ _ _ _
+      calc
+        of R (∀ i, N i) = of R (∀ i, N (e i)) :=
+          of_eq_of_equiv R _ (LinearEquiv.piCongrLeft Rᵐᵒᵖ N e).symm
+        _ = ∑ i, of R (N (e i)) := ih _
+        _ = ∑ i, of R (N i) := e.sum_comp (fun i => of R (N i))
+    · intro N _ _ _ _
+      simp
+    · intro α _ ih N _ _ _ _
+      calc
+        of R (∀ i, N i) = of R (N none × (∀ i, N (some i))) :=
+          of_eq_of_equiv R _ (LinearEquiv.piOptionEquivProd (R := Rᵐᵒᵖ))
+        _ = of R (N none) + of R (∀ i, N (some i)) := of_prod R _ _
+        _ = of R (N none) + ∑ i, of R (N (some i)) := by rw [ih]
+        _ = ∑ i, of R (N i) := (Fintype.sum_option (fun i => of R (N i))).symm
+  let : ∀ i, AddCommGroup (M i) :=
+    fun i ↦ Module.addCommMonoidToAddCommGroup Rᵐᵒᵖ
+  refine ⟨inferInstance, inferInstance, ?_⟩
+  exact h ι M
+
+end KTheory.K0

@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 -/
 -- Contributors: Prism
 module
+public import ProjectiveModules.KTheory.OrthogonalDecomposition
 public import ProjectiveModules.KTheory.CochainEulerCharacteristic
 public import ProjectiveModules.Module.RightExtensionReflection
 public import ProjectiveModules.ExteriorAlgebra.Contraction
