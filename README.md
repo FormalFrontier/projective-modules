@@ -185,6 +185,16 @@ examples and qualifications; links below go to the corresponding result families
   finite-projectivity premise is supplied. The underlying range identities and
   projectivity results hold over semiring scalars, with an additive group required
   for the results about the sum.
+- **[Finite intersections of idempotent ranges](ProjectiveModules/Module/FiniteRangeIntersections.lean):**
+  over any semiring `R`, a finite pairwise commuting family of idempotent endomorphisms
+  of an additive-commutative-monoid `R`-module `M` has a finitely generated intersection
+  of ranges when `M` is finitely generated
+  (`Module.Finite.iInf_range_of_commuting_idempotents`), and a projective intersection
+  when `M` is projective (`Module.Projective.iInf_range_of_commuting_idempotents`).
+  Neither conclusion requires the other ambient hypothesis. `LinearMap.range_noncommProd`
+  identifies the range of the finite product with the intersection. The original module
+  and action are retained, scalar, carrier and index universes are independent, and the
+  empty intersection is `⊤`.
 - **[Finite simultaneous decomposition](ProjectiveModules/Module/CommutingProjections.lean):**
   for any semiring `R`, additive commutative group `M` with an `R`-module structure,
   finite index type `I`, and supplied pairwise commuting idempotent endomorphisms
