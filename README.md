@@ -7,6 +7,15 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **[Finite generation from rank-one residue fibers](ProjectiveModules/Module/FiniteOfFiberRank.lean).**
+  An arbitrary projective module over a commutative ring is finitely generated when
+  every maximal residue tensor fiber has cardinal rank one. No finite generation,
+  finite presentation or Noetherian hypothesis is assumed, and scalar and carrier
+  universes are independent. The supporting results separate nonzero-fiber saturation
+  of dual evaluations from functional proportionality under the weaker rank-at-most-one
+  condition, which also allows zero fibers. The rank is a cardinal, not natural-number
+  `finrank`; the zero ring is allowed.
+
 - **[Quotients by an intersection and a sum](ProjectiveModules/Module/QuotientIntersection.lean).**
   For submodules `U,V` of a module `M` over any ring `S`, `diagonal` maps
   `M ⧸ (U ⊓ V)` to `(M ⧸ U) × (M ⧸ V)` by the two quotient factor maps, and
@@ -768,6 +777,9 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Finite-projective representatives](ProjectiveModules/Category/FiniteProjectiveSmallness.lean) | Derived ring-universe essential smallness at independent carrier universes; ring-sized representatives, linear equivalences and class equality in one reference skeleton |
 | [Finite dimension](ProjectiveModules/Category/FiniteModuleDimension.lean) | Finite-rank representative transport; finite-free categorical isomorphism criteria over strong-rank-condition rings |
 | [Finite stabilization](ProjectiveModules/Module/FiniteStabilization.lean) | Replace a finite projective common stabilizer by a common standard finite free one; no hypotheses on the two ambient modules |
+| [Dual-evaluation saturation](ProjectiveModules/Module/DualSaturation.lean) | For arbitrary projective modules over commutative rings, nonzero maximal residue tensor fibers force any ideal containing all dual evaluations to be the unit ideal; no finite generation or rank-one premise |
+| [Small residue rank](ProjectiveModules/Module/SmallFiberRank.lean) | Cardinal maximal-fiber rank at most one forces functional proportionality, with zero fibers allowed and no finite-generation premise |
+| [Rank-one finiteness](ProjectiveModules/Module/FiniteOfFiberRank.lean) | An arbitrary projective module with cardinal rank one at every maximal residue tensor fiber is finitely generated; independent scalar and carrier universes, including zero rings |
 | [Right regular module](ProjectiveModules/Module/RightRegular.lean) | Canonical opposite-scalar free and finite instances on the ordinary semiring carrier, including zero semirings |
 | [Right-module K₀](ProjectiveModules/KTheory/K0.lean), [stabilization](ProjectiveModules/KTheory/Stabilization.lean) | Ring-sized projective class monoid and group completion; arbitrary-universe module generators, descent/universal properties, difference representatives and common finite-projective or finite-free stabilization |
 | [Tensor semiring](ProjectiveModules/KTheory/TensorProduct.lean) | Canonical commutative semiring on finite-projective right-module classes over commutative rings, including zero rings; direct-sum addition, tensor multiplication, regular unit and natural casts, with independent module-carrier universes |
