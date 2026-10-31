@@ -12,6 +12,12 @@ public import Mathlib.LinearAlgebra.Projection
 /-!
 # Tensor-family zero detection, dual separation and injectivity reflection
 
+Over a commutative semiring, tensoring a jointly pair-separating family
+`f i : A →ₗ[R] B i` with a projective module `P` preserves pair separation in
+`P ⊗[R] A`, and by the commutor also in `A ⊗[R] P`. Only `P` is required to be
+projective; the dependent target family may be indexed by an arbitrary, possibly
+empty type. The premise compares all pairs in `A`, not only points with zero.
+
 Over a commutative semiring, tensoring a jointly zero-detecting family
 `h k : X →ₗ[R] Y k` with a projective module `P` preserves zero detection in
 `P ⊗[R] X`, and by the commutor also in `X ⊗[R] P`. The source and dependent
@@ -151,6 +157,67 @@ private theorem eq_of_forall_lid_rTensor_eq
       rw [hsplit]
     _ = u := by
       rw [← LinearMap.rTensor_comp_apply, hsM, LinearMap.rTensor_id, LinearMap.id_apply]
+
+/-- Tensoring a jointly pair-separating family with a projective module on the left
+preserves pair separation. The source, dependent targets and index type are arbitrary;
+no target projectivity, finiteness or additive inverses are required. -/
+theorem forall_map_id_left_apply_eq_iff_of_projective
+    {R : Type uR} [CommSemiring R]
+    {P : Type uP} [AddCommMonoid P] [Module R P]
+    [Module.Projective R P]
+    {A : Type uA} [AddCommMonoid A] [Module R A]
+    {I : Type uI} {B : I → Type uB}
+    [∀ i, AddCommMonoid (B i)] [∀ i, Module R (B i)]
+    (f : ∀ i, A →ₗ[R] B i)
+    (hf : ∀ a a' : A, (∀ i, f i a = f i a') → a = a')
+    (x y : P ⊗[R] A) :
+    (∀ i, TensorProduct.map (LinearMap.id : P →ₗ[R] P) (f i) x =
+      TensorProduct.map (LinearMap.id : P →ₗ[R] P) (f i) y) ↔ x = y := by
+  constructor
+  · intro hxy
+    apply eq_of_forall_lid_rTensor_eq R P A x y
+    intro φ
+    apply hf
+    intro i
+    -- Each family member commutes with the A-valued contraction by φ.
+    have hnat :
+        (f i).comp ((TensorProduct.lid R A).toLinearMap.comp (φ.rTensor A)) =
+          (TensorProduct.lid R (B i)).toLinearMap.comp
+            ((φ.rTensor (B i)).comp (TensorProduct.map LinearMap.id (f i))) := by
+      apply TensorProduct.ext'
+      intro p a
+      simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, LinearMap.rTensor_tmul,
+        TensorProduct.lid_tmul, TensorProduct.map_tmul, LinearMap.id_apply, map_smul]
+    exact ((LinearMap.congr_fun hnat x).trans
+      (congrArg (fun t => TensorProduct.lid R (B i) (φ.rTensor (B i) t)) (hxy i))).trans
+        (LinearMap.congr_fun hnat y).symm
+  · intro hxy i
+    rw [hxy]
+
+/-- Tensoring a jointly pair-separating family with a projective module on the right
+preserves pair separation. This is the commuting orientation of the left-projective
+criterion, with no projectivity assumption on any target. -/
+theorem forall_map_id_right_apply_eq_iff_of_projective
+    {R : Type uR} [CommSemiring R]
+    {P : Type uP} [AddCommMonoid P] [Module R P]
+    [Module.Projective R P]
+    {A : Type uA} [AddCommMonoid A] [Module R A]
+    {I : Type uI} {B : I → Type uB}
+    [∀ i, AddCommMonoid (B i)] [∀ i, Module R (B i)]
+    (f : ∀ i, A →ₗ[R] B i)
+    (hf : ∀ a a' : A, (∀ i, f i a = f i a') → a = a')
+    (x y : A ⊗[R] P) :
+    (∀ i, TensorProduct.map (f i) (LinearMap.id : P →ₗ[R] P) x =
+      TensorProduct.map (f i) (LinearMap.id : P →ₗ[R] P) y) ↔ x = y := by
+  constructor
+  · intro hxy
+    apply (TensorProduct.comm R A P).injective
+    apply (forall_map_id_left_apply_eq_iff_of_projective f hf
+      (TensorProduct.comm R A P x) (TensorProduct.comm R A P y)).mp
+    intro i
+    rw [TensorProduct.map_comm, TensorProduct.map_comm, hxy i]
+  · intro hxy i
+    rw [hxy]
 
 /-- Tensoring a jointly zero-detecting family with a projective module on the left
 preserves zero detection. The source, dependent targets and index type are arbitrary;

@@ -7,6 +7,11 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+Tensoring over a commutative semiring with a projective factor preserves joint pair
+injectivity of arbitrary dependent families. The canonical comparison
+`P ⊗[R] (∀ i, B i) → ∀ i, P ⊗[R] B i` is injective, but is not generally surjective;
+see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
+
 - **[Finite generation from rank-one residue fibers](ProjectiveModules/Module/FiniteOfFiberRank.lean).**
   An arbitrary projective module over a commutative ring is finitely generated when
   every maximal residue tensor fiber has cardinal rank one. No finite generation,
