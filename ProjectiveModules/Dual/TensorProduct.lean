@@ -10,7 +10,19 @@ public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.LinearAlgebra.Projection
 
 /-!
-# Dual tensor separation and injectivity reflection
+# Tensor-family zero detection, dual separation and injectivity reflection
+
+Over a commutative semiring, tensoring a jointly zero-detecting family
+`h k : X →ₗ[R] Y k` with a projective module `P` preserves zero detection in
+`P ⊗[R] X`, and by the commutor also in `X ⊗[R] P`. The source and dependent
+targets of the family are arbitrary; they need not be projective or have
+zero-separating duals. Index types may be empty and no finiteness is required.
+
+For two jointly zero-detecting families `f i : A →ₗ[R] B i` and
+`g j : C →ₗ[R] D j`, their tensor maps jointly detect zero when `C` and every
+`B i` are projective. First tensor the g-family with each `B i`, then tensor
+the f-family with `C`. No projectivity of `A` or `D j` is required. These
+criteria concern zero detection, not separation of arbitrary pairs.
 
 Over a commutative semiring, products of linear forms detect zero in `M ⊗[R] N`
 when `M` is projective and the canonical evaluation pairing `Module.Dual.eval R N`
@@ -31,8 +43,11 @@ is a corollary. The scalar-submodule application
 `TensorProduct.forall_dualDistrib_apply_eq_zero_iff_submodule` applies to every
 `I : Submodule R R`, including ideals, without assuming projectivity of `I`.
 
-The proof generalizes the projective-factor splitting argument, using Mathlib's
-projective splitting, finitely supported tensor coordinates and dual evaluation APIs.
+The one-sided criterion and the dual point-equality criterion share a vector-valued
+contraction argument, using Mathlib's projective splitting, finitely supported tensor
+coordinates and scalar unitors. The scalar zero criterion follows from the two-family
+criterion after swapping the factors; its second-factor zero-separation hypothesis
+is retained.
 
 Over a commutative semiring, the canonical map `dualTensorHom R M N` from
 `Module.Dual R M ⊗[R] N` to `M →ₗ[R] N` is injective whenever the output module `N`
@@ -75,7 +90,8 @@ of `P` nor finite generation, additive inverses or nontriviality.
   (`Mathlib.LinearAlgebra.Dual.Lemmas`), including projective dual-evaluation injectivity.
 - Mathlib's tensor maps and unitors by Kenny Lau and Mario Carneiro, and its
   Finsupp/direct-sum formalizations by Johannes Hölzl and Antoine Chambert-Loir.
-  Injectivity reflection uses these canonical maps; the family application uses
+  Tensor-family zero detection and dual separation use `TensorProduct.finsuppScalarLeft`
+  and the canonical tensor maps and unitors. The linear-independence application uses
   `TensorProduct.finsuppScalarRight` rather than a new free-module identification.
 -/
 
@@ -83,7 +99,7 @@ of `P` nor finite generation, additive inverses or nontriviality.
 
 open scoped TensorProduct
 
-universe uR uP uM uN uι
+universe uR uP uM uN uι uA uC uI uJ uB uD
 
 namespace TensorProduct
 
@@ -106,6 +122,122 @@ theorem eq_of_forall_tmul_eq_of_eval_injective
   have hφ := congrArg (fun t => TensorProduct.rid R P (φ.lTensor P t)) (h p)
   simpa only [LinearMap.lTensor_tmul, TensorProduct.rid_tmul] using hφ
 
+-- Vector-valued contractions distinguish pairs even if the second factor has no nonzero duals.
+-- This is the single free-coordinate argument used for both zero and pair detection.
+private theorem eq_of_forall_lid_rTensor_eq
+    (R : Type uR) [CommSemiring R]
+    (M : Type uM) (N : Type uN)
+    [AddCommMonoid M] [AddCommMonoid N]
+    [Module R M] [Module R N] [Module.Projective R M]
+    (t u : M ⊗[R] N)
+    (h : ∀ f : Module.Dual R M,
+      TensorProduct.lid R N (f.rTensor N t) = TensorProduct.lid R N (f.rTensor N u)) :
+    t = u := by
+  classical
+  obtain ⟨sM, hsM⟩ :=
+    Module.projective_def'.mp (inferInstance : Module.Projective R M)
+  have hsplit : sM.rTensor N t = sM.rTensor N u := by
+    apply (TensorProduct.finsuppScalarLeft R N M).injective
+    apply Finsupp.ext
+    intro i
+    rw [TensorProduct.finsuppScalarLeft_apply, TensorProduct.finsuppScalarLeft_apply,
+      ← LinearMap.rTensor_comp_apply, ← LinearMap.rTensor_comp_apply]
+    exact h ((Finsupp.lapply i).comp sM)
+  -- The tensor of the projective retraction returns equality in the original tensor.
+  calc
+    t = (Finsupp.linearCombination R (id : M → M)).rTensor N (sM.rTensor N t) := by
+      rw [← LinearMap.rTensor_comp_apply, hsM, LinearMap.rTensor_id, LinearMap.id_apply]
+    _ = (Finsupp.linearCombination R (id : M → M)).rTensor N (sM.rTensor N u) := by
+      rw [hsplit]
+    _ = u := by
+      rw [← LinearMap.rTensor_comp_apply, hsM, LinearMap.rTensor_id, LinearMap.id_apply]
+
+/-- Tensoring a jointly zero-detecting family with a projective module on the left
+preserves zero detection. The source, dependent targets and index type are arbitrary;
+no target projectivity, finiteness or additive inverses are required. -/
+theorem forall_map_id_left_apply_eq_zero_iff_of_projective
+    {R : Type uR} [CommSemiring R]
+    (P : Type uP) [AddCommMonoid P] [Module R P] [Module.Projective R P]
+    {X : Type uM} [AddCommMonoid X] [Module R X]
+    {K : Type uI} {Y : K → Type uB}
+    [∀ k, AddCommMonoid (Y k)] [∀ k, Module R (Y k)]
+    (h : ∀ k, X →ₗ[R] Y k)
+    (hh : ∀ x : X, (∀ k, h k x = 0) → x = 0)
+    (s : P ⊗[R] X) :
+    (∀ k, TensorProduct.map (LinearMap.id : P →ₗ[R] P) (h k) s = 0) ↔ s = 0 := by
+  constructor
+  · intro hs
+    apply eq_of_forall_lid_rTensor_eq R P X s 0
+    intro φ
+    rw [map_zero, map_zero]
+    apply hh
+    intro k
+    -- Each original test commutes with the X-valued contraction by φ.
+    have hnat :
+        (h k).comp ((TensorProduct.lid R X).toLinearMap.comp (φ.rTensor X)) =
+          (TensorProduct.lid R (Y k)).toLinearMap.comp
+            ((φ.rTensor (Y k)).comp (TensorProduct.map LinearMap.id (h k))) := by
+      apply TensorProduct.ext'
+      intro p x
+      simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, LinearMap.rTensor_tmul,
+        TensorProduct.lid_tmul, TensorProduct.map_tmul, LinearMap.id_apply, map_smul]
+    exact (LinearMap.congr_fun hnat s).trans (by
+      simp only [LinearMap.comp_apply, hs k, map_zero])
+  · intro hs k
+    rw [hs, map_zero]
+
+/-- Tensoring a jointly zero-detecting family with a projective module on the right
+preserves zero detection. This is the commuting orientation of the left-projective
+criterion, with no projectivity assumption on any target. -/
+theorem forall_map_id_right_apply_eq_zero_iff_of_projective
+    {R : Type uR} [CommSemiring R]
+    (P : Type uP) [AddCommMonoid P] [Module R P] [Module.Projective R P]
+    {X : Type uM} [AddCommMonoid X] [Module R X]
+    {K : Type uI} {Y : K → Type uB}
+    [∀ k, AddCommMonoid (Y k)] [∀ k, Module R (Y k)]
+    (h : ∀ k, X →ₗ[R] Y k)
+    (hh : ∀ x : X, (∀ k, h k x = 0) → x = 0)
+    (s : X ⊗[R] P) :
+    (∀ k, TensorProduct.map (h k) (LinearMap.id : P →ₗ[R] P) s = 0) ↔ s = 0 := by
+  constructor
+  · intro hs
+    apply (TensorProduct.comm R X P).map_eq_zero_iff.mp
+    apply (forall_map_id_left_apply_eq_zero_iff_of_projective P h hh
+      (TensorProduct.comm R X P s)).mp
+    intro k
+    rw [TensorProduct.map_comm, hs k, map_zero]
+  · intro hs k
+    rw [hs, map_zero]
+
+/-- Two jointly zero-detecting families detect zero after tensoring when the second
+source and every target of the first family are projective. No projectivity of the
+first source or the second family's targets is required, and both index types may
+be empty. This is zero detection, not separation of arbitrary pairs. -/
+theorem forall_map_apply_eq_zero_iff_of_projective
+    {R : Type uR} [CommSemiring R]
+    {A : Type uA} {C : Type uC}
+    [AddCommMonoid A] [AddCommMonoid C] [Module R A] [Module R C]
+    {I : Type uI} {J : Type uJ} {B : I → Type uB} {D : J → Type uD}
+    [∀ i, AddCommMonoid (B i)] [∀ i, Module R (B i)]
+    [∀ j, AddCommMonoid (D j)] [∀ j, Module R (D j)]
+    [Module.Projective R C] [∀ i, Module.Projective R (B i)]
+    (f : ∀ i, A →ₗ[R] B i) (g : ∀ j, C →ₗ[R] D j)
+    (hf : ∀ a : A, (∀ i, f i a = 0) → a = 0)
+    (hg : ∀ c : C, (∀ j, g j c = 0) → c = 0)
+    (t : A ⊗[R] C) :
+    (∀ i j, TensorProduct.map (f i) (g j) t = 0) ↔ t = 0 := by
+  constructor
+  · intro ht
+    apply (forall_map_id_right_apply_eq_zero_iff_of_projective C f hf t).mp
+    intro i
+    -- First use projectivity of B i, not of any D j.
+    apply (forall_map_id_left_apply_eq_zero_iff_of_projective (B i) g hg
+      (TensorProduct.map (f i) LinearMap.id t)).mp
+    intro j
+    simpa only [TensorProduct.map_map, LinearMap.id_comp, LinearMap.comp_id] using ht i j
+  · intro ht i j
+    rw [ht, map_zero]
+
 /-- A tensor with projective first factor vanishes exactly when every rank-one product
 of linear forms vanishes on it, provided the canonical dual evaluation on the second
 factor detects zero. No finite-generation or second-factor projectivity is required. -/
@@ -121,32 +253,23 @@ theorem forall_dualDistrib_apply_eq_zero_iff_of_eval_separatingLeft
       TensorProduct.dualDistrib R M N (f ⊗ₜ[R] g) t = 0) ↔ t = 0 := by
   constructor
   · intro h
-    classical
-    obtain ⟨sM, hsM⟩ :=
-      Module.projective_def'.mp (inferInstance : Module.Projective R M)
-    -- Testing an N-valued coordinate gives a product with a pulled-back coordinate form.
-    have hcoord (i : M) (g : Module.Dual R N) :
-        g.comp ((Finsupp.lapply i).comp
-            ((TensorProduct.finsuppScalarLeft R N M).toLinearMap.comp (sM.rTensor N))) =
-          TensorProduct.dualDistrib R M N ((Finsupp.lapply i).comp sM ⊗ₜ[R] g) := by
+    apply (TensorProduct.comm R M N).map_eq_zero_iff.mp
+    apply (forall_map_apply_eq_zero_iff_of_projective
+      (fun g : Module.Dual R N => g) (fun f : Module.Dual R M => f)
+      hN (fun m hm => (Module.forall_dual_apply_eq_zero_iff R m).mp hm)
+      (TensorProduct.comm R M N t)).mp
+    intro g f
+    apply (TensorProduct.rid R R).map_eq_zero_iff.mp
+    -- Swapping the factors gives the scalar product in its original order via rid.
+    have hscalar : (TensorProduct.rid R R).toLinearMap.comp
+        ((TensorProduct.map g f).comp (TensorProduct.comm R M N).toLinearMap) =
+          TensorProduct.dualDistrib R M N (f ⊗ₜ[R] g) := by
       apply TensorProduct.ext'
       intro m n
-      simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, LinearMap.rTensor_tmul,
-        Finsupp.lapply_apply, TensorProduct.finsuppScalarLeft_apply_tmul_apply, map_smul,
-        TensorProduct.dualDistrib_apply, smul_eq_mul]
-    have hzero : sM.rTensor N t = 0 := by
-      apply (TensorProduct.finsuppScalarLeft R N M).map_eq_zero_iff.mp
-      apply Finsupp.ext
-      intro i
-      change TensorProduct.finsuppScalarLeft R N M (sM.rTensor N t) i = 0
-      apply hN
-      intro g
-      exact (LinearMap.congr_fun (hcoord i g) t).trans (h ((Finsupp.lapply i).comp sM) g)
-    -- Tensoring the sole projective splitting with the identity gives a retraction.
-    calc
-      t = (Finsupp.linearCombination R (id : M → M)).rTensor N (sM.rTensor N t) := by
-        rw [← LinearMap.rTensor_comp_apply, hsM, LinearMap.rTensor_id, LinearMap.id_apply]
-      _ = 0 := by rw [hzero, map_zero]
+      simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, TensorProduct.comm_tmul,
+        TensorProduct.map_tmul, TensorProduct.rid_tmul, smul_eq_mul,
+        TensorProduct.dualDistrib_apply]
+    exact (LinearMap.congr_fun hscalar t).trans (h f g)
   · intro ht f g
     rw [ht, map_zero]
 
@@ -193,40 +316,22 @@ theorem forall_dualDistrib_apply_eq_iff_of_eval_injective
         TensorProduct.dualDistrib R M N (f ⊗ₜ[R] g) u) ↔ t = u := by
   constructor
   · intro h
-    classical
-    obtain ⟨sM, hsM⟩ :=
-      Module.projective_def'.mp (inferInstance : Module.Projective R M)
-    -- Pull each dual form back along an N-valued split coordinate.
-    have hcoord (i : M) (g : Module.Dual R N) :
-        g.comp ((Finsupp.lapply i).comp
-            ((TensorProduct.finsuppScalarLeft R N M).toLinearMap.comp (sM.rTensor N))) =
-          TensorProduct.dualDistrib R M N ((Finsupp.lapply i).comp sM ⊗ₜ[R] g) := by
+    apply eq_of_forall_lid_rTensor_eq R M N t u
+    intro f
+    apply hN
+    apply LinearMap.ext
+    intro g
+    change g (TensorProduct.lid R N (f.rTensor N t)) =
+      g (TensorProduct.lid R N (f.rTensor N u))
+    have hcoord :
+        g.comp ((TensorProduct.lid R N).toLinearMap.comp (f.rTensor N)) =
+          TensorProduct.dualDistrib R M N (f ⊗ₜ[R] g) := by
       apply TensorProduct.ext'
       intro m n
       simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, LinearMap.rTensor_tmul,
-        Finsupp.lapply_apply, TensorProduct.finsuppScalarLeft_apply_tmul_apply, map_smul,
-        TensorProduct.dualDistrib_apply, smul_eq_mul]
-    have hsplit : sM.rTensor N t = sM.rTensor N u := by
-      apply (TensorProduct.finsuppScalarLeft R N M).injective
-      apply Finsupp.ext
-      intro i
-      change TensorProduct.finsuppScalarLeft R N M (sM.rTensor N t) i =
-        TensorProduct.finsuppScalarLeft R N M (sM.rTensor N u) i
-      apply hN
-      apply LinearMap.ext
-      intro g
-      change g (TensorProduct.finsuppScalarLeft R N M (sM.rTensor N t) i) =
-        g (TensorProduct.finsuppScalarLeft R N M (sM.rTensor N u) i)
-      exact ((LinearMap.congr_fun (hcoord i g) t).trans
-        (h ((Finsupp.lapply i).comp sM) g)).trans (LinearMap.congr_fun (hcoord i g) u).symm
-    -- Apply the tensor of the sole projective retraction to both split images.
-    calc
-      t = (Finsupp.linearCombination R (id : M → M)).rTensor N (sM.rTensor N t) := by
-        rw [← LinearMap.rTensor_comp_apply, hsM, LinearMap.rTensor_id, LinearMap.id_apply]
-      _ = (Finsupp.linearCombination R (id : M → M)).rTensor N (sM.rTensor N u) := by
-        rw [hsplit]
-      _ = u := by
-        rw [← LinearMap.rTensor_comp_apply, hsM, LinearMap.rTensor_id, LinearMap.id_apply]
+        TensorProduct.lid_tmul, map_smul, TensorProduct.dualDistrib_apply, smul_eq_mul]
+    exact ((LinearMap.congr_fun hcoord t).trans (h f g)).trans
+      (LinearMap.congr_fun hcoord u).symm
   · intro htu f g
     rw [htu]
 

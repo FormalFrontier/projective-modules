@@ -298,6 +298,15 @@ examples and qualifications; links below go to the corresponding result families
   agrees with successive contractions, first over `M` and then over `N`, after
   inverse-associator input and forward-associator output transport. The remaining
   input and output semimodules are arbitrary, with independent universes.
+- **[Tensor-family zero detection](ProjectiveModules/Dual/TensorProduct.lean):** over a
+  commutative semiring, tensoring a jointly zero-detecting family with a projective
+  module on either side preserves zero detection. The family's source and dependent
+  targets are arbitrary additive commutative monoids. For two jointly zero-detecting
+  families `f i : A →ₗ[R] B i` and `g j : C →ₗ[R] D j`, the maps `f i ⊗ g j`
+  jointly detect zero when `C` and every `B i` are projective; no projectivity of
+  `A` or `D j` is required. Universes are independent, index types may be empty,
+  and no finite-generation assumption is needed. This is zero detection, not
+  separation of arbitrary pairs.
 - **[Tensor dual separation](ProjectiveModules/Dual/TensorProduct.lean):** over a
   commutative semiring, products of linear forms detect zero in `M ⊗[R] N` when
   `M` is projective and the canonical dual evaluation on `N` is left-separating
