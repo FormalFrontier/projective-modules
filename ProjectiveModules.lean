@@ -33,6 +33,7 @@ public import ProjectiveModules.Dual.ModuleCat
 public import ProjectiveModules.Dual.Quotient
 public import ProjectiveModules.Dual.TensorProduct
 public import ProjectiveModules.TensorProduct.Hom
+public import ProjectiveModules.TensorProduct.SemilinearHom
 public import ProjectiveModules.TensorProduct.Pi
 public import ProjectiveModules.TensorProduct.Submodule
 public import ProjectiveModules.ExteriorAlgebra.BaseChange
