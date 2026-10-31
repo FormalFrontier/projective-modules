@@ -175,6 +175,7 @@ public import ProjectiveModules.KTheory.RankLocallyConstantRing
 public import ProjectiveModules.RingTheory.IdempotentCorrection
 public import ProjectiveModules.Topology.Projective
 public import ProjectiveModules.Topology.Splitting
+public import ProjectiveModules.Topology.KernelComparison
 
 /-!
 # Projective module interfaces

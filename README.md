@@ -7,6 +7,15 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **[Kernels with a common section](ProjectiveModules/Topology/KernelComparison.lean).**
+  Over a semiring, continuous linear maps `r, s : A →L[K] H` sharing a right inverse
+  `Γ : H →L[K] A` have canonically continuously linearly equivalent kernels, via
+  `a ↦ a - Γ (s a)`. Here `H` is an additive commutative monoid with a module
+  structure and a given topology, and `A` is an additive commutative group with a
+  module structure and a given topological additive group topology. The comparison
+  uses the induced kernel topologies and satisfies identity, inverse and composition
+  laws; no topology on the scalar semiring or separation axiom is required.
+
 Tensoring over a commutative semiring with a projective factor preserves joint pair
 injectivity of arbitrary dependent families. The canonical comparison
 `P ⊗[R] (∀ i, B i) → ∀ i, P ⊗[R] B i` is injective, but is not generally surjective;
