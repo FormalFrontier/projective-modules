@@ -119,6 +119,7 @@ public import ProjectiveModules.Module.FiniteStabilization
 public import ProjectiveModules.Module.FiniteOfFiberRank
 public import ProjectiveModules.Module.FiniteOfLocallyConstantRank
 public import ProjectiveModules.Module.QuotientResidueRankLocus
+public import ProjectiveModules.Module.QuotientResidueRankMap
 public import ProjectiveModules.Module.LocalFiberBasis
 public import ProjectiveModules.Module.ZeroOfFiberRank
 public import ProjectiveModules.Localization.TensorProduct

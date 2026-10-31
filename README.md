@@ -52,7 +52,9 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   This function is locally constant exactly when `V(I)` is clopen, without a
   finite-generation assumption on `I`. A nonzero proper ideal in a domain
   gives non-local constancy; in particular, `ℤ/(2)` is not projective as a
-  `ℤ`-module.
+  `ℤ`-module. The ranks are also [compatible with pullback along ring
+  homomorphisms](ProjectiveModules/Module/QuotientResidueRankMap.lean), with
+  cardinal lifts accommodating independent universes.
 
 - **[Quotients by an intersection and a sum](ProjectiveModules/Module/QuotientIntersection.lean).**
   For submodules `U,V` of a module `M` over any ring `S`, `diagonal` maps
@@ -834,7 +836,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Constant finite residue rank](ProjectiveModules/Module/FiniteOfFiberRank.lean), [vanishing](ProjectiveModules/Module/ZeroOfFiberRank.lean) | `finite_of_residue_rank_eq_nat` gives finite generation from constant finite cardinal maximal-fiber rank; cardinal rank zero forces the original module to be subsingleton |
 | [Locally constant finite residue rank](ProjectiveModules/Module/FiniteOfLocallyConstantRank.lean), [continuity](ProjectiveModules/Module/LocallyConstantResidueRank.lean) | A projective module is finitely generated exactly when its genuine cardinal residue ranks are finite and locally constant; no uniform rank is assumed |
 | [Residue rank base change](ProjectiveModules/Module/ResidueRank.lean) | Arbitrary algebra and module scalar extension preserves the cardinal rank of a maximal fiber after passage to the residue field at the contracted prime, with independent universes |
-| [Cyclic quotient residue ranks](ProjectiveModules/Module/QuotientResidueRankLocus.lean) | The cardinal residue rank of `R/I` is one on `V(I)` and zero off it; local constancy is equivalent to clopen `V(I)`, and nonzero proper ideals in domains give non-local constancy |
+| [Cyclic quotient residue ranks](ProjectiveModules/Module/QuotientResidueRankLocus.lean) | The cardinal residue rank of `R/I` is one on `V(I)` and zero off it; local constancy is equivalent to clopen `V(I)`, nonzero proper ideals in domains give non-local constancy, and ranks are compatible with pullback along ring homomorphisms |
 | [Exterior base change](ProjectiveModules/ExteriorPower/TensorProduct.lean), [top exterior rank](ProjectiveModules/ExteriorPower/Rank.lean) | Degreewise scalar-extension equivalences with pure-wedge and naturality formulas, without flatness; cardinal rank `r` over a field gives rank one in exterior degree `r` |
 | [Exterior surjectivity](ProjectiveModules/ExteriorPower/Surjectivity.lean), [finite support](ProjectiveModules/ExteriorPower/FiniteSupport.lean) | A map to a free module with a `Fin r` basis is surjective exactly when its degree-`r` exterior map is; finitely generated exterior powers admit finite source spans surjecting onto them |
 | [Local fiber bases](ProjectiveModules/Module/LocalFiberBasis.lean) | A projective module with maximal residue cardinal rank `r` has a `Fin r` basis after localization at that maximal ideal, without a prior finite-generation hypothesis |
