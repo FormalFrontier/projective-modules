@@ -45,6 +45,10 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   has coefficient one for each labelled subset, and its inverse is natural
   in both modules. The degree-zero comparison preserves the scalar unit;
   the degree-one target is ordered as the second module followed by the first.
+  [Scalar extension](ProjectiveModules/Module/SymmetricPower/BaseChange.lean)
+  commutes with every finite symmetric degree over commutative semirings,
+  without flatness or projectivity. The comparison and its inverse are
+  characterized on labelled pure tensors and are natural in module maps.
 - **[Finite-projective Hom](ProjectiveModules/Module/FiniteProjectiveHom.lean).**
   For arbitrary semirings `R`, `S`, `T`, a finite projective `R`-module `M`
   and `σ : R →+* S`, let `N` be both an `S`-module and a `T`-module.

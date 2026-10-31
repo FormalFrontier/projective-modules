@@ -14,6 +14,7 @@ public import ProjectiveModules.Module.SymmetricPower.Basis
 public import ProjectiveModules.Module.SymmetricPower.Quadratic
 public import ProjectiveModules.Module.SymmetricPower.Tensor
 public import ProjectiveModules.Module.SymmetricPower.Prod
+public import ProjectiveModules.Module.SymmetricPower.BaseChange
 public import ProjectiveModules.Module.PiTensorProduct
 
 /-!
@@ -31,6 +32,11 @@ symmetric degrees of the two summands. The forward map is the coefficient-one
 sum over labelled subsets, and the inverse concatenates the two blocks. The
 decomposition is natural and agrees with the scalar unit and coordinate swap
 in degrees zero and one.
+
+Scalar extension commutes with every finite symmetric degree for arbitrary
+semimodules over commutative semirings. The comparison is natural, is
+characterized on all labelled pure tensors, and preserves the scalar unit
+in degree zero.
 -/
 
 @[expose] public section
