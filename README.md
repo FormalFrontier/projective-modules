@@ -634,6 +634,12 @@ examples and qualifications; links below go to the corresponding result families
   range description includes trivial coefficients and empty/infinite alphabets. A cyclic additive map
   with injective natural multiples of its unit value gives semiring IBN.
 
+- **[Tensor-image membership](ProjectiveModules/TensorProduct/Submodule.lean):** over a
+  commutative ring, if `W ≤ V` has projective quotient, any jointly zero-detecting
+  family `f i : A →ₗ[R] B i` detects membership in the image of
+  `W ⊗[R] A → V ⊗[R] A`. This image equals the infimum of the comaps of the
+  corresponding images in `V ⊗[R] B i`. The source and dependent targets are
+  arbitrary modules, and the index type may be infinite or empty.
 ## Trace modulo additive commutators
 
 This is the endomorphism-level Hattori–Stallings trace described in Weibel,

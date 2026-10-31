@@ -12,6 +12,7 @@ import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.RingTheory.PrincipalIdealDomain
 import ProjectiveModulesTests.TensorDualSeparationClient
+import ProjectiveModulesTests.TensorSubmoduleMembershipClient
 import ProjectiveModulesTests.K0RetractionMatrixClient
 import ProjectiveModulesTests.K0LocalPIDCalculationsClient
 import ProjectiveModulesTests.K0CompletionBijectivityClient
