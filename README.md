@@ -7,6 +7,14 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **Kernel families.** Over an arbitrary semiring, two supplied split linear
+  retractions with a common section into a fixed module with a topological
+  additive-group structure have homeomorphic total kernel spaces whenever their
+  ambient projection difference is jointly continuous. The section-domain modules
+  may vary and need no topology. Both total spaces retain their subspace topologies
+  in the parameter–ambient product. Writing `Δ = Γr - Γq`, transport is
+  `(t,a) ↦ (t,a + Δ(t,a))`, with inverse `(t,a) ↦ (t,a - Δ(t,a))`.
+
 - **[Kernels with a common section](ProjectiveModules/Topology/KernelComparison.lean).**
   Over a semiring, continuous linear maps `r, s : A →L[K] H` sharing a right inverse
   `Γ : H →L[K] A` have canonically continuously linearly equivalent kernels, via

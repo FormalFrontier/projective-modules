@@ -4,6 +4,8 @@ Authors: Formal Frontier Agents
 -/
 module
 
+import Mathlib.Tactic.Abel
+
 public import Mathlib.LinearAlgebra.Prod
 
 /-!
@@ -129,5 +131,133 @@ def kerProdEquivOfLifts
     (s : Q →ₗ[R] P) (t : P →ₗ[R] Q)
     (hps : p.comp s = q) (hqt : q.comp t = p) (z : q.ker × P) :
     ((kerProdEquivOfLifts p q s t hps hqt).symm z).2 = (z.1 : Q) + t z.2 := rfl
+
+end LinearMap
+
+end
+
+@[expose] public section
+
+universe uK uH uA
+
+private theorem commonSectionResidual
+    {K : Type uK} {H : Type uH} {A : Type uA}
+    [Semiring K] [AddCommMonoid H] [Module K H]
+    [AddCommGroup A] [Module K A]
+    (Γ : H →ₗ[K] A) (u v : A →ₗ[K] H)
+    (hu : ∀ h : H, u (Γ h) = h) (a : A) :
+    ((a - Γ (v a)) - Γ (u (a - Γ (v a)))) = a - Γ (u a) := by
+  let P : A →ₗ[K] A := Γ.comp u
+  have hP : P (a - Γ (v a)) = Γ (u a) - Γ (v a) := by
+    rw [map_sub]
+    change Γ (u a) - Γ (u (Γ (v a))) = Γ (u a) - Γ (v a)
+    rw [hu]
+  change (a - Γ (v a)) - P (a - Γ (v a)) = a - Γ (u a)
+  rw [hP]
+  abel
+
+private theorem commonSectionResidual_mem
+    {K : Type uK} {H : Type uH} {A : Type uA}
+    [Semiring K] [AddCommMonoid H] [Module K H]
+    [AddCommGroup A] [Module K A]
+    (Γ : H →ₗ[K] A) (u : A →ₗ[K] H)
+    (hu : ∀ h : H, u (Γ h) = h) (a : A) :
+    u (a - Γ (u a)) = 0 := by
+  -- Reflect zero through the split injection, keeping subtraction in the ambient group.
+  have hΓ : Function.Injective Γ := by
+    intro x y h
+    simpa only [hu] using congrArg u h
+  apply hΓ
+  change (Γ.comp u) (a - Γ (u a)) = Γ 0
+  rw [map_sub]
+  change Γ (u a) - Γ (u (Γ (u a))) = Γ 0
+  rw [hu, sub_self, map_zero]
+
+namespace LinearMap
+
+/-- The linear equivalence between the kernels of two split linear retractions
+with a common section. Its ambient formula is `a ↦ a - Γ (q a)`, with inverse
+`b ↦ b - Γ (r b)`. Only the ambient module needs an additive group structure. -/
+def kerEquivOfCommonRightInverse
+    {K : Type uK} {H : Type uH} {A : Type uA}
+    [Semiring K] [AddCommMonoid H] [Module K H]
+    [AddCommGroup A] [Module K A]
+    (Γ : H →ₗ[K] A) (r q : A →ₗ[K] H)
+    (hr : ∀ h : H, r (Γ h) = h) (hq : ∀ h : H, q (Γ h) = h) :
+    LinearMap.ker r ≃ₗ[K] LinearMap.ker q where
+  toFun a := ⟨(a : A) - Γ (q (a : A)), by
+    exact commonSectionResidual_mem Γ q hq a⟩
+  invFun b := ⟨(b : A) - Γ (r (b : A)), by
+    exact commonSectionResidual_mem Γ r hr b⟩
+  left_inv a := by
+    apply Subtype.ext
+    have ha : r (a : A) = 0 := a.property
+    simpa only [ha, map_zero, sub_zero] using commonSectionResidual Γ r q hr (a : A)
+  right_inv b := by
+    apply Subtype.ext
+    have hb : q (b : A) = 0 := b.property
+    simpa only [hb, map_zero, sub_zero] using commonSectionResidual Γ q r hq (b : A)
+  map_add' a b := by
+    apply Subtype.ext
+    change (a : A) + (b : A) - Γ (q ((a : A) + (b : A))) =
+      ((a : A) - Γ (q (a : A))) + ((b : A) - Γ (q (b : A)))
+    rw [map_add, map_add]
+    abel
+  map_smul' c a := by
+    apply Subtype.ext
+    change c • (a : A) - Γ (q (c • (a : A))) = c • ((a : A) - Γ (q (a : A)))
+    rw [map_smul, map_smul, smul_sub]
+
+variable {K : Type uK} [Semiring K]
+variable {H : Type uH} [AddCommMonoid H] [Module K H]
+variable {A : Type uA} [AddCommGroup A] [Module K A]
+
+/-- The ambient value of the common-section kernel comparison. -/
+@[simp]
+theorem coe_kerEquivOfCommonRightInverse_apply (Γ : H →ₗ[K] A) (r q : A →ₗ[K] H)
+    (hr : ∀ h : H, r (Γ h) = h) (hq : ∀ h : H, q (Γ h) = h)
+    (a : LinearMap.ker r) :
+    (kerEquivOfCommonRightInverse Γ r q hr hq a : A) = (a : A) - Γ (q (a : A)) :=
+  rfl
+
+/-- The ambient value of the inverse common-section kernel comparison. -/
+theorem coe_kerEquivOfCommonRightInverse_symm_apply (Γ : H →ₗ[K] A)
+    (r q : A →ₗ[K] H) (hr : ∀ h : H, r (Γ h) = h) (hq : ∀ h : H, q (Γ h) = h)
+    (b : LinearMap.ker q) :
+    ((kerEquivOfCommonRightInverse Γ r q hr hq).symm b : A) =
+      (b : A) - Γ (r (b : A)) :=
+  rfl
+
+/-- Comparing a kernel with itself gives the identity linear equivalence. -/
+@[simp]
+theorem kerEquivOfCommonRightInverse_refl (Γ : H →ₗ[K] A) (r : A →ₗ[K] H)
+    (hr : ∀ h : H, r (Γ h) = h) :
+    kerEquivOfCommonRightInverse Γ r r hr hr = LinearEquiv.refl K (LinearMap.ker r) := by
+  ext a : 1
+  apply Subtype.ext
+  change (a : A) - Γ (r (a : A)) = (a : A)
+  have ha : r (a : A) = 0 := a.property
+  rw [ha, map_zero, sub_zero]
+
+/-- Reversing the two retractions gives the inverse linear equivalence. -/
+@[simp]
+theorem kerEquivOfCommonRightInverse_symm (Γ : H →ₗ[K] A) (r q : A →ₗ[K] H)
+    (hr : ∀ h : H, r (Γ h) = h) (hq : ∀ h : H, q (Γ h) = h) :
+    (kerEquivOfCommonRightInverse Γ r q hr hq).symm =
+      kerEquivOfCommonRightInverse Γ q r hq hr := by
+  ext b : 1
+  rfl
+
+/-- Kernel comparisons with a fixed common section compose in order. -/
+@[simp]
+theorem kerEquivOfCommonRightInverse_trans (Γ : H →ₗ[K] A) (r q s : A →ₗ[K] H)
+    (hr : ∀ h : H, r (Γ h) = h) (hq : ∀ h : H, q (Γ h) = h)
+    (hs : ∀ h : H, s (Γ h) = h) :
+    (kerEquivOfCommonRightInverse Γ r q hr hq).trans
+        (kerEquivOfCommonRightInverse Γ q s hq hs) =
+      kerEquivOfCommonRightInverse Γ r s hr hs := by
+  ext a : 1
+  apply Subtype.ext
+  exact commonSectionResidual Γ s q hs (a : A)
 
 end LinearMap
