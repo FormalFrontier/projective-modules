@@ -33,6 +33,7 @@ public import ProjectiveModules.Dual.ModuleCat
 public import ProjectiveModules.Dual.Quotient
 public import ProjectiveModules.Dual.TensorProduct
 public import ProjectiveModules.TensorProduct.Hom
+public import ProjectiveModules.TensorProduct.SemilinearHom
 public import ProjectiveModules.TensorProduct.Pi
 public import ProjectiveModules.TensorProduct.Submodule
 public import ProjectiveModules.ExteriorAlgebra.BaseChange
@@ -120,6 +121,7 @@ public import ProjectiveModules.Module.FiniteOfFiberRank
 public import ProjectiveModules.Module.FiniteOfLocallyConstantRank
 public import ProjectiveModules.Module.QuotientResidueRankLocus
 public import ProjectiveModules.Module.QuotientResidueRankMap
+public import ProjectiveModules.Module.ResidueRankOperations
 public import ProjectiveModules.Module.LocalFiberBasis
 public import ProjectiveModules.Module.ZeroOfFiberRank
 public import ProjectiveModules.Localization.TensorProduct
@@ -175,6 +177,7 @@ public import ProjectiveModules.KTheory.RankLocallyConstantRing
 public import ProjectiveModules.RingTheory.IdempotentCorrection
 public import ProjectiveModules.Topology.Projective
 public import ProjectiveModules.Topology.Splitting
+public import ProjectiveModules.Topology.KernelComparison
 
 /-!
 # Projective module interfaces

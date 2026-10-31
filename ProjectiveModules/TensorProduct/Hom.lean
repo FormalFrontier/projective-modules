@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Pi
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import ProjectiveModules.Dual.TensorProduct
 public import ProjectiveModules.LinearMap.Finsupp
+public import ProjectiveModules.TensorProduct.SemilinearHomProjective
 
 /-!
 # Semilinear tensor-Hom comparisons
@@ -39,12 +40,12 @@ Naturality in all three modules holds without finiteness or projectivity.
 The dual specialization is connected to Mathlib's `dualTensorHom` by the tensor
 left unitor.
 
-For a finite projective source, the proof reuses Mathlib's
-`LinearMap.liftBaseChangeEquiv` to identify semilinear Hom with linear Hom out
-of `S ⊗[R] L`. Existing base-change instances make this source finite projective
-over `S`, so Mathlib's linear tensor-Hom equivalence applies. All restricted
-scalar actions and the algebra structure are derived internally from `σ`.
-No finiteness, projectivity or flatness of `S` over `R`, or of `N` over `S`, is
+For a finite projective source, the proof specializes
+`TensorProduct.semilinearHomTensorMap_bijective`, whose source scalars may be
+noncommutative. Evaluation on a finite basis identifies that comparison with
+`TensorProduct.piLeft`, and source naturality descends bijectivity along a
+finite free projective splitting. No algebra structure, scalar extension, or
+finiteness, projectivity or flatness of `S` over `R`, or of `N` over `S`, is
 needed.
 
 Projective-right injectivity follows by tensoring the jointly pair-separating
@@ -296,23 +297,6 @@ theorem rTensorHomToHomRTensor_bijective_of_finite_left_projective_right
 
 section FiniteProjectiveLeft
 
-private def semilinearBaseChangeEquiv [Algebra R S] :
-    (L →ₛₗ[algebraMap R S] M) ≃ₗ[S] (S ⊗[R] L →ₗ[S] M) := by
-  letI : Module R M := Module.compHom M (algebraMap R S)
-  letI : IsScalarTower R S M := IsScalarTower.of_algebraMap_smul fun _ _ => rfl
-  exact (LinearMap.semilinearCompHomEquiv S (algebraMap R S)).trans
-    (LinearMap.liftBaseChangeEquiv S)
-
-private theorem semilinearBaseChangeEquiv_tmul [Algebra R S]
-    (f : L →ₛₗ[algebraMap R S] M) (s : S) (l : L) :
-    semilinearBaseChangeEquiv f (s ⊗ₜ[R] l) = s • f l := by
-  simp [semilinearBaseChangeEquiv, LinearMap.semilinearCompHomEquiv_apply]
-
-private theorem semilinearBaseChangeEquiv_symm_apply [Algebra R S]
-    (f : S ⊗[R] L →ₗ[S] M) (l : L) :
-    semilinearBaseChangeEquiv.symm f l = f (1 ⊗ₜ[R] l) := by
-  simp [semilinearBaseChangeEquiv, LinearMap.semilinearCompHomEquiv_symm_apply]
-
 variable [Module.Finite R L] [Module.Projective R L]
 
 variable (L M N) in
@@ -324,44 +308,18 @@ This extends Mathlib's linear finite-projective-source tensor-Hom equivalence
 (and the linear comparison in Chapter 17 of May's *A Concise Course in Algebraic
 Topology*) to arbitrary scalar homomorphisms between commutative semirings. -/
 noncomputable def rTensorHomEquivHomRTensor :
-    (L →ₛₗ[σ] M) ⊗[S] N ≃ₗ[S] (L →ₛₗ[σ] (M ⊗[S] N)) := by
-  letI : Algebra R S := σ.toAlgebra
-  letI : Module.Projective S S := Module.Projective.of_free
-  let eM : (L →ₛₗ[algebraMap R S] M) ≃ₗ[S] (S ⊗[R] L →ₗ[S] M) := by
-    letI : Module R M := Module.compHom M (algebraMap R S)
-    letI : IsScalarTower R S M := IsScalarTower.of_algebraMap_smul fun _ _ => rfl
-    exact (LinearMap.semilinearCompHomEquiv S (algebraMap R S)).trans
-      (LinearMap.liftBaseChangeEquiv S)
-  let eMN : (L →ₛₗ[algebraMap R S] (M ⊗[S] N)) ≃ₗ[S]
-      (S ⊗[R] L →ₗ[S] (M ⊗[S] N)) := by
-    letI : Module R (M ⊗[S] N) := Module.compHom (M ⊗[S] N) (algebraMap R S)
-    letI : IsScalarTower R S (M ⊗[S] N) :=
-      IsScalarTower.of_algebraMap_smul fun _ _ => rfl
-    exact (LinearMap.semilinearCompHomEquiv S (algebraMap R S)).trans
-      (LinearMap.liftBaseChangeEquiv S)
-  exact eM.rTensor N ≪≫ₗ _root_.rTensorHomEquivHomRTensor S (S ⊗[R] L) M N ≪≫ₗ eMN.symm
+    (L →ₛₗ[σ] M) ⊗[S] N ≃ₗ[S] (L →ₛₗ[σ] (M ⊗[S] N)) :=
+  LinearEquiv.ofBijective (rTensorHomToHomRTensor σ L M N) (by
+    simpa only [semilinearHomTensorMap_eq_rTensorHomToHomRTensor] using
+      (semilinearHomTensorMap_bijective (M := L) (N := M) (P := N) σ))
 
 /-- The finite-projective-source equivalence has the canonical tensor-Hom map
 as its forward linear map. -/
 @[simp]
 theorem rTensorHomEquivHomRTensor_toLinearMap :
     (rTensorHomEquivHomRTensor σ L M N).toLinearMap =
-      rTensorHomToHomRTensor σ L M N := by
-  let : Algebra R S := σ.toAlgebra
-  let : Module.Projective S S := Module.Projective.of_free
-  apply TensorProduct.ext'
-  intro f n
-  apply LinearMap.ext
-  intro l
-  change
-    (semilinearBaseChangeEquiv (R := R) (S := S) (L := L) (M := M ⊗[S] N)).symm
-        (_root_.rTensorHomEquivHomRTensor S (S ⊗[R] L) M N
-          ((semilinearBaseChangeEquiv (R := R) (S := S) (L := L) (M := M)).rTensor N
-            (f ⊗ₜ[S] n))) l =
-      f l ⊗ₜ[S] n
-  rw [LinearEquiv.rTensor_tmul, semilinearBaseChangeEquiv_symm_apply,
-    _root_.rTensorHomEquivHomRTensor_apply, rTensorHomToHomRTensor_apply,
-    semilinearBaseChangeEquiv_tmul, one_smul]
+      rTensorHomToHomRTensor σ L M N :=
+  rfl
 
 /-- The finite-projective-source equivalence evaluates by the canonical
 semilinear tensor-Hom comparison, on arbitrary tensors. -/
@@ -395,7 +353,8 @@ theorem rTensorHomEquivHomRTensor_apply_symm_apply (f : L →ₛₗ[σ] (M ⊗[S
 /-- For a finite projective source, the canonical semilinear tensor-Hom map is
 bijective. The coefficient module and tensor factor are arbitrary `S`-modules.
 This is the arbitrary-scalar-homomorphism version of Mathlib's
-`rTensorHomEquivHomRTensor`, proved using its finite-projective base change. -/
+`rTensorHomEquivHomRTensor`, obtained by specializing the arbitrary-source
+semilinear comparison. -/
 theorem rTensorHomToHomRTensor_bijective_of_finite_projective_left :
     Function.Bijective (rTensorHomToHomRTensor σ L M N) := by
   rw [← rTensorHomEquivHomRTensor_toLinearMap]
