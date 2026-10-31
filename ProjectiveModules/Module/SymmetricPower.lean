@@ -13,6 +13,7 @@ public import ProjectiveModules.Module.SymmetricPower.Basic
 public import ProjectiveModules.Module.SymmetricPower.Basis
 public import ProjectiveModules.Module.SymmetricPower.Quadratic
 public import ProjectiveModules.Module.SymmetricPower.Tensor
+public import ProjectiveModules.Module.SymmetricPower.Prod
 public import ProjectiveModules.Module.PiTensorProduct
 
 /-!
@@ -24,6 +25,12 @@ projectivity, additive inverses, or an invertibility condition on factorials.
 Concatenation on disjoint label types is surjective, is characterized on all
 labelled generator tensors, and commutes with linear maps. It requires no
 finiteness assumption on the labels or semimodule.
+
+Finite-degree symmetric powers of a binary direct sum decompose into the
+symmetric degrees of the two summands. The forward map is the coefficient-one
+sum over labelled subsets, and the inverse concatenates the two blocks. The
+decomposition is natural and agrees with the scalar unit and coordinate swap
+in degrees zero and one.
 -/
 
 @[expose] public section

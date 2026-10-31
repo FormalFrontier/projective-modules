@@ -39,6 +39,12 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   surjective linear map from the tensor product of the two symmetric powers
   to the symmetric power on the disjoint union. It is characterized on all
   labelled generator tensors and is natural under linear maps.
+  The [binomial decomposition](ProjectiveModules/Module/SymmetricPower/Prod.lean)
+  identifies every finite-degree symmetric power of a binary direct sum with
+  the sum of tensors of complementary symmetric degrees. Its forward formula
+  has coefficient one for each labelled subset, and its inverse is natural
+  in both modules. The degree-zero comparison preserves the scalar unit;
+  the degree-one target is ordered as the second module followed by the first.
 - **[Finite-projective Hom](ProjectiveModules/Module/FiniteProjectiveHom.lean).**
   For arbitrary semirings `R`, `S`, `T`, a finite projective `R`-module `M`
   and `σ : R →+* S`, let `N` be both an `S`-module and a `T`-module.
