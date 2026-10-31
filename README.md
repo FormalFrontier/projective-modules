@@ -74,6 +74,13 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   homomorphisms](ProjectiveModules/Module/QuotientResidueRankMap.lean), with
   cardinal lifts accommodating independent universes.
 
+- **[Tensor and direct-sum residue ranks](ProjectiveModules/Module/ResidueRankOperations.lean).**
+  For arbitrary modules over a commutative ring, the cardinal residue-field rank of
+  a tensor product is the product of the ranks of its two fibres, with lifts for
+  independent universes. The rank of an arbitrary algebraic direct sum is the
+  cardinal sum of the fibre ranks. No finite generation, flatness or projectivity
+  hypothesis is required, and the index and module universes are independent.
+
 - **[Quotients by an intersection and a sum](ProjectiveModules/Module/QuotientIntersection.lean).**
   For submodules `U,V` of a module `M` over any ring `S`, `diagonal` maps
   `M ⧸ (U ⊓ V)` to `(M ⧸ U) × (M ⧸ V)` by the two quotient factor maps, and
@@ -862,6 +869,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Locally constant finite residue rank](ProjectiveModules/Module/FiniteOfLocallyConstantRank.lean), [continuity](ProjectiveModules/Module/LocallyConstantResidueRank.lean) | A projective module is finitely generated exactly when its genuine cardinal residue ranks are finite and locally constant; no uniform rank is assumed |
 | [Residue rank base change](ProjectiveModules/Module/ResidueRank.lean) | Arbitrary algebra and module scalar extension preserves the cardinal rank of a maximal fiber after passage to the residue field at the contracted prime, with independent universes |
 | [Cyclic quotient residue ranks](ProjectiveModules/Module/QuotientResidueRankLocus.lean) | The cardinal residue rank of `R/I` is one on `V(I)` and zero off it; local constancy is equivalent to clopen `V(I)`, nonzero proper ideals in domains give non-local constancy, and ranks are compatible with pullback along ring homomorphisms |
+| [Tensor and direct-sum residue ranks](ProjectiveModules/Module/ResidueRankOperations.lean) | Cardinal fibre ranks multiply under tensor products and add under arbitrary algebraic direct sums, without finite generation, flatness or projectivity |
 | [Exterior base change](ProjectiveModules/ExteriorPower/TensorProduct.lean), [top exterior rank](ProjectiveModules/ExteriorPower/Rank.lean) | Degreewise scalar-extension equivalences with pure-wedge and naturality formulas, without flatness; cardinal rank `r` over a field gives rank one in exterior degree `r` |
 | [Exterior surjectivity](ProjectiveModules/ExteriorPower/Surjectivity.lean), [finite support](ProjectiveModules/ExteriorPower/FiniteSupport.lean) | A map to a free module with a `Fin r` basis is surjective exactly when its degree-`r` exterior map is; finitely generated exterior powers admit finite source spans surjecting onto them |
 | [Local fiber bases](ProjectiveModules/Module/LocalFiberBasis.lean) | A projective module with maximal residue cardinal rank `r` has a `Fin r` basis after localization at that maximal ideal, without a prior finite-generation hypothesis |
