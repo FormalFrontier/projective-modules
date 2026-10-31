@@ -362,10 +362,14 @@ examples and qualifications; links below go to the corresponding result families
   and no projectivity of `M` is assumed.
 - **[Tensoring semilinear Hom](ProjectiveModules/TensorProduct/Hom.lean):** for a
   homomorphism `σ : R →+* S` of commutative semirings, the canonical map
-  `(L →ₛₗ[σ] M) ⊗[S] N →ₗ[S] (L →ₛₗ[σ] (M ⊗[S] N))` is bijective when `N`
-  is finite projective over `S`, with arbitrary source `L`. It is also surjective
-  when `L` is finitely generated over `R` and `N` is projective over `S`, without
-  projectivity of `L` or finite generation of `N`. All modules are additive
+  `(L →ₛₗ[σ] M) ⊗[S] N →ₗ[S] (L →ₛₗ[σ] (M ⊗[S] N))` is bijective when `L`
+  is finite projective over `R`, with arbitrary `N`. The finite-projective-source
+  equivalence has this canonical forward map and agrees with the linear
+  equivalence for identity scalars. For a projective `S`-module `N`, the same
+  map is injective for arbitrary `L`, and bijective if either `L` is finitely
+  generated over `R` or `N` is finitely generated over `S`. Finite-source
+  bijectivity thus needs neither projectivity of `L` nor finite generation of `N`.
+  All modules are additive
   commutative monoids, their carrier universes are independent, and `σ` is
   arbitrary. Naturality in all three modules needs no finiteness or projectivity;
   the left unitor identifies the dual specialization with `dualTensorHom`.
@@ -744,7 +748,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 
 | Area | Interfaces and scope |
 | --- | --- |
-| [Dual](ProjectiveModules/Dual/BaseChange.lean), [Contraction](ProjectiveModules/Contraction/BaseChange.lean), [Invertible](ProjectiveModules/Invertible/OfRankOne.lean), [Tensor–Hom](ProjectiveModules/TensorProduct/Hom.lean) | Dual/evaluation base change, rank-one iff, scalar endomorphisms, finite-summand cancellation and tensoring semilinear Hom |
+| [Dual](ProjectiveModules/Dual/BaseChange.lean), [Contraction](ProjectiveModules/Contraction/BaseChange.lean), [Invertible](ProjectiveModules/Invertible/OfRankOne.lean), [Tensor–Hom](ProjectiveModules/TensorProduct/Hom.lean) | Dual/evaluation base change, rank-one iff, scalar endomorphisms, finite-summand cancellation and tensoring semilinear Hom: canonical equivalence for a finite projective source or tensor factor, and finite-source surjectivity for a projective tensor factor |
 | [Invertible module topologies and continuous endomorphisms](ProjectiveModules/Invertible/Topology.lean) | `Module.Invertible.isModuleTopology` identifies the given module topology; `ContinuousLinearMap.scalarEndEquiv` identifies the scalar field with continuous endomorphisms in bounded convergence. Hausdorff invertible topological vector spaces over nontrivially normed fields, with independent scalar/carrier universes and no completeness, norm or chosen frame |
 | [Bidual evaluation](ProjectiveModules/Module/Bidual.lean) | Ordinary-coefficient bidual equivalence for finite projective semiring modules; forward/inverse evaluation, naturality and coefficient-preserving commutative comparison |
 | [Exterior algebra](ProjectiveModules/ExteriorAlgebra/BaseChange.lean), [exterior powers](ProjectiveModules/ExteriorPower/DirectSum.lean) | Full algebra base change; projective powers, determinants/top powers and binary fixed-degree Sum Formula |
@@ -759,6 +763,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Determinant lines](ProjectiveModules/ExteriorPower/DeterminantLine.lean) | `Module.DeterminantLine`: invertible for finite projective modules of variable stalk rank; linear-isomorphism invariance, rank-fiber recovery, product compatibility, zero and invertible-module comparisons as `Nonempty` isomorphisms |
 | [Determinant scalar extension](ProjectiveModules/ExteriorPower/DeterminantLineBaseChange.lean) | `ModuleCat.RightExtension.determinantLine_mk`: the determinant-line Picard class of a finite projective right module commutes with arbitrary ring-homomorphism scalar extension via the opposite homomorphism; no flatness or constant-rank hypothesis |
 | [Free modules](ProjectiveModules/Free/CountableCancellation.lean), [infinite coordinates](ProjectiveModules/Free/InfiniteCoordinates.lean), [rank conditions](ProjectiveModules/Free/InvariantBasisNumber.lean) | Countable cancellation/absorption; finite stably-free semisimple endpoint; infinite basis cardinality and free-coordinate classification without IBN; semiring-homomorphism pullbacks of rank condition and IBN |
+| [Semilinear scalar restriction](ProjectiveModules/LinearMap/ChangeOfScalars.lean), [categorical comparison](ProjectiveModules/Category/ChangeOfScalars.lean) | Pointwise auxiliary-linear equivalence between semilinear Hom and Hom into the canonically restricted target, over three arbitrary semirings with commuting target actions; full ring-category additive comparison |
 | [Finsupp–Hom comparison](ProjectiveModules/LinearMap/Finsupp.lean) | Coordinatewise comparison from finitely supported families of semilinear maps to semilinear maps with finitely supported values: always injective and bijective for a finitely generated source, over arbitrary semirings with commuting auxiliary scalar actions, arbitrary index type and independent universes |
 | [Linear-map modules](ProjectiveModules/Free/LinearMap.lean) | Finite free semiring source and commuting target actions; independent freeness and finiteness conclusions for Hom over the outer semiring, with independent universes and chosen-basis inverse factorization |
 | [Free-word semirings](ProjectiveModules/Free/FreeWordAlgebra.lean) | Rank-two to rank-one left-linear injection by distinct right suffixes and strong-rank obstruction; arbitrary semiring coefficients and alphabet |

@@ -19,6 +19,7 @@ public import ProjectiveModules.Module.SymmetricAlgebra
 public import ProjectiveModules.Module.SymmetricPower
 
 public import ProjectiveModules.Category.ChangeOfRings
+public import ProjectiveModules.Category.ChangeOfScalars
 public import ProjectiveModules.Category.FiniteModuleDimension
 public import ProjectiveModules.Category.FiniteProjective
 public import ProjectiveModules.Category.FiniteProjectiveRestriction
@@ -93,6 +94,7 @@ public import ProjectiveModules.KTheory.TensorProduct
 public import ProjectiveModules.KTheory.Trace
 public import ProjectiveModules.KTheory.TraceNaturality
 public import ProjectiveModules.KTheory.ZeroRing
+public import ProjectiveModules.LinearMap.ChangeOfScalars
 public import ProjectiveModules.LinearMap.Finsupp
 public import ProjectiveModules.MatrixSpan
 public import ProjectiveModules.Module.BalancedTensorProduct

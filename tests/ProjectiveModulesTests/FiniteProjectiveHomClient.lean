@@ -33,10 +33,12 @@ projective module is free over the PID `ℤ`, hence torsion-free, contradicting
 `5 • 1 = 0` with both factors nonzero. Specified maps in both examples are nonzero
 and move under the canonical pointwise coefficient action.
 
-The same modules also exhibit finite-source tensor-Hom surjectivity with a
+The same modules also exhibit finite-source tensor-Hom bijectivity with a
 nonprojective source and an infinite projective tensor factor. The map sending
 a residue modulo `5` to its tensor with the first integer coordinate vector
-has a tensor preimage and a nonzero value at `1`.
+has a unique tensor preimage and a nonzero value at `1`. For the nonsurjective
+scalar inclusion `ℕ →+* ℤ`, a regular natural-number source instead gives a
+specified tensor preimage with the nonprojective tensor factor `ZMod 5`.
 
 The natural-number self-module supplies a nonzero example without additive
 inverses. Empty source, zero target, and the one-element scalar ring are separate
@@ -52,7 +54,7 @@ arguments use Mathlib, particularly `Finsupp.basisSingleOne`,
 `Module.dual_projective`, and `Module.dual_finite`. The implication from projectivity
 to freeness over `ℤ` uses the public Projective Modules theorem
 `Module.Projective.free_of_pid`. The tensor preimage uses Projective Modules'
-finite-source tensor-Hom surjectivity theorem, and its nonzero value is detected
+finite-source tensor-Hom comparison theorems, and its nonzero value is detected
 by Mathlib's `TensorProduct.finsuppScalarRight`. These examples follow the
 elementary model ideas of the Projective Modules finite-projective developments.
 This module was written with AI assistance.
@@ -168,6 +170,57 @@ theorem zmod_five_tensorHom_preimage :
   simpa only [f, LinearMap.flip_apply, TensorProduct.mk_apply,
     TensorProduct.finsuppScalarRight_apply_tmul_apply, Finsupp.single_eq_same,
     one_smul, map_zero, Finsupp.zero_apply] using hcoord
+
+/-- The specified residue-to-first-coordinate tensor map has a unique tensor
+preimage, although its finite source is not projective and its projective tensor
+factor is not finite. -/
+theorem zmod_five_tensorHom_unique_preimage :
+    ∃! t : (ZMod 5 →ₗ[ℤ] ZMod 5) ⊗[ℤ] (ℕ →₀ ℤ),
+      TensorProduct.rTensorHomToHomRTensor (RingHom.id ℤ)
+          (ZMod 5) (ZMod 5) (ℕ →₀ ℤ) t =
+        (TensorProduct.mk ℤ (ZMod 5) (ℕ →₀ ℤ)).flip (Finsupp.single 0 1) := by
+  let : Module.Finite ℤ (ZMod 5) := zmod_five_finite_not_projective.1
+  let : Module.Projective ℤ (ℕ →₀ ℤ) := integer_finsupp_projective_not_finite.1
+  have hbij := TensorProduct.rTensorHomToHomRTensor_bijective_of_finite_left_projective_right
+    (L := ZMod 5) (M := ZMod 5) (N := ℕ →₀ ℤ) (RingHom.id ℤ)
+  obtain ⟨t, ht⟩ := hbij.2
+    ((TensorProduct.mk ℤ (ZMod 5) (ℕ →₀ ℤ)).flip (Finsupp.single 0 1))
+  refine ⟨t, ht, ?_⟩
+  intro t' ht'
+  exact hbij.1 (ht'.trans ht.symm)
+
+/-- For the nonsurjective inclusion `ℕ →+* ℤ`, the finite-projective-source
+comparison lifts a specified map with nonzero value at `1`, although its tensor
+factor `ZMod 5` is not projective over `ℤ`. The source is the regular
+`ℕ`-semimodule; no `ℤ`-action on it is used. -/
+theorem nat_int_zmod_five_tensorHom_preimage :
+    ¬ Function.Surjective (Nat.castRingHom ℤ) ∧
+      ¬ Module.Projective ℤ (ZMod 5) ∧
+      ∃ t : (ℕ →ₛₗ[Nat.castRingHom ℤ] ℤ) ⊗[ℤ] ZMod 5,
+        TensorProduct.rTensorHomToHomRTensor (Nat.castRingHom ℤ) ℕ ℤ (ZMod 5) t =
+          ((TensorProduct.mk ℤ ℤ (ZMod 5)).flip 1).comp
+            (Nat.castRingHom ℤ).toSemilinearMap ∧
+        TensorProduct.rTensorHomToHomRTensor (Nat.castRingHom ℤ) ℕ ℤ (ZMod 5) t 1 ≠ 0 := by
+  refine ⟨?_, zmod_five_finite_not_projective.2, ?_⟩
+  · intro hsurj
+    obtain ⟨n, hn⟩ := hsurj (-1)
+    have hn_nonneg : (0 : ℤ) ≤ (Nat.castRingHom ℤ) n := Int.natCast_nonneg n
+    rw [hn] at hn_nonneg
+    norm_num at hn_nonneg
+  · let σ : ℕ →+* ℤ := Nat.castRingHom ℤ
+    let h := ((TensorProduct.mk ℤ ℤ (ZMod 5)).flip 1).comp σ.toSemilinearMap
+    let e := TensorProduct.rTensorHomEquivHomRTensor σ ℕ ℤ (ZMod 5)
+    have ht : TensorProduct.rTensorHomToHomRTensor σ ℕ ℤ (ZMod 5) (e.symm h) = h := by
+      rw [← TensorProduct.rTensorHomEquivHomRTensor_apply]
+      exact e.apply_symm_apply h
+    refine ⟨e.symm h, ht, ?_⟩
+    rw [ht]
+    intro hzero
+    apply zmod_five_annihilator.2.1
+    have hone := congrArg (TensorProduct.lid ℤ (ZMod 5)) hzero
+    simpa only [h, LinearMap.comp_apply, LinearMap.flip_apply, TensorProduct.mk_apply,
+      RingHom.coe_toSemilinearMap, map_one, TensorProduct.lid_tmul, one_smul, map_zero]
+      using hone
 
 /-- The regular-source map corresponding to `1` modulo `5` under evaluation
 at `1`. -/

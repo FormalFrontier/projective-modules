@@ -7,6 +7,7 @@ Authors: Johan Commelin, Formal Frontier Agents
 module
 
 public import Mathlib.RingTheory.Finiteness.Finsupp
+public import ProjectiveModules.LinearMap.ChangeOfScalars
 
 /-!
 # Finitely supported families of semilinear maps
@@ -72,22 +73,6 @@ theorem finsuppLinearMapₛₗ_injective :
   simpa only [finsuppLinearMapₛₗ_apply] using
     congrArg (fun F : L →ₛₗ[σ] (ι →₀ M) => F l i) h
 
-private def semilinearCompHomAddEquiv :
-    letI := Module.compHom M σ
-    (L →ₛₗ[σ] M) ≃+ (L →ₗ[R] M) :=
-  letI := Module.compHom M σ
-  { toFun := fun f =>
-      { toFun := f
-        map_add' := f.map_add
-        map_smul' := f.map_smulₛₗ }
-    invFun := fun f =>
-      { toFun := f
-        map_add' := f.map_add
-        map_smul' := f.map_smul }
-    left_inv := fun _ => by ext; rfl
-    right_inv := fun _ => by ext; rfl
-    map_add' := fun _ _ => rfl }
-
 /-- The semilinear finitely supported comparison is bijective when its source
 module is finitely generated. The index type is unrestricted. This reuses
 `finsuppLinearMap_bijective_of_moduleFinite` after restriction of the target
@@ -97,7 +82,8 @@ theorem finsuppLinearMapₛₗ_bijective_of_moduleFinite [Module.Finite R L] :
   refine ⟨finsuppLinearMapₛₗ_injective T σ, ?_⟩
   intro f
   let : Module R M := Module.compHom M σ
-  let e : (L →ₛₗ[σ] M) ≃+ (L →ₗ[R] M) := semilinearCompHomAddEquiv σ
+  let e : (L →ₛₗ[σ] M) ≃+ (L →ₗ[R] M) :=
+    (semilinearCompHomEquiv ℕ σ).toAddEquiv
   -- Use the pointwise restricted action on the finitely supported target.
   let f' : L →ₗ[R] (ι →₀ M) :=
     { toFun := f
@@ -112,7 +98,8 @@ theorem finsuppLinearMapₛₗ_bijective_of_moduleFinite [Module.Finite R L] :
     (finsuppLinearMap_bijective_of_moduleFinite (R := R) (M := L) (N := M)
       (ι := ι) (S := ℕ)).2 f'
   have hcoord (i : ι) (l : L) :
-      (Finsupp.mapRange.addEquiv e.symm g) i l = g i l := rfl
+      (Finsupp.mapRange.addEquiv e.symm g) i l = g i l :=
+    semilinearCompHomEquiv_symm_apply ℕ σ (g i) l
   refine ⟨Finsupp.mapRange.addEquiv e.symm g, ?_⟩
   ext l i
   simpa only [finsuppLinearMapₛₗ_apply, hcoord] using
