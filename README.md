@@ -60,9 +60,13 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   function on the prime spectrum is locally constant. The finite ranks may vary
   between components; no common rank value, finite-generation premise or
   nontrivial-ring hypothesis is needed for the finiteness implication.
-  [Residue rank base change](ProjectiveModules/Module/ResidueRank.lean) compares
-  maximal fibers over any commutative algebra with the residue fiber at the
-  contracted prime, for arbitrary modules without projectivity or flatness.
+  [Residue rank base change](ProjectiveModules/Module/ResidueRank.lean) identifies
+  the Cardinal ranks of `κ(q) ⊗[S] (S ⊗[R] M)` and `κ(f⁻¹(q)) ⊗[R] M`
+  for every homomorphism `f : R →+* S` of commutative rings, arbitrary `R`-module
+  `M`, and prime `q` of `S`, with cardinal lifts for independent universes.
+  This includes infinite-dimensional fibers, without finite-generation, flatness
+  or projectivity hypotheses. The maximal-ideal quotient comparison for an algebra
+  also allows the contracted prime to be nonmaximal.
 
 - **[Residue ranks of cyclic quotients](ProjectiveModules/Module/QuotientResidueRankLocus.lean).**
   For a commutative ring `R` and any ideal `I`, the Cardinal-valued residue-field
@@ -867,7 +871,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Rank-one finiteness](ProjectiveModules/Module/FiniteOfFiberRank.lean) | An arbitrary projective module with cardinal rank one at every maximal residue tensor fiber is finitely generated; independent scalar and carrier universes, including zero rings |
 | [Constant finite residue rank](ProjectiveModules/Module/FiniteOfFiberRank.lean), [vanishing](ProjectiveModules/Module/ZeroOfFiberRank.lean) | `finite_of_residue_rank_eq_nat` gives finite generation from constant finite cardinal maximal-fiber rank; cardinal rank zero forces the original module to be subsingleton |
 | [Locally constant finite residue rank](ProjectiveModules/Module/FiniteOfLocallyConstantRank.lean), [continuity](ProjectiveModules/Module/LocallyConstantResidueRank.lean) | A projective module is finitely generated exactly when its genuine cardinal residue ranks are finite and locally constant; no uniform rank is assumed |
-| [Residue rank base change](ProjectiveModules/Module/ResidueRank.lean) | Arbitrary algebra and module scalar extension preserves the cardinal rank of a maximal fiber after passage to the residue field at the contracted prime, with independent universes |
+| [Residue rank base change](ProjectiveModules/Module/ResidueRank.lean) | For any homomorphism of commutative rings and any module over its source, scalar extension preserves Cardinal-valued residue rank at every target prime, with independent universes and no finite-generation, flatness or projectivity hypotheses; maximal-quotient fiber ranks also agree with residue ranks at the contracted prime |
 | [Cyclic quotient residue ranks](ProjectiveModules/Module/QuotientResidueRankLocus.lean) | The cardinal residue rank of `R/I` is one on `V(I)` and zero off it; local constancy is equivalent to clopen `V(I)`, nonzero proper ideals in domains give non-local constancy, and ranks are compatible with pullback along ring homomorphisms |
 | [Tensor and direct-sum residue ranks](ProjectiveModules/Module/ResidueRankOperations.lean) | Cardinal fibre ranks multiply under tensor products and add under arbitrary algebraic direct sums, without finite generation, flatness or projectivity |
 | [Exterior base change](ProjectiveModules/ExteriorPower/TensorProduct.lean), [top exterior rank](ProjectiveModules/ExteriorPower/Rank.lean) | Degreewise scalar-extension equivalences with pure-wedge and naturality formulas, without flatness; cardinal rank `r` over a field gives rank one in exterior degree `r` |
