@@ -21,6 +21,16 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   condition, which also allows zero fibers. The rank is a cardinal, not natural-number
   `finrank`; the zero ring is allowed.
 
+- **[Finite generation from constant finite residue rank](ProjectiveModules/Module/FiniteOfFiberRank.lean).**
+  A projective module over a commutative ring whose maximal residue tensor fibers all
+  have cardinal rank `r : ℕ` is finitely generated, without assuming finite generation
+  or presentation.
+  The result includes rank zero and the zero ring, and preserves independent scalar
+  and carrier universes. In rank zero the module is
+  [subsingleton](ProjectiveModules/Module/ZeroOfFiberRank.lean). Degreewise exterior
+  base change and finite support reduce the argument to rank-one finiteness and
+  surjectivity over maximal localizations.
+
 - **[Quotients by an intersection and a sum](ProjectiveModules/Module/QuotientIntersection.lean).**
   For submodules `U,V` of a module `M` over any ring `S`, `diagonal` maps
   `M ⧸ (U ⊓ V)` to `(M ⧸ U) × (M ⧸ V)` by the two quotient factor maps, and
@@ -793,6 +803,11 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Dual-evaluation saturation](ProjectiveModules/Module/DualSaturation.lean) | For arbitrary projective modules over commutative rings, nonzero maximal residue tensor fibers force any ideal containing all dual evaluations to be the unit ideal; no finite generation or rank-one premise |
 | [Small residue rank](ProjectiveModules/Module/SmallFiberRank.lean) | Cardinal maximal-fiber rank at most one forces functional proportionality, with zero fibers allowed and no finite-generation premise |
 | [Rank-one finiteness](ProjectiveModules/Module/FiniteOfFiberRank.lean) | An arbitrary projective module with cardinal rank one at every maximal residue tensor fiber is finitely generated; independent scalar and carrier universes, including zero rings |
+| [Constant finite residue rank](ProjectiveModules/Module/FiniteOfFiberRank.lean), [vanishing](ProjectiveModules/Module/ZeroOfFiberRank.lean) | `finite_of_residue_rank_eq_nat` gives finite generation from constant finite cardinal maximal-fiber rank; cardinal rank zero forces the original module to be subsingleton |
+| [Exterior base change](ProjectiveModules/ExteriorPower/TensorProduct.lean), [top exterior rank](ProjectiveModules/ExteriorPower/Rank.lean) | Degreewise scalar-extension equivalences with pure-wedge and naturality formulas, without flatness; cardinal rank `r` over a field gives rank one in exterior degree `r` |
+| [Exterior surjectivity](ProjectiveModules/ExteriorPower/Surjectivity.lean), [finite support](ProjectiveModules/ExteriorPower/FiniteSupport.lean) | A map to a free module with a `Fin r` basis is surjective exactly when its degree-`r` exterior map is; finitely generated exterior powers admit finite source spans surjecting onto them |
+| [Local fiber bases](ProjectiveModules/Module/LocalFiberBasis.lean) | A projective module with maximal residue cardinal rank `r` has a `Fin r` basis after localization at that maximal ideal, without a prior finite-generation hypothesis |
+| [Localization and tensor products](ProjectiveModules/Localization/TensorProduct.lean) | The canonical localized-module–tensor equivalence intertwines localized maps and scalar extension, over arbitrary commutative semirings and submonoids |
 | [Right regular module](ProjectiveModules/Module/RightRegular.lean) | Canonical opposite-scalar free and finite instances on the ordinary semiring carrier, including zero semirings |
 | [Right-module K₀](ProjectiveModules/KTheory/K0.lean), [stabilization](ProjectiveModules/KTheory/Stabilization.lean) | Ring-sized projective class monoid and group completion; arbitrary-universe module generators, descent/universal properties, difference representatives and common finite-projective or finite-free stabilization |
 | [Tensor semiring](ProjectiveModules/KTheory/TensorProduct.lean) | Canonical commutative semiring on finite-projective right-module classes over commutative rings, including zero rings; direct-sum addition, tensor multiplication, regular unit and natural casts, with independent module-carrier universes |

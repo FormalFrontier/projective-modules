@@ -41,10 +41,14 @@ public import ProjectiveModules.ExteriorPower.Determinant
 public import ProjectiveModules.ExteriorPower.DeterminantLineBaseChange
 public import ProjectiveModules.ExteriorPower.DirectSum
 public import ProjectiveModules.ExteriorPower.Duality
+public import ProjectiveModules.ExteriorPower.FiniteSupport
 public import ProjectiveModules.ExteriorPower.Invertible
 public import ProjectiveModules.ExteriorPower.ProdPairing
 public import ProjectiveModules.ExteriorPower.Projective
+public import ProjectiveModules.ExteriorPower.Rank
 public import ProjectiveModules.ExteriorPower.StalkRank
+public import ProjectiveModules.ExteriorPower.Surjectivity
+public import ProjectiveModules.ExteriorPower.TensorProduct
 public import ProjectiveModules.ExteriorPower.DeterminantLine
 public import ProjectiveModules.ExteriorPower.Top
 public import ProjectiveModules.Free.CountableAbsorption
@@ -111,6 +115,9 @@ public import ProjectiveModules.Module.FiniteProjectiveHom
 public import ProjectiveModules.Module.FiniteRangeIntersections
 public import ProjectiveModules.Module.FiniteStabilization
 public import ProjectiveModules.Module.FiniteOfFiberRank
+public import ProjectiveModules.Module.LocalFiberBasis
+public import ProjectiveModules.Module.ZeroOfFiberRank
+public import ProjectiveModules.Localization.TensorProduct
 public import ProjectiveModules.Module.HomExact
 public import ProjectiveModules.Module.Injective
 public import ProjectiveModules.Module.InvariantSupportedProjection
