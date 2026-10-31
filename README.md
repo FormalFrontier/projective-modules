@@ -12,6 +12,11 @@ injectivity of arbitrary dependent families. The canonical comparison
 `P ⊗[R] (∀ i, B i) → ∀ i, P ⊗[R] B i` is injective, but is not generally surjective;
 see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
 
+- **[Symmetric powers](ProjectiveModules/Module/SymmetricPower.lean).**
+  Finitely indexed symmetric powers over a commutative semiring preserve
+  finite generation, freeness and projectivity separately. An arbitrary
+  supplied basis gives a monomial basis indexed by multiplicity vectors
+  of total slot count. Projectivity requires no finite generation.
 - **[Finite generation from rank-one residue fibers](ProjectiveModules/Module/FiniteOfFiberRank.lean).**
   An arbitrary projective module over a commutative ring is finitely generated when
   every maximal residue tensor fiber has cardinal rank one. No finite generation,
@@ -30,6 +35,16 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   [subsingleton](ProjectiveModules/Module/ZeroOfFiberRank.lean). Degreewise exterior
   base change and finite support reduce the argument to rank-one finiteness and
   surjectivity over maximal localizations.
+
+- **[Finite generation from locally constant finite residue rank](ProjectiveModules/Module/FiniteOfLocallyConstantRank.lean).**
+  A projective module over a commutative ring is finitely generated exactly when
+  its residue-field tensor ranks are finite cardinals and their Cardinal-valued
+  function on the prime spectrum is locally constant. The finite ranks may vary
+  between components; no common rank value, finite-generation premise or
+  nontrivial-ring hypothesis is needed for the finiteness implication.
+  [Residue rank base change](ProjectiveModules/Module/ResidueRank.lean) compares
+  maximal fibers over any commutative algebra with the residue fiber at the
+  contracted prime, for arbitrary modules without projectivity or flatness.
 
 - **[Quotients by an intersection and a sum](ProjectiveModules/Module/QuotientIntersection.lean).**
   For submodules `U,V` of a module `M` over any ring `S`, `diagonal` maps
@@ -809,6 +824,8 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Small residue rank](ProjectiveModules/Module/SmallFiberRank.lean) | Cardinal maximal-fiber rank at most one forces functional proportionality, with zero fibers allowed and no finite-generation premise |
 | [Rank-one finiteness](ProjectiveModules/Module/FiniteOfFiberRank.lean) | An arbitrary projective module with cardinal rank one at every maximal residue tensor fiber is finitely generated; independent scalar and carrier universes, including zero rings |
 | [Constant finite residue rank](ProjectiveModules/Module/FiniteOfFiberRank.lean), [vanishing](ProjectiveModules/Module/ZeroOfFiberRank.lean) | `finite_of_residue_rank_eq_nat` gives finite generation from constant finite cardinal maximal-fiber rank; cardinal rank zero forces the original module to be subsingleton |
+| [Locally constant finite residue rank](ProjectiveModules/Module/FiniteOfLocallyConstantRank.lean), [continuity](ProjectiveModules/Module/LocallyConstantResidueRank.lean) | A projective module is finitely generated exactly when its genuine cardinal residue ranks are finite and locally constant; no uniform rank is assumed |
+| [Residue rank base change](ProjectiveModules/Module/ResidueRank.lean) | Arbitrary algebra and module scalar extension preserves the cardinal rank of a maximal fiber after passage to the residue field at the contracted prime, with independent universes |
 | [Exterior base change](ProjectiveModules/ExteriorPower/TensorProduct.lean), [top exterior rank](ProjectiveModules/ExteriorPower/Rank.lean) | Degreewise scalar-extension equivalences with pure-wedge and naturality formulas, without flatness; cardinal rank `r` over a field gives rank one in exterior degree `r` |
 | [Exterior surjectivity](ProjectiveModules/ExteriorPower/Surjectivity.lean), [finite support](ProjectiveModules/ExteriorPower/FiniteSupport.lean) | A map to a free module with a `Fin r` basis is surjective exactly when its degree-`r` exterior map is; finitely generated exterior powers admit finite source spans surjecting onto them |
 | [Local fiber bases](ProjectiveModules/Module/LocalFiberBasis.lean) | A projective module with maximal residue cardinal rank `r` has a `Fin r` basis after localization at that maximal ideal, without a prior finite-generation hypothesis |

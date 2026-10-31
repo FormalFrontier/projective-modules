@@ -10,6 +10,7 @@ Authors: Kenny Lau
 module
 
 public import ProjectiveModules.Module.SymmetricPower.Basic
+public import ProjectiveModules.Module.SymmetricPower.Basis
 public import ProjectiveModules.Module.SymmetricPower.Quadratic
 public import ProjectiveModules.Module.PiTensorProduct
 

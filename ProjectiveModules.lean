@@ -117,6 +117,7 @@ public import ProjectiveModules.Module.FiniteProjectiveHom
 public import ProjectiveModules.Module.FiniteRangeIntersections
 public import ProjectiveModules.Module.FiniteStabilization
 public import ProjectiveModules.Module.FiniteOfFiberRank
+public import ProjectiveModules.Module.FiniteOfLocallyConstantRank
 public import ProjectiveModules.Module.LocalFiberBasis
 public import ProjectiveModules.Module.ZeroOfFiberRank
 public import ProjectiveModules.Localization.TensorProduct
