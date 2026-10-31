@@ -6,8 +6,7 @@
       "path": ".",
       "targets": [
         "ProjectiveModules",
-        "ProjectiveModulesTests",
-        "ProjectiveModules.Topology.KernelComparison"
+        "ProjectiveModulesTests"
       ],
       "source_roots": [
         ".",

@@ -9,31 +9,18 @@ public import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-public import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
 # Residue rank and base change
 
-For commutative rings `R` and `S`, a ring homomorphism `f : R →+* S`, an arbitrary
-`R`-module `M`, and any prime `q` of `S`,
-`Module.lift_rank_residueField_tensor_baseChange` identifies the cardinal ranks of
-`κ(q) ⊗[S] (S ⊗[R] M)` over `κ(q)` and
-`κ(f⁻¹(q)) ⊗[R] M` over `κ(f⁻¹(q))`. Here `κ` denotes the residue field and
-`f⁻¹(q)` is the contracted prime. The cardinals are lifted to a common universe, allowing
-the rings and module to lie in independent universes. The extension `S ⊗[R] M` uses the
-algebra structure on `S` associated to `f`.
-
-The fibres may be infinite-dimensional. No finite-generation, flatness or projectivity
-condition on `M`, injectivity condition on `f`, or nontriviality condition on the rings is
-required. The maximal-ideal quotient comparison for an algebra identifies its maximal
-fibre rank with the residue rank at the contracted prime, which need not be maximal.
-
-The rank and tensor-product constructions use Mathlib's scalar-extension API.
+The dimension of a maximal fibre after scalar extension agrees with the dimension over the
+residue field at the contracted prime. This holds for arbitrary modules and arbitrary algebra
+maps: the two fibres differ by extension of their coefficient fields.
 -/
 
 @[expose] public section
 
-universe uR uS v vM
+universe uR uS v
 
 open scoped TensorProduct
 
@@ -98,64 +85,5 @@ theorem lift_rank_quotient_baseChange
     _ = Module.rank K (K ⊗[k] (k ⊗[R] P)) := hk.symm
     _ = Cardinal.lift.{uS} (Module.rank k (k ⊗[R] P)) :=
       Module.rank_baseChange
-
-/-- Cardinal dimension of a prime fibre is preserved by scalar extension along a ring
-homomorphism, after lifting to a common universe. The module and the prime are arbitrary.
-The proof combines Mathlib's scalar-extension rank formula and tensor cancellation with
-the maximal-fibre comparison. -/
-theorem lift_rank_residueField_tensor_baseChange
-    {R : Type uR} {S : Type uS} [CommRing R] [CommRing S]
-    (f : R →+* S) {M : Type vM} [AddCommMonoid M] [Module R M]
-    (q : PrimeSpectrum S) :
-    Cardinal.lift.{uR}
-      (Module.rank q.asIdeal.ResidueField
-        (@TensorProduct S _ q.asIdeal.ResidueField
-          (@TensorProduct R _ S M _ _ (@Algebra.toModule R S _ _ f.toAlgebra) _)
-          _ _ _
-          (@TensorProduct.leftModule R S _ _ S M _ _ _
-            (@Algebra.toModule R S _ _ f.toAlgebra) _
-            (@Algebra.to_smulCommClass R S _ _ f.toAlgebra)))) =
-      Cardinal.lift.{uS}
-        (Module.rank (PrimeSpectrum.comap f q).asIdeal.ResidueField
-          ((PrimeSpectrum.comap f q).asIdeal.ResidueField ⊗[R] M)) := by
-  let : Algebra R S := f.toAlgebra
-  let K := q.asIdeal.ResidueField
-  let : Algebra R K := ((algebraMap S K).comp f).toAlgebra
-  let : Module R K := Algebra.toModule
-  let : IsScalarTower R S K :=
-    IsScalarTower.of_algebraMap_eq' (by simp only [RingHom.algebraMap_toAlgebra])
-  let : (⊥ : Ideal K).IsMaximal := Ideal.bot_isMaximal
-  let : Field (K ⧸ (⊥ : Ideal K)) := Ideal.Quotient.field _
-  -- The tensor action uses the canonical module of the composite R → S → K.
-  let : Module K (K ⊗[R] M) :=
-    @TensorProduct.leftModule R K _ _ K M _ _ _
-      (@Algebra.toModule R K _ _ ((algebraMap S K).comp f).toAlgebra) _
-      (@Algebra.to_smulCommClass R K _ _ ((algebraMap S K).comp f).toAlgebra)
-  let : Module.Free K (K ⊗[R] M) :=
-    Module.Free.of_basis (Module.Basis.ofVectorSpace K _)
-  have hcontract : (⊥ : Ideal K).under R = (PrimeSpectrum.comap f q).asIdeal := by
-    rw [Ideal.under_def, RingHom.algebraMap_toAlgebra, ← Ideal.comap_comap,
-      ← RingHom.ker_eq_comap_bot, Ideal.ker_algebraMap_residueField,
-      PrimeSpectrum.comap_asIdeal]
-  have hrank :
-      Module.rank (K ⧸ (⊥ : Ideal K)) ((K ⧸ (⊥ : Ideal K)) ⊗[K] (K ⊗[R] M)) =
-        Module.rank K (K ⊗[R] M) := by
-    simpa only [← Cardinal.lift_umax, Cardinal.lift_id] using
-      (Module.rank_baseChange (R := K ⧸ (⊥ : Ideal K)) (S := K) (M' := K ⊗[R] M))
-  have hrank_congr (p p' : Ideal R) [p.IsPrime] [p'.IsPrime] (h : p = p') :
-      Module.rank p.ResidueField (p.ResidueField ⊗[R] M) =
-        Module.rank p'.ResidueField (p'.ResidueField ⊗[R] M) := by
-    subst p'
-    rfl
-  have hbase := lift_rank_quotient_baseChange
-    (R := R) (S := K) (P := M) (⊥ : Ideal K)
-  rw [(TensorProduct.AlgebraTensorModule.cancelBaseChange R S K K M).rank_eq]
-  calc
-    Cardinal.lift.{uR} (Module.rank K (K ⊗[R] M)) =
-        Cardinal.lift.{uR}
-          (Module.rank (K ⧸ (⊥ : Ideal K))
-            ((K ⧸ (⊥ : Ideal K)) ⊗[K] (K ⊗[R] M))) :=
-      congrArg Cardinal.lift.{uR} hrank.symm
-    _ = _ := hbase.trans (congrArg Cardinal.lift.{uS} (hrank_congr _ _ hcontract))
 
 end Module

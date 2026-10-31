@@ -47,8 +47,8 @@ which presents selected current library interfaces. Documentation, metadata
 and project-specific generator adaptations are project contributions; earlier
 proofs are credited separately above. The generator was adapted from a project
 script, not from doc-gen code or assets. The Lake manifest records
-dependency versions; mathlib, General Linear Groups, Stable Range and
-Homological Algebra code and notices remain in their own repositories.
+dependency versions; mathlib, General Linear Groups and Stable Range code and
+notices remain in their own repositories.
 
 Project contributions use [Apache-2.0](../LICENSE) and the truthful
 `Authors: Formal Frontier Agents` headers. Weibel’s book is cited as a
@@ -94,12 +94,6 @@ reference is C. A. Weibel, *The K-book: An Introduction to Algebraic K-theory*,
 for Morita invariance of finite projective modules. The companion examples
 reuse Mathlib's matrix-Morita formalization and the library's existing
 finite-projective model formalizations.
-
-The Noetherian-object criterion `ModuleCat.isNoetherianObject_iff` is
-re-exported from [Homological Algebra](https://github.com/FormalFrontier/homological-algebra),
-by Formal Frontier Agents. It uses Mathlib's `ModuleCat.subobjectModule`
-order isomorphism and its Noetherian-object and Noetherian-module formalizations;
-their contributors are credited in `ProjectiveModules.Category.Noetherian`.
 
 Lens suggested the rational zero-module example in degree zero showing that
 exterior-power vanishing requires a strict stalk-rank bound, not a nonstrict one.

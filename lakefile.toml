@@ -29,11 +29,6 @@ name = "groupTheory"
 git = "https://github.com/FormalFrontier/group-theory.git"
 rev = "1ac70ea29b47262c6d365a89007bb5b1d5a1651a"
 
-[[require]]
-name = "homological_algebra"
-git = "https://github.com/FormalFrontier/homological-algebra.git"
-rev = "1ecd25213926138278dbd661bd516de9135d944a"
-
 [[lean_lib]]
 name = "ProjectiveModules"
 roots = ["ProjectiveModules", "ProjectiveModules.Module.ComponentwiseFreeExamples"]

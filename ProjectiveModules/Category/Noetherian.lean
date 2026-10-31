@@ -4,7 +4,6 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import HomologicalAlgebra.ShortComplex.ModuleCatNoetherian
 public import ProjectiveModules.Category.ModuleEquivalence
 public import Mathlib.CategoryTheory.Subobject.NoetherianObject
 public import Mathlib.RingTheory.Noetherian.Basic
@@ -34,13 +33,6 @@ commutativity is not assumed.
 
 ## Implementation notes
 
-`ModuleCat.isNoetherianObject_iff` is re-exported from
-`HomologicalAlgebra.ShortComplex.ModuleCatNoetherian`. Its explicit module
-argument is named `M`; the former name `X` remains available as a deprecated
-alias. Prefer `(M := ...)` or a positional argument. Positional and saturated
-`@` calls retain their argument order, with implicit scalar ring and ring
-instance and independent scalar and carrier universes.
-
 The order isomorphisms on subobjects and submodules transport the ascending
 chain condition. Well-foundedness passes along dual order embeddings, as in
 Mathlib's Noetherian-module proofs. All submodules occur, without a
@@ -61,8 +53,6 @@ source regular module is not needed for the forward implication.
 * Mathlib's module-category and subobject formalizations by Markus Himmel,
   Bhavik Mehta and Kim Morrison, finiteness formalization by Johan Commelin,
   and lifted-module linear equivalence by Kim Morrison.
-* The Noetherian-object criterion in
-  `HomologicalAlgebra.ShortComplex.ModuleCatNoetherian` by Formal Frontier Agents.
 * The finite-generation transport in
   `ProjectiveModules.Category.ModuleEquivalence` by Formal Frontier Agents.
 -/
@@ -72,9 +62,6 @@ source regular module is not needed for the forward implication.
 universe uC uD vC vD uR uS vR vS
 
 open CategoryTheory
-
-attribute [deprecated_arg X M (since := "2026-10-31")]
-  ModuleCat.isNoetherianObject_iff
 
 namespace CategoryTheory
 
@@ -96,6 +83,19 @@ theorem isNoetherianObject_iff_of_equivalence
 end CategoryTheory
 
 namespace ModuleCat
+
+/-- A module is a Noetherian object exactly when all its submodules are
+finitely generated. -/
+theorem isNoetherianObject_iff {R : Type uR} [Ring R] (X : ModuleCat.{vR} R) :
+    CategoryTheory.IsNoetherianObject X ↔ IsNoetherian R X := by
+  let φ : Subobject X ≃o Submodule R X := subobjectModule X
+  simp only [CategoryTheory.IsNoetherianObject, ObjectProperty.is_iff,
+    CategoryTheory.isNoetherianObject, _root_.isNoetherian_iff']
+  constructor
+  · intro h
+    exact ⟨φ.symm.toOrderEmbedding.dual.wellFounded h.wf⟩
+  · intro h
+    exact ⟨φ.toOrderEmbedding.dual.wellFounded h.wf⟩
 
 variable (R : Type uR) (S : Type uS) [Ring R] [Ring S]
 
