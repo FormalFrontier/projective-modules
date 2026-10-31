@@ -88,6 +88,7 @@ public import ProjectiveModules.KTheory.TensorProduct
 public import ProjectiveModules.KTheory.Trace
 public import ProjectiveModules.KTheory.TraceNaturality
 public import ProjectiveModules.KTheory.ZeroRing
+public import ProjectiveModules.LinearMap.Finsupp
 public import ProjectiveModules.MatrixSpan
 public import ProjectiveModules.Module.BalancedTensorProduct
 public import ProjectiveModules.Module.BalancedTensorExact

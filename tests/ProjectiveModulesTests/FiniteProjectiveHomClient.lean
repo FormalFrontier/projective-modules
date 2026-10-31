@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.Module.FiniteProjectiveHom
+public import ProjectiveModules.TensorProduct.Hom
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Ring.PUnit
 public import Mathlib.Data.ZMod.Basic
@@ -12,6 +13,7 @@ public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import ProjectiveModules.Module.PID
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Module.Torsion.Free
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.RingTheory.Finiteness.Projective
@@ -31,6 +33,11 @@ projective module is free over the PID `ℤ`, hence torsion-free, contradicting
 `5 • 1 = 0` with both factors nonzero. Specified maps in both examples are nonzero
 and move under the canonical pointwise coefficient action.
 
+The same modules also exhibit finite-source tensor-Hom surjectivity with a
+nonprojective source and an infinite projective tensor factor. The map sending
+a residue modulo `5` to its tensor with the first integer coordinate vector
+has a tensor preimage and a nonzero value at `1`.
+
 The natural-number self-module supplies a nonzero example without additive
 inverses. Empty source, zero target, and the one-element scalar ring are separate
 boundary examples. Private specializations also exercise finite generation for
@@ -44,9 +51,11 @@ arguments use Mathlib, particularly `Finsupp.basisSingleOne`,
 `LinearMap.ringLmapEquivSelf`, `Module.Finite.linearMap`,
 `Module.dual_projective`, and `Module.dual_finite`. The implication from projectivity
 to freeness over `ℤ` uses the public Projective Modules theorem
-`Module.Projective.free_of_pid`. These examples follow the elementary model ideas
-of the Projective Modules finite-projective developments. This module was written
-with AI assistance.
+`Module.Projective.free_of_pid`. The tensor preimage uses Projective Modules'
+finite-source tensor-Hom surjectivity theorem, and its nonzero value is detected
+by Mathlib's `TensorProduct.finsuppScalarRight`. These examples follow the
+elementary model ideas of the Projective Modules finite-projective developments.
+This module was written with AI assistance.
 -/
 
 @[expose] public section
@@ -127,6 +136,38 @@ theorem zmod_five_finite_not_projective :
   have hzero := (Module.isTorsionFree_iff_smul_eq_zero (R := ℤ) (M := ZMod 5)).mp
     (inferInstance : Module.IsTorsionFree ℤ (ZMod 5)) 5 1 zmod_five_annihilator.2.2
   exact hzero.elim zmod_five_annihilator.1 zmod_five_annihilator.2.1
+
+open scoped TensorProduct
+
+/-- The map sending a residue modulo `5` to its tensor with the first integer
+coordinate vector has a tensor preimage and a nonzero value at `1`. The finite
+source is not projective, and the projective right tensor factor is not finite. -/
+theorem zmod_five_tensorHom_preimage :
+    ¬ Module.Projective ℤ (ZMod 5) ∧
+      ¬ Module.Finite ℤ (ℕ →₀ ℤ) ∧
+      ∃ t : (ZMod 5 →ₗ[ℤ] ZMod 5) ⊗[ℤ] (ℕ →₀ ℤ),
+        TensorProduct.rTensorHomToHomRTensor (RingHom.id ℤ)
+            (ZMod 5) (ZMod 5) (ℕ →₀ ℤ) t =
+          (TensorProduct.mk ℤ (ZMod 5) (ℕ →₀ ℤ)).flip (Finsupp.single 0 1) ∧
+        TensorProduct.rTensorHomToHomRTensor (RingHom.id ℤ)
+            (ZMod 5) (ZMod 5) (ℕ →₀ ℤ) t 1 ≠ 0 := by
+  let : Module.Finite ℤ (ZMod 5) := zmod_five_finite_not_projective.1
+  let : Module.Projective ℤ (ℕ →₀ ℤ) := integer_finsupp_projective_not_finite.1
+  refine ⟨zmod_five_finite_not_projective.2, integer_finsupp_projective_not_finite.2, ?_⟩
+  let f := (TensorProduct.mk ℤ (ZMod 5) (ℕ →₀ ℤ)).flip (Finsupp.single 0 1)
+  obtain ⟨t, ht⟩ :=
+    (TensorProduct.rTensorHomToHomRTensor_surjective_of_finite_left_projective_right
+      (L := ZMod 5) (M := ZMod 5) (N := ℕ →₀ ℤ) (RingHom.id ℤ)) f
+  refine ⟨t, ht, ?_⟩
+  rw [ht]
+  intro hzero
+  apply zmod_five_annihilator.2.1
+  have hcoord := congrArg
+    (fun x : ZMod 5 ⊗[ℤ] (ℕ →₀ ℤ) =>
+      TensorProduct.finsuppScalarRight ℤ ℤ (ZMod 5) ℕ x 0) hzero
+  simpa only [f, LinearMap.flip_apply, TensorProduct.mk_apply,
+    TensorProduct.finsuppScalarRight_apply_tmul_apply, Finsupp.single_eq_same,
+    one_smul, map_zero, Finsupp.zero_apply] using hcoord
 
 /-- The regular-source map corresponding to `1` modulo `5` under evaluation
 at `1`. -/

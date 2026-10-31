@@ -347,12 +347,13 @@ examples and qualifications; links below go to the corresponding result families
   and no projectivity of `M` is assumed.
 - **[Tensoring semilinear Hom](ProjectiveModules/TensorProduct/Hom.lean):** for a
   homomorphism `σ : R →+* S` of commutative semirings, the canonical map
-  `(L →ₛₗ[σ] M) ⊗[S] N →ₗ[S] L →ₛₗ[σ] M ⊗[S] N` is bijective when only `N`
-  is finite projective over `S`. The source `L` and Hom target `M` are arbitrary
-  additive commutative monoids with independent universes. Naturality in all three
-  modules needs no finiteness or projectivity; the left unitor identifies the dual
-  specialization with `dualTensorHom`. These are semiring and semilinear
-  generalizations of the tensor–Hom comparison.
+  `(L →ₛₗ[σ] M) ⊗[S] N →ₗ[S] (L →ₛₗ[σ] (M ⊗[S] N))` is bijective when `N`
+  is finite projective over `S`, with arbitrary source `L`. It is also surjective
+  when `L` is finitely generated over `R` and `N` is projective over `S`, without
+  projectivity of `L` or finite generation of `N`. All modules are additive
+  commutative monoids, their carrier universes are independent, and `σ` is
+  arbitrary. Naturality in all three modules needs no finiteness or projectivity;
+  the left unitor identifies the dual specialization with `dualTensorHom`.
 - **[Trace under scalar restriction](ProjectiveModules/Module/Trace/ScalarRestriction.lean):**
   for a commutative-semiring algebra `R → A`, with `A` finite projective over
   `R` and an additive-commutative-monoid module `M` finite projective over `A`,
@@ -743,6 +744,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Determinant lines](ProjectiveModules/ExteriorPower/DeterminantLine.lean) | `Module.DeterminantLine`: invertible for finite projective modules of variable stalk rank; linear-isomorphism invariance, rank-fiber recovery, product compatibility, zero and invertible-module comparisons as `Nonempty` isomorphisms |
 | [Determinant scalar extension](ProjectiveModules/ExteriorPower/DeterminantLineBaseChange.lean) | `ModuleCat.RightExtension.determinantLine_mk`: the determinant-line Picard class of a finite projective right module commutes with arbitrary ring-homomorphism scalar extension via the opposite homomorphism; no flatness or constant-rank hypothesis |
 | [Free modules](ProjectiveModules/Free/CountableCancellation.lean), [infinite coordinates](ProjectiveModules/Free/InfiniteCoordinates.lean), [rank conditions](ProjectiveModules/Free/InvariantBasisNumber.lean) | Countable cancellation/absorption; finite stably-free semisimple endpoint; infinite basis cardinality and free-coordinate classification without IBN; semiring-homomorphism pullbacks of rank condition and IBN |
+| [Finsupp–Hom comparison](ProjectiveModules/LinearMap/Finsupp.lean) | Coordinatewise comparison from finitely supported families of semilinear maps to semilinear maps with finitely supported values: always injective and bijective for a finitely generated source, over arbitrary semirings with commuting auxiliary scalar actions, arbitrary index type and independent universes |
 | [Linear-map modules](ProjectiveModules/Free/LinearMap.lean) | Finite free semiring source and commuting target actions; independent freeness and finiteness conclusions for Hom over the outer semiring, with independent universes and chosen-basis inverse factorization |
 | [Free-word semirings](ProjectiveModules/Free/FreeWordAlgebra.lean) | Rank-two to rank-one left-linear injection by distinct right suffixes and strong-rank obstruction; arbitrary semiring coefficients and alphabet |
 | [Free-word augmentation](ProjectiveModules/Free/FreeWordAugmentation.lean), [augmentation kernel](ProjectiveModules/Free/FreeWordAugmentationKernel.lean) | Zero-generator homomorphism returns the empty-word coefficient; full-letter left-linear combination has range equal to its canonical semilinear kernel, for arbitrary semiring coefficients and independent alphabet universe |
