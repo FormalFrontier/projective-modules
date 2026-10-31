@@ -12,13 +12,18 @@ module
 public import ProjectiveModules.Module.SymmetricPower.Basic
 public import ProjectiveModules.Module.SymmetricPower.Basis
 public import ProjectiveModules.Module.SymmetricPower.Quadratic
+public import ProjectiveModules.Module.SymmetricPower.Tensor
 public import ProjectiveModules.Module.PiTensorProduct
 
 /-!
-# Finite generation of symmetric tensor powers
+# Symmetric tensor powers
 
 Symmetric tensor powers of finite semimodules are finite, without
 projectivity, additive inverses, or an invertibility condition on factorials.
+
+Concatenation on disjoint label types is surjective, is characterized on all
+labelled generator tensors, and commutes with linear maps. It requires no
+finiteness assumption on the labels or semimodule.
 -/
 
 @[expose] public section

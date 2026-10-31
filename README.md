@@ -26,6 +26,11 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   finite generation, freeness and projectivity separately. An arbitrary
   supplied basis gives a monomial basis indexed by multiplicity vectors
   of total slot count. Projectivity requires no finite generation.
+  For arbitrary label types,
+  [concatenation](ProjectiveModules/Module/SymmetricPower/Tensor.lean) is a
+  surjective linear map from the tensor product of the two symmetric powers
+  to the symmetric power on the disjoint union. It is characterized on all
+  labelled generator tensors and is natural under linear maps.
 - **[Finite-projective Hom](ProjectiveModules/Module/FiniteProjectiveHom.lean).**
   For arbitrary semirings `R`, `S`, `T`, a finite projective `R`-module `M`
   and `σ : R →+* S`, let `N` be both an `S`-module and a `T`-module.
