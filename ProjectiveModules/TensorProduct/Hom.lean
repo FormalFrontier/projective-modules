@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
@@ -24,9 +25,15 @@ For a projective tensor factor `N` over `S`, the same canonical map is injective
 with arbitrary source `L`. It is bijective if, in addition, either `L` is finite
 over `R` or `N` is finite over `S`. Finite-source bijectivity thus needs neither
 projectivity of `L` nor finite generation of `N`. The coefficient module `M` is
-arbitrary throughout. Scalars are commutative semirings, all additive structures
-are commutative monoids, and the carrier universes are independent. The scalar
-homomorphism `σ` need not be injective or surjective.
+arbitrary throughout. For these semilinear comparisons, scalars are commutative
+semirings, all additive structures are commutative monoids, and the carrier
+universes are independent. The scalar homomorphism `σ` need not be injective or
+surjective.
+
+In the identity-scalar case, a flat tensor factor `N` gives injectivity when `L`
+is finitely generated, over a commutative semiring. Over a commutative ring,
+finite presentation of `L` gives bijectivity. The coefficient module `M` remains
+arbitrary, and neither `L` nor `N` is required to be projective.
 
 Naturality in all three modules holds without finiteness or projectivity.
 The dual specialization is connected to Mathlib's `dualTensorHom` by the tensor
@@ -50,6 +57,11 @@ arbitrary free tensor factor, and the finite-source semilinear Finsupp compariso
 supplies a lift before descent along a projective retraction. Neither proof
 chooses a basis.
 
+For the finite-presentation comparison with a flat tensor factor, Hom turns a
+finite free presentation into a left-exact sequence. Flatness preserves this
+sequence after tensoring. Naturality and the left-exact five lemma then reduce
+the comparison to the existing finite-projective-source case.
+
 ## References
 
 - J. P. May, *A Concise Course in Algebraic Topology*, Chapter 17, for the
@@ -57,6 +69,14 @@ chooses a basis.
   semirings and the Hom maps to semilinear maps.
 - Mathlib's Contraction formalization by Oliver Nash and Antoine Labelle
   (`Mathlib.LinearAlgebra.Contraction`), for the finite-free and retract strategy.
+- Mathlib's finite-presentation formalization by Andrew Yang
+  (`Mathlib.Algebra.Module.FinitePresentation`), whose
+  `Module.FinitePresentation.isBaseChange_map` uses the finite free presentation
+  and left-exact comparison strategy.
+- Mathlib's Hom left-exactness by Nailin Guan, flatness by Johan Commelin,
+  Jujian Zhang and Yongle Hu, and module five lemma by Christian Merten
+  (`Mathlib.LinearAlgebra.LeftExact`, `Mathlib.RingTheory.Flat.Basic` and
+  `Mathlib.Algebra.FiveLemma`).
 - Mathlib's tensor maps by Kenny Lau and Mario Carneiro, and tensor products with
   finite products by Judith Ludwig and Christian Merten.
 - Mathlib's projective-module formalization by Kevin Buzzard and Antoine Labelle,
@@ -405,6 +425,172 @@ theorem rTensorHomEquivHomRTensor_id :
     _root_.rTensorHomEquivHomRTensor_toLinearMap]
 
 end IdentityScalars
+
+section FlatRight
+
+/-- Over a commutative semiring, the canonical tensor-Hom comparison is injective
+when its source is finitely generated and its tensor factor is flat. The Hom
+target is arbitrary; neither the source nor tensor factor need be projective. -/
+theorem rTensorHomToHomRTensor_injective_of_finite_left_flat_right
+    {R : Type uR} [CommSemiring R]
+    {L : Type uL} {M : Type uM} {N : Type uN}
+    [AddCommMonoid L] [AddCommMonoid M] [AddCommMonoid N]
+    [Module R L] [Module R M] [Module R N]
+    [Module.Finite R L] [Module.Flat R N] :
+    Function.Injective (rTensorHomToHomRTensor (RingHom.id R) L M N) := by
+  obtain ⟨n, p, hp⟩ := Module.Finite.exists_fin' R L
+  have hpre : Function.Injective (LinearMap.lcomp R M p) :=
+    LinearMap.lcomp_injective_of_surjective (S := R) (N := M) p hp
+  have htensor : Function.Injective ((LinearMap.lcomp R M p).rTensor N) :=
+    Module.Flat.rTensor_preserves_injective_linearMap (M := N) _ hpre
+  have hcomp :
+      (LinearMap.llcomp R (Fin n → R) M M (LinearMap.id : M →ₗ[R] M)).comp
+        (LinearMap.lcompₛₗ R M (RingHom.id R) p) = LinearMap.lcomp R M p := by
+    ext f l
+    rfl
+  have hnatural (t : (L →ₗ[R] M) ⊗[R] N) (l : Fin n → R) :
+      rTensorHomToHomRTensor (RingHom.id R) (Fin n → R) M N
+          ((LinearMap.lcomp R M p).rTensor N t) l =
+        rTensorHomToHomRTensor (RingHom.id R) L M N t (p l) := by
+    simpa only [hcomp, LinearMap.rTensor_def, map_id, LinearMap.id_apply] using
+      rTensorHomToHomRTensor_natural (RingHom.id R) p
+        (LinearMap.id : M →ₗ[R] M) (LinearMap.id : N →ₗ[R] N) t l
+  intro x y hxy
+  apply htensor
+  apply
+    (rTensorHomToHomRTensor_bijective_of_finite_projective_left
+      (RingHom.id R) (L := Fin n → R) (M := M) (N := N)).1
+  apply LinearMap.ext
+  intro l
+  rw [hnatural, hnatural, hxy]
+
+/-- Over a commutative ring, tensoring Hom from a finitely presented source with a
+flat module commutes with Hom: the canonical tensor-Hom comparison is bijective.
+The Hom target is arbitrary, and no projectivity is required of the source or
+tensor factor. The proof follows the finite-presentation/left-exact comparison
+strategy of Mathlib's `Module.FinitePresentation.isBaseChange_map`, using flat
+tensor exactness and
+`LinearMap.bijective_of_bijective_of_injective_of_left_exact`. -/
+theorem rTensorHomToHomRTensor_bijective_of_finitePresentation_left_flat_right
+    {R : Type uR} [CommRing R]
+    {L : Type uL} {M : Type uM} {N : Type uN}
+    [AddCommMonoid L] [AddCommMonoid M] [AddCommMonoid N]
+    [Module R L] [Module R M] [Module R N]
+    [Module.FinitePresentation R L] [Module.Flat R N] :
+    Function.Bijective (rTensorHomToHomRTensor (RingHom.id R) L M N) := by
+  let : AddCommGroup L := Module.addCommMonoidToAddCommGroup R (M := L)
+  let : AddCommGroup M := Module.addCommMonoidToAddCommGroup R (M := M)
+  let : AddCommGroup N := Module.addCommMonoidToAddCommGroup R (M := N)
+  obtain ⟨n, m, p, q, hp, hqp⟩ := Module.FinitePresentation.exists_fin' R L
+  refine LinearMap.bijective_of_bijective_of_injective_of_left_exact
+    (R := R)
+    (M₁ := (L →ₗ[R] M) ⊗[R] N)
+    (M₂ := ((Fin n → R) →ₗ[R] M) ⊗[R] N)
+    (M₃ := ((Fin m → R) →ₗ[R] M) ⊗[R] N)
+    (N₁ := L →ₗ[R] (M ⊗[R] N))
+    (N₂ := (Fin n → R) →ₗ[R] (M ⊗[R] N))
+    (N₃ := (Fin m → R) →ₗ[R] (M ⊗[R] N))
+    ((LinearMap.lcomp R M p).rTensor N) ((LinearMap.lcomp R M q).rTensor N)
+    (LinearMap.lcomp R (M ⊗[R] N) p) (LinearMap.lcomp R (M ⊗[R] N) q)
+    (rTensorHomToHomRTensor (RingHom.id R) L M N)
+    (rTensorHomToHomRTensor (RingHom.id R) (Fin n → R) M N)
+    (rTensorHomToHomRTensor (RingHom.id R) (Fin m → R) M N) ?_ ?_
+    (Module.Flat.rTensor_exact N
+      (LinearMap.exact_lcomp_of_exact_of_surjective M hqp hp))
+    (LinearMap.exact_lcomp_of_exact_of_surjective (M ⊗[R] N) hqp hp)
+    (rTensorHomToHomRTensor_bijective_of_finite_projective_left
+      (L := Fin n → R) (M := M) (N := N) (RingHom.id R))
+    (rTensorHomToHomRTensor_bijective_of_finite_projective_left
+      (L := Fin m → R) (M := M) (N := N) (RingHom.id R)).injective
+    (Module.Flat.rTensor_preserves_injective_linearMap _
+      (LinearMap.lcomp_injective_of_surjective p hp)) ?_
+  · refine LinearMap.ext fun t ↦ LinearMap.ext fun l ↦ ?_
+    have hcomp :
+        (LinearMap.llcomp R (Fin n → R) M M (LinearMap.id : M →ₗ[R] M)).comp
+            (LinearMap.lcompₛₗ R M (RingHom.id R) p) = LinearMap.lcomp R M p := by
+      ext f x
+      rfl
+    simpa only [LinearMap.comp_apply, LinearMap.lcomp_apply, LinearMap.rTensor_def,
+      hcomp, map_id, LinearMap.id_apply] using
+      (rTensorHomToHomRTensor_natural (RingHom.id R) p
+        (LinearMap.id : M →ₗ[R] M) (LinearMap.id : N →ₗ[R] N) t l).symm
+  · refine LinearMap.ext fun t ↦ LinearMap.ext fun l ↦ ?_
+    have hcomp :
+        (LinearMap.llcomp R (Fin m → R) M M (LinearMap.id : M →ₗ[R] M)).comp
+            (LinearMap.lcompₛₗ R M (RingHom.id R) q) = LinearMap.lcomp R M q := by
+      ext f x
+      rfl
+    simpa only [LinearMap.comp_apply, LinearMap.lcomp_apply, LinearMap.rTensor_def,
+      hcomp, map_id, LinearMap.id_apply] using
+      (rTensorHomToHomRTensor_natural (RingHom.id R) q
+        (LinearMap.id : M →ₗ[R] M) (LinearMap.id : N →ₗ[R] N) t l).symm
+  · exact LinearMap.lcomp_injective_of_surjective (S := R) (N := M ⊗[R] N) p hp
+
+end FlatRight
+
+section BaseChange
+
+variable (R : Type uR) (S : Type uS) (L : Type uL) (M : Type uM)
+variable [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable [AddCommMonoid L] [AddCommMonoid M] [Module R L] [Module R M]
+
+/-- The induced Hom base-change map is the identity-scalar tensor-Hom comparison,
+conjugated by the tensor commutors and the scalar-extension Hom adjunction.
+No finiteness or flatness is required.
+
+The canonical components are Mathlib's tensor commutors, formalized by Kenny Lau
+and Mario Carneiro, and `LinearMap.liftBaseChangeEquiv`, formalized by Kim Morrison
+and Johan Commelin. -/
+theorem _root_.LinearMap.liftBaseChange_baseChangeHom_eq :
+    (LinearMap.liftBaseChange S (LinearMap.baseChangeHom R S L M)).restrictScalars R =
+      ((LinearMap.liftBaseChangeEquiv S :
+        (L →ₗ[R] S ⊗[R] M) ≃ₗ[S]
+          (S ⊗[R] L →ₗ[S] S ⊗[R] M)).restrictScalars R).toLinearMap.comp
+        ((LinearEquiv.congrRight (M := L) (TensorProduct.comm R M S)).toLinearMap.comp
+          ((rTensorHomToHomRTensor (RingHom.id R) L M S).comp
+            (TensorProduct.comm R S (L →ₗ[R] M)).toLinearMap)) := by
+  apply TensorProduct.ext'
+  intro s f
+  apply AlgebraTensorModule.ext
+  intro s' l
+  simp [smul_tmul', mul_comm]
+
+/-- The algebra-base-change condition for Hom is equivalent to bijectivity of the
+canonical tensor-Hom comparison with the algebra as tensor factor. This equivalence
+requires no finite presentation, projectivity or flatness.
+
+The proof uses the canonical conjugacy
+`LinearMap.liftBaseChange_baseChangeHom_eq` and Andrew Yang's Mathlib
+`IsBaseChange.equiv` and `IsBaseChange.of_equiv`. -/
+theorem isBaseChange_baseChangeHom_iff :
+    IsBaseChange S (LinearMap.baseChangeHom R S L M) ↔
+      Function.Bijective (rTensorHomToHomRTensor (RingHom.id R) L M S) := by
+  have hbij :
+      Function.Bijective
+        ((LinearMap.liftBaseChange S (LinearMap.baseChangeHom R S L M)).restrictScalars R) ↔
+      Function.Bijective (rTensorHomToHomRTensor (RingHom.id R) L M S) := by
+    rw [LinearMap.liftBaseChange_baseChangeHom_eq]
+    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe,
+      EquivLike.comp_bijective, EquivLike.bijective_comp]
+  constructor
+  · intro h
+    apply hbij.mp
+    have he : h.equiv.toLinearMap =
+        LinearMap.liftBaseChange S (LinearMap.baseChangeHom R S L M) := by
+      apply AlgebraTensorModule.ext
+      intro s f
+      simp only [LinearEquiv.coe_coe, IsBaseChange.equiv_tmul,
+        LinearMap.liftBaseChange_tmul]
+    rw [← he]
+    exact (h.equiv.restrictScalars R).bijective
+  · intro h
+    refine IsBaseChange.of_equiv
+      (LinearEquiv.ofBijective
+        (LinearMap.liftBaseChange S (LinearMap.baseChangeHom R S L M)) (hbij.mpr h)) ?_
+    intro f
+    exact LinearMap.liftBaseChange_one_tmul S _ f
+
+end BaseChange
 
 section LeftUnitor
 

@@ -17,6 +17,15 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   finite generation, freeness and projectivity separately. An arbitrary
   supplied basis gives a monomial basis indexed by multiplicity vectors
   of total slot count. Projectivity requires no finite generation.
+- **[Finite-projective Hom](ProjectiveModules/Module/FiniteProjectiveHom.lean).**
+  For arbitrary semirings `R`, `S`, `T`, a finite projective `R`-module `M`
+  and `σ : R →+* S`, let `N` be both an `S`-module and a `T`-module.
+  Semilinear maps carry the
+  [canonical pointwise `T`-module structure](ProjectiveModules/LinearMap/ChangeOfScalars.lean)
+  when the `T`-action on `N` commutes with the image of `σ`. They are
+  projective over `T` if `N` is projective over `T`, and finitely generated
+  over `T` if `N` is finitely generated over `T`, independently. No `T`-action
+  on `M` or commutation with all of `S` is required.
 - **[Finite generation from rank-one residue fibers](ProjectiveModules/Module/FiniteOfFiberRank.lean).**
   An arbitrary projective module over a commutative ring is finitely generated when
   every maximal residue tensor fiber has cardinal rank one. No finite generation,
@@ -398,6 +407,13 @@ examples and qualifications; links below go to the corresponding result families
   commutative monoids, their carrier universes are independent, and `σ` is
   arbitrary. Naturality in all three modules needs no finiteness or projectivity;
   the left unitor identifies the dual specialization with `dualTensorHom`.
+- **[Flat tensor–Hom comparison](ProjectiveModules/TensorProduct/Hom.lean):** for
+  a flat `R`-module `N`, the canonical map
+  `(L →ₗ[R] M) ⊗[R] N →ₗ[R] (L →ₗ[R] M ⊗[R] N)` is injective when `L` is
+  finitely generated over a commutative semiring `R`, and bijective when `L` is
+  finitely presented over a commutative ring `R`. All three modules are additive
+  commutative monoids, with four independent scalar and carrier universes;
+  `M` is arbitrary, and neither `L` nor `N` need be projective.
 - **[Trace under scalar restriction](ProjectiveModules/Module/Trace/ScalarRestriction.lean):**
   for a commutative-semiring algebra `R → A`, with `A` finite projective over
   `R` and an additive-commutative-monoid module `M` finite projective over `A`,
