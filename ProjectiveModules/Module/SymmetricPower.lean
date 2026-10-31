@@ -15,6 +15,7 @@ public import ProjectiveModules.Module.SymmetricPower.Quadratic
 public import ProjectiveModules.Module.SymmetricPower.Tensor
 public import ProjectiveModules.Module.SymmetricPower.Prod
 public import ProjectiveModules.Module.SymmetricPower.BaseChange
+public import ProjectiveModules.Module.SymmetricPower.Plethysm
 public import ProjectiveModules.Module.PiTensorProduct
 
 /-!

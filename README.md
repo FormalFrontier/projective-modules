@@ -45,6 +45,13 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   has coefficient one for each labelled subset, and its inverse is natural
   in both modules. The degree-zero comparison preserves the scalar unit;
   the degree-one target is ordered as the second module followed by the first.
+  [Plethysm](ProjectiveModules/Module/SymmetricPower/Plethysm.lean) flattens
+  iterated symmetric powers with finitely many outer factors and arbitrary
+  inner labels. Its finite-degree map `Sym^p (Sym^q M) → Sym^(p*q) M` is
+  natural and surjective over any commutative semiring, with coefficient one
+  on every labelled grid. The singleton comparisons and degree-zero scalar
+  unit formulas hold in all degrees. For projective semimodules the map
+  admits a linear section, without choosing a canonical or natural section.
   [Scalar extension](ProjectiveModules/Module/SymmetricPower/BaseChange.lean)
   commutes with every finite symmetric degree over commutative semirings,
   without flatness or projectivity. The comparison and its inverse are
