@@ -727,6 +727,15 @@ reference for the existing right-matrix convention are credited in the module.
 
 ### Kernel families
 
+- **[Kernel comparisons](../ProjectiveModules/Topology/KernelComparison.lean).** For linear retractions with a common section, the
+  algebraic comparison of their kernels is a continuous linear equivalence
+  exactly when the ambient correction `Δ a = Γ (r a) - Γ (s a)` is continuous
+  on each kernel. Only the ambient module needs a given topological additive-group
+  structure: the scalars may form any semiring, and the section-domain module may
+  be an additive commutative monoid with no topology. The kernels retain their
+  subspace topologies. Global continuity of `Δ` supplies a convenient constructor;
+  continuous linear input data recover the same comparison.
+
 - **Kernel families.** Over an arbitrary semiring, two supplied split linear
   retractions with a common section into a fixed module with a topological
   additive-group structure have homeomorphic total kernel spaces whenever their
