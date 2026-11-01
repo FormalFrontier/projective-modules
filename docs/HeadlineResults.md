@@ -282,6 +282,15 @@ examples and qualifications; links below go to the corresponding result families
   For a finite flat module, an exterior power vanishes when its degree strictly
   exceeds every stalk rank, without assuming global projectivity.
 
+### Quadratic tensor exactness
+
+[The quadratic sequence](../ProjectiveModules/ExteriorPower/Quadratic.lean) constructs
+canonical natural maps from the exterior square to the tensor square and from the tensor
+square to the symmetric square. Over any commutative ring, the second map is surjective
+and its kernel is the image of the first. The quotient and its naturality are also
+provided over commutative semirings. For a projective module, the quotient admits a
+linear section, without a finite-generation assumption or a natural choice of section.
+
 ### Symmetric powers
 
 - **[Symmetric powers](../ProjectiveModules/Module/SymmetricPower.lean).**

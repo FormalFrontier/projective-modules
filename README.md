@@ -7,6 +7,10 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **[Quadratic tensor exactness](docs/HeadlineResults.md#quadratic-tensor-exactness).**
+  The exterior-square image is the kernel of the symmetric-square quotient over a
+  commutative ring; projective modules admit a quotient section.
+
 - **[Kernel families](ProjectiveModules/Topology/KernelComparison.lean).**
   Over an arbitrary semiring, two supplied split linear
   retractions with a common section into a fixed module with a topological

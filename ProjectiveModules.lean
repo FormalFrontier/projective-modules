@@ -48,6 +48,7 @@ public import ProjectiveModules.ExteriorPower.FiniteSupport
 public import ProjectiveModules.ExteriorPower.Invertible
 public import ProjectiveModules.ExteriorPower.ProdPairing
 public import ProjectiveModules.ExteriorPower.Projective
+public import ProjectiveModules.ExteriorPower.Quadratic
 public import ProjectiveModules.ExteriorPower.Rank
 public import ProjectiveModules.ExteriorPower.StalkRank
 public import ProjectiveModules.ExteriorPower.Surjectivity
