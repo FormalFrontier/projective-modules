@@ -4,7 +4,9 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
@@ -15,7 +17,11 @@ as the product of its quotient and kernel. Only the middle semimodule needs an
 additive group structure. Continuity of the negative of the section replaces
 continuity of negation on the entire middle semimodule.
 
-The topologies are prescribed, and the scalar semiring needs no topology.
+All topologies are prescribed. The section criterion needs no topology on the
+scalar semiring. For a projective quotient with its prescribed module topology,
+the section and its negative are continuous by the universal property of the
+module topology. Thus continuous addition and scalar multiplication on the
+middle semimodule suffice for a splitting.
 -/
 
 public section
@@ -133,3 +139,39 @@ theorem exists_continuousLinearEquiv_prod_of_split_exact
   rw [hgf, hq_f]
 
 end LinearMap
+
+namespace ContinuousLinearMap
+
+variable {R : Type uR} [Semiring R] [TopologicalSpace R]
+variable {A : Type uA} [AddCommMonoid A] [Module R A]
+variable {B : Type uB} [AddCommGroup B] [Module R B]
+variable {C : Type uC} [AddCommMonoid C] [Module R C]
+variable [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
+variable [ContinuousAdd B] [ContinuousSMul R B]
+variable [Module.Projective R C] [IsModuleTopology R C]
+
+/-- An exact sequence with embedded kernel and projective quotient endowed with
+its prescribed module topology splits as the product of quotient and kernel.
+The equivalence has quotient map as first coordinate and sends the kernel
+inclusion to the second factor. Only the middle semimodule needs continuous
+addition and scalar multiplication; continuity of negation is not assumed. -/
+theorem exists_continuousLinearEquiv_prod_of_projective_exact
+    (f : A →L[R] B) (g : B →L[R] C)
+    (hf : Topology.IsEmbedding f)
+    (hexact : LinearMap.range (f : A →ₗ[R] B) = LinearMap.ker (g : B →ₗ[R] C))
+    (hsurj : Function.Surjective g) :
+    ∃ e : B ≃L[R] C × A,
+      (∀ b : B, (e b).1 = g b) ∧
+      (∀ a : A, e (f a) = (0, a)) := by
+  obtain ⟨s, hsplit⟩ :=
+    Module.projective_lifting_property g.toLinearMap
+      (LinearMap.id : C →ₗ[R] C) hsurj
+  have hs : Continuous s := IsModuleTopology.continuous_of_linearMap s
+  have hneg : Continuous (fun c : C => -s c) :=
+    IsModuleTopology.continuous_of_linearMap (-s)
+  obtain ⟨e, hfst, hincl, _⟩ :=
+    LinearMap.exists_continuousLinearEquiv_prod_of_split_exact
+      f.toLinearMap g.toLinearMap s g.continuous hf hexact hsplit hs hneg
+  exact ⟨e, hfst, hincl⟩
+
+end ContinuousLinearMap
