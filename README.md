@@ -7,6 +7,16 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **Finite orthogonal idempotent endomorphisms.** Over a possibly noncommutative
+  semiring `R`, a finite orthogonal idempotent family `e` on an additive
+  commutative `R`-module `M`, whose sum is the identity, gives the canonical
+  equivalence `CompleteOrthogonalIdempotents.linearEquivPiRange`:
+  `M ≃ₗ[R] (Π i, LinearMap.range (e i))`. Its coordinates are `e i m` and its
+  inverse sums the ambient values. The API includes extensionality and
+  naturality for arbitrary linear intertwiners, with no projectivity, topology,
+  rank or nontriviality premise. An empty index type forces `M`, not `R`, to be
+  zero. See [`Module.OrthogonalIdempotentRanges`](ProjectiveModules/Module/OrthogonalIdempotentRanges.lean).
+
 - **Total symmetric-power series on `K0`.** For every commutative ring `R`,
   `KTheory.K0.totalSymmetricSeries` sends addition in `K0 R` to multiplication
   of units of `PowerSeries (K0 R)`. On a finite projective right module, its
