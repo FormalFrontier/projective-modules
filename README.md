@@ -132,11 +132,14 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
 - **[Determinant lines](docs/Overview.md#determinant-lines):** for finite projective
   modules over arbitrary commutative rings, the dependent product of top exterior
   powers over attained stalk-rank fibers is invertible. Rank zero, zero rings and
-  independent universes are included. Isomorphism invariance, rank-fiber recovery,
+  independent universes are included. `Module.DeterminantLine.congr` is the
+  canonical equivalence induced by a linear equivalence, acting on each attained
+  fiber in its top exterior degree. It respects identity, composition and inverses,
+  and respects intertwining of arbitrary endomorphisms. Rank-fiber recovery,
   zero-module and invertible-module normalizations assert existence of linear
-  isomorphisms, not a chosen coherent family of maps. For any commutative
-  `R`-algebra `S` supported on a rank fiber, the scalar-extended line is isomorphic
-  to the homogeneous exterior power of `S ⊗[R] P` in that fiber's rank.
+  isomorphisms. For any commutative `R`-algebra `S` supported on a rank fiber,
+  the scalar-extended line is isomorphic to the homogeneous exterior power of
+  `S ⊗[R] P` in that fiber's rank.
   The tensor product of the determinant lines of two finite projective modules
   is isomorphic to the determinant line of their product.
 
@@ -313,7 +316,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Homogeneous exterior base change](ProjectiveModules/ExteriorPower/BaseChange.lean) | `ExteriorAlgebra.equivBaseChange_map_exteriorPower`: image equality with the scalar-extended homogeneous submodule, for arbitrary degree and independent ring/carrier universes |
 | [Invertible top exterior powers](ProjectiveModules/ExteriorPower/Invertible.lean) | `exteriorPower.invertible_of_rankAtStalk_eq`: the top exterior power of a finite projective module of constant stalk rank is invertible, without a nontrivial-ring hypothesis |
 | [Exterior vanishing](ProjectiveModules/ExteriorPower/StalkRank.lean) | `exteriorPower.subsingleton_of_rankAtStalk_lt`: an exterior power of a finite flat module vanishes above all stalk ranks, for arbitrary commutative rings and independent universes |
-| [Determinant lines](ProjectiveModules/ExteriorPower/DeterminantLine.lean) | `Module.DeterminantLine`: invertible for finite projective modules of variable stalk rank; linear-isomorphism invariance, rank-fiber recovery, product compatibility, zero and invertible-module comparisons as `Nonempty` isomorphisms |
+| [Determinant lines](ProjectiveModules/ExteriorPower/DeterminantLine.lean) | `Module.DeterminantLine`: invertible for finite projective modules of variable stalk rank; canonical equivalence transport with top-exterior characteristic action, identity/composition/inverse and arbitrary-endomorphism intertwining; rank-fiber recovery, product compatibility, zero and invertible-module comparisons as `Nonempty` isomorphisms |
 | [Determinant scalar extension](ProjectiveModules/ExteriorPower/DeterminantLineBaseChange.lean) | `ModuleCat.RightExtension.determinantLine_mk`: the determinant-line Picard class of a finite projective right module commutes with arbitrary ring-homomorphism scalar extension via the opposite homomorphism; no flatness or constant-rank hypothesis |
 | [Free modules](ProjectiveModules/Free/CountableCancellation.lean), [infinite coordinates](ProjectiveModules/Free/InfiniteCoordinates.lean), [rank conditions](ProjectiveModules/Free/InvariantBasisNumber.lean) | Countable cancellation/absorption; finite stably-free semisimple endpoint; infinite basis cardinality and free-coordinate classification without IBN; semiring-homomorphism pullbacks of rank condition and IBN |
 | [Semilinear tensor–Hom](ProjectiveModules/TensorProduct/SemilinearHomProjective.lean), [coefficient extension](ProjectiveModules/TensorProduct/SemilinearHomCoefficient.lean) | Arbitrary source semiring and commutative base: canonical tensor–Hom bijectivity for finite projective sources; coefficient extension over possibly noncommutative algebras, with explicit right-factor actions |

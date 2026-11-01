@@ -29,8 +29,10 @@ fiber. In particular, an attained rank-zero fiber contributes an exterior power
 of degree zero, rather than being omitted. The construction also allows an
 empty prime spectrum and an empty product.
 
-Isomorphic modules have isomorphic determinant lines, and scalar extension to a
-rank-fiber ring recovers the corresponding top exterior power. The zero module
+Linear equivalences induce canonical equivalences of determinant lines, respecting
+identity, composition and inverses. Their componentwise top-exterior action
+respects intertwining of arbitrary endomorphisms. Scalar extension to a rank-fiber
+ring recovers the corresponding top exterior power. The zero module
 has determinant line isomorphic to the regular module; the determinant line of
 an invertible module is isomorphic to the module itself.
 The tensor product of two determinant lines is isomorphic to the determinant
@@ -58,7 +60,7 @@ use Mathlib's exterior-power equivalences by Sophie Morel and Joël Riou.
 
 noncomputable section
 
-universe u v w
+universe u v w z
 
 open scoped TensorProduct
 
@@ -445,6 +447,16 @@ private def determinantLineCongrModelMap (d : determinantLineCongrData R)
     map_smul' := fun r x ↦ funext fun i ↦
       (e i).map_smul (Ideal.Quotient.mk (Ideal.span {1 - d.2.1 i}) r) (x i) }
 
+-- Compute through the induced linear map without unfolding the equivalences.
+private theorem determinantLineCongrModelMap_apply (d : determinantLineCongrData R)
+    {M : Type v} [AddCommGroup M] [Module R M]
+    {N : Type w} [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N)
+    (x : determinantLineCongrModel R d M) (i : Function.Fiber d.1) :
+    determinantLineCongrModelMap R d e x i =
+      exteriorPower.map (d.2.2 i)
+        (e.toLinearMap.baseChange (determinantLineCongrRing R d i)) (x i) :=
+  rfl
+
 -- Equality elimination here transports the indices, rings, degrees, additive
 -- groups and quotient-map scalar actions together, before returning to DLine.
 private def determinantLineCongrModelTransport
@@ -454,43 +466,295 @@ private def determinantLineCongrModelTransport
   cases h
   exact LinearEquiv.refl R _
 
+private def determinantLineCongrModelAction (d : determinantLineCongrData R)
+    {M : Type v} [AddCommGroup M] [Module R M] (f : Module.End R M)
+    (x : determinantLineCongrModel R d M) : determinantLineCongrModel R d M :=
+  fun i ↦ exteriorPower.map (d.2.2 i)
+    (f.baseChange (determinantLineCongrRing R d i)) (x i)
+
+private theorem determinantLineCongrModelEquiv_action (f : Module.End R P)
+    (x : DeterminantLine R P) :
+    determinantLineCongrModelEquiv R P
+        (DeterminantLine.ofComponents R P (fun i ↦
+          exteriorPower.map (rankFiberRank R P i) (f.baseChange (rankFiberRing R P i))
+            (DeterminantLine.component R P i x))) =
+      determinantLineCongrModelAction R _ f (determinantLineCongrModelEquiv R P x) :=
+  rfl
+
+private theorem determinantLineCongrModelMap_action (d : determinantLineCongrData R)
+    {M : Type v} [AddCommGroup M] [Module R M]
+    {N : Type w} [AddCommGroup N] [Module R N]
+    (e : M ≃ₗ[R] N) (f : Module.End R M) (g : Module.End R N)
+    (h : e.toLinearMap.comp f = g.comp e.toLinearMap)
+    (x : determinantLineCongrModel R d M) :
+    determinantLineCongrModelMap R d e (determinantLineCongrModelAction R d f x) =
+      determinantLineCongrModelAction R d g (determinantLineCongrModelMap R d e x) := by
+  funext i
+  simp only [determinantLineCongrModelMap_apply, determinantLineCongrModelAction]
+  have hb := congrArg
+    (fun k : M →ₗ[R] N ↦ k.baseChange (determinantLineCongrRing R d i)) h
+  simp only [LinearMap.baseChange_comp] at hb
+  have he := congrArg (exteriorPower.map (d.2.2 i)) hb
+  simp only [exteriorPower.map_comp] at he
+  exact DFunLike.congr_fun he (x i)
+
+private theorem determinantLineCongrModelTransport_action
+    {d e : determinantLineCongrData R} (h : d = e)
+    {M : Type v} [AddCommGroup M] [Module R M] (f : Module.End R M)
+    (x : determinantLineCongrModel R d M) :
+    determinantLineCongrModelTransport R h M (determinantLineCongrModelAction R d f x) =
+      determinantLineCongrModelAction R e f (determinantLineCongrModelTransport R h M x) := by
+  cases h
+  rfl
+
+private theorem determinantLineCongrModelTransport_heq
+    {d e : determinantLineCongrData R} (h : d = e)
+    (M : Type v) [AddCommGroup M] [Module R M]
+    (x : determinantLineCongrModel R d M) :
+    HEq (determinantLineCongrModelTransport R h M x) x := by
+  cases h
+  rfl
+
+private theorem determinantLineCongrModelMap_refl (d : determinantLineCongrData R)
+    (M : Type v) [AddCommGroup M] [Module R M]
+    (x : determinantLineCongrModel R d M) :
+    determinantLineCongrModelMap R d (LinearEquiv.refl R M) x = x := by
+  funext i
+  rw [determinantLineCongrModelMap_apply]
+  change exteriorPower.map (d.2.2 i)
+    ((LinearMap.id : Module.End R M).baseChange (determinantLineCongrRing R d i)) (x i) = x i
+  rw [LinearMap.baseChange_id, exteriorPower.map_id, LinearMap.id_apply]
+
+private theorem determinantLineCongrModelMap_trans (d : determinantLineCongrData R)
+    {M : Type v} [AddCommGroup M] [Module R M]
+    {N : Type w} [AddCommGroup N] [Module R N]
+    {T : Type z} [AddCommGroup T] [Module R T]
+    (e : M ≃ₗ[R] N) (f : N ≃ₗ[R] T) (x : determinantLineCongrModel R d M) :
+    determinantLineCongrModelMap R d (e.trans f) x =
+      determinantLineCongrModelMap R d f (determinantLineCongrModelMap R d e x) := by
+  funext i
+  simp only [determinantLineCongrModelMap_apply, LinearEquiv.coe_trans,
+    LinearMap.baseChange_comp, exteriorPower.map_comp, LinearMap.comp_apply]
+
+private theorem determinantLineCongrModelTransport_refl
+    (d : determinantLineCongrData R) (h : d = d)
+    (M : Type v) [AddCommGroup M] [Module R M]
+    (x : determinantLineCongrModel R d M) :
+    determinantLineCongrModelTransport R h M x = x := by
+  exact eq_of_heq (determinantLineCongrModelTransport_heq R h M x)
+
+private theorem determinantLineCongrModelTransport_trans
+    {d e f : determinantLineCongrData R} (h : d = e) (k : e = f)
+    (M : Type v) [AddCommGroup M] [Module R M]
+    (x : determinantLineCongrModel R d M) :
+    determinantLineCongrModelTransport R k M (determinantLineCongrModelTransport R h M x) =
+      determinantLineCongrModelTransport R (h.trans k) M x := by
+  cases h
+  cases k
+  rfl
+
+private theorem determinantLineCongrModelTransport_map
+    {d e : determinantLineCongrData R} (h : d = e)
+    {M : Type v} [AddCommGroup M] [Module R M]
+    {N : Type w} [AddCommGroup N] [Module R N]
+    (f : M ≃ₗ[R] N) (x : determinantLineCongrModel R d M) :
+    determinantLineCongrModelTransport R h N (determinantLineCongrModelMap R d f x) =
+      determinantLineCongrModelMap R e f (determinantLineCongrModelTransport R h M x) := by
+  cases h
+  rfl
+
+private theorem determinantLineCongrData_eq (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q] (f : P ≃ₗ[R] Q) :
+    (⟨rankLocallyConstant R P, rankFiberIdempotent R P, rankFiberRank R P⟩ :
+      determinantLineCongrData R) =
+    ⟨rankLocallyConstant R Q, rankFiberIdempotent R Q, rankFiberRank R Q⟩ := by
+  have hrank : rankLocallyConstant R P = rankLocallyConstant R Q :=
+    rankLocallyConstant_eq_of_equiv (R := R) (M := P) (N := Q) f
+  refine determinantLineCongrData_ext R hrank ?_ ?_
+  · intro i j hij
+    have he :
+        (⟨rankFiberIdempotent R P i, rankFiberIdempotent_isIdempotent R P i⟩ :
+          {a : R // IsIdempotentElem a}) =
+        ⟨rankFiberIdempotent R Q j, rankFiberIdempotent_isIdempotent R Q j⟩ := by
+      apply (PrimeSpectrum.isIdempotentElemEquivClopens (R := R)).injective
+      apply SetLike.coe_injective
+      rw [PrimeSpectrum.coe_isIdempotentElemEquivClopens_apply,
+        PrimeSpectrum.coe_isIdempotentElemEquivClopens_apply]
+      ext p
+      change rankFiberIdempotent R P i ∉ p.asIdeal ↔
+        rankFiberIdempotent R Q j ∉ p.asIdeal
+      rw [rankFiberIdempotent_notMem_iff, rankFiberIdempotent_notMem_iff, hij]
+    exact congrArg Subtype.val he
+  · intro i j hij
+    obtain ⟨p, hp⟩ := Function.Fiber.fiber_nonempty (rankLocallyConstant R P) i
+    have hq : p ∈ j.1 := by
+      rw [← hij]
+      exact hp
+    exact (rankAtStalk_eq_rankFiberRank_of_mem R P i p hp).symm.trans
+      ((congrFun (rankAtStalk_eq_of_equiv f) p).trans
+        (rankAtStalk_eq_rankFiberRank_of_mem R Q j p hq))
+
+private def determinantLineCongrEquiv (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q] (e : P ≃ₗ[R] Q) :
+    DeterminantLine R P ≃ₗ[R] DeterminantLine R Q :=
+  (determinantLineCongrModelEquiv R P).trans
+    ((determinantLineCongrModelMap R _ e).trans
+      ((determinantLineCongrModelTransport R (determinantLineCongrData_eq R P Q e) Q).trans
+        (determinantLineCongrModelEquiv R Q).symm))
+
+private theorem determinantLineCongrEquiv_toModel (Q : Type w)
+    [AddCommGroup Q] [Module R Q] [Module.Finite R Q] [Module.Projective R Q]
+    (e : P ≃ₗ[R] Q) (x : DeterminantLine R P) :
+    determinantLineCongrModelEquiv R Q (determinantLineCongrEquiv R P Q e x) =
+      determinantLineCongrModelTransport R (determinantLineCongrData_eq R P Q e) Q
+        (determinantLineCongrModelMap R _ e (determinantLineCongrModelEquiv R P x)) := by
+  simp only [determinantLineCongrEquiv, LinearEquiv.trans_apply,
+    LinearEquiv.apply_symm_apply]
+
+private theorem determinantLineCongrEquiv_apply_heq (Q : Type w)
+    [AddCommGroup Q] [Module R Q] [Module.Finite R Q] [Module.Projective R Q]
+    (e : P ≃ₗ[R] Q) (x : DeterminantLine R P) :
+    HEq (determinantLineCongrEquiv R P Q e x)
+      (fun i : rankFiberIndex R P ↦
+        (exteriorPower.map (rankFiberRank R P i)
+          (e.toLinearMap.baseChange (rankFiberRing R P i))
+            (DeterminantLine.component R P i x) :
+              ⋀[rankFiberRing R P i]^(rankFiberRank R P i) (rankFiberRing R P i ⊗[R] Q))) := by
+  change HEq (determinantLineCongrModelEquiv R Q (determinantLineCongrEquiv R P Q e x))
+    (determinantLineCongrModelMap R _ e (determinantLineCongrModelEquiv R P x))
+  rw [determinantLineCongrEquiv_toModel]
+  exact determinantLineCongrModelTransport_heq R (determinantLineCongrData_eq R P Q e) Q _
+
+private theorem determinantLineCongr_exists (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q] (e : P ≃ₗ[R] Q) :
+    ∃ e' : DeterminantLine R P ≃ₗ[R] DeterminantLine R Q, ∀ x : DeterminantLine R P,
+      HEq (e' x)
+        (fun i : rankFiberIndex R P ↦
+          (exteriorPower.map (rankFiberRank R P i)
+            (e.toLinearMap.baseChange (rankFiberRing R P i))
+              (DeterminantLine.component R P i x) :
+                ⋀[rankFiberRing R P i]^(rankFiberRank R P i) (rankFiberRing R P i ⊗[R] Q))) :=
+  ⟨determinantLineCongrEquiv R P Q e, determinantLineCongrEquiv_apply_heq R P Q e⟩
+
+namespace DeterminantLine
+
+/-- The natural equivalence of determinant lines induced by a linear equivalence.
+It applies the scalar-extended equivalence in the top exterior degree on each
+attained rank fiber, transporting the common rank-fiber data to the target. -/
+def congr (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q] (e : P ≃ₗ[R] Q) :
+    DeterminantLine R P ≃ₗ[R] DeterminantLine R Q :=
+  Classical.choose (show ∃ e' : DeterminantLine R P ≃ₗ[R] DeterminantLine R Q,
+    ∀ x : DeterminantLine R P, HEq (e' x)
+      (fun i : rankFiberIndex R P ↦
+        (exteriorPower.map (rankFiberRank R P i)
+          (e.toLinearMap.baseChange (rankFiberRing R P i)) (component R P i x) :
+            ⋀[rankFiberRing R P i]^(rankFiberRank R P i) (rankFiberRing R P i ⊗[R] Q))) from by
+      exact determinantLineCongr_exists R P Q e)
+
+/-- Componentwise description of the natural determinant-line equivalence.
+Heterogeneous equality records the simultaneous transport of the fiber indices,
+coefficient rings and top degrees, without choosing separate ring identifications. -/
+theorem congr_apply_heq (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q] (e : P ≃ₗ[R] Q)
+    (x : DeterminantLine R P) :
+    HEq (congr R P Q e x)
+      (fun i : rankFiberIndex R P ↦
+        (exteriorPower.map (rankFiberRank R P i)
+          (e.toLinearMap.baseChange (rankFiberRing R P i)) (component R P i x) :
+            ⋀[rankFiberRing R P i]^(rankFiberRank R P i) (rankFiberRing R P i ⊗[R] Q))) := by
+  exact Classical.choose_spec (determinantLineCongr_exists R P Q e) x
+
+-- The full componentwise action determines the equivalence, including its inverse.
+private theorem congr_eq_model (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q] (e : P ≃ₗ[R] Q) :
+    congr R P Q e = determinantLineCongrEquiv R P Q e := by
+  apply LinearEquiv.ext
+  intro x
+  exact eq_of_heq ((congr_apply_heq R P Q e x).trans
+    (determinantLineCongrEquiv_apply_heq R P Q e x).symm)
+
+private theorem congr_toModel (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q] (e : P ≃ₗ[R] Q)
+    (x : DeterminantLine R P) :
+    determinantLineCongrModelEquiv R Q (congr R P Q e x) =
+      determinantLineCongrModelTransport R (determinantLineCongrData_eq R P Q e) Q
+        (determinantLineCongrModelMap R _ e (determinantLineCongrModelEquiv R P x)) := by
+  rw [congr_eq_model]
+  exact determinantLineCongrEquiv_toModel R P Q e x
+
+/-- The identity equivalence induces the identity on the determinant line. -/
+@[simp] theorem congr_refl :
+    congr R P P (LinearEquiv.refl R P) = LinearEquiv.refl R (DeterminantLine R P) := by
+  apply LinearEquiv.ext
+  intro x
+  apply (determinantLineCongrModelEquiv R P).injective
+  rw [congr_toModel, determinantLineCongrModelMap_refl,
+    determinantLineCongrModelTransport_refl, LinearEquiv.refl_apply]
+
+/-- Transport on determinant lines respects composition of linear equivalences. -/
+theorem congr_trans (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q]
+    (T : Type z) [AddCommGroup T] [Module R T]
+    [Module.Finite R T] [Module.Projective R T]
+    (e : P ≃ₗ[R] Q) (f : Q ≃ₗ[R] T) :
+    congr R P T (e.trans f) = (congr R P Q e).trans (congr R Q T f) := by
+  apply LinearEquiv.ext
+  intro x
+  apply (determinantLineCongrModelEquiv R T).injective
+  simp only [LinearEquiv.trans_apply, congr_toModel, determinantLineCongrModelMap_trans,
+    ← determinantLineCongrModelTransport_map, determinantLineCongrModelTransport_trans]
+
+/-- Transport along an inverse equivalence is inverse determinant-line transport. -/
+@[simp] theorem congr_symm (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q] (e : P ≃ₗ[R] Q) :
+    congr R Q P e.symm = (congr R P Q e).symm := by
+  apply LinearEquiv.ext
+  intro y
+  apply (congr R P Q e).injective
+  rw [LinearEquiv.apply_symm_apply]
+  have he : e.symm.trans e = LinearEquiv.refl R Q := by
+    apply LinearEquiv.ext
+    intro q
+    exact e.apply_symm_apply q
+  have h := DFunLike.congr_fun (congr_trans R Q P Q e.symm e) y
+  rw [he, congr_refl] at h
+  exact h.symm
+
+/-- An automorphism acts on each rank-fiber component by its induced top
+exterior-power map. -/
+theorem component_congr (e : P ≃ₗ[R] P) (i : rankFiberIndex R P)
+    (x : DeterminantLine R P) :
+    component R P i (congr R P P e x) =
+      exteriorPower.map (rankFiberRank R P i)
+        (e.toLinearMap.baseChange (rankFiberRing R P i)) (component R P i x) := by
+  exact congrFun (eq_of_heq (congr_apply_heq R P P e x)) i
+
+/-- The natural determinant-line equivalence intertwines componentwise exterior
+power actions whenever the underlying endomorphisms are intertwined. This holds
+for arbitrary endomorphisms, including on attained rank-zero fibers. -/
+theorem congr_naturality (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q]
+    (e : P ≃ₗ[R] Q) (f : Module.End R P) (g : Module.End R Q)
+    (h : e.toLinearMap.comp f = g.comp e.toLinearMap) (x : DeterminantLine R P) :
+    congr R P Q e (ofComponents R P (fun i ↦
+        exteriorPower.map (rankFiberRank R P i) (f.baseChange (rankFiberRing R P i))
+          (component R P i x))) =
+      ofComponents R Q (fun i ↦
+        exteriorPower.map (rankFiberRank R Q i) (g.baseChange (rankFiberRing R Q i))
+          (component R Q i (congr R P Q e x))) := by
+  apply (determinantLineCongrModelEquiv R Q).injective
+  simp only [congr_toModel, determinantLineCongrModelEquiv_action,
+    determinantLineCongrModelMap_action R _ e f g h,
+    determinantLineCongrModelTransport_action]
+
+end DeterminantLine
+
 /-- Isomorphic finite projective modules have isomorphic determinant lines. -/
 theorem determinantLine_congr (Q : Type w) [AddCommGroup Q] [Module R Q]
     [Module.Finite R Q] [Module.Projective R Q] (f : P ≃ₗ[R] Q) :
-    Nonempty (DeterminantLine R P ≃ₗ[R] DeterminantLine R Q) := by
-  have hrank : rankLocallyConstant R P = rankLocallyConstant R Q :=
-    rankLocallyConstant_eq_of_equiv (R := R) (M := P) (N := Q) f
-  have hdata :
-      (⟨rankLocallyConstant R P, rankFiberIdempotent R P, rankFiberRank R P⟩ :
-        determinantLineCongrData R) =
-      ⟨rankLocallyConstant R Q, rankFiberIdempotent R Q, rankFiberRank R Q⟩ := by
-    refine determinantLineCongrData_ext R hrank ?_ ?_
-    · intro i j hij
-      have he :
-          (⟨rankFiberIdempotent R P i, rankFiberIdempotent_isIdempotent R P i⟩ :
-            {a : R // IsIdempotentElem a}) =
-          ⟨rankFiberIdempotent R Q j, rankFiberIdempotent_isIdempotent R Q j⟩ := by
-        apply (PrimeSpectrum.isIdempotentElemEquivClopens (R := R)).injective
-        apply SetLike.coe_injective
-        rw [PrimeSpectrum.coe_isIdempotentElemEquivClopens_apply,
-          PrimeSpectrum.coe_isIdempotentElemEquivClopens_apply]
-        ext p
-        change rankFiberIdempotent R P i ∉ p.asIdeal ↔
-          rankFiberIdempotent R Q j ∉ p.asIdeal
-        rw [rankFiberIdempotent_notMem_iff, rankFiberIdempotent_notMem_iff, hij]
-      exact congrArg Subtype.val he
-    · intro i j hij
-      obtain ⟨p, hp⟩ := Function.Fiber.fiber_nonempty (rankLocallyConstant R P) i
-      have hq : p ∈ j.1 := by
-        rw [← hij]
-        exact hp
-      exact (rankAtStalk_eq_rankFiberRank_of_mem R P i p hp).symm.trans
-        ((congrFun (rankAtStalk_eq_of_equiv f) p).trans
-          (rankAtStalk_eq_rankFiberRank_of_mem R Q j p hq))
-  exact ⟨(determinantLineCongrModelEquiv R P).trans
-    ((determinantLineCongrModelMap R _ f).trans
-      ((determinantLineCongrModelTransport R hdata Q).trans
-        (determinantLineCongrModelEquiv R Q).symm))⟩
+    Nonempty (DeterminantLine R P ≃ₗ[R] DeterminantLine R Q) :=
+  ⟨DeterminantLine.congr R P Q f⟩
 
 /-- Base change to a rank-fiber ring recovers that fiber's top exterior power. -/
 theorem determinantLine_component (i : rankFiberIndex R P) :
