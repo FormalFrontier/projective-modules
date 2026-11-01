@@ -185,6 +185,7 @@ public import ProjectiveModules.Topology.Projective
 public import ProjectiveModules.Topology.Splitting
 public import ProjectiveModules.Topology.KernelComparison
 public import ProjectiveModules.KTheory.SymmetricPowerSeries
+public import ProjectiveModules.KTheory.ExteriorPowerSeries
 
 /-!
 # Projective module interfaces
