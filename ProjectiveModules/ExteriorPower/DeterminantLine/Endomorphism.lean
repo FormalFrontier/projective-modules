@@ -7,6 +7,7 @@ module
 public import ProjectiveModules.ExteriorPower.DeterminantLine
 public import ProjectiveModules.ExteriorPower.Top
 import ProjectiveModules.ExteriorPower.BaseChange
+import ProjectiveModules.ExteriorPower.ProdPairing
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
@@ -23,7 +24,9 @@ The construction reuses `Module.DeterminantLine` and its component interface,
 scalar-extension maps. The comparison with the conditional exterior-power
 determinant uses the top degree, not merely an invertible exterior power.
 The finite-free comparison uses the top exterior-power interface in
-`ProjectiveModules.ExteriorPower.Top`.
+`ProjectiveModules.ExteriorPower.Top`. For factors of constant stalk rank,
+`Module.determinant_prodMap_of_rankAtStalk_eq` gives the product formula using
+the ordered top exterior-product pairing.
 
 ## References
 
@@ -38,7 +41,9 @@ ProjectiveModules interfaces; no new rank decomposition is used here.
 
 noncomputable section
 
-universe u v
+open scoped TensorProduct
+
+universe u v w
 
 namespace Module
 
@@ -201,6 +206,48 @@ theorem determinant_eq_exteriorPower_determinant (n : ℕ)
   exact exteriorPower.map_baseChange_eq_smul _ f _
     (exteriorPower.map_eq_smul_determinant R P _ f)
     (DeterminantLine.component R P i x)
+
+/-- The scalar determinant of a product endomorphism is the product of the scalar
+determinants when both finite projective factors have constant stalk rank.
+The ordered top exterior-product pairing places `P` before `Q`; the maps need
+not be invertible, and the ring need not be nontrivial. -/
+theorem determinant_prodMap_of_rankAtStalk_eq
+    (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q]
+    {n m : ℕ}
+    (hP : ∀ p : PrimeSpectrum R, rankAtStalk (R := R) P p = n)
+    (hQ : ∀ p : PrimeSpectrum R, rankAtStalk (R := R) Q p = m)
+    (f : Module.End R P) (g : Module.End R Q) :
+    determinant R (P × Q) (f.prodMap g) = determinant R P f * determinant R Q g := by
+  have hP' : rankAtStalk (R := R) P = fun _ ↦ n := funext hP
+  have hQ' : rankAtStalk (R := R) Q = fun _ ↦ m := funext hQ
+  have hPQ : rankAtStalk (R := R) (P × Q) = fun _ ↦ n + m := by
+    ext p
+    simp only [rankAtStalk_prod, Pi.add_apply, hP, hQ]
+  let := exteriorPower.invertible_of_rankAtStalk_eq n hP'
+  let := exteriorPower.invertible_of_rankAtStalk_eq m hQ'
+  let := exteriorPower.invertible_of_rankAtStalk_eq (n + m) hPQ
+  rw [determinant_eq_exteriorPower_determinant R (P × Q) (n + m) hPQ,
+    determinant_eq_exteriorPower_determinant R P n hP',
+    determinant_eq_exteriorPower_determinant R Q m hQ']
+  apply (exteriorPower.determinant_eq_iff_map_eq_smul R (P × Q) (n + m) _ _).2
+  have htensor :
+      TensorProduct.map (exteriorPower.map n f) (exteriorPower.map m g) =
+        (exteriorPower.determinant R P n f * exteriorPower.determinant R Q m g) •
+          (LinearMap.id : Module.End R ((⋀[R]^n P) ⊗[R] (⋀[R]^m Q))) := by
+    apply TensorProduct.ext'
+    intro a b
+    simp only [TensorProduct.map_tmul, exteriorPower.map_eq_smul_determinant,
+      LinearMap.smul_apply, LinearMap.id_apply, TensorProduct.smul_tmul_smul]
+  intro z
+  obtain ⟨x, rfl⟩ :=
+    (exteriorPower.prodPairingEquiv R P Q n m hP' hQ').surjective z
+  change exteriorPower.map (n + m) (f.prodMap g)
+      (exteriorPower.prodPairing R P Q n m x) = _
+  have h := LinearMap.congr_fun (exteriorPower.prodPairing_naturality R P Q n m f g) x
+  rw [LinearMap.comp_apply, LinearMap.comp_apply, htensor,
+    LinearMap.smul_apply, LinearMap.id_apply, map_smul] at h
+  exact h
 
 /-- The sole endomorphism of a zero module has determinant one. -/
 theorem determinant_of_subsingleton [Subsingleton P] (f : Module.End R P) :
