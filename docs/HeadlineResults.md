@@ -203,6 +203,41 @@ examples and qualifications; links below go to the corresponding result families
 
 [Stalk rank and component models](#stalk-rank-and-component-models)
 
+### Idempotent-matrix classification
+
+Over any semiring `R : Type u`, let `P : Type v` be an additive commutative monoid
+with a given `Module Rᵐᵒᵖ P` structure. The
+[idempotent-matrix interface](../ProjectiveModules/LinearAlgebra/Matrix/Projective.lean)
+provides `Module.finite_projective_iff_exists_equiv_range_idempotent_matrix`:
+
+```lean
+(Module.Finite Rᵐᵒᵖ P ∧ Module.Projective Rᵐᵒᵖ P) ↔
+  ∃ (n : ℕ) (e : Matrix (Fin n) (Fin n) R), e * e = e ∧
+    Nonempty (P ≃ₗ[Rᵐᵒᵖ] LinearMap.range (Matrix.mulVecBilin R Rᵐᵒᵖ e))
+```
+
+Finiteness and projectivity of `P` are the left-hand side, not ambient hypotheses.
+The scalar and carrier universes are independent. Neither `R` nor `P` needs
+additive inverses, and `R` need not be commutative. Zero semirings, the zero
+semimodule and matrix size `n = 0` are allowed.
+
+The range is the original column-map range of `x ↦ e *ᵥ x`, on `Fin n → R`
+with canonical pointwise right action `(MulOpposite.op a • x) i = x i * a`.
+Left matrix multiplication is right-linear without commutativity of `R`; no
+row-vector or left-module image replaces this range. The forward companion
+`Module.Projective.exists_equiv_range_idempotent_matrix` retains its
+`Module.Finite Rᵐᵒᵖ P` and `Module.Projective Rᵐᵒᵖ P` assumptions.
+
+C. A. Weibel, *The K-book: An Introduction to Algebraic K-theory*, I.2.2,
+presents the classical ring description. This classification generalizes it to
+semirings, with right scalar multiplication encoded by the opposite-semiring
+action. The forward construction uses Mathlib's finite-free retract theorem
+`Module.Finite.exists_comp_eq_id_of_projective` and its endomorphism-matrix
+equivalences `endVecRingEquivMatrixEnd` and `RingEquiv.moduleEndSelfOp`.
+The converse uses `Module.Projective.range_of_isIdempotentElem` from the
+[split-kernel interface](../ProjectiveModules/Module/ProjectiveKernel.lean),
+reusing Mathlib's projection and direct-summand APIs on the same range.
+
 ### Idempotents and principal ideals
 
 - **[Idempotents and principal ideals](../docs/Overview.md#idempotents-and-principal-right-ideals):**

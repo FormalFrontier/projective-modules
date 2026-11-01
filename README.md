@@ -7,6 +7,14 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **[Idempotent-matrix classification](docs/HeadlineResults.md#idempotent-matrix-classification).**
+  Over any semiring `R`, a right semimodule `P` is finitely generated and projective
+  iff it is `Rᵐᵒᵖ`-linearly equivalent to the range of an idempotent finite
+  `R`-matrix acting on `R`-valued columns by `x ↦ e *ᵥ x`, with pointwise
+  right action `(MulOpposite.op a • x) i = x i * a`. No finiteness or projectivity
+  is assumed in advance; scalar and carrier universes are independent, and size
+  zero, zero semirings and the zero semimodule are included.
+
 - **[Quadratic tensor exactness](docs/HeadlineResults.md#quadratic-tensor-exactness).**
   The exterior-square image is the kernel of the symmetric-square quotient over a
   commutative ring; projective modules admit a quotient section.
