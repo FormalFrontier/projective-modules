@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 -/
 -- Contributors: Prism
 module
+public import ProjectiveModules.Module.Koszul.Basic
 public import ProjectiveModules.Module.OrthogonalIdempotentRanges
 public import ProjectiveModules.KTheory.OrthogonalDecomposition
 public import ProjectiveModules.KTheory.CommutingIdempotents
