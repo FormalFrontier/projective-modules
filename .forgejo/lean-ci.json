@@ -8,6 +8,7 @@
         "ProjectiveModules",
         "ProjectiveModulesTests",
         "ProjectiveModules.Topology.KernelComparison",
+        "+ProjectiveModules.Topology.SplitExact",
         "+ProjectiveModules.LinearAlgebra.Matrix.Projective"
       ],
       "source_roots": [
