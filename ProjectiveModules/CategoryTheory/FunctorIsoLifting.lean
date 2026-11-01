@@ -5,17 +5,20 @@ Authors: Formal Frontier Agents
 module
 
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.Skeletal
 
 /-!
-# Lifting isomorphisms
+# Isomorphisms and object-isomorphism classes
 
-Full functors that reflect isomorphisms lift image isomorphisms.
+Full functors that reflect isomorphisms lift image isomorphisms and induce injective
+maps on object-isomorphism classes.
 
 ## References
 
 The proofs use the Mathlib contributors' fullness, isomorphism-reflection and
 isomorphism APIs from `Mathlib.CategoryTheory.Functor.ReflectsIso.Basic`,
-`Mathlib.CategoryTheory.Functor.FullyFaithful` and `Mathlib.CategoryTheory.Iso`.
+`Mathlib.CategoryTheory.Functor.FullyFaithful`, `Mathlib.CategoryTheory.Iso` and
+`Mathlib.CategoryTheory.Skeletal`.
 -/
 
 @[expose] public section
@@ -55,3 +58,14 @@ theorem CategoryTheory.Functor.nonempty_iso_map_iff
     exact ⟨i⟩
   · rintro ⟨i⟩
     exact ⟨F.mapIso i⟩
+
+/-- Injectivity on isomorphism classes for full functors reflecting isomorphisms. -/
+theorem CategoryTheory.ThinSkeleton.map_obj_injective
+    {C : Type uC} [Category.{vC} C]
+    {D : Type uD} [Category.{vD} D]
+    (F : C ⥤ D) [F.Full] [F.ReflectsIsomorphisms] :
+    Function.Injective ((ThinSkeleton.map F).obj) := by
+  intro X Y
+  refine Quotient.inductionOn₂ X Y ?_
+  intro X Y h
+  exact Quotient.sound ((F.nonempty_iso_map_iff X Y).mp (Quotient.exact h))
