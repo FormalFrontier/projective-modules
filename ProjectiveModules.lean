@@ -134,6 +134,7 @@ public import ProjectiveModules.Module.LocalFiberBasis
 public import ProjectiveModules.Module.ZeroOfFiberRank
 public import ProjectiveModules.Localization.TensorProduct
 public import ProjectiveModules.Module.HomExact
+public import ProjectiveModules.Module.FiniteConsistency
 public import ProjectiveModules.Module.Injective
 public import ProjectiveModules.Module.InvariantSupportedProjection
 public import ProjectiveModules.Module.IsotypicMultiplicity

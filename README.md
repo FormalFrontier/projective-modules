@@ -7,6 +7,19 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **Finite consistency of row-finite linear systems.** For a ring `R` and any
+  left `R`-module `M` satisfying `Module.Baer R M`, a system with finitely
+  supported coefficient rows has a full solution whenever every finite set of
+  rows has a solution (`Module.Baer.exists_solution_of_finite`). Over a semisimple
+  ring, this is equivalent to finite consistency for every left module
+  (`Finsupp.exists_solution_iff_finite`), hence applies to division rings and
+  real vector spaces. The scalar, target, row and coordinate types have
+  independent universes; no countability or dimension bound is required.
+  Solutions are arbitrary coordinate functions, not finitely supported
+  functions, and the assignments for finite subsystems need not be compatible.
+  See [`Module.FiniteConsistency`](ProjectiveModules/Module/FiniteConsistency.lean)
+  for the extension argument and its Mathlib formalization credits.
+
 - **Finite orthogonal idempotent endomorphisms.** Over a possibly noncommutative
   semiring `R`, a finite orthogonal idempotent family `e` on an additive
   commutative `R`-module `M`, whose sum is the identity, gives the canonical

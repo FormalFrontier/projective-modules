@@ -3,6 +3,12 @@ version: "v0.4"
 project:
   name: "Projective modules"
   description: >-
+    Row-finite linear systems with target satisfying Module.Baer have full
+    solutions whenever every finite set of rows has a solution. Over a
+    semisimple ring this holds for every left module, including modules over
+    division rings; scalars, targets, rows and coordinates have independent
+    universes. Solutions are arbitrary coordinate functions, not necessarily
+    finitely supported functions.
     Reusable Lean theory of projective modules: finite-projective dual and
     evaluation base change, invertible modules, exterior algebras and powers,
     determinants, bounded cancellation and countable absorption, infinite free
@@ -148,7 +154,13 @@ sources:
 related_formalizations:
   - id: "https://github.com/leanprover-community/mathlib4/tree/83abb3e776bdefcbc447a1e44d0debe4010039e5"
     relationship: "builds-on"
-    note: "Mathlib mathematics and categories; the Projective root resolves this exact mathlib revision."
+    note: >-
+      Mathlib mathematics and categories; the Projective root resolves this exact mathlib revision.
+      The finite-consistency argument is due to Formal Frontier Agents and
+      uses Mathlib's Baer criterion by Jujian Zhang, semisimple modules by
+      Aaron Anderson, linear combinations by Johannes Hölzl, and quotient
+      isomorphisms by Johannes Hölzl, Mario Carneiro, Kevin Buzzard and
+      Yury Kudryashov.
   - id: "https://github.com/FormalFrontier/general-linear-groups/tree/c9705889a85f85cc89d92d21372bb9bc360162c8"
     relationship: "builds-on"
     note: >-
@@ -282,6 +294,24 @@ status:
     identity/composition coherence or compatibility with carrier lifts.
 
   main_results:
+    - declaration: "Module.Baer.of_isSemisimpleRing"
+      file: "ProjectiveModules/Module/FiniteConsistency.lean"
+      note: >-
+        Every left module over a semisimple ring satisfies Baer's
+        ideal-extension criterion, with independent scalar and target universes.
+    - declaration: "Module.Baer.exists_solution_of_finite"
+      file: "ProjectiveModules/Module/FiniteConsistency.lean"
+      note: >-
+        For a ring and a left module satisfying Module.Baer, a row-finite
+        linear system has a full solution if every finite set of rows does.
+        The finite assignments need not be compatible. Solutions are arbitrary
+        functions on the coordinate type; all four universes are independent.
+    - declaration: "Finsupp.exists_solution_iff_finite"
+      file: "ProjectiveModules/Module/FiniteConsistency.lean"
+      note: >-
+        Over a semisimple ring, full solvability and finite consistency are
+        equivalent for every left module. Existing instances cover division
+        rings, without countability, dimension or nontriviality restrictions.
     - declaration: "LinearMap.injective_of_lTensor_injective_of_eval_injective"
       file: "ProjectiveModules/Dual/TensorProduct.lean"
       note: >-
