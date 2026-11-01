@@ -151,6 +151,22 @@ theorem component_map_eq_smul_determinant (f : Module.End R P)
       rankFiberRingEquiv R P (determinant R P f) i • component R P i x := by
   rw [← component_map, map_eq_smul_determinant, component_smul]
 
+/-- On every element of the top exterior power of a rank fiber, the induced
+endomorphism is multiplication by the image of the scalar determinant in the
+rank-fiber ring. -/
+theorem rankFiber_map_eq_smul_determinant (f : Module.End R P)
+    (i : rankFiberIndex R P)
+    (y : ⋀[rankFiberRing R P i]^(rankFiberRank R P i) (rankFiberModule R P i)) :
+    exteriorPower.map (rankFiberRank R P i) (f.baseChange (rankFiberRing R P i)) y =
+      algebraMap R (rankFiberRing R P i) (determinant R P f) • y := by
+  classical
+  have hscalar : rankFiberRingEquiv R P (determinant R P f) i =
+      algebraMap R (rankFiberRing R P i) (determinant R P f) := by
+    simpa only [Algebra.algebraMap_self_apply, Pi.algebraMap_apply] using
+      congrFun ((rankFiberRingEquiv R P).commutes (determinant R P f)) i
+  simpa only [component_ofComponents, Pi.single_eq_same, hscalar] using
+    component_map_eq_smul_determinant R P f i (ofComponents R P (Pi.single i y))
+
 end DeterminantLine
 
 /-- A scalar is the determinant exactly when it induces the determinant-line
