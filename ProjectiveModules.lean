@@ -40,6 +40,7 @@ public import ProjectiveModules.TensorProduct.Pi
 public import ProjectiveModules.TensorProduct.Submodule
 public import ProjectiveModules.ExteriorAlgebra.BaseChange
 public import ProjectiveModules.ExteriorPower.AlternatingForms
+public import ProjectiveModules.ExteriorPower.Antisymmetrization
 public import ProjectiveModules.ExteriorPower.BaseChange
 public import ProjectiveModules.ExteriorPower.Determinant
 public import ProjectiveModules.ExteriorPower.DeterminantLineBaseChange
