@@ -280,6 +280,64 @@ def equivPiTensorProduct [Subsingleton ι] :
   simpa only [equivPiTensorProduct_symm_apply] using
     (equivPiTensorProduct (R := R) (ι := ι) (M := M)).apply_symm_apply x
 
+/-- The symmetric power of the scalar semiring, indexed by a finite type, is the scalar
+semiring itself. The equivalence multiplies the scalar entries of a pure symmetric tensor. -/
+def baseRingEquiv
+    (S ι : Type u) [CommSemiring S] [Fintype ι] :
+    SymmetricPower S ι S ≃ₗ[S] S := by
+  classical
+  let p : MultilinearMap S (fun _ : ι => S) S :=
+    MultilinearMap.mkPiRing S ι (1 : S)
+  have hp : ∀ (e : Equiv.Perm ι) x, p (fun i => x (e i)) = p x := by
+    intro e x
+    simpa only [p, MultilinearMap.mkPiRing_apply] using
+      congrArg (fun c : S => c • (1 : S)) (Equiv.prod_comp e x)
+  let f : SymmetricPower S ι S →ₗ[S] S := SymmetricPower.lift p hp
+  let z : SymmetricPower S ι S :=
+    SymmetricPower.tprod S (fun _ : ι => (1 : S))
+  let g : S →ₗ[S] SymmetricPower S ι S :=
+    LinearMap.toSpanSingleton S (SymmetricPower S ι S) z
+  have hf (x : ι → S) : f (SymmetricPower.tprod S x) = ∏ i, x i := by
+    simp only [f, p, SymmetricPower.lift_tprod,
+      MultilinearMap.mkPiRing_apply, smul_eq_mul, mul_one]
+  have hg1 : g 1 = z :=
+    LinearMap.toSpanSingleton_apply_one S (SymmetricPower S ι S) z
+  have hg (c : S) : g c = c • z := by
+    simpa only [smul_eq_mul, mul_one, hg1] using g.map_smul c (1 : S)
+  refine LinearEquiv.ofLinearMap f g ?_ ?_
+  · apply LinearMap.ext_ring
+    change f (g 1) = (1 : S)
+    rw [hg1]
+    simpa only [z, Finset.prod_const_one] using hf (fun _ : ι => (1 : S))
+  · apply SymmetricPower.hom_ext
+    intro x
+    change g (f (SymmetricPower.tprod S x)) = SymmetricPower.tprod S x
+    rw [hf, hg]
+    simpa only [z, smul_eq_mul, mul_one] using
+      ((SymmetricPower.tprod S).map_smul_univ x (fun _ : ι => (1 : S))).symm
+
+/-- The base-ring equivalence multiplies the entries of a pure symmetric tensor. -/
+@[simp] theorem baseRingEquiv_tprod
+    (S ι : Type u) [CommSemiring S] [Fintype ι] (x : ι → S) :
+    baseRingEquiv S ι (tprod S x) = ∏ i, x i := by
+  simp only [baseRingEquiv, LinearEquiv.coe_ofLinearMap, lift_tprod,
+    MultilinearMap.mkPiRing_apply, smul_eq_mul, mul_one]
+
+/-- The inverse base-ring equivalence scales the pure tensor whose entries are all one. -/
+@[simp] theorem baseRingEquiv_symm_apply
+    (S ι : Type u) [CommSemiring S] [Fintype ι] (s : S) :
+    (baseRingEquiv S ι).symm s = s • tprod S (fun _ : ι => (1 : S)) := by
+  have h : (baseRingEquiv S ι).symm 1 = tprod S (fun _ : ι => (1 : S)) := by
+    simp only [baseRingEquiv, LinearEquiv.symm_ofLinearMap,
+      LinearEquiv.coe_ofLinearMap, LinearMap.toSpanSingleton_apply_one]
+  calc
+    (baseRingEquiv S ι).symm s =
+        (baseRingEquiv S ι).symm (s • (1 : S)) := by rw [smul_eq_mul, mul_one]
+    _ = s • (baseRingEquiv S ι).symm 1 :=
+      (baseRingEquiv S ι).symm.toLinearMap.map_smul s (1 : S)
+    _ = s • tprod S (fun _ : ι => (1 : S)) :=
+      congrArg (fun z : SymmetricPower S ι S => s • z) h
+
 /-- The symmetric power over an empty index type is the scalar module. -/
 def isEmptyEquiv [IsEmpty ι] : SymmetricPower R ι M ≃ₗ[R] R :=
   equivPiTensorProduct.trans (PiTensorProduct.isEmptyEquiv ι)

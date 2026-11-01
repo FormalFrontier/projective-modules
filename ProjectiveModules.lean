@@ -180,6 +180,7 @@ public import ProjectiveModules.RingTheory.IdempotentCorrection
 public import ProjectiveModules.Topology.Projective
 public import ProjectiveModules.Topology.Splitting
 public import ProjectiveModules.Topology.KernelComparison
+public import ProjectiveModules.KTheory.SymmetricPowerSeries
 
 /-!
 # Projective module interfaces

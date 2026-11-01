@@ -7,6 +7,14 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **Total symmetric-power series on `K0`.** For every commutative ring `R`,
+  `KTheory.K0.totalSymmetricSeries` sends addition in `K0 R` to multiplication
+  of units of `PowerSeries (K0 R)`. On a finite projective right module, its
+  coefficients are the classes of the symmetric powers. The linear coefficient
+  recovers every virtual class, and the negative regular-module class has series
+  `1 - X`. This is a fixed-ring additive construction, not an identification with
+  the exterior-power λ-series.
+
 - **[Idempotent-matrix classification](docs/HeadlineResults.md#idempotent-matrix-classification).**
   Over any semiring `R`, a right semimodule `P` is finitely generated and projective
   iff it is `Rᵐᵒᵖ`-linearly equivalent to the range of an idempotent finite
