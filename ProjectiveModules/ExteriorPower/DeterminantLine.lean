@@ -1191,10 +1191,8 @@ theorem determinantLine_prod (Q : Type w) [AddCommGroup Q] [Module R Q]
       exact ⟨TensorProduct.AlgebraTensorModule.distribBaseChange R (S t)
           (DeterminantLine R P) (DeterminantLine R Q) ≪≫ₗ
         TensorProduct.congr eP eQ ≪≫ₗ
-        LinearEquiv.ofBijective
-          (exteriorPower.prodPairing (S t) (S t ⊗[R] P) (S t ⊗[R] Q) n m)
-          (exteriorPower.bijective_prodPairing_of_rankAtStalk_eq
-            (S t) (S t ⊗[R] P) (S t ⊗[R] Q) n m (hP_rank t) (hQ_rank t)) ≪≫ₗ
+        exteriorPower.prodPairingEquiv
+          (S t) (S t ⊗[R] P) (S t ⊗[R] Q) n m (hP_rank t) (hQ_rank t) ≪≫ₗ
         eTop ≪≫ₗ eDegree ≪≫ₗ ePQ.symm⟩
   exact ⟨sourceEquiv ≪≫ₗ
     LinearEquiv.piCongrRight (fun t ↦ (Classical.choice (hlocal t)).restrictScalars R) ≪≫ₗ
