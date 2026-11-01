@@ -143,6 +143,15 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   The tensor product of the determinant lines of two finite projective modules
   is isomorphic to the determinant line of their product.
 
+- **Scalar determinants.** Over any commutative ring `R`, for a finite projective
+  `R`-module `P` of possibly variable stalk rank,
+  `Module.determinant R P : Module.End R P →* R` is multiplicative under
+  endomorphism composition. `Module.determinant_eq_iff_map_eq_smul` characterizes
+  it as the unique scalar giving the induced action on the determinant line.
+  For finite free `P`, `Module.determinant_eq_det` identifies it with
+  `LinearMap.det`; on the zero module its value is `1`. See
+  [determinant-line endomorphisms](ProjectiveModules/ExteriorPower/DeterminantLine/Endomorphism.lean).
+
 [Determinant lines](ProjectiveModules/ExteriorPower/DeterminantLine.lean)
 
 - **[Partial trace](ProjectiveModules/Module/Trace/Partial.lean):** over a commutative
