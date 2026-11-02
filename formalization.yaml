@@ -1459,6 +1459,53 @@ status:
         of the whole kernel is nilpotent. No common nilpotence exponent,
         surjectivity, completeness of the families, commutativity or
         nontriviality assumption is imposed.
+    - declaration: "RingHom.map_conjugationCoeff"
+      file: "ProjectiveModules/RingTheory/IdempotentConjugationNaturality.lean"
+      note: >-
+        Any unital f : R →+* S sends conjugationCoeff a b to
+        conjugationCoeff (f ∘ a) (f ∘ b), for arbitrary finite families
+        a b : ι → R. No orthogonality, ideals or congruences are required.
+        This is a simp law over possibly noncommutative or zero rings,
+        with empty indices allowed and independent scalar and index universes.
+    - declaration: "OrthogonalIdempotents.map_conjugatingUnit"
+      file: "ProjectiveModules/RingTheory/IdempotentConjugationNaturality.lean"
+      note: >-
+        For an orthogonal finite family a and any unital f : R →+* S,
+        Units.map f.toMonoidHom of the source constructed unit equals the
+        target constructed unit in Sˣ. The source uses a two-sided ideal
+        I ≤ Ring.jacobson R and b i - a i ∈ I for every i; the target uses
+        its own two-sided ideal J ≤ Ring.jacobson S and
+        f (b i) - f (a i) ∈ J for every i. Orthogonality of the image of a
+        is derived by OrthogonalIdempotents.map, not an extra hypothesis.
+        No ideal-image containment, radical preservation, injectivity or
+        surjectivity is assumed. The target data name the target construction;
+        they are not needed merely to map a source unit. The family b need
+        not be idempotent or orthogonal, so this is construction transport,
+        not simultaneous conjugacy in that generality. Neither family must
+        sum to one; noncommutative and zero rings, empty indices and independent
+        scalar and index universes are allowed. This is not a simp law,
+        since the target ideal data occur only on the right.
+    - declaration: "OrthogonalIdempotents.conjugationCoeff_comp_equiv"
+      file: "ProjectiveModules/RingTheory/IdempotentConjugationNaturality.lean"
+      note: >-
+        For arbitrary finite families a b : ι → R and any e : κ ≃ ι,
+        conjugationCoeff (a ∘ e) (b ∘ e) = conjugationCoeff a b.
+        Both families are reindexed together. This simp law requires no
+        orthogonality, ideal or congruence data, over possibly noncommutative
+        or zero rings, with empty indices and independent ring and both
+        index universes allowed.
+    - declaration: "OrthogonalIdempotents.conjugatingUnit_comp_equiv"
+      file: "ProjectiveModules/RingTheory/IdempotentConjugationNaturality.lean"
+      note: >-
+        For an orthogonal finite family a, a two-sided ideal
+        I ≤ Ring.jacobson R, b i - a i ∈ I for every i, and any e : κ ≃ ι,
+        jointly reindexing a and b leaves the constructed unit unchanged in
+        Rˣ. The reindexed construction uses the same ideal and the congruence
+        at e k; orthogonality is transported by OrthogonalIdempotents.equiv.
+        No idempotence or orthogonality of b, sum-to-one, commutativity or
+        nontriviality hypothesis is required. Empty finite indices and
+        independent ring and both index universes are included. This is a
+        construction identity, not simultaneous conjugacy for arbitrary b.
 
 automation:
   methods:

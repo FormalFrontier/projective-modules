@@ -71,6 +71,20 @@ Maintained by the Formal Frontier source-maintainer team.
   element of the whole kernel is nilpotent. No surjectivity or uniform
   nilpotence exponent is required; source, target and index universes are
   independent.
+  The [construction naturality API](ProjectiveModules/RingTheory/IdempotentConjugationNaturality.lean)
+  sends the coefficient of arbitrary `a b : ι → R` to that of `f ∘ a, f ∘ b`
+  under any unital `f : R →+* S`, without orthogonality or ideal hypotheses.
+  For orthogonal `a`, `Units.map f.toMonoidHom u` equals the target constructed
+  unit in `Sˣ` when the source uses a two-sided `I ≤ Ring.jacobson R` with
+  `b i - a i ∈ I` for every `i`, and the target uses its own two-sided
+  `J ≤ Ring.jacobson S` with `f (b i) - f (a i) ∈ J` for every `i`.
+  No ideal-image containment, radical-preservation, injectivity or surjectivity
+  assumption is imposed. Joint reindexing of both families by `e : κ ≃ ι`
+  between finite types leaves the coefficient and unit unchanged. Only `a`
+  must be orthogonal for the unit identities; `b` may be nonidempotent, so these
+  are construction-transport laws, not conjugacy in that generality. Neither
+  family must sum to one; noncommutative and zero rings, empty finite indices,
+  and independent source, target and index universes are included.
 
 - **Total symmetric-power series on `K0`.** For every commutative ring `R`,
   `KTheory.K0.totalSymmetricSeries` sends addition in `K0 R` to multiplication
