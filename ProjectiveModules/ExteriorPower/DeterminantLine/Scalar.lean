@@ -17,19 +17,25 @@ without unfolding the construction. For constant stalk rank `n`, it is the usual
 `n`th power map; for a subsingleton module it is constantly one.
 
 The scalar-multiplication formula for `Module.determinant` uses this rank-dependent
-power instead of choosing a global rank. All statements include the zero ring.
+power instead of choosing a global rank. These powers commute with arbitrary
+scalar extension, are invariant under linear equivalence, and multiply under
+binary module products. All statements include the zero ring.
 
 ## Implementation notes
 
 The construction reuses this library's `Module.rankFiberRingEquiv` and Mathlib's
 `powMonoidHom` and `MonoidHom.pi`. No additional rank decomposition is used.
+The compatibility laws follow from the scalar-identity characteristic and the
+canonical determinant's scalar-extension, intertwining, and product laws.
 -/
 
 @[expose] public section
 
 noncomputable section
 
-universe u v
+open scoped TensorProduct
+
+universe u v w x
 
 namespace Module
 
@@ -134,6 +140,55 @@ theorem determinant_smul (r : R) (f : Module.End R P) :
     simp only [Module.End.mul_eq_comp, LinearMap.comp_apply,
       LinearMap.smul_apply, LinearMap.id_apply]
   rw [hs, (determinant R P).map_mul, determinant_smul_id R P r]
+
+/-- Rank-dependent powers commute with arbitrary scalar extension. -/
+theorem rankPower_baseChange
+    (S : Type w) [CommRing S] [Algebra R S] (r : R) :
+    rankPower S (S ⊗[R] P) (algebraMap R S r) =
+      algebraMap R S (rankPower R P r) := by
+  have hbase :
+      (r • (LinearMap.id : Module.End R P)).baseChange S =
+        algebraMap R S r • (LinearMap.id : Module.End S (S ⊗[R] P)) := by
+    apply LinearMap.ext
+    intro x
+    simpa only [LinearMap.baseChange_smul, LinearMap.baseChange_id,
+      LinearMap.smul_apply, LinearMap.id_apply] using
+      (IsScalarTower.algebraMap_smul S r x).symm
+  rw [← determinant_smul_id S (S ⊗[R] P), ← hbase,
+    determinant_baseChange R P S, determinant_smul_id R P]
+
+/-- A linear equivalence preserves the rank-dependent power homomorphism. -/
+theorem rankPower_congr
+    (Q : Type x) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q] (e : P ≃ₗ[R] Q) :
+    rankPower R P = rankPower R Q := by
+  apply MonoidHom.ext
+  intro r
+  rw [← determinant_smul_id R P, ← determinant_smul_id R Q]
+  apply determinant_eq_of_intertwining R P Q e
+  apply LinearMap.ext
+  intro x
+  simp only [LinearMap.comp_apply, LinearMap.smul_apply, LinearMap.id_apply,
+    map_smul]
+
+/-- Binary module products multiply the rank-dependent power homomorphisms
+pointwise, including when the factors have varying stalk ranks. -/
+theorem rankPower_prod
+    (Q : Type x) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q] :
+    rankPower R (P × Q) = rankPower R P * rankPower R Q := by
+  apply MonoidHom.ext
+  intro r
+  rw [MonoidHom.mul_apply, ← determinant_smul_id R (P × Q),
+    ← determinant_smul_id R P, ← determinant_smul_id R Q]
+  have hprod :
+      r • (LinearMap.id : Module.End R (P × Q)) =
+        (r • (LinearMap.id : Module.End R P)).prodMap
+          (r • (LinearMap.id : Module.End R Q)) := by
+    apply LinearMap.ext
+    intro x
+    apply Prod.ext <;> rfl
+  rw [hprod, determinant_prodMap R P Q]
 
 end FiniteProjective
 

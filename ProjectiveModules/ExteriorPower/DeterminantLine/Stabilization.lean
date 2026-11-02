@@ -8,17 +8,20 @@ public import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Basic
 import ProjectiveModules.ExteriorPower.BaseChange
 import ProjectiveModules.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Charpoly.BaseChange
+import Mathlib.RingTheory.Finiteness.Projective
 import Mathlib.RingTheory.LocalProperties.Submodule
 import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
 import Mathlib.RingTheory.LocalRing.Module
 
 /-!
-# Scalar determinants and finite-free stabilization
+# Scalar determinants, stabilization, and scalar extension
 
 The determinant of an endomorphism of a finite projective module agrees with
 its ordinary determinant after extending it by the identity along any split
 finite-free presentation. The module may have varying stalk rank, and the
-section need not be a coordinate inclusion.
+section need not be a coordinate inclusion. Canonical scalar determinants also
+commute with arbitrary scalar extension, without a flatness hypothesis: a split
+finite-free presentation remains split after tensoring.
 
 The proof compares the top exterior action on each rank fiber after localization
 at maximal ideals. These full localizations retain nilpotents. The rectangular
@@ -32,7 +35,8 @@ For background on determinants and finite projective modules, see C. A. Weibel,
 *The K-book: An Introduction to Algebraic K-theory*.
 The finite-free comparison reuses `LinearMap.det_stabilization_eq_of_retractions`
 in `ProjectiveModules.LinearAlgebra.Determinant`, based on Mathlib's
-Weinstein–Aronszajn identity.
+Weinstein–Aronszajn identity. Scalar extension reuses Mathlib's
+`Module.Finite.exists_comp_eq_id_of_projective` and `LinearMap.det_baseChange`.
 -/
 
 @[expose] public section
@@ -158,5 +162,22 @@ theorem determinant_eq_det_stabilization
   simp only [Algebra.linearMap_apply]
   exact hdet.symm.trans
     (det_baseChange_baseChange_stabilization (R := R) (P := P) (M := M) A S f p j hpj)
+
+/-- Canonical scalar determinants commute with arbitrary scalar extension.
+No flatness hypothesis is needed, since tensoring preserves a split retraction. -/
+theorem determinant_baseChange
+    (S : Type w) [CommRing S] [Algebra R S] (f : Module.End R P) :
+    determinant S (S ⊗[R] P) (f.baseChange S) =
+      algebraMap R S (determinant R P f) := by
+  obtain ⟨n, p, j, _, _, hpj⟩ :=
+    Module.Finite.exists_comp_eq_id_of_projective R P
+  have hpjS : (p.baseChange S).comp (j.baseChange S) =
+      (LinearMap.id : Module.End S (S ⊗[R] P)) := by
+    simpa only [LinearMap.baseChange_comp, LinearMap.baseChange_id] using
+      congrArg (fun g : Module.End R P ↦ g.baseChange S) hpj
+  rw [determinant_eq_det_stabilization S (S ⊗[R] P) (S ⊗[R] (Fin n → R))
+      (f.baseChange S) (p.baseChange S) (j.baseChange S) hpjS,
+    determinant_eq_det_stabilization R P (Fin n → R) f p j hpj]
+  exact det_baseChange_stabilization (R := R) (P := P) (M := Fin n → R) S f p j
 
 end Module
