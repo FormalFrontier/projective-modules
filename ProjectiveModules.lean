@@ -17,6 +17,7 @@ public import ProjectiveModules.KTheory.OrthogonalDecomposition
 public import ProjectiveModules.KTheory.CommutingIdempotents
 public import ProjectiveModules.KTheory.CochainEulerCharacteristic
 public import ProjectiveModules.KTheory.KoszulEulerCharacteristic
+public import ProjectiveModules.KTheory.ExteriorSymmetricPowerSeries
 public import ProjectiveModules.Module.RightExtensionReflection
 public import ProjectiveModules.ExteriorAlgebra.Contraction
 public import ProjectiveModules.ExteriorPower.Contraction

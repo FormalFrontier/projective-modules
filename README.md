@@ -80,6 +80,15 @@ Maintained by the Formal Frontier source-maintainer team.
   `1 - X`. This is a fixed-ring additive construction, not an identification with
   the exterior-power λ-series.
 
+- **[Exterior–symmetric series identity](ProjectiveModules/KTheory/ExteriorSymmetricPowerSeries.lean).**
+  Over every commutative ring `R` and for every virtual class `x : K0 R`,
+  the exterior- and symmetric-power series satisfy
+  `λₓ(-t) σₓ(t) = 1` and `λₓ(t) σₓ(-t) = 1`.
+  Their coefficients on finite projective right modules are the respective
+  power classes. The proof uses the homogeneous Koszul complex and its
+  integer-signed Euler identity, with no freeness, constant-rank or
+  characteristic assumptions.
+
 - **[Idempotent-matrix classification](docs/HeadlineResults.md#idempotent-matrix-classification).**
   Over any semiring `R`, a right semimodule `P` is finitely generated and projective
   iff it is `Rᵐᵒᵖ`-linearly equivalent to the range of an idempotent finite
