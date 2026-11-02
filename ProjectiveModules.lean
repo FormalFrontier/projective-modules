@@ -90,6 +90,7 @@ public import ProjectiveModules.Free.LinearMap
 public import ProjectiveModules.Free.Semisimple
 public import ProjectiveModules.Free.StablePresentation
 public import ProjectiveModules.Free.StableKernel
+public import ProjectiveModules.LinearAlgebra.Charpoly.CayleyHamilton
 public import ProjectiveModules.LinearAlgebra.Determinant
 public import ProjectiveModules.Invertible.Endomorphism
 public import ProjectiveModules.Invertible.OfRankOne

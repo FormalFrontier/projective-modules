@@ -275,6 +275,16 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
 
 [Determinant lines](ProjectiveModules/ExteriorPower/DeterminantLine.lean)
 
+- **[Characteristic polynomials](ProjectiveModules/LinearAlgebra/Charpoly/CayleyHamilton.lean):**
+  for an endomorphism `f` of a finite projective module over any commutative ring,
+  `Module.charpoly R P f` is the determinant over `R[X]` of the universal scalar
+  pencil `X • id - f.baseChange R[X]`. Evaluation in every commutative algebra and
+  arbitrary scalar extension are characterized by `Module.eval₂_charpoly` and
+  `Module.charpoly_baseChange`; the finite-free construction agrees with Mathlib's.
+  `Module.aeval_self_charpoly` gives Cayley–Hamilton in the endomorphism ring,
+  without a faithfulness assumption. Varying ranks and zero rings are included:
+  the polynomial need not be monic, and on the zero module it is `1`.
+
 - **[Partial trace](ProjectiveModules/Module/Trace/Partial.lean):** over a commutative
   semiring `R`, contraction in a finite-projective tensor factor `M` defines an
   `R`-linear operator from maps `M ⊗[R] N →ₗ[R] M ⊗[R] P` to maps `N →ₗ[R] P`.
