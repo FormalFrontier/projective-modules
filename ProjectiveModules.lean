@@ -71,6 +71,7 @@ public import ProjectiveModules.ExteriorPower.TensorProduct
 public import ProjectiveModules.ExteriorPower.DeterminantLine
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Scalar
+public import ProjectiveModules.ExteriorPower.DeterminantLine.Tensor
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Stabilization
 public import ProjectiveModules.ExteriorPower.Top
 public import ProjectiveModules.Free.CountableAbsorption

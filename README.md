@@ -17,6 +17,12 @@ Maintained by the Formal Frontier source-maintainer team.
   linear equivalence and multiplies pointwise under binary module products.
   For a zero module it is one, including at the scalar zero.
 
+- **[Tensor determinants](ProjectiveModules/ExteriorPower/DeterminantLine/Tensor.lean).**
+  For finite projective modules over a commutative ring, the determinant of a
+  tensor product of arbitrary endomorphisms is the product of the cross
+  rank-dependent powers of their determinants. Tensor products compose the
+  multiplicative scalar powers. Neither constant rank nor invertibility is needed.
+
 - **[Exterior-power coproduct](ProjectiveModules/ExteriorPower/Coproduct.lean).**
   Over an arbitrary commutative ring and arbitrary modules, the homogeneous
   coproduct maps have coefficient-one signed coshuffle formulas, commute with
