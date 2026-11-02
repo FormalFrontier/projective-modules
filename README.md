@@ -262,6 +262,12 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   `LinearMap.det_stabilization_eq_of_retractions` compares different presentations.
   For arbitrary finite projective factors, `Module.determinant_prodMap` gives
   `det(f × g) = det(f) * det(g)`, even when their stalk ranks vary.
+  [Linear duality](ProjectiveModules/ExteriorPower/DeterminantLine/Endomorphism/Dual.lean)
+  preserves this determinant. Upper and lower block-triangular endomorphisms have
+  the product of their diagonal determinants, with no condition on the off-diagonal
+  block. The [unit criterion](ProjectiveModules/ExteriorPower/DeterminantLine/Endomorphism/Units.lean)
+  says that an endomorphism is a unit exactly when its scalar determinant is a unit.
+  None of these formulas requires freeness or constant stalk rank.
   For finite projective `R`-modules `P` and `Q` in independent universes and
   arbitrary `R`-linear maps `f : P →ₗ[R] Q` and `g : Q →ₗ[R] P`, the
   [intrinsic Sylvester identity](ProjectiveModules/ExteriorPower/DeterminantLine/Endomorphism/Sylvester.lean),
@@ -573,7 +579,7 @@ mathlib `83abb3e776bdefcbc447a1e44d0debe4010039e5`, GLG
 `c9705889a85f85cc89d92d21372bb9bc360162c8` and Stable Range
 [`c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e`](https://github.com/FormalFrontier/stable-range/commit/c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e),
 with Group Theory
-[`1ac70ea29b47262c6d365a89007bb5b1d5a1651a`](https://github.com/FormalFrontier/group-theory/commit/1ac70ea29b47262c6d365a89007bb5b1d5a1651a)
+[`3b3810d5235d21c55ab65664618a4bd2d0df9be9`](https://github.com/FormalFrontier/group-theory/commit/3b3810d5235d21c55ab65664618a4bd2d0df9be9)
 and Homological Algebra
 [`1ecd25213926138278dbd661bd516de9135d944a`](https://github.com/FormalFrontier/homological-algebra/commit/1ecd25213926138278dbd661bd516de9135d944a).
 These four libraries declare the same mathlib revision and Lean `4.34.0-rc2`

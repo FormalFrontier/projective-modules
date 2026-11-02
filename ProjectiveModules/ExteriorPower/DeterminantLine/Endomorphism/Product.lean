@@ -8,14 +8,19 @@ public import ProjectiveModules.ExteriorPower.DeterminantLine.Stabilization
 import Mathlib.RingTheory.Finiteness.Projective
 
 /-!
-# Determinants of product endomorphisms
+# Determinants of product and block triangular endomorphisms
 
 The scalar determinant of a product endomorphism is the product of the scalar
 determinants, even when the finite projective factors have varying stalk ranks.
-The coefficient ring may be trivial, and the endomorphisms may be noninvertible.
+The same formula holds for upper and lower triangular endomorphisms with arbitrary
+off-diagonal maps. The coefficient ring may be trivial, and the diagonal
+endomorphisms may be noninvertible.
 
-The proof uses Mathlib's finite-free split presentations, the scalar comparison
-with their stabilizations, and `LinearMap.det_prodMap` on the free ambient modules.
+The proofs use Mathlib's finite-free split presentations and the scalar comparison
+with their stabilizations, which act by the identity on the complementary summands.
+The free ambient calculations use `LinearMap.det_prodMap` in the diagonal case
+and `Matrix.det_fromBlocks_zero₂₁` in the upper triangular case. The lower
+triangular formula follows by interchanging the factors.
 
 ## References
 
@@ -74,5 +79,100 @@ theorem determinant_prodMap
   have hQ := Module.determinant_eq_det_stabilization R Q (Fin m → R)
     g pQ jQ hpQ
   rw [hPQ, hblock, LinearMap.det_prodMap, ← hP, ← hQ]
+
+private theorem toMatrix_prod_coprod
+    {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+    {ι κ : Type*} [Fintype ι] [Fintype κ] [DecidableEq ι] [DecidableEq κ]
+    (e : Basis ι R M) (f : Basis κ R N)
+    (a : Module.End R M) (b : N →ₗ[R] M)
+    (c : M →ₗ[R] N) (d : Module.End R N) :
+    LinearMap.toMatrix (e.prod f) (e.prod f) ((a.coprod b).prod (c.coprod d)) =
+      Matrix.fromBlocks (LinearMap.toMatrix e e a) (LinearMap.toMatrix f e b)
+        (LinearMap.toMatrix e f c) (LinearMap.toMatrix f f d) := by
+  ext (i | i) (j | j) <;>
+    simp [LinearMap.toMatrix_apply, LinearMap.prod_apply, LinearMap.coprod_apply,
+      Basis.prod_apply]
+
+/-- The determinant of an upper triangular product endomorphism is the product
+of the determinants of its diagonal endomorphisms. -/
+theorem determinant_prod_coprod_zero₂₁
+    (a : Module.End R P) (b : Q →ₗ[R] P) (d : Module.End R Q) :
+    Module.determinant R (P × Q)
+        ((LinearMap.coprod a b).prod
+          (LinearMap.coprod (0 : P →ₗ[R] Q) d)) =
+      Module.determinant R P a * Module.determinant R Q d := by
+  classical
+  obtain ⟨n, pP, jP, _, _, hpP⟩ :=
+    Module.Finite.exists_comp_eq_id_of_projective R P
+  obtain ⟨m, pQ, jQ, _, _, hpQ⟩ :=
+    Module.Finite.exists_comp_eq_id_of_projective R Q
+  have hpjProd : (pP.prodMap pQ).comp (jP.prodMap jQ) =
+      (LinearMap.id : Module.End R (P × Q)) := by
+    apply LinearMap.ext
+    intro x
+    apply Prod.ext
+    · simpa only [LinearMap.comp_apply, LinearMap.prodMap_apply,
+        LinearMap.id_apply] using DFunLike.congr_fun hpP x.1
+    · simpa only [LinearMap.comp_apply, LinearMap.prodMap_apply,
+        LinearMap.id_apply] using DFunLike.congr_fun hpQ x.2
+  let A : Module.End R (Fin n → R) :=
+    jP.comp (a.comp pP) + (LinearMap.id - jP.comp pP)
+  let B : (Fin m → R) →ₗ[R] (Fin n → R) := jP.comp (b.comp pQ)
+  let D : Module.End R (Fin m → R) :=
+    jQ.comp (d.comp pQ) + (LinearMap.id - jQ.comp pQ)
+  have hblock :
+      (jP.prodMap jQ).comp
+          (((a.coprod b).prod ((0 : P →ₗ[R] Q).coprod d)).comp
+            (pP.prodMap pQ)) +
+        (LinearMap.id - (jP.prodMap jQ).comp (pP.prodMap pQ)) =
+      (A.coprod B).prod
+        ((0 : (Fin n → R) →ₗ[R] (Fin m → R)).coprod D) := by
+    apply LinearMap.ext
+    intro x
+    apply Prod.ext <;>
+      simp [A, B, D, LinearMap.prodMap_apply, LinearMap.comp_apply,
+        LinearMap.prod_apply, LinearMap.coprod_apply, LinearMap.id_apply,
+        LinearMap.add_apply, LinearMap.sub_apply, add_assoc, add_left_comm, add_comm]
+  have hPQ := Module.determinant_eq_det_stabilization R (P × Q)
+    ((Fin n → R) × (Fin m → R))
+    ((a.coprod b).prod ((0 : P →ₗ[R] Q).coprod d))
+    (pP.prodMap pQ) (jP.prodMap jQ) hpjProd
+  have hP : Module.determinant R P a = LinearMap.det A :=
+    Module.determinant_eq_det_stabilization R P (Fin n → R) a pP jP hpP
+  have hQ : Module.determinant R Q d = LinearMap.det D :=
+    Module.determinant_eq_det_stabilization R Q (Fin m → R) d pQ jQ hpQ
+  rw [hPQ, hblock,
+    ← LinearMap.det_toMatrix ((Pi.basisFun R (Fin n)).prod (Pi.basisFun R (Fin m))),
+    toMatrix_prod_coprod, map_zero, Matrix.det_fromBlocks_zero₂₁,
+    LinearMap.det_toMatrix, LinearMap.det_toMatrix, ← hP, ← hQ]
+
+/-- The determinant of a lower triangular product endomorphism is the product
+of the determinants of its diagonal endomorphisms. -/
+theorem determinant_prod_coprod_zero₁₂
+    (a : Module.End R P) (c : P →ₗ[R] Q) (d : Module.End R Q) :
+    Module.determinant R (P × Q)
+        ((LinearMap.coprod a (0 : Q →ₗ[R] P)).prod
+          (LinearMap.coprod c d)) =
+      Module.determinant R P a * Module.determinant R Q d := by
+  have hswap :
+      (LinearEquiv.prodComm R P Q).toLinearMap.comp
+          ((a.coprod (0 : Q →ₗ[R] P)).prod (c.coprod d)) =
+        ((d.coprod c).prod ((0 : Q →ₗ[R] P).coprod a)).comp
+          (LinearEquiv.prodComm R P Q).toLinearMap := by
+    apply LinearMap.ext
+    intro x
+    apply Prod.ext <;>
+      simp [LinearMap.comp_apply, LinearMap.prod_apply, LinearMap.coprod_apply,
+        LinearEquiv.prodComm_apply, add_comm]
+  calc
+    Module.determinant R (P × Q)
+        ((a.coprod (0 : Q →ₗ[R] P)).prod (c.coprod d)) =
+        Module.determinant R (Q × P)
+          ((d.coprod c).prod ((0 : Q →ₗ[R] P).coprod a)) :=
+      Module.determinant_eq_of_intertwining R (P × Q) (Q × P)
+        (LinearEquiv.prodComm R P Q) _ _ hswap
+    _ = Module.determinant R Q d * Module.determinant R P a :=
+      determinant_prod_coprod_zero₂₁ R Q P d c a
+    _ = Module.determinant R P a * Module.determinant R Q d := mul_comm _ _
 
 end Module
