@@ -43,6 +43,18 @@ Maintained by the Formal Frontier source-maintainer team.
   rank or nontriviality premise. An empty index type forces `M`, not `R`, to be
   zero. See [`Module.OrthogonalIdempotentRanges`](ProjectiveModules/Module/OrthogonalIdempotentRanges.lean).
 
+- **[Endomorphism range ideals](ProjectiveModules/Module/EndomorphismIdeals.lean).**
+  For any semiring `R` and additive commutative `R`-module `M`,
+  `Module.End.rangeIdeal U` is the right ideal of endomorphisms with range
+  in `U`, expressed as an ideal of `(Module.End R M)ᵐᵒᵖ`.
+  `Module.End.idealRange I` is the supremum of their ranges, or equivalently
+  the `R`-span of all evaluations. These form a Galois connection:
+  `idealRange I ≤ U ↔ I ≤ rangeIdeal U`. The principal right ideal generated
+  by any endomorphism evaluates to its range. Scalar and module universes
+  are independent; neither additive inverses nor finiteness, projectivity,
+  commutativity or full invariance of `U` is assumed. This is not an
+  unrestricted lattice equivalence.
+
 - **[Simultaneous idempotent conjugation](ProjectiveModules/RingTheory/IdempotentConjugation.lean).**
   Let `R` be any ring, `ι` a finite index type, and `a b : ι → R` two
   orthogonal idempotent families with `b i - a i ∈ I` for a two-sided ideal
