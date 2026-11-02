@@ -19,6 +19,8 @@ freeness nor constant rank is required.
 It gives ordinary scalar evaluation and compatibility with arbitrary scalar
 extension. For finite free modules, `Module.charpoly_eq_charpoly` identifies this
 construction with Mathlib's characteristic polynomial.
+`Module.charpoly_eq_of_intertwining` gives invariance under linear equivalences,
+and `Module.charpoly_conj` specializes it to conjugation.
 
 ## References
 
@@ -56,6 +58,41 @@ theorem charpoly_def (f : Module.End R P) :
       ((Polynomial.X : R[X]) •
         (LinearMap.id : Module.End R[X] (R[X] ⊗[R] P)) - f.baseChange R[X]) :=
   rfl
+
+/-- Endomorphisms intertwined by a linear equivalence have the same
+characteristic polynomial. -/
+theorem charpoly_eq_of_intertwining
+    (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q]
+    (f : Module.End R P) (g : Module.End R Q) (e : P ≃ₗ[R] Q)
+    (h : e.toLinearMap.comp f = g.comp e.toLinearMap) :
+    charpoly R P f = charpoly R Q g := by
+  have hbase : (e.toLinearMap.baseChange R[X]).comp (f.baseChange R[X]) =
+      (g.baseChange R[X]).comp (e.toLinearMap.baseChange R[X]) := by
+    simpa only [LinearMap.baseChange_comp] using
+      congrArg (fun k : P →ₗ[R] Q => k.baseChange R[X]) h
+  rw [charpoly_def, charpoly_def]
+  apply determinant_eq_of_intertwining (e := e.baseChange R R[X] P Q)
+  simp only [LinearEquiv.coe_baseChange]
+  apply LinearMap.ext
+  intro x
+  simpa only [LinearMap.comp_apply, LinearMap.sub_apply, LinearMap.smul_apply,
+    LinearMap.id_apply, map_sub, map_smul] using
+    congrArg (fun k : R[X] ⊗[R] P →ₗ[R[X]] R[X] ⊗[R] Q =>
+      (Polynomial.X : R[X]) • (e.toLinearMap.baseChange R[X]) x - k x) hbase
+
+/-- Characteristic polynomials are unchanged by conjugation along a linear
+equivalence. -/
+theorem charpoly_conj
+    (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q]
+    (f : Module.End R P) (e : P ≃ₗ[R] Q) :
+    charpoly R Q (e.toLinearMap.comp (f.comp e.symm.toLinearMap)) =
+      charpoly R P f := by
+  symm
+  apply charpoly_eq_of_intertwining R P Q f _ e
+  ext x
+  simp
 
 /-- Evaluating the characteristic polynomial at an element of any commutative
 algebra gives the determinant of the corresponding scalar pencil after base
