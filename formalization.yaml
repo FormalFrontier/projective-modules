@@ -1597,3 +1597,24 @@ acknowledgements: >-
   least-upper-bound transport by Johannes Hölzl and Yury Kudryashov, and
   directed-set transport by Johannes Hölzl and Yaël Dillies. Weibel's K-book
   supplies the mathematical reference for Morita invariance.
+
+highlights:
+  - title: "Sylvester's determinant identity for finite projective modules"
+    statement: >-
+      For finite projective modules P and Q over a commutative ring R and
+      R-linear maps f : P → Q and g : Q → P,
+      det(1 + g ∘ f) = det(1 + f ∘ g).
+    declarations:
+      - declaration: "Module.determinant_one_add_comp_comm"
+        file: "ProjectiveModules/ExteriorPower/DeterminantLine/Endomorphism/Sylvester.lean"
+  - title: "Tensor-product determinants and rank powers"
+    statement: >-
+      For finite projective R-modules P and Q over a commutative ring R,
+      det(f ⊗ g) = rankPower_Q(det(f)) · rankPower_P(det(g)) for all
+      endomorphisms f of P and g of Q, and the rank-power map of P ⊗ Q is
+      rankPower_P ∘ rankPower_Q.
+    declarations:
+      - declaration: "Module.determinant_tensorProduct_map"
+        file: "ProjectiveModules/ExteriorPower/DeterminantLine/Tensor.lean"
+      - declaration: "Module.rankPower_tensorProduct"
+        file: "ProjectiveModules/ExteriorPower/DeterminantLine/Tensor.lean"
