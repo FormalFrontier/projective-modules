@@ -1421,6 +1421,45 @@ status:
         carrier universes are independent, without an enumeration, basis,
         additive inverses or an additional output-projectivity premise.
 
+    - declaration: "OrthogonalIdempotents.conjugationCoeff"
+      file: "ProjectiveModules/RingTheory/IdempotentConjugation.lean"
+      note: >-
+        Over any ring and finite index type, the coefficient is
+        (sum i, b i * a i) + (1 - sum i, b i) * (1 - sum i, a i).
+        No orthogonality or ideal hypothesis is needed for its definition.
+        It intertwines corresponding members of two orthogonal families;
+        it reduces to the diagonal sum when a sums to one, to the
+        two-idempotent expression for a singleton, and to one for an empty index.
+    - declaration: "OrthogonalIdempotents.conjugatingUnit"
+      file: "ProjectiveModules/RingTheory/IdempotentConjugation.lean"
+      note: >-
+        For an orthogonal family a, a two-sided ideal I contained in the
+        Jacobson radical, and b i - a i in I for every i, construct a unit
+        whose value is conjugationCoeff a b. The value is congruent to one
+        modulo I. Orthogonality of b is not needed for this construction.
+    - declaration: "OrthogonalIdempotents.conjugatingUnit_mul_inv"
+      file: "ProjectiveModules/RingTheory/IdempotentConjugation.lean"
+      note: >-
+        If b is also orthogonal, this one unit simultaneously conjugates
+        every a i to b i. Neither family must sum to one. Noncommutative
+        and zero rings and empty indices are allowed; the empty-family
+        unit is one. Scalar and index universes are independent.
+    - declaration: "OrthogonalIdempotents.exists_conjugatingUnit_of_ker_le_jacobson"
+      file: "ProjectiveModules/RingTheory/IdempotentConjugation.lean"
+      note: >-
+        Given any ring homomorphism whose kernel lies in the source
+        Jacobson radical, two equal-image finite orthogonal families are
+        conjugate by a unit with the specified coefficient as its value,
+        mapping to one and congruent to one modulo the kernel. No
+        surjectivity is required; source, target and index universes are independent.
+    - declaration: "OrthogonalIdempotents.exists_conjugatingUnit_of_isNilpotent_ker"
+      file: "ProjectiveModules/RingTheory/IdempotentConjugation.lean"
+      note: >-
+        The same equal-image conjugacy conclusion holds when every element
+        of the whole kernel is nilpotent. No common nilpotence exponent,
+        surjectivity, completeness of the families, commutativity or
+        nontriviality assumption is imposed.
+
 automation:
   methods:
     - method: "agent"

@@ -191,6 +191,7 @@ public import ProjectiveModules.KTheory.RankLocallyConstant
 public import ProjectiveModules.KTheory.RankLocallyConstantNaturality
 public import ProjectiveModules.KTheory.RankLocallyConstantRing
 public import ProjectiveModules.RingTheory.IdempotentCentrality
+public import ProjectiveModules.RingTheory.IdempotentConjugation
 public import ProjectiveModules.RingTheory.IdempotentCorrection
 public import ProjectiveModules.Topology.Projective
 public import ProjectiveModules.Topology.Splitting

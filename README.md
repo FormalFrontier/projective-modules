@@ -36,6 +36,23 @@ Maintained by the Formal Frontier source-maintainer team.
   rank or nontriviality premise. An empty index type forces `M`, not `R`, to be
   zero. See [`Module.OrthogonalIdempotentRanges`](ProjectiveModules/Module/OrthogonalIdempotentRanges.lean).
 
+- **[Simultaneous idempotent conjugation](ProjectiveModules/RingTheory/IdempotentConjugation.lean).**
+  Let `R` be any ring, `ι` a finite index type, and `a b : ι → R` two
+  orthogonal idempotent families with `b i - a i ∈ I` for a two-sided ideal
+  `I ≤ Ring.jacobson R`. The unit
+  `u = OrthogonalIdempotents.conjugatingUnit ha I hI hab` has value
+  `(∑ i, b i * a i) + (1 - ∑ i, b i) * (1 - ∑ i, a i)`, satisfies
+  `(u : R) - 1 ∈ I`, and simultaneously conjugates `a i` to `b i`:
+  `u * a i * u⁻¹ = b i`. Neither family must sum to one; noncommutative
+  and zero rings are allowed, and an empty family gives the identity unit.
+  The coefficient needs no orthogonality, and its unit construction needs
+  only orthogonality of `a`; both families' orthogonality enters conjugacy.
+  For any ring homomorphism `f`, equal-image orthogonal families admit this
+  conjugating unit with `f u = 1` if `ker f ≤ Ring.jacobson R`, or if every
+  element of the whole kernel is nilpotent. No surjectivity or uniform
+  nilpotence exponent is required; source, target and index universes are
+  independent.
+
 - **Total symmetric-power series on `K0`.** For every commutative ring `R`,
   `KTheory.K0.totalSymmetricSeries` sends addition in `K0 R` to multiplication
   of units of `PowerSeries (K0 R)`. On a finite projective right module, its
