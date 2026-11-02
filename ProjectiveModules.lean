@@ -57,6 +57,7 @@ public import ProjectiveModules.ExteriorPower.Coproduct
 public import ProjectiveModules.ExteriorPower.Duality
 public import ProjectiveModules.ExteriorPower.FiniteSupport
 public import ProjectiveModules.ExteriorPower.Invertible
+public import ProjectiveModules.ExteriorPower.Map
 public import ProjectiveModules.ExteriorPower.ProdPairing
 public import ProjectiveModules.ExteriorPower.Projective
 public import ProjectiveModules.ExteriorPower.Quadratic
@@ -66,6 +67,7 @@ public import ProjectiveModules.ExteriorPower.Surjectivity
 public import ProjectiveModules.ExteriorPower.TensorProduct
 public import ProjectiveModules.ExteriorPower.DeterminantLine
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism
+public import ProjectiveModules.ExteriorPower.DeterminantLine.Scalar
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Stabilization
 public import ProjectiveModules.ExteriorPower.Top
 public import ProjectiveModules.Free.CountableAbsorption

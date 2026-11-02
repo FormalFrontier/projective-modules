@@ -7,6 +7,13 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **[Scalar determinants and rank-dependent powers](ProjectiveModules/ExteriorPower/DeterminantLine/Scalar.lean).**
+  Over a commutative ring, scaling any endomorphism of a finite projective module
+  multiplies its canonical determinant by `Module.rankPower R P r`. This
+  multiplicative scalar power is characterized on every rank fiber by the usual
+  power with that fiber's rank. No constant-rank or invertibility assumption is
+  needed. For a zero module it is one, including at the scalar zero.
+
 - **[Exterior-power coproduct](ProjectiveModules/ExteriorPower/Coproduct.lean).**
   Over an arbitrary commutative ring and arbitrary modules, the homogeneous
   coproduct maps have coefficient-one signed coshuffle formulas, commute with

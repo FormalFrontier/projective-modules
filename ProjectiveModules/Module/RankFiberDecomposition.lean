@@ -211,6 +211,12 @@ noncomputable def rankFiberRingEquiv :
       (Ideal.span {1 - rankFiberIdempotent R M i})
     __ := Equiv.ofBijective _ (rankFiberIdempotents_complete R M).bijective_pi }
 
+/-- Each coordinate of the rank-fiber ring equivalence is the canonical algebra map. -/
+@[simp] theorem rankFiberRingEquiv_apply (r : R) (i : rankFiberIndex R M) :
+    rankFiberRingEquiv R M r i = algebraMap R (rankFiberRing R M i) r := by
+  simpa only [Algebra.algebraMap_self_apply, Pi.algebraMap_apply] using
+    congrFun ((rankFiberRingEquiv R M).commutes r) i
+
 /-- On a rank-fiber component, the base-changed module has the fiber's
 constant stalk rank. -/
 theorem rankAtStalk_rankFiberModule (i : rankFiberIndex R M)
