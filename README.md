@@ -172,6 +172,15 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   flatness or projectivity; both directions have natural labelled pure-tensor
   formulas. See the [full statements and unit comparisons](docs/HeadlineResults.md#symmetric-powers).
 
+- **[Exterior twists by invertible lines](ProjectiveModules/ExteriorPower/InvertibleTwist.lean):**
+  over a commutative ring `R`, an invertible module `L` and an arbitrary module `P`
+  have the canonical equivalence
+  `TensorPower R n L ⊗[R] exteriorPower R n P ≃ₗ[R] exteriorPower R n (L ⊗[R] P)`
+  in every degree, including zero. It sends `tprod(l) ⊗ ιMulti(p)` to
+  `ιMulti(fun i => l i ⊗ p i)` and is natural for arbitrary linear maps of the
+  invertible lines and the other modules. Independent universes and zero rings
+  are included; `P` need not be flat, finite, free or projective.
+
 - **[Determinant lines](docs/Overview.md#determinant-lines):** for finite projective
   modules over arbitrary commutative rings, the dependent product of top exterior
   powers over attained stalk-rank fibers is invertible. Rank zero, zero rings and

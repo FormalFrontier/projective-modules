@@ -46,6 +46,7 @@ public import ProjectiveModules.TensorProduct.SemilinearHom
 public import ProjectiveModules.TensorProduct.SemilinearHomCoefficient
 public import ProjectiveModules.TensorProduct.Pi
 public import ProjectiveModules.TensorProduct.Submodule
+public import ProjectiveModules.TensorPower.BaseChange
 public import ProjectiveModules.ExteriorAlgebra.BaseChange
 public import ProjectiveModules.ExteriorPower.AlternatingForms
 public import ProjectiveModules.ExteriorPower.Antisymmetrization
@@ -57,6 +58,7 @@ public import ProjectiveModules.ExteriorPower.Coproduct
 public import ProjectiveModules.ExteriorPower.Duality
 public import ProjectiveModules.ExteriorPower.FiniteSupport
 public import ProjectiveModules.ExteriorPower.Invertible
+public import ProjectiveModules.ExteriorPower.InvertibleTwist
 public import ProjectiveModules.ExteriorPower.Map
 public import ProjectiveModules.ExteriorPower.ProdPairing
 public import ProjectiveModules.ExteriorPower.Projective
