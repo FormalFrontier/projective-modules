@@ -216,6 +216,11 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   flatness or projectivity; both directions have natural labelled pure-tensor
   formulas. See the [full statements and unit comparisons](docs/HeadlineResults.md#symmetric-powers).
 
+- **[Exterior series under invertible twists](ProjectiveModules/KTheory/ExteriorPowerSeriesInvertible.lean):**
+  For an invertible right module L over a commutative ring R,
+  λⁿ([L]x) = [L]ⁿ λⁿ(x) for every virtual class x ∈ K₀(R) and every degree n.
+  Equivalently, λ_([L]x)(t) = λ_x([L]t).
+
 - **[Exterior twists by invertible lines](ProjectiveModules/ExteriorPower/InvertibleTwist.lean):**
   over a commutative ring `R`, an invertible module `L` and an arbitrary module `P`
   have the canonical equivalence
@@ -504,6 +509,9 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Tensor semiring](ProjectiveModules/KTheory/TensorProduct.lean) | Canonical commutative semiring on finite-projective right-module classes over commutative rings, including zero rings; direct-sum addition, tensor multiplication, regular unit and natural casts, with independent module-carrier universes |
 | [Product comparison and tensor multiplication](ProjectiveModules/KTheory/ProductRing.lean) | Regular right-module formula for arbitrary unital rings; unit and multiplication for families of commutative rings, allowing empty families and zero factors, with independent index/scalar universes; a nonfree Bool-indexed integer corner with idempotent K₀ class |
 | [Tensor-product ring on K₀](ProjectiveModules/KTheory/Ring.lean) | Generic Grothendieck commutative ring on the existing K₀ group; bundled class ring homomorphism with the same whole additive map, regular unit, tensor-generator multiplication and regular-module cast formulas. The generic ring universal property permits arbitrary target rings and independent universes |
+| [Projective tensor powers](ProjectiveModules/TensorPower/Projective.lean) | Tensor powers preserve projectivity over commutative semirings, without a finite-generation hypothesis |
+| [Tensor-power classes](ProjectiveModules/KTheory/TensorPower.lean) | The class of a tensor power of a finite projective right module is the corresponding power in K₀ |
+| [Exterior series under invertible twists](ProjectiveModules/KTheory/ExteriorPowerSeriesInvertible.lean) | Tensoring any virtual class by an invertible right module rescales its exterior series; all-degree coefficient formula |
 | [Tensor-semiring scalar extension](ProjectiveModules/KTheory/RingScalarExtension.lean) | `ProjectiveClass.mapRingHom` for arbitrary unital commutative rings, including zero rings; whole additive-map compatibility, arbitrary-carrier module evaluation, identity and composition |
 | [Opposite-ring duality](ProjectiveModules/KTheory/Dual.lean) | Canonical additive equivalences of class monoids and K₀ over arbitrary rings; normalized right duals, inverse double-opposite transport, regular generators, completion squares and universal extension |
 | [Right-module Morita invariance](ProjectiveModules/KTheory/ModuleEquivalence.lean) | Additive equivalences of projective classes and K₀ along ordinary right-module category equivalences; independent scalar/carrier universes, arbitrary-carrier representative/lift evaluation, inverse, completion and coherence laws |

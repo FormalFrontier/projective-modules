@@ -50,6 +50,7 @@ public import ProjectiveModules.TensorProduct.SemilinearHomCoefficient
 public import ProjectiveModules.TensorProduct.Pi
 public import ProjectiveModules.TensorProduct.Submodule
 public import ProjectiveModules.TensorPower.BaseChange
+public import ProjectiveModules.TensorPower.Projective
 public import ProjectiveModules.ExteriorAlgebra.BaseChange
 public import ProjectiveModules.ExteriorPower.AlternatingForms
 public import ProjectiveModules.ExteriorPower.Antisymmetrization
@@ -110,6 +111,7 @@ public import ProjectiveModules.KTheory.Rank
 public import ProjectiveModules.KTheory.RankBound
 public import ProjectiveModules.KTheory.Reduced
 public import ProjectiveModules.KTheory.Ring
+public import ProjectiveModules.KTheory.TensorPower
 public import ProjectiveModules.KTheory.RingScalarExtension
 public import ProjectiveModules.KTheory.ScalarExtension
 public import ProjectiveModules.KTheory.ShortExact
@@ -209,6 +211,7 @@ public import ProjectiveModules.Topology.Splitting
 public import ProjectiveModules.Topology.KernelComparison
 public import ProjectiveModules.KTheory.SymmetricPowerSeries
 public import ProjectiveModules.KTheory.ExteriorPowerSeries
+public import ProjectiveModules.KTheory.ExteriorPowerSeriesInvertible
 
 /-!
 # Projective module interfaces
