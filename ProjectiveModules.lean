@@ -47,6 +47,7 @@ public import ProjectiveModules.ExteriorPower.BaseChange
 public import ProjectiveModules.ExteriorPower.Determinant
 public import ProjectiveModules.ExteriorPower.DeterminantLineBaseChange
 public import ProjectiveModules.ExteriorPower.DirectSum
+public import ProjectiveModules.ExteriorPower.Coproduct
 public import ProjectiveModules.ExteriorPower.Duality
 public import ProjectiveModules.ExteriorPower.FiniteSupport
 public import ProjectiveModules.ExteriorPower.Invertible

@@ -18,6 +18,8 @@ acting on the top exterior power on each stalk-rank fiber. The determinant is
 the unique scalar inducing this action on the invertible determinant line.
 The stalk rank may vary, and the coefficient ring need not be nontrivial.
 An attained rank-zero fiber contributes its degree-zero exterior action.
+Intertwining linear equivalences preserve the scalar determinant, so it is
+invariant under conjugation.
 
 The construction reuses `Module.DeterminantLine` and its component interface,
 `Module.Invertible.toModuleEndRingEquiv`, and Mathlib's exterior-power and
@@ -80,6 +82,15 @@ map in that fiber's top degree. -/
       exteriorPower.map (rankFiberRank R P i) (f.baseChange (rankFiberRing R P i))
         (component R P i x) :=
   rfl
+
+/-- The canonical determinant-line equivalence intertwines the induced actions
+of intertwined endomorphisms. -/
+theorem congr_map (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q]
+    (e : P ≃ₗ[R] Q) (f : Module.End R P) (g : Module.End R Q)
+    (h : e.toLinearMap.comp f = g.comp e.toLinearMap) (x : DeterminantLine R P) :
+    congr R P Q e (map R P f x) = map R Q g (congr R P Q e x) := by
+  exact congr_naturality R P Q e f g h x
 
 /-- The identity endomorphism acts identically on the determinant line. -/
 @[simp] theorem map_id :
@@ -185,6 +196,32 @@ theorem determinant_eq_iff_map_eq_smul (f : Module.End R P) (r : R) :
     apply LinearMap.ext
     intro x
     exact h x
+
+/-- Endomorphisms intertwined by a linear equivalence have equal scalar
+determinants. -/
+theorem determinant_eq_of_intertwining (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q]
+    (e : P ≃ₗ[R] Q) (f : Module.End R P) (g : Module.End R Q)
+    (h : e.toLinearMap.comp f = g.comp e.toLinearMap) :
+    determinant R P f = determinant R Q g := by
+  apply (determinant_eq_iff_map_eq_smul R P f (determinant R Q g)).2
+  intro x
+  apply (DeterminantLine.congr R P Q e).injective
+  rw [DeterminantLine.congr_map R P Q e f g h,
+    DeterminantLine.map_eq_smul_determinant, LinearEquiv.map_smul]
+
+/-- Conjugating an endomorphism by a linear equivalence preserves its scalar
+determinant. -/
+@[simp] theorem determinant_conj (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q]
+    (e : P ≃ₗ[R] Q) (f : Module.End R P) :
+    determinant R Q (e.conj f) = determinant R P f := by
+  symm
+  apply determinant_eq_of_intertwining R P Q e f (e.conj f)
+  apply LinearMap.ext
+  intro x
+  simp only [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap,
+    LinearEquiv.conj_apply_apply, LinearEquiv.symm_apply_apply]
 
 /-- The determinant of the identity endomorphism is one. -/
 @[simp] theorem determinant_id :

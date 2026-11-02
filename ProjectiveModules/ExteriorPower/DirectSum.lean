@@ -6,14 +6,21 @@ Authors: Formal Frontier Agents
 -- Contributors: Formal Frontier Agents, including Prism; see docs/CREDITS.md
 module
 
+public import Mathlib.LinearAlgebra.Alternating.DomCoprod
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Product
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
+public import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-!
 # Exterior powers of a direct sum
 
 This file gives the fixed-degree decomposition of the exterior power of a binary direct sum.
 It is valid for arbitrary modules over an arbitrary commutative ring, including degree zero.
+The component formula on generating wedges uses Eric Wieser's formalization of the exterior
+product of alternating maps, `AlternatingMap.domCoprod`.
+The homogeneous components are natural in both module arguments and respect graded
+commutation and association. These identities follow from the ordered multiplication
+formula for the inverse binary decomposition.
 -/
 
 @[expose] public section
@@ -496,5 +503,659 @@ theorem prodEquivDirectSum_naturality (k : ℕ)
   change prodEquivDirectSum R P' Q' k (exteriorPower.map k (f.prodMap g) x) =
     prodDirectSumMap R P Q k f g (prodEquivDirectSum R P Q k x)
   rw [hinv, LinearEquiv.apply_symm_apply]
+
+/-- The bidegree `(p, q)` component of the exterior power of a binary product.
+It is the homogeneous projection of `prodEquivDirectSum`, with the canonical
+indexed cast from the right degree `(p + q) - p` to `q`. -/
+noncomputable def prodComponent (p q : ℕ) :
+    (⋀[R]^(p + q) (P × Q)) →ₗ[R] (⋀[R]^p P) ⊗[R] (⋀[R]^q Q) :=
+  (LinearEquiv.cast (R := R)
+      (M := fun d : ℕ ↦ (⋀[R]^p P) ⊗[R] (⋀[R]^d Q))
+      (Nat.add_sub_cancel_left p q)).toLinearMap ∘ₗ
+    DirectSum.component R (Fin (p + q + 1))
+      (fun i ↦ (⋀[R]^i.1 P) ⊗[R] (⋀[R]^(p + q - i.1) Q))
+      ⟨p, Nat.lt_succ_of_le (Nat.le_add_right p q)⟩ ∘ₗ
+    (prodEquivDirectSum R P Q (p + q)).toLinearMap
+
+private theorem sumEquiv_eq_sum_map {α β γ δ : Type*} (e : α ⊕ β ≃ γ ⊕ δ)
+    (hl : ∀ x, ∃ y, e (Sum.inl x) = Sum.inl y)
+    (hr : ∀ x, ∃ y, e (Sum.inr x) = Sum.inr y) :
+    ∃ (f : α → γ) (g : β → δ), Function.Bijective f ∧ Function.Bijective g ∧
+      (e : α ⊕ β → γ ⊕ δ) = Sum.map f g := by
+  classical
+  choose f hf using hl
+  choose g hg using hr
+  have he : (e : α ⊕ β → γ ⊕ δ) = Sum.map f g := by
+    funext z
+    cases z with
+    | inl x => exact hf x
+    | inr x => exact hg x
+  have hb : Function.Bijective (Sum.map f g) := by
+    rw [← he]
+    exact e.bijective
+  exact ⟨f, g, (Sum.map_bijective.mp hb).1, (Sum.map_bijective.mp hb).2, he⟩
+
+/-- A nonzero projected coshuffle summand cannot move an entry across the two pure blocks. -/
+private theorem prodComponent_summand_ne_zero_blocks (p q a b : ℕ)
+    (x : Fin a → P) (y : Fin b → Q)
+    (e : Fin p ⊕ Fin q ≃ Fin a ⊕ Fin b)
+    (σ : Equiv.Perm (Fin p ⊕ Fin q))
+    (h : AlternatingMap.domCoprod.summand
+      ((ιMulti R p).compLinearMap (LinearMap.fst R P Q))
+      ((ιMulti R q).compLinearMap (LinearMap.snd R P Q)) (Quotient.mk'' σ)
+      (Sum.elim (LinearMap.inl R P Q ∘ x) (LinearMap.inr R P Q ∘ y) ∘ e) ≠ 0) :
+    (∀ k, ∃ l, e (σ (Sum.inl k)) = Sum.inl l) ∧
+      (∀ k, ∃ l, e (σ (Sum.inr k)) = Sum.inr l) := by
+  classical
+  simp only [AlternatingMap.domCoprod.summand_mk'', _root_.smul_apply,
+    MultilinearMap.domDomCongr_apply, MultilinearMap.domCoprod_apply,
+    AlternatingMap.coe_multilinearMap, AlternatingMap.compLinearMap_apply,
+    Function.comp_apply] at h
+  constructor
+  · intro k
+    cases he : e (σ (Sum.inl k)) with
+    | inl l => exact ⟨l, rfl⟩
+    | inr l =>
+        exfalso
+        apply h
+        have hz : ιMulti R p (fun j ↦ LinearMap.fst R P Q
+            (Sum.elim (LinearMap.inl R P Q ∘ x) (LinearMap.inr R P Q ∘ y)
+              (e (σ (Sum.inl j))))) = 0 :=
+          (ιMulti R p).map_coord_zero k (by simp [he])
+        simp only [hz, TensorProduct.zero_tmul, smul_zero]
+  · intro k
+    cases he : e (σ (Sum.inr k)) with
+    | inr l => exact ⟨l, rfl⟩
+    | inl l =>
+        exfalso
+        apply h
+        have hz : ιMulti R q (fun j ↦ LinearMap.snd R P Q
+            (Sum.elim (LinearMap.inl R P Q ∘ x) (LinearMap.inr R P Q ∘ y)
+              (e (σ (Sum.inr j))))) = 0 :=
+          (ιMulti R q).map_coord_zero k (by simp [he])
+        simp only [hz, TensorProduct.tmul_zero, smul_zero]
+
+/-- Every coshuffle summand vanishes when the size of the left pure block is wrong. -/
+private theorem prodComponent_domCoprod_eq_zero (p q a b : ℕ) (ha : a ≠ p)
+    (x : Fin a → P) (y : Fin b → Q)
+    (e : Fin p ⊕ Fin q ≃ Fin a ⊕ Fin b) :
+    (((ιMulti R p).compLinearMap (LinearMap.fst R P Q)).domCoprod
+      ((ιMulti R q).compLinearMap (LinearMap.snd R P Q)))
+      (Sum.elim (LinearMap.inl R P Q ∘ x) (LinearMap.inr R P Q ∘ y) ∘ e) = 0 := by
+  classical
+  simp only [AlternatingMap.domCoprod_apply, _root_.sum_apply]
+  apply Finset.sum_eq_zero
+  intro s _
+  refine Quotient.inductionOn' s (fun σ ↦ ?_)
+  by_contra hs
+  have hb := prodComponent_summand_ne_zero_blocks R P Q p q a b x y e σ hs
+  obtain ⟨f, _, hf, _, _⟩ := sumEquiv_eq_sum_map (σ.trans e) hb.1 hb.2
+  have hc : p = a := by simpa using Fintype.card_of_bijective hf
+  exact ha hc.symm
+
+/-- For matching pure blocks, only the identity coset contributes, with coefficient one. -/
+private theorem prodComponent_domCoprod_blocks (p q : ℕ)
+    (x : Fin p → P) (y : Fin q → Q) :
+    (((ιMulti R p).compLinearMap (LinearMap.fst R P Q)).domCoprod
+      ((ιMulti R q).compLinearMap (LinearMap.snd R P Q)))
+      (Sum.elim (LinearMap.inl R P Q ∘ x) (LinearMap.inr R P Q ∘ y)) =
+      ιMulti R p x ⊗ₜ[R] ιMulti R q y := by
+  classical
+  let s₀ : Equiv.Perm.ModSumCongr (Fin p) (Fin q) :=
+    Quotient.mk'' (1 : Equiv.Perm (Fin p ⊕ Fin q))
+  have hzero : ∀ s : Equiv.Perm.ModSumCongr (Fin p) (Fin q), s ≠ s₀ →
+      AlternatingMap.domCoprod.summand
+        ((ιMulti R p).compLinearMap (LinearMap.fst R P Q))
+        ((ιMulti R q).compLinearMap (LinearMap.snd R P Q)) s
+        (Sum.elim (LinearMap.inl R P Q ∘ x) (LinearMap.inr R P Q ∘ y)) = 0 := by
+    intro s
+    refine Quotient.inductionOn' s (fun σ hσ ↦ ?_)
+    by_contra hs
+    have hb := prodComponent_summand_ne_zero_blocks R P Q p q p q x y
+      (Equiv.refl _) σ hs
+    obtain ⟨f, g, hf, hg, he⟩ := sumEquiv_eq_sum_map σ hb.1 hb.2
+    have hm : σ ∈ (Equiv.Perm.sumCongrHom (Fin p) (Fin q)).range := by
+      refine ⟨(Equiv.ofBijective f hf, Equiv.ofBijective g hg), ?_⟩
+      apply Equiv.ext
+      intro z
+      exact (congrFun he z).symm
+    have hc : (Quotient.mk'' (1 : Equiv.Perm (Fin p ⊕ Fin q)) :
+        Equiv.Perm.ModSumCongr (Fin p) (Fin q)) = Quotient.mk'' σ :=
+      QuotientGroup.eq.mpr (by simpa using hm)
+    exact hσ hc.symm
+  simp only [AlternatingMap.domCoprod_apply, _root_.sum_apply]
+  rw [Finset.sum_eq_single s₀ (fun s _ hs ↦ hzero s hs) (by simp)]
+  simp [s₀, AlternatingMap.domCoprod.summand_mk'',
+    MultilinearMap.domDomCongr_apply, MultilinearMap.domCoprod_apply,
+    AlternatingMap.compLinearMap_apply, Function.comp_def]
+
+private theorem prodComponent_domCoprod_append_cast (p q b : ℕ) (h : b = q)
+    (x : Fin p → P) (y : Fin b → Q) :
+    (((ιMulti R p).compLinearMap (LinearMap.fst R P Q)).domCoprod
+      ((ιMulti R q).compLinearMap (LinearMap.snd R P Q)))
+      ((Fin.append (LinearMap.inl R P Q ∘ x) (LinearMap.inr R P Q ∘ y) ∘
+        Equiv.cast (congrArg Fin (congrArg (fun d ↦ p + d) h).symm)) ∘
+          finSumFinEquiv) =
+      LinearEquiv.cast (R := R)
+        (M := fun d : ℕ ↦ (⋀[R]^p P) ⊗[R] (⋀[R]^d Q)) h
+        (ιMulti R p x ⊗ₜ[R] ιMulti R b y) := by
+  subst b
+  change (((ιMulti R p).compLinearMap (LinearMap.fst R P Q)).domCoprod
+    ((ιMulti R q).compLinearMap (LinearMap.snd R P Q)))
+      (Fin.append (LinearMap.inl R P Q ∘ x) (LinearMap.inr R P Q ∘ y) ∘
+        finSumFinEquiv) = ιMulti R p x ⊗ₜ[R] ιMulti R q y
+  have happend : Fin.append (LinearMap.inl R P Q ∘ x) (LinearMap.inr R P Q ∘ y) ∘
+      (finSumFinEquiv : Fin p ⊕ Fin q ≃ Fin (p + q)) =
+      Sum.elim (LinearMap.inl R P Q ∘ x) (LinearMap.inr R P Q ∘ y) :=
+    Fin.append_comp_sumElim
+  rw [happend]
+  exact prodComponent_domCoprod_blocks R P Q p q x y
+
+private theorem prodComponent_ιMulti_coe_reindex {X : Type*}
+    [AddCommGroup X] [Module R X] {a b : ℕ} (h : a = b) (x : Fin a → X) :
+    (ιMulti R a x : ExteriorAlgebra R X) =
+      (ιMulti R b (x ∘ Equiv.cast (congrArg Fin h.symm)) : ExteriorAlgebra R X) := by
+  cases h
+  rfl
+
+/-- The Cauchy component of a generating wedge is the exterior product of the two projected
+universal alternating maps. The signed sum is indexed by coshuffles, so each shuffle occurs
+once, without factorial coefficients. -/
+@[simp]
+theorem prodComponent_ιMulti (p q : ℕ) (v : Fin (p + q) → P × Q) :
+    prodComponent R P Q p q (ιMulti R (p + q) v) =
+      (((ιMulti R p).compLinearMap (LinearMap.fst R P Q)).domCoprod
+        ((ιMulti R q).compLinearMap (LinearMap.snd R P Q)))
+        (v ∘ finSumFinEquiv) := by
+  classical
+  let e := prodEquivDirectSum R P Q (p + q)
+  let A := ((ιMulti R p).compLinearMap (LinearMap.fst R P Q)).domCoprod
+    ((ιMulti R q).compLinearMap (LinearMap.snd R P Q))
+  let T : (⋀[R]^(p + q) (P × Q)) →ₗ[R] (⋀[R]^p P) ⊗[R] (⋀[R]^q Q) :=
+    alternatingMapLinearEquiv (R := R) (M := P × Q) (n := p + q)
+      (N := (⋀[R]^p P) ⊗[R] (⋀[R]^q Q))
+      (AlternatingMap.domDomCongr finSumFinEquiv A)
+  let c : (⨁ i : Fin (p + q + 1),
+      (⋀[R]^i.1 P) ⊗[R] (⋀[R]^(p + q - i.1) Q)) →ₗ[R]
+      (⋀[R]^p P) ⊗[R] (⋀[R]^q Q) :=
+    (LinearEquiv.cast (R := R)
+      (M := fun d : ℕ ↦ (⋀[R]^p P) ⊗[R] (⋀[R]^d Q))
+      (Nat.add_sub_cancel_left p q)).toLinearMap ∘ₗ
+      DirectSum.component R (Fin (p + q + 1))
+        (fun i ↦ (⋀[R]^i.1 P) ⊗[R] (⋀[R]^(p + q - i.1) Q))
+        ⟨p, Nat.lt_succ_of_le (Nat.le_add_right p q)⟩
+  have hT : T.comp e.symm.toLinearMap = c := by
+    apply DirectSum.linearMap_ext
+    intro i
+    apply TensorProduct.curry_injective (σ₁₂ := RingHom.id R)
+    rw [Submodule.linearMap_eq_iff_of_span_eq_top _ _ (ιMulti_span R i.1 P)]
+    rintro ⟨_, x, rfl⟩
+    rw [Submodule.linearMap_eq_iff_of_span_eq_top _ _
+      (ιMulti_span R (p + q - i.1) Q)]
+    rintro ⟨_, y, rfl⟩
+    simp only [TensorProduct.curry_apply, LinearMap.comp_apply]
+    let h : i.1 + (p + q - i.1) = p + q :=
+      Nat.add_sub_of_le (Nat.lt_succ_iff.mp i.2)
+    let w := Fin.append (LinearMap.inl R P Q ∘ x) (LinearMap.inr R P Q ∘ y)
+    have hinv : e.symm
+        (DirectSum.lof R (Fin (p + q + 1))
+          (fun j ↦ (⋀[R]^j.1 P) ⊗[R] (⋀[R]^(p + q - j.1) Q)) i
+          (ιMulti R i.1 x ⊗ₜ[R] ιMulti R (p + q - i.1) y)) =
+        ιMulti R (p + q) (w ∘ Equiv.cast (congrArg Fin h.symm)) := by
+      apply Subtype.ext
+      rw [DirectSum.lof_eq_of]
+      exact (coe_prodEquivDirectSum_symm_of_tmul_ιMulti R P Q (p + q) i x y).trans
+        (prodComponent_ιMulti_coe_reindex R h w)
+    change T (e.symm
+      (DirectSum.lof R (Fin (p + q + 1))
+        (fun j ↦ (⋀[R]^j.1 P) ⊗[R] (⋀[R]^(p + q - j.1) Q)) i
+        (ιMulti R i.1 x ⊗ₜ[R] ιMulti R (p + q - i.1) y))) =
+      LinearEquiv.cast (R := R)
+        (M := fun d : ℕ ↦ (⋀[R]^p P) ⊗[R] (⋀[R]^d Q))
+        (Nat.add_sub_cancel_left p q)
+        (DirectSum.component R (Fin (p + q + 1))
+          (fun j ↦ (⋀[R]^j.1 P) ⊗[R] (⋀[R]^(p + q - j.1) Q))
+          ⟨p, Nat.lt_succ_of_le (Nat.le_add_right p q)⟩
+          (DirectSum.lof R (Fin (p + q + 1))
+            (fun j ↦ (⋀[R]^j.1 P) ⊗[R] (⋀[R]^(p + q - j.1) Q)) i
+            (ιMulti R i.1 x ⊗ₜ[R] ιMulti R (p + q - i.1) y)))
+    rw [hinv]
+    simp only [T, alternatingMapLinearEquiv_apply_ιMulti,
+      AlternatingMap.domDomCongr_apply]
+    by_cases hi : i.1 = p
+    · have hie : i = ⟨p, Nat.lt_succ_of_le (Nat.le_add_right p q)⟩ := Fin.ext hi
+      subst i
+      rw [DirectSum.component.lof_self]
+      exact prodComponent_domCoprod_append_cast R P Q p q (p + q - p)
+        (Nat.add_sub_cancel_left p q) x y
+    · have hie : i ≠ ⟨p, Nat.lt_succ_of_le (Nat.le_add_right p q)⟩ := by
+        intro he
+        exact hi (congrArg Fin.val he)
+      rw [DirectSum.component.of, dite_eq_right hie, map_zero]
+      let e' : Fin p ⊕ Fin q ≃ Fin i.1 ⊕ Fin (p + q - i.1) :=
+        finSumFinEquiv.trans
+          ((Equiv.cast (congrArg Fin h.symm)).trans finSumFinEquiv.symm)
+      have hw : (w ∘ Equiv.cast (congrArg Fin h.symm)) ∘ finSumFinEquiv =
+          Sum.elim (LinearMap.inl R P Q ∘ x) (LinearMap.inr R P Q ∘ y) ∘ e' := by
+        have happend : w ∘ (finSumFinEquiv :
+            Fin i.1 ⊕ Fin (p + q - i.1) ≃ Fin (i.1 + (p + q - i.1))) =
+            Sum.elim (LinearMap.inl R P Q ∘ x) (LinearMap.inr R P Q ∘ y) :=
+          Fin.append_comp_sumElim
+        funext z
+        simpa only [e', Function.comp_apply, Equiv.trans_apply, Equiv.apply_symm_apply] using
+          congrFun happend (finSumFinEquiv.symm
+            (Equiv.cast (congrArg Fin h.symm) (finSumFinEquiv z)))
+      rw [hw]
+      exact prodComponent_domCoprod_eq_zero R P Q p q i.1 (p + q - i.1) hi x y e'
+  have hv := LinearMap.congr_fun hT (e (ιMulti R (p + q) v))
+  change c (e (ιMulti R (p + q) v)) = A (v ∘ finSumFinEquiv)
+  simpa only [LinearMap.comp_apply, LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply,
+    T, alternatingMapLinearEquiv_apply_ιMulti, AlternatingMap.domDomCongr_apply] using hv.symm
+
+private theorem prodComponent_tensor_map_cast (p : ℕ) {a b : ℕ} (h : a = b)
+    (f : P →ₗ[R] P') (g : Q →ₗ[R] Q')
+    (x : (⋀[R]^p P) ⊗[R] (⋀[R]^a Q)) :
+    TensorProduct.map (map p f) (map b g)
+        (LinearEquiv.cast (R := R)
+          (M := fun d : ℕ ↦ (⋀[R]^p P) ⊗[R] (⋀[R]^d Q)) h x) =
+      LinearEquiv.cast (R := R)
+        (M := fun d : ℕ ↦ (⋀[R]^p P') ⊗[R] (⋀[R]^d Q')) h
+        (TensorProduct.map (map p f) (map a g) x) := by
+  cases h
+  rfl
+
+/-- The homogeneous product component is natural in both module arguments. -/
+theorem prodComponent_naturality (p q : ℕ)
+    (f : P →ₗ[R] P') (g : Q →ₗ[R] Q') :
+    TensorProduct.map (map p f) (map q g) ∘ₗ prodComponent R P Q p q =
+      prodComponent R P' Q' p q ∘ₗ map (p + q) (f.prodMap g) := by
+  apply LinearMap.ext
+  intro x
+  have h := LinearMap.congr_fun
+    (prodEquivDirectSum_naturality R P Q (p + q) f g) x
+  change prodEquivDirectSum R P' Q' (p + q) (map (p + q) (f.prodMap g) x) =
+    prodDirectSumMap R P Q (p + q) f g (prodEquivDirectSum R P Q (p + q) x) at h
+  change TensorProduct.map (map p f) (map q g)
+      (LinearEquiv.cast (R := R)
+        (M := fun d : ℕ ↦ (⋀[R]^p P) ⊗[R] (⋀[R]^d Q))
+        (Nat.add_sub_cancel_left p q)
+        (prodEquivDirectSum R P Q (p + q) x
+          ⟨p, Nat.lt_succ_of_le (Nat.le_add_right p q)⟩)) =
+    LinearEquiv.cast (R := R)
+      (M := fun d : ℕ ↦ (⋀[R]^p P') ⊗[R] (⋀[R]^d Q'))
+      (Nat.add_sub_cancel_left p q)
+      (prodEquivDirectSum R P' Q' (p + q) (map (p + q) (f.prodMap g) x)
+        ⟨p, Nat.lt_succ_of_le (Nat.le_add_right p q)⟩)
+  simp only [prodComponent_tensor_map_cast, h, prodDirectSumMap, DirectSum.lmap_apply]
+
+/-- Applying the homogeneous product component after a product map applies the
+induced exterior-power maps to its two tensor factors. -/
+@[simp]
+theorem prodComponent_map (p q : ℕ) (f : P →ₗ[R] P') (g : Q →ₗ[R] Q')
+    (x : ⋀[R]^(p + q) (P × Q)) :
+    prodComponent R P' Q' p q (map (p + q) (f.prodMap g) x) =
+      TensorProduct.map (map p f) (map q g) (prodComponent R P Q p q x) := by
+  exact (LinearMap.congr_fun (prodComponent_naturality R P Q p q f g) x).symm
+
+/-- On the inverse Cauchy decomposition, the homogeneous product component is the
+selected direct-sum component with its canonical right-degree transport. -/
+@[simp]
+theorem prodComponent_symm_apply (p q : ℕ)
+    (x : ⨁ i : Fin (p + q + 1), (⋀[R]^i.1 P) ⊗[R] (⋀[R]^(p + q - i.1) Q)) :
+    prodComponent R P Q p q ((prodEquivDirectSum R P Q (p + q)).symm x) =
+      LinearEquiv.cast (R := R)
+        (M := fun d : ℕ ↦ (⋀[R]^p P) ⊗[R] (⋀[R]^d Q))
+        (Nat.add_sub_cancel_left p q)
+        (x ⟨p, Nat.lt_succ_of_le (Nat.le_add_right p q)⟩) := by
+  simp only [prodComponent, LinearMap.comp_apply, LinearEquiv.coe_coe,
+    LinearEquiv.apply_symm_apply, ← DirectSum.apply_eq_component]
+
+/-- The indexed linear cast between equal exterior degrees preserves the image in the
+exterior algebra. -/
+theorem coe_cast {a b : ℕ} (h : a = b) (x : ⋀[R]^a P) :
+    (LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d P) h x :
+      ExteriorAlgebra R P) = x.1 := by
+  cases h
+  rfl
+
+/-- Transporting the right exterior degree of a pure tensor transports only its right factor. -/
+theorem tensor_cast_tmul (p : ℕ) {a b : ℕ} (h : a = b)
+    (x : ⋀[R]^p P) (y : ⋀[R]^a Q) :
+    LinearEquiv.cast (R := R)
+        (M := fun d : ℕ ↦ (⋀[R]^p P) ⊗[R] (⋀[R]^d Q)) h (x ⊗ₜ[R] y) =
+      x ⊗ₜ[R] LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d Q) h y := by
+  cases h
+  rfl
+
+/-- Linear maps out of an exterior power of a binary product agree if they agree on
+pure tensors in every summand of the inverse Cauchy decomposition. -/
+theorem prodEquivDirectSum_ext {T : Type*} [AddCommMonoid T] [Module R T]
+    (n : ℕ) {F G : (⋀[R]^n (P × Q)) →ₗ[R] T}
+    (h : ∀ (i : Fin (n + 1)) (a : ⋀[R]^i.1 P) (b : ⋀[R]^(n - i.1) Q),
+      F ((prodEquivDirectSum R P Q n).symm
+        (DirectSum.of (fun j : Fin (n + 1) ↦
+          (⋀[R]^j.1 P) ⊗[R] (⋀[R]^(n - j.1) Q)) i (a ⊗ₜ[R] b))) =
+      G ((prodEquivDirectSum R P Q n).symm
+        (DirectSum.of (fun j : Fin (n + 1) ↦
+          (⋀[R]^j.1 P) ⊗[R] (⋀[R]^(n - j.1) Q)) i (a ⊗ₜ[R] b)))) :
+    F = G := by
+  have heq : F ∘ₗ (prodEquivDirectSum R P Q n).symm.toLinearMap =
+      G ∘ₗ (prodEquivDirectSum R P Q n).symm.toLinearMap := by
+    apply DirectSum.linearMap_ext
+    intro i
+    apply TensorProduct.ext'
+    intro a b
+    simpa only [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap,
+      DirectSum.lof_eq_of] using h i a b
+  apply LinearMap.ext
+  intro x
+  obtain ⟨y, rfl⟩ := (prodEquivDirectSum R P Q n).symm.surjective x
+  simpa only [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap] using
+    LinearMap.congr_fun heq y
+
+private theorem exists_prod_coe_eq_mul (n i j : ℕ) (h : i + j = n)
+    (a : ⋀[R]^i P) (b : ⋀[R]^j Q) :
+    ∃ x : ⋀[R]^n (P × Q), x.1 =
+      ExteriorAlgebra.map (LinearMap.inl R P Q) a.1 *
+        ExteriorAlgebra.map (LinearMap.inr R P Q) b.1 := by
+  have hi : i < n + 1 := by omega
+  have hj : j = n - i := by omega
+  let b' := LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d Q) hj b
+  refine ⟨(prodEquivDirectSum R P Q n).symm
+    (DirectSum.of (fun k : Fin (n + 1) ↦
+      (⋀[R]^k.1 P) ⊗[R] (⋀[R]^(n - k.1) Q)) ⟨i, hi⟩ (a ⊗ₜ[R] b')), ?_⟩
+  rw [coe_prodEquivDirectSum_symm_of_tmul]
+  simp only [b', coe_cast]
+
+private theorem prodComponent_of_coe_eq_mul (p q : ℕ)
+    (a : ⋀[R]^p P) (b : ⋀[R]^q Q) (x : ⋀[R]^(p + q) (P × Q))
+    (hx : x.1 = ExteriorAlgebra.map (LinearMap.inl R P Q) a.1 *
+      ExteriorAlgebra.map (LinearMap.inr R P Q) b.1) :
+    prodComponent R P Q p q x = a ⊗ₜ[R] b := by
+  let b' := LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d Q)
+    (Nat.add_sub_cancel_left p q).symm b
+  have heq : x = (prodEquivDirectSum R P Q (p + q)).symm
+      (DirectSum.of (fun k : Fin (p + q + 1) ↦
+        (⋀[R]^k.1 P) ⊗[R] (⋀[R]^(p + q - k.1) Q))
+        ⟨p, Nat.lt_succ_of_le (Nat.le_add_right p q)⟩ (a ⊗ₜ[R] b')) := by
+    apply Subtype.ext
+    rw [coe_prodEquivDirectSum_symm_of_tmul, hx]
+    simp only [b', coe_cast]
+  rw [heq, prodComponent_symm_apply]
+  rw [← DirectSum.lof_eq_of R, DirectSum.lof_apply, tensor_cast_tmul]
+  congr 1
+  apply Subtype.ext
+  simp only [b', coe_cast]
+
+private theorem prodComponent_of_coe_eq_mul_of_ne (p q i j : ℕ) (h : i + j = p + q)
+    (hi : i ≠ p) (a : ⋀[R]^i P) (b : ⋀[R]^j Q)
+    (x : ⋀[R]^(p + q) (P × Q))
+    (hx : x.1 = ExteriorAlgebra.map (LinearMap.inl R P Q) a.1 *
+      ExteriorAlgebra.map (LinearMap.inr R P Q) b.1) :
+    prodComponent R P Q p q x = 0 := by
+  have hin : i < p + q + 1 := by omega
+  have hj : j = p + q - i := by omega
+  let b' := LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d Q) hj b
+  have heq : x = (prodEquivDirectSum R P Q (p + q)).symm
+      (DirectSum.of (fun k : Fin (p + q + 1) ↦
+        (⋀[R]^k.1 P) ⊗[R] (⋀[R]^(p + q - k.1) Q))
+        ⟨i, hin⟩ (a ⊗ₜ[R] b')) := by
+    apply Subtype.ext
+    rw [coe_prodEquivDirectSum_symm_of_tmul, hx]
+    simp only [b', coe_cast]
+  have hfin : (⟨i, hin⟩ : Fin (p + q + 1)) ≠
+      ⟨p, Nat.lt_succ_of_le (Nat.le_add_right p q)⟩ := by
+    intro he
+    exact hi (congrArg Fin.val he)
+  rw [heq, prodComponent_symm_apply]
+  change LinearEquiv.cast (R := R)
+    (M := fun d : ℕ ↦ (⋀[R]^p P) ⊗[R] (⋀[R]^d Q))
+    (Nat.add_sub_cancel_left p q)
+    (DirectSum.component R (Fin (p + q + 1))
+      (fun k ↦ (⋀[R]^k.1 P) ⊗[R] (⋀[R]^(p + q - k.1) Q))
+      ⟨p, Nat.lt_succ_of_le (Nat.le_add_right p q)⟩
+      (DirectSum.lof R _ _ ⟨i, hin⟩ (a ⊗ₜ[R] b'))) = 0
+  rw [DirectSum.component.of, dite_eq_right hfin, map_zero]
+
+/-- Product commutation corresponds to graded tensor commutation on each
+homogeneous component. The sign uses the ordered convention for the inverse
+Cauchy decomposition. -/
+theorem prodComponent_comm (p q : ℕ) :
+    (TensorProduct.comm R (⋀[R]^p P) (⋀[R]^q Q)).toLinearMap ∘ₗ
+        prodComponent R P Q p q =
+      ((-1 : R) ^ (p * q)) •
+        (prodComponent R Q P q p ∘ₗ
+          map (q + p) (LinearEquiv.prodComm R P Q).toLinearMap ∘ₗ
+          (LinearEquiv.cast (R := R)
+            (M := fun d : ℕ ↦ ⋀[R]^d (P × Q))
+            (Nat.add_comm p q)).toLinearMap) := by
+  apply prodEquivDirectSum_ext (T := (⋀[R]^q Q) ⊗[R] (⋀[R]^p P)) R P Q (p + q)
+  intro i a b
+  let x := (prodEquivDirectSum R P Q (p + q)).symm
+    (DirectSum.of (fun k : Fin (p + q + 1) ↦
+      (⋀[R]^k.1 P) ⊗[R] (⋀[R]^(p + q - k.1) Q)) i (a ⊗ₜ[R] b))
+  have hx : x.1 = ExteriorAlgebra.map (LinearMap.inl R P Q) a.1 *
+      ExteriorAlgebra.map (LinearMap.inr R P Q) b.1 :=
+    coe_prodEquivDirectSum_symm_of_tmul R P Q (p + q) i a b
+  have hi : i.1 ≤ p + q := Nat.lt_succ_iff.mp i.2
+  obtain ⟨y, hy⟩ := exists_prod_coe_eq_mul R Q P (q + p) (p + q - i.1) i.1
+    (by omega) b a
+  let σ := (LinearEquiv.prodComm R P Q).toLinearMap
+  have hσl : σ.comp (LinearMap.inl R P Q) = LinearMap.inr R Q P := by
+    apply LinearMap.ext
+    intro a
+    rfl
+  have hσr : σ.comp (LinearMap.inr R P Q) = LinearMap.inl R Q P := by
+    apply LinearMap.ext
+    intro b
+    rfl
+  have hac :
+      ExteriorAlgebra.map (LinearMap.inl R P Q) a.1 *
+          ExteriorAlgebra.map (LinearMap.inr R P Q) b.1 =
+        ((-1 : ℤˣ) ^ ((p + q - i.1) * i.1)) •
+          (ExteriorAlgebra.map (LinearMap.inr R P Q) b.1 *
+            ExteriorAlgebra.map (LinearMap.inl R P Q) a.1) :=
+    ExteriorAlgebra.map_inl_inr_anticomm R i.1 (p + q - i.1) a b
+  -- Compare the existing quotient actions pointwise through canonical zsmul.
+  let E := ExteriorAlgebra R (P × Q)
+  let hℤ : Module ℤ E :=
+    @Algebra.toModule ℤ E (inferInstance : CommSemiring ℤ) (inferInstance : Semiring E)
+      (CliffordAlgebra.instAlgebra' (R := ℤ) (A := R) (M := P × Q)
+        (0 : QuadraticForm R (P × Q)))
+  let hR : Module R E :=
+    @Algebra.toModule R E (inferInstance : CommSemiring R) (inferInstance : Semiring E)
+      (CliffordAlgebra.instAlgebra' (R := R) (A := R) (M := P × Q)
+        (0 : QuadraticForm R (P × Q)))
+  have hac := hac.trans
+    ((@Units.smul_def ℤ E (inferInstance : Monoid ℤ) hℤ.toSMul
+      ((-1 : ℤˣ) ^ ((p + q - i.1) * i.1))
+      (ExteriorAlgebra.map (LinearMap.inr R P Q) b.1 *
+        ExteriorAlgebra.map (LinearMap.inl R P Q) a.1)).trans
+      ((@int_smul_eq_zsmul E (inferInstance : AddCommGroup E) hℤ _ _).trans
+        (@Int.cast_smul_eq_zsmul R E (inferInstance : Ring R)
+          (inferInstance : AddCommGroup E) hR _ _).symm))
+  simp only [Units.val_pow_eq_pow_val, Units.coe_neg_one,
+    Int.cast_pow, Int.cast_neg, Int.cast_one] at hac
+  have hswap : map (q + p) σ
+      (LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d (P × Q))
+        (Nat.add_comm p q) x) =
+      ((-1 : R) ^ ((p + q - i.1) * i.1)) • y := by
+    apply Subtype.ext
+    rw [coe_map, coe_cast, Submodule.coe_smul, hx, hac, map_smul, map_mul, hy]
+    simp only [← AlgHom.comp_apply, ExteriorAlgebra.map_comp_map, hσl, hσr]
+  change TensorProduct.comm R (⋀[R]^p P) (⋀[R]^q Q)
+      (prodComponent R P Q p q x) =
+    ((-1 : R) ^ (p * q)) • prodComponent R Q P q p
+      (map (q + p) σ
+        (LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d (P × Q))
+          (Nat.add_comm p q) x))
+  by_cases hip : i.1 = p
+  · have hjq : p + q - i.1 = q := by omega
+    let a' := LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d P) hip a
+    let b' := LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d Q) hjq b
+    have hx' : x.1 = ExteriorAlgebra.map (LinearMap.inl R P Q) a'.1 *
+        ExteriorAlgebra.map (LinearMap.inr R P Q) b'.1 := by
+      simpa only [a', b', coe_cast] using hx
+    have hy' : y.1 = ExteriorAlgebra.map (LinearMap.inl R Q P) b'.1 *
+        ExteriorAlgebra.map (LinearMap.inr R Q P) a'.1 := by
+      simpa only [a', b', coe_cast] using hy
+    rw [prodComponent_of_coe_eq_mul R P Q p q a' b' x hx', hswap, map_smul,
+      prodComponent_of_coe_eq_mul R Q P q p b' a' y hy', TensorProduct.comm_tmul]
+    rw [hjq, hip, Nat.mul_comm q p, smul_smul]
+    have hsign : ((-1 : R) ^ (p * q)) * ((-1 : R) ^ (p * q)) = 1 := by
+      rw [← mul_pow]
+      simp
+    rw [hsign, one_smul]
+  · have hjq : p + q - i.1 ≠ q := by omega
+    rw [prodComponent_of_coe_eq_mul_of_ne R P Q p q i.1 (p + q - i.1)
+        (by omega) hip a b x hx,
+      hswap, map_smul,
+      prodComponent_of_coe_eq_mul_of_ne R Q P q p (p + q - i.1) i.1
+        (by omega) hjq b a y hy]
+    simp
+
+universe z
+
+variable (S : Type z) [AddCommGroup S] [Module R S]
+
+/-- The binary product decomposition respects association of product modules and
+tensor products. Association preserves the block order and introduces no sign. -/
+theorem prodComponent_assoc (p q r : ℕ) :
+    (TensorProduct.assoc R (⋀[R]^p P) (⋀[R]^q Q) (⋀[R]^r S)).toLinearMap ∘ₗ
+        TensorProduct.map (prodComponent R P Q p q) LinearMap.id ∘ₗ
+        prodComponent R (P × Q) S (p + q) r =
+      TensorProduct.map LinearMap.id (prodComponent R Q S q r) ∘ₗ
+        prodComponent R P (Q × S) p (q + r) ∘ₗ
+        map (p + (q + r)) (LinearEquiv.prodAssoc R P Q S).toLinearMap ∘ₗ
+        (LinearEquiv.cast (R := R)
+          (M := fun d : ℕ ↦ ⋀[R]^d ((P × Q) × S))
+          (Nat.add_assoc p q r)).toLinearMap := by
+  let n := (p + q) + r
+  let F := (TensorProduct.assoc R (⋀[R]^p P) (⋀[R]^q Q) (⋀[R]^r S)).toLinearMap ∘ₗ
+    TensorProduct.map (prodComponent R P Q p q) LinearMap.id ∘ₗ
+    prodComponent R (P × Q) S (p + q) r
+  let G := TensorProduct.map LinearMap.id (prodComponent R Q S q r) ∘ₗ
+    prodComponent R P (Q × S) p (q + r) ∘ₗ
+    map (p + (q + r)) (LinearEquiv.prodAssoc R P Q S).toLinearMap ∘ₗ
+    (LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d ((P × Q) × S))
+      (Nat.add_assoc p q r)).toLinearMap
+  change F = G
+  apply prodEquivDirectSum_ext
+    (T := (⋀[R]^p P) ⊗[R] ((⋀[R]^q Q) ⊗[R] (⋀[R]^r S))) R (P × Q) S n
+  intro i a c
+  let outer : (⋀[R]^i.1 (P × Q)) →ₗ[R] ⋀[R]^n ((P × Q) × S) :=
+    (prodEquivDirectSum R (P × Q) S n).symm.toLinearMap ∘ₗ
+      DirectSum.lof R (Fin (n + 1))
+        (fun k ↦ (⋀[R]^k.1 (P × Q)) ⊗[R] (⋀[R]^(n - k.1) S)) i ∘ₗ
+      (TensorProduct.mk R (⋀[R]^i.1 (P × Q)) (⋀[R]^(n - i.1) S)).flip c
+  suffices h : F ∘ₗ outer = G ∘ₗ outer from LinearMap.congr_fun h a
+  apply prodEquivDirectSum_ext
+    (T := (⋀[R]^p P) ⊗[R] ((⋀[R]^q Q) ⊗[R] (⋀[R]^r S))) R P Q i.1
+  intro j x y
+  let b := (prodEquivDirectSum R P Q i.1).symm
+    (DirectSum.of (fun k : Fin (i.1 + 1) ↦
+      (⋀[R]^k.1 P) ⊗[R] (⋀[R]^(i.1 - k.1) Q)) j (x ⊗ₜ[R] y))
+  let t := outer b
+  have hb : b.1 = ExteriorAlgebra.map (LinearMap.inl R P Q) x.1 *
+      ExteriorAlgebra.map (LinearMap.inr R P Q) y.1 :=
+    coe_prodEquivDirectSum_symm_of_tmul R P Q i.1 j x y
+  have ht : t.1 = ExteriorAlgebra.map (LinearMap.inl R (P × Q) S) b.1 *
+      ExteriorAlgebra.map (LinearMap.inr R (P × Q) S) c.1 :=
+    coe_prodEquivDirectSum_symm_of_tmul R (P × Q) S n i b c
+  have hi : i.1 ≤ n := Nat.lt_succ_iff.mp i.2
+  have hj : j.1 ≤ i.1 := Nat.lt_succ_iff.mp j.2
+  obtain ⟨v, hv⟩ := exists_prod_coe_eq_mul R Q S
+    ((i.1 - j.1) + (n - i.1)) (i.1 - j.1) (n - i.1) rfl y c
+  obtain ⟨t', ht'⟩ := exists_prod_coe_eq_mul R P (Q × S) (p + (q + r))
+    j.1 ((i.1 - j.1) + (n - i.1)) (by dsimp only [n] at hi ⊢; omega) x v
+  let α := (LinearEquiv.prodAssoc R P Q S).toLinearMap
+  have hP : α.comp ((LinearMap.inl R (P × Q) S).comp (LinearMap.inl R P Q)) =
+      LinearMap.inl R P (Q × S) := by
+    apply LinearMap.ext
+    intro x
+    rfl
+  have hQ : α.comp ((LinearMap.inl R (P × Q) S).comp (LinearMap.inr R P Q)) =
+      (LinearMap.inr R P (Q × S)).comp (LinearMap.inl R Q S) := by
+    apply LinearMap.ext
+    intro y
+    rfl
+  have hS : α.comp (LinearMap.inr R (P × Q) S) =
+      (LinearMap.inr R P (Q × S)).comp (LinearMap.inr R Q S) := by
+    apply LinearMap.ext
+    intro c
+    rfl
+  have hassoc : map (p + (q + r)) α
+      (LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d ((P × Q) × S))
+        (Nat.add_assoc p q r) t) = t' := by
+    apply Subtype.ext
+    rw [coe_map, coe_cast, ht, hb, ht', hv]
+    simp only [map_mul, ← AlgHom.comp_apply, ExteriorAlgebra.map_comp_map,
+      hP, hQ, hS, mul_assoc]
+  change TensorProduct.assoc R (⋀[R]^p P) (⋀[R]^q Q) (⋀[R]^r S)
+      (TensorProduct.map (prodComponent R P Q p q) LinearMap.id
+        (prodComponent R (P × Q) S (p + q) r t)) =
+    TensorProduct.map LinearMap.id (prodComponent R Q S q r)
+      (prodComponent R P (Q × S) p (q + r)
+        (map (p + (q + r)) α
+          (LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d ((P × Q) × S))
+            (Nat.add_assoc p q r) t)))
+  rw [hassoc]
+  by_cases hjp : j.1 = p
+  · have hrest : (i.1 - j.1) + (n - i.1) = q + r := by dsimp only [n] at hi ⊢; omega
+    let x' := LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d P) hjp x
+    let v' := LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d (Q × S)) hrest v
+    have ht'0 : t'.1 = ExteriorAlgebra.map (LinearMap.inl R P (Q × S)) x'.1 *
+        ExteriorAlgebra.map (LinearMap.inr R P (Q × S)) v'.1 := by
+      simpa only [x', v', coe_cast] using ht'
+    have hv' : v'.1 = ExteriorAlgebra.map (LinearMap.inl R Q S) y.1 *
+        ExteriorAlgebra.map (LinearMap.inr R Q S) c.1 := by
+      simpa only [v', coe_cast] using hv
+    rw [prodComponent_of_coe_eq_mul R P (Q × S) p (q + r) x' v' t' ht'0,
+      TensorProduct.map_tmul, LinearMap.id_apply]
+    by_cases hipq : i.1 = p + q
+    · have hyq : i.1 - j.1 = q := by omega
+      have hcr : n - i.1 = r := by dsimp [n]; omega
+      let b' := LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d (P × Q)) hipq b
+      let y' := LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d Q) hyq y
+      let c' := LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d S) hcr c
+      have ht0 : t.1 = ExteriorAlgebra.map (LinearMap.inl R (P × Q) S) b'.1 *
+          ExteriorAlgebra.map (LinearMap.inr R (P × Q) S) c'.1 := by
+        simpa only [b', c', coe_cast] using ht
+      have hb' : b'.1 = ExteriorAlgebra.map (LinearMap.inl R P Q) x'.1 *
+          ExteriorAlgebra.map (LinearMap.inr R P Q) y'.1 := by
+        simpa only [b', x', y', coe_cast] using hb
+      have hv'0 : v'.1 = ExteriorAlgebra.map (LinearMap.inl R Q S) y'.1 *
+          ExteriorAlgebra.map (LinearMap.inr R Q S) c'.1 := by
+        simpa only [y', c', coe_cast] using hv'
+      rw [prodComponent_of_coe_eq_mul R (P × Q) S (p + q) r b' c' t ht0,
+        TensorProduct.map_tmul, LinearMap.id_apply,
+        prodComponent_of_coe_eq_mul R P Q p q x' y' b' hb', TensorProduct.assoc_tmul,
+        prodComponent_of_coe_eq_mul R Q S q r y' c' v' hv'0]
+    · have hyq : i.1 - j.1 ≠ q := by omega
+      rw [prodComponent_of_coe_eq_mul_of_ne R (P × Q) S (p + q) r i.1 (n - i.1)
+          (by dsimp only [n] at hi ⊢; omega) hipq b c t ht,
+        map_zero, map_zero,
+        prodComponent_of_coe_eq_mul_of_ne R Q S q r (i.1 - j.1) (n - i.1)
+          hrest hyq y c v' hv', TensorProduct.tmul_zero]
+  · have hright : prodComponent R P (Q × S) p (q + r) t' = 0 :=
+      prodComponent_of_coe_eq_mul_of_ne R P (Q × S) p (q + r)
+        j.1 ((i.1 - j.1) + (n - i.1)) (by dsimp only [n] at hi ⊢; omega) hjp x v t' ht'
+    rw [hright, map_zero]
+    by_cases hipq : i.1 = p + q
+    · have hcr : n - i.1 = r := by dsimp [n]; omega
+      let b' := LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d (P × Q)) hipq b
+      let c' := LinearEquiv.cast (R := R) (M := fun d : ℕ ↦ ⋀[R]^d S) hcr c
+      have ht0 : t.1 = ExteriorAlgebra.map (LinearMap.inl R (P × Q) S) b'.1 *
+          ExteriorAlgebra.map (LinearMap.inr R (P × Q) S) c'.1 := by
+        simpa only [b', c', coe_cast] using ht
+      have hb' : b'.1 = ExteriorAlgebra.map (LinearMap.inl R P Q) x.1 *
+          ExteriorAlgebra.map (LinearMap.inr R P Q) y.1 := by
+        simpa only [b', coe_cast] using hb
+      rw [prodComponent_of_coe_eq_mul R (P × Q) S (p + q) r b' c' t ht0,
+        TensorProduct.map_tmul, LinearMap.id_apply,
+        prodComponent_of_coe_eq_mul_of_ne R P Q p q j.1 (i.1 - j.1)
+          (by omega) hjp x y b' hb', TensorProduct.zero_tmul, map_zero]
+    · rw [prodComponent_of_coe_eq_mul_of_ne R (P × Q) S (p + q) r i.1 (n - i.1)
+        (by dsimp only [n] at hi ⊢; omega) hipq b c t ht, map_zero, map_zero]
 
 end exteriorPower

@@ -7,6 +7,12 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **[Exterior-power coproduct](ProjectiveModules/ExteriorPower/Coproduct.lean).**
+  Over an arbitrary commutative ring and arbitrary modules, the homogeneous
+  coproduct maps have coefficient-one signed coshuffle formulas, commute with
+  linear maps, and satisfy graded symmetry and associativity. The degree-zero
+  and exterior-square formulas include the zero ring and characteristic two.
+
 - **Finite consistency of row-finite linear systems.** For a ring `R` and any
   left `R`-module `M` satisfying `Module.Baer R M`, a system with finitely
   supported coefficient rows has a full solution whenever every finite set of
@@ -155,6 +161,10 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   `S ⊗[R] P` in that fiber's rank.
   The tensor product of the determinant lines of two finite projective modules
   is isomorphic to the determinant line of their product.
+  The [scalar determinant](ProjectiveModules/ExteriorPower/DeterminantLine/Endomorphism.lean)
+  of any endomorphism is the unique scalar inducing its action on the line.
+  It is multiplicative under composition and invariant under intertwining linear
+  equivalences, hence under conjugation.
 
 - **Scalar determinants.** Over any commutative ring `R`, for a finite projective
   `R`-module `P` of possibly variable stalk rank,
