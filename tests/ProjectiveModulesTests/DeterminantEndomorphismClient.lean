@@ -11,6 +11,8 @@ import Mathlib.Algebra.Module.RingHom
 import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Data.ZMod.Basic
+import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.RingTheory.Finiteness.Basic
 import Mathlib.Tactic.NormNum
 
 /-!
@@ -27,6 +29,30 @@ subtraction from addition.
 -/
 
 noncomputable section
+
+universe uR uV
+
+namespace RestrictionQuotient
+
+-- Under precisely the hypotheses of `LinearMap.det_eq_det_mul_det`, the
+-- intrinsic formula normalizes to the same equality. Finiteness of the quotient
+-- and freeness of the ambient module are consequences, not extra hypotheses.
+private theorem determinant_formula_agrees_with_det
+    (R : Type uR) [CommRing R] (V : Type uV) [AddCommGroup V]
+    [Module R V] [Module.Finite R V]
+    (W : Submodule R V) [Module.Free R W] [Module.Finite R W]
+    [Module.Free R (V ⧸ W)]
+    (f : Module.End R V) (hW : W ≤ W.comap f) :
+    LinearMap.det f = LinearMap.det (f.restrict hW) * LinearMap.det (W.mapQ W f hW) := by
+  let : Module.Finite R (V ⧸ W) :=
+    Module.Finite.of_surjective W.mkQ W.mkQ_surjective
+  let : Module.Free R V :=
+    Module.Free.of_basis
+      ((Module.Free.chooseBasis R W).sumQuot (Module.Free.chooseBasis R (V ⧸ W)))
+  simpa only [Module.determinant_eq_det] using
+    (Module.determinant_eq_restrict_mul_quotient R V W f hW)
+
+end RestrictionQuotient
 
 namespace ProjectionSummand
 
@@ -152,7 +178,9 @@ private theorem determinant_twice : Module.determinant R R twice = 2 := by
   exact mul_one _
 
 -- Both orientations retain the product of the diagonal determinants, including
--- when that product is a nonzero nilpotent in the coefficient ring.
+-- when that product is a nonzero nilpotent in the coefficient ring. The upper
+-- triangular computation uses the short exact sequence with injection `inl`
+-- and quotient `snd`; its off-diagonal block does not have to vanish.
 example :
     Module.determinant R (R × R) upper = 4 ∧
       Module.determinant R (R × R) lower = 4 ∧
@@ -160,7 +188,18 @@ example :
   refine ⟨?_, ?_, ?_, ?_⟩
   · calc
       _ = Module.determinant R R twice * Module.determinant R R twice :=
-        Module.determinant_prod_coprod_zero₂₁ R R R twice LinearMap.id twice
+        Module.determinant_eq_mul_of_exact R R (R × R) R
+          (LinearMap.inl R R R) (LinearMap.snd R R R)
+          LinearMap.inl_injective Prod.snd_surjective Function.Exact.inl_snd
+          twice upper twice
+          (by
+            apply LinearMap.ext
+            intro x
+            apply Prod.ext <;> simp [upper])
+          (by
+            apply LinearMap.ext
+            rintro ⟨x, y⟩
+            simp [upper])
       _ = 4 := by norm_num [determinant_twice]
   · calc
       _ = Module.determinant R R twice * Module.determinant R R twice :=

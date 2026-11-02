@@ -24,6 +24,13 @@ Maintained by the Formal Frontier source-maintainer team.
   needs to be invertible. Varying rank and nonfaithful modules are allowed;
   finite bases identify the scalar determinant with the block matrix determinant.
 
+- **[Determinants in short exact sequences](ProjectiveModules/ExteriorPower/DeterminantLine/Endomorphism/ShortExact.lean).**
+  For a short exact sequence `0 → P → M → Q → 0` of finite projective modules
+  over a commutative ring and compatible endomorphisms, the determinant on `M`
+  is the product of the determinants on `P` and `Q`. No equivariant splitting
+  or invertibility assumption is needed. An invariant finite projective submodule
+  with finite projective quotient gives the restriction/quotient formula.
+
 - **[Tensor determinants](ProjectiveModules/ExteriorPower/DeterminantLine/Tensor.lean).**
   For finite projective modules over a commutative ring, the determinant of a
   tensor product of arbitrary endomorphisms is the product of the cross
