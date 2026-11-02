@@ -7,6 +7,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.Module.Reduction
+public import ProjectiveModules.Module.ProjectiveReduction
 public import ProjectiveModules.Module.Koszul.Basic
 public import ProjectiveModules.Module.Koszul.FreeContraction
 public import ProjectiveModules.Module.Koszul.FreeHomotopy
