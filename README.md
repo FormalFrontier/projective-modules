@@ -257,6 +257,13 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   `LinearMap.det_stabilization_eq_of_retractions` compares different presentations.
   For arbitrary finite projective factors, `Module.determinant_prodMap` gives
   `det(f × g) = det(f) * det(g)`, even when their stalk ranks vary.
+  For finite projective `R`-modules `P` and `Q` in independent universes and
+  arbitrary `R`-linear maps `f : P →ₗ[R] Q` and `g : Q →ₗ[R] P`, the
+  [intrinsic Sylvester identity](ProjectiveModules/ExteriorPower/DeterminantLine/Endomorphism/Sylvester.lean),
+  `Module.determinant_one_add_comp_comm`, states
+  `det_P(1 + g ∘ f) = det_Q(1 + f ∘ g)`. Neither module need be free or have
+  constant rank; their ranks may differ, and neither endomorphism is assumed
+  invertible.
   See [determinant-line endomorphisms](ProjectiveModules/ExteriorPower/DeterminantLine/Endomorphism.lean),
   [finite-free stabilization](ProjectiveModules/ExteriorPower/DeterminantLine/Stabilization.lean),
   and [product endomorphisms](ProjectiveModules/ExteriorPower/DeterminantLine/Endomorphism/Product.lean).

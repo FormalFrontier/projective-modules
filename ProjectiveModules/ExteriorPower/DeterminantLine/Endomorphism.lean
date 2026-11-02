@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Product
+public import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Sylvester
 import ProjectiveModules.ExteriorPower.ProdPairing
 
 /-!
