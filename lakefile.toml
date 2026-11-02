@@ -27,7 +27,7 @@ rev = "c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e"
 [[require]]
 name = "groupTheory"
 git = "https://github.com/FormalFrontier/group-theory.git"
-rev = "1ac70ea29b47262c6d365a89007bb5b1d5a1651a"
+rev = "3b3810d5235d21c55ab65664618a4bd2d0df9be9"
 
 [[require]]
 name = "homological_algebra"
@@ -36,7 +36,7 @@ rev = "1ecd25213926138278dbd661bd516de9135d944a"
 
 [[lean_lib]]
 name = "ProjectiveModules"
-roots = ["ProjectiveModules", "ProjectiveModules.Module.ComponentwiseFreeExamples", "ProjectiveModules.Topology.SplitExact", "ProjectiveModules.LinearAlgebra.Matrix.Projective"]
+roots = ["ProjectiveModules", "ProjectiveModules.Module.ComponentwiseFreeExamples", "ProjectiveModules.Topology.SplitExact", "ProjectiveModules.Topology.OpenSubmodule", "ProjectiveModules.LinearAlgebra.Matrix.Projective"]
 
 [[lean_lib]]
 name = "ProjectiveModulesTests"
