@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Stabilization
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.Finiteness.Projective
 
 /-!
@@ -22,6 +23,12 @@ The free ambient calculations use `LinearMap.det_prodMap` in the diagonal case
 and `Matrix.det_fromBlocks_zero₂₁` in the upper triangular case. The lower
 triangular formula follows by interchanging the factors.
 
+`LinearMap.toMatrix_prod_coprod` describes a four-block map in independently chosen
+source and target product bases over a commutative semiring. With the same product
+basis on both sides, `Module.determinant_prod_coprod_eq_det_fromBlocks` identifies
+the scalar determinant with the block matrix determinant. In particular, Mathlib's
+`Matrix.det_fromBlocks₁₁` applies to this matrix when its upper-left block is invertible.
+
 ## References
 
 For determinants of finite projective modules, see C. A. Weibel,
@@ -32,7 +39,29 @@ For determinants of finite projective modules, see C. A. Weibel,
 
 noncomputable section
 
-universe u v w
+universe u v w x y
+
+/-- The matrix of a four-block linear map in product bases is the matrix formed
+from the four component matrices. The source and target bases are independent. -/
+theorem LinearMap.toMatrix_prod_coprod
+    {R : Type u} [CommSemiring R]
+    {M₁ : Type v} [AddCommMonoid M₁] [Module R M₁]
+    {M₂ : Type w} [AddCommMonoid M₂] [Module R M₂]
+    {N₁ : Type x} [AddCommMonoid N₁] [Module R N₁]
+    {N₂ : Type y} [AddCommMonoid N₂] [Module R N₂]
+    {ι₁ : Type*} [Fintype ι₁] [DecidableEq ι₁]
+    {ι₂ : Type*} [Fintype ι₂] [DecidableEq ι₂]
+    {κ₁ : Type*} [Finite κ₁] {κ₂ : Type*} [Finite κ₂]
+    (e₁ : Module.Basis ι₁ R M₁) (e₂ : Module.Basis ι₂ R M₂)
+    (f₁ : Module.Basis κ₁ R N₁) (f₂ : Module.Basis κ₂ R N₂)
+    (a : M₁ →ₗ[R] N₁) (b : M₂ →ₗ[R] N₁)
+    (c : M₁ →ₗ[R] N₂) (d : M₂ →ₗ[R] N₂) :
+    LinearMap.toMatrix (e₁.prod e₂) (f₁.prod f₂) ((a.coprod b).prod (c.coprod d)) =
+      Matrix.fromBlocks (LinearMap.toMatrix e₁ f₁ a) (LinearMap.toMatrix e₂ f₁ b)
+        (LinearMap.toMatrix e₁ f₂ c) (LinearMap.toMatrix e₂ f₂ d) := by
+  ext (i | i) (j | j) <;>
+    simp [LinearMap.toMatrix_apply, LinearMap.prod_apply, LinearMap.coprod_apply,
+      Module.Basis.prod_apply]
 
 namespace Module
 
@@ -80,18 +109,21 @@ theorem determinant_prodMap
     g pQ jQ hpQ
   rw [hPQ, hblock, LinearMap.det_prodMap, ← hP, ← hQ]
 
-private theorem toMatrix_prod_coprod
-    {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-    {ι κ : Type*} [Fintype ι] [Fintype κ] [DecidableEq ι] [DecidableEq κ]
-    (e : Basis ι R M) (f : Basis κ R N)
-    (a : Module.End R M) (b : N →ₗ[R] M)
-    (c : M →ₗ[R] N) (d : Module.End R N) :
-    LinearMap.toMatrix (e.prod f) (e.prod f) ((a.coprod b).prod (c.coprod d)) =
-      Matrix.fromBlocks (LinearMap.toMatrix e e a) (LinearMap.toMatrix f e b)
-        (LinearMap.toMatrix e f c) (LinearMap.toMatrix f f d) := by
-  ext (i | i) (j | j) <;>
-    simp [LinearMap.toMatrix_apply, LinearMap.prod_apply, LinearMap.coprod_apply,
-      Basis.prod_apply]
+/-- In finite bases, the scalar determinant of a four-block endomorphism is the
+determinant of its block matrix. The same product basis is used for source and target. -/
+theorem determinant_prod_coprod_eq_det_fromBlocks
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {κ : Type*} [Fintype κ] [DecidableEq κ]
+    (p : Basis ι R P) (q : Basis κ R Q)
+    (a : Module.End R P) (b : Q →ₗ[R] P)
+    (c : P →ₗ[R] Q) (d : Module.End R Q) :
+    Module.determinant R (P × Q) ((a.coprod b).prod (c.coprod d)) =
+      Matrix.det (Matrix.fromBlocks (LinearMap.toMatrix p p a) (LinearMap.toMatrix q p b)
+        (LinearMap.toMatrix p q c) (LinearMap.toMatrix q q d)) := by
+  let : Module.Free R P := Module.Free.of_basis p
+  let : Module.Free R Q := Module.Free.of_basis q
+  rw [Module.determinant_eq_det, ← LinearMap.det_toMatrix (p.prod q),
+    LinearMap.toMatrix_prod_coprod]
 
 /-- The determinant of an upper triangular product endomorphism is the product
 of the determinants of its diagonal endomorphisms. -/
@@ -143,7 +175,7 @@ theorem determinant_prod_coprod_zero₂₁
     Module.determinant_eq_det_stabilization R Q (Fin m → R) d pQ jQ hpQ
   rw [hPQ, hblock,
     ← LinearMap.det_toMatrix ((Pi.basisFun R (Fin n)).prod (Pi.basisFun R (Fin m))),
-    toMatrix_prod_coprod, map_zero, Matrix.det_fromBlocks_zero₂₁,
+    LinearMap.toMatrix_prod_coprod, map_zero, Matrix.det_fromBlocks_zero₂₁,
     LinearMap.det_toMatrix, LinearMap.det_toMatrix, ← hP, ← hQ]
 
 /-- The determinant of a lower triangular product endomorphism is the product

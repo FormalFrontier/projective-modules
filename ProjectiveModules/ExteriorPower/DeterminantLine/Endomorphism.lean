@@ -6,6 +6,7 @@ module
 
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Dual
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Product
+public import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Schur
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Sylvester
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Units
 import ProjectiveModules.ExteriorPower.ProdPairing
@@ -18,6 +19,14 @@ multiply under composition and direct products, and are preserved by linear dual
 An endomorphism is a unit if and only if its scalar determinant is a unit. The
 modules need not have constant stalk rank or be faithful, and the determinant is
 defined even for endomorphisms that are not invertible.
+
+For a block endomorphism `((e.toLinearMap.coprod b).prod (c.coprod d))` with
+`e : P ≃ₗ[R] P`, `Module.determinant_prod_coprod_of_linearEquiv` gives the Schur
+formula: its determinant is the determinant of `e` times that of
+`d - c.comp (e.symm.toLinearMap.comp b)`. No invertibility of this complement or
+of the full block is required. Finite bases identify the scalar block determinant
+with the block matrix determinant via
+`Module.determinant_prod_coprod_eq_det_fromBlocks`.
 
 The unrestricted product formula uses finite-free split presentations and their
 block-diagonal stabilizations. The constant-rank formula below uses the ordered

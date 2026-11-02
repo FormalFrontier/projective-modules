@@ -17,6 +17,13 @@ Maintained by the Formal Frontier source-maintainer team.
   linear equivalence and multiplies pointwise under binary module products.
   For a zero module it is one, including at the scalar zero.
 
+- **[Schur determinants](ProjectiveModules/ExteriorPower/DeterminantLine/Endomorphism/Schur.lean).**
+  For finite projective modules over a commutative ring, a block endomorphism
+  whose upper-left block is a linear equivalence `e` has determinant
+  `det(e) * det(d - c ∘ e⁻¹ ∘ b)`. Neither the complement nor the full block
+  needs to be invertible. Varying rank and nonfaithful modules are allowed;
+  finite bases identify the scalar determinant with the block matrix determinant.
+
 - **[Tensor determinants](ProjectiveModules/ExteriorPower/DeterminantLine/Tensor.lean).**
   For finite projective modules over a commutative ring, the determinant of a
   tensor product of arbitrary endomorphisms is the product of the cross
