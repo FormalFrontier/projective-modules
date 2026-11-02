@@ -189,8 +189,17 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   endomorphism composition. `Module.determinant_eq_iff_map_eq_smul` characterizes
   it as the unique scalar giving the induced action on the determinant line.
   For finite free `P`, `Module.determinant_eq_det` identifies it with
-  `LinearMap.det`; on the zero module its value is `1`. See
-  [determinant-line endomorphisms](ProjectiveModules/ExteriorPower/DeterminantLine/Endomorphism.lean).
+  `LinearMap.det`; on the zero module its value is `1`.
+  For any finite free ambient module and specified split presentation,
+  `Module.determinant_eq_det_stabilization` computes this scalar as the ordinary
+  determinant of the endomorphism extended by the identity on the complement.
+  The retract need not be free or have constant stalk rank, and
+  `LinearMap.det_stabilization_eq_of_retractions` compares different presentations.
+  For arbitrary finite projective factors, `Module.determinant_prodMap` gives
+  `det(f × g) = det(f) * det(g)`, even when their stalk ranks vary.
+  See [determinant-line endomorphisms](ProjectiveModules/ExteriorPower/DeterminantLine/Endomorphism.lean),
+  [finite-free stabilization](ProjectiveModules/ExteriorPower/DeterminantLine/Stabilization.lean),
+  and [product endomorphisms](ProjectiveModules/ExteriorPower/DeterminantLine/Endomorphism/Product.lean).
 
 [Determinant lines](ProjectiveModules/ExteriorPower/DeterminantLine.lean)
 

@@ -66,6 +66,7 @@ public import ProjectiveModules.ExteriorPower.Surjectivity
 public import ProjectiveModules.ExteriorPower.TensorProduct
 public import ProjectiveModules.ExteriorPower.DeterminantLine
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism
+public import ProjectiveModules.ExteriorPower.DeterminantLine.Stabilization
 public import ProjectiveModules.ExteriorPower.Top
 public import ProjectiveModules.Free.CountableAbsorption
 public import ProjectiveModules.Free.CountableCancellation
