@@ -436,3 +436,17 @@ theorem hom_ext {G : Type w} [AddCommGroup G] {f g : K0 R →+ G}
 end K0
 
 end KTheory
+
+namespace KTheory.K0
+
+universe uR uG
+
+/-- The Grothendieck-group lift evaluates on a projective class through its
+canonical image in `K₀`. -/
+public theorem grothendieckLift_ofClass
+    (R : Type uR) [Ring R] {G : Type uG} [AddCommGroup G]
+    (f : ProjectiveClass R →+ G) (a : ProjectiveClass R) :
+    Algebra.GrothendieckAddGroup.lift f (ofClass R a) = f a := by
+  simpa only [lift] using (lift_ofClass R f a)
+
+end KTheory.K0

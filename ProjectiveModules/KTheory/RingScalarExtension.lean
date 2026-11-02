@@ -4,13 +4,14 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import ProjectiveModules.KTheory.Ring
 public import ProjectiveModules.KTheory.ScalarExtension
 public import ProjectiveModules.KTheory.TensorProduct
 
 import ProjectiveModules.Module.RightExtensionTensorProduct
 
 /-!
-# Scalar extension on the tensor semiring of projective classes
+# Multiplicative scalar extension on projective classes and K₀
 
 For a unital homomorphism `f : R →+* S` of commutative rings,
 `KTheory.ProjectiveClass.mapRingHom f` enriches the additive scalar-extension map
@@ -18,6 +19,11 @@ For a unital homomorphism `f : R →+* S` of commutative rings,
 homomorphism is unchanged. It sends a finite projective right-module class to
 the class of its right scalar extension, respects identity and composition, and
 allows zero rings and independent scalar and module universes.
+
+The induced `KTheory.K0.mapRingHom f` is a ring homomorphism on K₀. Its whole
+underlying additive homomorphism is the existing `K0.map f`. It agrees with the
+specified right extension on finite projective generators, and its identity and
+composition laws are equalities of ring homomorphisms.
 
 Multiplicativity follows by descending the target-opposite-linear tensor
 base-change equivalence. The supplied right actions are retained: tensor
@@ -33,6 +39,7 @@ available without a commutativity hypothesis.
 * Projective Modules' finite-projective class, scalar-extension and tensor
   interfaces, including the right-extension comparisons contributed by Prism
   and Lens.
+* The Grothendieck-ring universal property `Algebra.GrothendieckAddGroup.liftRingHom`.
 * Mathlib's tensor and change-of-rings formalizations, including those of
   Alex J. Best, Yaël Dillies and Jujian Zhang, and its bundled homomorphism API.
 -/
@@ -110,3 +117,67 @@ theorem mapRingHom_comp (f : R →+* S) (g : S →+* T) :
     congrArg (fun F : ProjectiveClass R →+ ProjectiveClass T ↦ F a) (map_comp f g)
 
 end KTheory.ProjectiveClass
+
+namespace KTheory.K0
+
+variable {R : Type uR} {S : Type uS} {T : Type uT}
+variable [rR : CommRing R] [rS : CommRing S] [rT : CommRing T]
+
+/-- Scalar extension on `K₀` as a ring homomorphism.
+
+Its underlying additive homomorphism is the scalar-extension map `K0.map`. -/
+noncomputable def mapRingHom (f : R →+* S) : K0 R →+* K0 S :=
+  Algebra.GrothendieckAddGroup.liftRingHom
+    ((ofClassRingHom S).comp (ProjectiveClass.mapRingHom f))
+
+/-- Scalar extension on a projective class agrees with the canonical map on classes. -/
+theorem mapRingHom_ofClass (f : R →+* S) (a : ProjectiveClass R) :
+    mapRingHom f (ofClass R a) =
+      ofClass S (@ProjectiveClass.map R S rR.toRing rS.toRing f a) := by
+  simp only [mapRingHom, Algebra.GrothendieckAddGroup.liftRingHom_apply,
+    grothendieckLift_ofClass]
+  change ((ofClassRingHom S).comp (ProjectiveClass.mapRingHom f)) a = _
+  simp only [RingHom.comp_apply, ofClassRingHom_apply,
+    ProjectiveClass.mapRingHom_apply]
+
+/-- The ring homomorphism for scalar extension has exactly the existing additive map
+as its underlying additive homomorphism. -/
+theorem mapRingHom_toAddMonoidHom (f : R →+* S) :
+    (mapRingHom f).toAddMonoidHom = @map R S rR.toRing rS.toRing f := by
+  apply hom_ext_ofClass R
+  intro a
+  exact (mapRingHom_ofClass f a).trans
+    (@map_ofClass R S rR.toRing rS.toRing f a).symm
+
+/-- The ring and additive scalar-extension maps agree on every virtual class. -/
+@[simp]
+theorem mapRingHom_apply (f : R →+* S) (x : K0 R) :
+    mapRingHom f x = @map R S rR.toRing rS.toRing f x := by
+  exact congrArg (fun h : K0 R →+ K0 S => h x) (mapRingHom_toAddMonoidHom f)
+
+/-- Scalar extension sends a finite projective right module to its extension
+of scalars, with its given right-module structure. -/
+theorem mapRingHom_of (f : R →+* S)
+    (M : Type uM) [AddCommGroup M] [Module Rᵐᵒᵖ M]
+    [Module.Finite Rᵐᵒᵖ M] [Module.Projective Rᵐᵒᵖ M] :
+    mapRingHom f (of R M) = of S (ModuleCat.RightExtension.Obj f M) := by
+  rw [mapRingHom_apply, map_of]
+
+variable (R) in
+/-- Scalar extension along the identity is the identity ring homomorphism. -/
+@[simp]
+theorem mapRingHom_id :
+    mapRingHom (RingHom.id R) = RingHom.id (K0 R) := by
+  apply RingHom.ext
+  intro x
+  simp [map_id]
+
+/-- Scalar extension respects composition as an equality of ring homomorphisms. -/
+@[simp]
+theorem mapRingHom_comp (f : R →+* S) (g : S →+* T) :
+    mapRingHom (g.comp f) = (mapRingHom g).comp (mapRingHom f) := by
+  apply RingHom.ext
+  intro x
+  simp [map_comp]
+
+end KTheory.K0
