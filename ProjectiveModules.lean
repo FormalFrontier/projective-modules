@@ -6,11 +6,17 @@ Authors: Formal Frontier Agents
 -- Contributors: Prism
 module
 public import ProjectiveModules.Module.Koszul.Basic
+public import ProjectiveModules.Module.Koszul.FreeContraction
+public import ProjectiveModules.Module.Koszul.FreeHomotopy
 public import ProjectiveModules.Module.Koszul.Homogeneous
+public import ProjectiveModules.Module.Koszul.HomogeneousContraction
+public import ProjectiveModules.Module.Koszul.Acyclic
+public import ProjectiveModules.Module.Koszul.ProjectiveContraction
 public import ProjectiveModules.Module.OrthogonalIdempotentRanges
 public import ProjectiveModules.KTheory.OrthogonalDecomposition
 public import ProjectiveModules.KTheory.CommutingIdempotents
 public import ProjectiveModules.KTheory.CochainEulerCharacteristic
+public import ProjectiveModules.KTheory.KoszulEulerCharacteristic
 public import ProjectiveModules.Module.RightExtensionReflection
 public import ProjectiveModules.ExteriorAlgebra.Contraction
 public import ProjectiveModules.ExteriorPower.Contraction
