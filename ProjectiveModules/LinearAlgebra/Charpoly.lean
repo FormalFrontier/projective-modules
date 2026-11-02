@@ -6,6 +6,8 @@ module
 
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Stabilization
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
+import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Product
+import Mathlib.LinearAlgebra.TensorProduct.Prod
 
 /-!
 # Characteristic polynomials of finite projective modules
@@ -18,7 +20,8 @@ freeness nor constant rank is required.
 `Module.eval₂_charpoly` characterizes evaluation in every commutative algebra.
 It gives ordinary scalar evaluation and compatibility with arbitrary scalar
 extension. For finite free modules, `Module.charpoly_eq_charpoly` identifies this
-construction with Mathlib's characteristic polynomial.
+construction with Mathlib's characteristic polynomial. Characteristic polynomials
+multiply under binary products of finite projective modules.
 `Module.charpoly_eq_of_intertwining` gives invariance under linear equivalences,
 and `Module.charpoly_conj` specializes it to conjugation.
 
@@ -178,6 +181,32 @@ theorem charpoly_baseChange (f : Module.End R P)
       (eval₂_charpoly R P f S[X] (Polynomial.X : S[X])).symm
     _ = Polynomial.map (algebraMap R S) (charpoly R P f) := by
       rw [← Polynomial.aeval_def, Polynomial.aeval_X_left_eq_map]
+
+/-- The characteristic polynomial of a product endomorphism is the product of
+its characteristic polynomials. -/
+theorem charpoly_prodMap
+    (Q : Type w) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q]
+    (f : Module.End R P) (g : Module.End R Q) :
+    charpoly R (P × Q) (f.prodMap g) = charpoly R P f * charpoly R Q g := by
+  calc
+    charpoly R (P × Q) (f.prodMap g) =
+        Module.determinant R[X] ((R[X] ⊗[R] P) × (R[X] ⊗[R] Q))
+          (((Polynomial.X : R[X]) •
+              (LinearMap.id : Module.End R[X] (R[X] ⊗[R] P)) -
+                f.baseChange R[X]).prodMap
+            ((Polynomial.X : R[X]) •
+              (LinearMap.id : Module.End R[X] (R[X] ⊗[R] Q)) -
+                g.baseChange R[X])) := by
+      rw [charpoly_def]
+      apply determinant_eq_of_intertwining
+        (e := TensorProduct.prodRight R R[X] R[X] P Q)
+      apply TensorProduct.AlgebraTensorModule.ext
+      intro a x
+      rcases x with ⟨p, q⟩
+      simp [TensorProduct.prodRight_tmul]
+    _ = charpoly R P f * charpoly R Q g := by
+      rw [determinant_prodMap, ← charpoly_def, ← charpoly_def]
 
 /-- The characteristic polynomial of an endomorphism of a zero module is one. -/
 @[simp] theorem charpoly_of_subsingleton [Subsingleton P] (f : Module.End R P) :
