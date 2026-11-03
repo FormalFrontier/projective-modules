@@ -94,6 +94,7 @@ public import ProjectiveModules.Free.Semisimple
 public import ProjectiveModules.Free.StablePresentation
 public import ProjectiveModules.Free.StableKernel
 public import ProjectiveModules.LinearAlgebra.Charpoly.CayleyHamilton
+public import ProjectiveModules.LinearAlgebra.Charpoly.Idempotent
 public import ProjectiveModules.LinearAlgebra.Charpoly.Spectrum
 public import ProjectiveModules.LinearAlgebra.Determinant
 public import ProjectiveModules.Invertible.Endomorphism

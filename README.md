@@ -308,6 +308,9 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   give `IsUnit ((Module.charpoly R P f).eval r) ↔ IsUnit (r • 1 - f)`.
   Thus the algebraic spectrum is the set of scalars with nonunit polynomial value,
   and `f` is invertible exactly when the constant coefficient is a unit.
+  [Complementary idempotents](ProjectiveModules/LinearAlgebra/Charpoly/Idempotent.lean)
+  satisfy `charpoly(f) * charpoly(1 - f) = charpoly(0) * charpoly(1)`, with all four
+  polynomials taken on the original module, without a global rank or freeness assumption.
 
 - **[Partial trace](ProjectiveModules/Module/Trace/Partial.lean):** over a commutative
   semiring `R`, contraction in a finite-projective tensor factor `M` defines an
