@@ -4,10 +4,8 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import ProjectiveModules.LinearAlgebra.Charpoly
+public import ProjectiveModules.LinearAlgebra.Charpoly.MonicMultiple
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import ProjectiveModules.Module.ProjectiveComplement
-import Mathlib.LinearAlgebra.Charpoly.Basic
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Algebra.Regular.Basic
@@ -21,8 +19,8 @@ not be monic when the projective module has varying rank. Consequently an
 intertwining equivalence after adding a common endomorphism allows cancellation
 of the common characteristic-polynomial factor.
 
-The proof combines the existing finite free complement, product formula and
-finite-free comparison with Mathlib's monicity and polynomial-regularity APIs.
+A monic multiple of the characteristic polynomial is regular, so the
+characteristic polynomial itself is regular as a factor.
 -/
 
 @[expose] public section
@@ -39,26 +37,8 @@ theorem charpoly_mem_nonZeroDivisors
     [Module.Finite R P] [Module.Projective R P]
     (f : Module.End R P) :
     Module.charpoly R P f ∈ nonZeroDivisors (Polynomial R) := by
-  classical
-  have hAux :
-      ∀ (Q : Type uR) [AddCommGroup Q] [Module R Q]
-        [Module.Finite R Q] [Module.Finite R (P × Q)] [Module.Free R (P × Q)],
-        Module.charpoly R P f ∈ nonZeroDivisors (Polynomial R) := by
-    intro Q _ _ _ _ _
-    have : Module.Projective R (P × Q) := inferInstance
-    -- The complementary summand is a retract of the free product.
-    have : Module.Projective R Q :=
-      Module.Projective.of_split (LinearMap.inr R P Q) (LinearMap.snd R P Q)
-        (by ext q; rfl)
-    have hmonic :
-        (Module.charpoly R P f * Module.charpoly R Q (0 : Module.End R Q)).Monic := by
-      rw [← Module.charpoly_prodMap R P Q f (0 : Module.End R Q),
-        Module.charpoly_eq_charpoly R (P × Q)]
-      exact LinearMap.charpoly_monic _
-    exact IsRegular.mem_nonZeroDivisors (IsRegular.of_mul_left hmonic.isRegular)
-  obtain ⟨Q, hAdd, hModule, hFinite, hFiniteProd, hFreeProd⟩ :=
-    Module.exists_finite_free_product_of_finite_projective (R := R) (B := P)
-  exact @hAux Q hAdd hModule hFinite hFiniteProd hFreeProd
+  obtain ⟨g, hmonic, h, rfl⟩ := Module.charpoly_dvd_monic R P f
+  exact IsRegular.mem_nonZeroDivisors (IsRegular.of_mul_left hmonic.isRegular)
 
 /-- An intertwining equivalence after adding a common finite projective endomorphism
 forces equality of characteristic polynomials. -/

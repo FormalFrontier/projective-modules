@@ -728,3 +728,19 @@ chosen from a global rank. Neither invertibility nor regularity of `a` is needed
 The homothety identity is also available separately. In rank zero the scalar
 determinant is `1`, even at `a = 0`; on modules of varying rank the multiplier
 therefore retains the rank-zero contribution.
+
+
+## Coefficients of projective characteristic polynomials
+
+For an endomorphism of a finite projective module over a commutative ring,
+`Module.charpoly_contentIdeal` says that the coefficient ideal of its intrinsic
+characteristic polynomial is the unit ideal. Equivalently,
+`Module.span_range_coeff_charpoly` says that all coefficient values generate the
+whole ring. This does not assert that an individual coefficient is a unit or
+that the polynomial is monic, and allows varying rank and the zero ring.
+`Polynomial.contentIdeal_eq_span_range_coeff` identifies polynomial content
+ideals with spans of coefficient ranges over any semiring.
+
+`Module.charpoly_dvd_monic` supplies a monic multiple of the intrinsic
+characteristic polynomial. Regularity and the unit coefficient ideal share this
+argument without a constant-rank hypothesis.

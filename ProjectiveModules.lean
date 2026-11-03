@@ -95,6 +95,7 @@ public import ProjectiveModules.Free.StablePresentation
 public import ProjectiveModules.Free.StableKernel
 public import ProjectiveModules.LinearAlgebra.Charpoly.Affine
 public import ProjectiveModules.LinearAlgebra.Charpoly.CayleyHamilton
+public import ProjectiveModules.LinearAlgebra.Charpoly.ContentIdeal
 public import ProjectiveModules.LinearAlgebra.Charpoly.Idempotent
 public import ProjectiveModules.LinearAlgebra.Charpoly.Regular
 public import ProjectiveModules.LinearAlgebra.Charpoly.Spectrum
