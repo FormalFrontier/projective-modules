@@ -304,6 +304,11 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   `Module.aeval_self_charpoly` gives Cayley–Hamilton in the endomorphism ring,
   without a faithfulness assumption. Varying ranks and zero rings are included:
   the polynomial need not be monic, and on the zero module it is `1`.
+  For maps `f : P →ₗ[R] Q` and `g : Q →ₗ[R] P` between finite projective modules,
+  the [composition formulas](ProjectiveModules/LinearAlgebra/Charpoly/Composition.lean)
+  give `χ(g ∘ f) χ(0_Q) = χ(0_P) χ(f ∘ g)`, retaining the zero-map polynomials
+  rather than a global rank. The rank-one case is
+  `χ(φ.smulRight v) X = χ(0_P) (X - C (φ v))`.
   The [unit and spectrum criteria](ProjectiveModules/LinearAlgebra/Charpoly/Spectrum.lean)
   give `IsUnit ((Module.charpoly R P f).eval r) ↔ IsUnit (r • 1 - f)`.
   Thus the algebraic spectrum is the set of scalars with nonunit polynomial value,
