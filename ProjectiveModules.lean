@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 -- Contributors: Prism
 module
 
+public import ProjectiveModules.LinearAlgebra.Charpoly.Nilpotent
 public import ProjectiveModules.Module.Reduction
 public import ProjectiveModules.Module.ProjectiveReduction
 public import ProjectiveModules.Module.Koszul.Basic

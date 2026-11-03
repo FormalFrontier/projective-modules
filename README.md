@@ -7,6 +7,13 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **[Nilpotent characteristic polynomials](ProjectiveModules/LinearAlgebra/Charpoly/Nilpotent.lean).**
+  For a nilpotent endomorphism of a finite projective module over a commutative
+  ring, its intrinsic characteristic polynomial differs from that of zero by a
+  nilpotent polynomial. Over a reduced ring the two are equal. No freeness,
+  constant rank or nontriviality hypothesis is required; zero modules and zero
+  rings are included.
+
 - **[Scalar determinants and functorial rank-dependent powers](ProjectiveModules/ExteriorPower/DeterminantLine/Scalar.lean).**
   Over a commutative ring, scaling any endomorphism of a finite projective module
   multiplies its canonical determinant by `Module.rankPower R P r`. This
