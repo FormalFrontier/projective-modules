@@ -173,6 +173,11 @@ related_formalizations:
       semisimple result, and the local Jacobson-radical characterization.
       Stable Range and this root both declare mathlib
       83abb3e776bdefcbc447a1e44d0debe4010039e5.
+  - id: "https://github.com/FormalFrontier/adic-modules/tree/4487e8c4c5106b19fc3305b76a188c763517ceae"
+    relationship: "builds-on"
+    note: >-
+      Canonical ideal quotients of dependent direct sums and finite-generation
+      reflection when a power of an ideal annihilates a module.
   - id: "docs/CREDITS.md"
     relationship: "other"
     note: >-
@@ -1618,3 +1623,14 @@ highlights:
         file: "ProjectiveModules/ExteriorPower/DeterminantLine/Tensor.lean"
       - declaration: "Module.rankPower_tensorProduct"
         file: "ProjectiveModules/ExteriorPower/DeterminantLine/Tensor.lean"
+  - title: "Projective modules lift across nilpotent ideals"
+    statement: >-
+      For any ring R and nilpotent two-sided ideal I, every projective
+      R/I-module is isomorphic to the canonical reduction of a projective
+      R-module. Finitely generated inputs admit finitely generated lifts.
+      Neither commutativity nor a finite-generation assumption on I is needed.
+    declarations:
+      - declaration: "Module.exists_projective_lift"
+        file: "ProjectiveModules/Module/ReductionProjectiveLift.lean"
+      - declaration: "Module.exists_finite_projective_lift"
+        file: "ProjectiveModules/Module/ReductionProjectiveLift.lean"

@@ -34,6 +34,22 @@ name = "homological_algebra"
 git = "https://github.com/FormalFrontier/homological-algebra.git"
 rev = "1ecd25213926138278dbd661bd516de9135d944a"
 
+[[require]]
+name = "adic-modules"
+git = "https://github.com/FormalFrontier/adic-modules.git"
+rev = "4487e8c4c5106b19fc3305b76a188c763517ceae"
+
+[[require]]
+name = "coherent-modules"
+git = "https://github.com/FormalFrontier/coherent-modules.git"
+rev = "0bcb335a180c39e599086aefb505efbe84523e2f"
+
+[[require]]
+name = "batteries"
+scope = "leanprover-community"
+git = "https://github.com/leanprover-community/batteries"
+rev = "4cac2177c37f5530c4da76aa8e4307f3fc9e4dcb"
+
 [[lean_lib]]
 name = "ProjectiveModules"
 roots = ["ProjectiveModules", "ProjectiveModules.Module.DirectSum", "ProjectiveModules.Module.ComponentwiseFreeExamples", "ProjectiveModules.Topology.SplitExact", "ProjectiveModules.Topology.OpenSubmodule", "ProjectiveModules.LinearAlgebra.Matrix.Projective"]

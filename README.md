@@ -790,3 +790,15 @@ finite generation nor projectivity of the source is required.
 [`Module.exists_linearEquiv_lift`](ProjectiveModules/Module/ReductionEquiv.lean)
 lifts every specified `R ⧸ I`-linear equivalence between reductions of projective
 `R`-modules to an `R`-linear equivalence with exactly the prescribed reduced map.
+
+
+## Projective modules over nilpotent quotients
+
+Over any ring `R` and a nilpotent two-sided ideal `I`,
+[`Module.exists_projective_lift`](ProjectiveModules/Module/ReductionProjectiveLift.lean)
+realizes every projective `R ⧸ I`-module as the canonical reduction of a
+projective `R`-module, without a finite-generation hypothesis.
+[`Module.exists_finite_projective_lift`](ProjectiveModules/Module/ReductionProjectiveLift.lean)
+retains finite generation when the given quotient-ring module is finitely
+generated. The ring may be zero or noncommutative, the scalar and module
+universes are independent, and no finite-generation assumption on `I` is needed.
