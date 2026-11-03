@@ -735,6 +735,25 @@ freeness, faithfulness, or constant rank. The existing
 `Module.charpoly_eq_charpoly` identifies the intrinsic and finite-free
 characteristic polynomials.
 
+## Commuting nilpotent perturbations of characteristic polynomials
+
+For commuting endomorphisms `f`, `g` of a finite projective module over any
+commutative ring, a nilpotent difference `f - g` implies that
+`Module.charpoly R P f - Module.charpoly R P g` is nilpotent. Over a reduced
+ring the characteristic polynomials are equal; see
+[commuting nilpotent perturbations](ProjectiveModules/LinearAlgebra/Charpoly/CommutingNilpotent.lean).
+There is no freeness, faithfulness, constant-rank or nonzero-ring assumption.
+
+Both qualifications matter. Over a field, `f = E₂₁` and `g = E₂₁ + E₁₂`
+have square-zero difference but characteristic polynomials `X²` and `X² - 1`;
+they do not commute. On the rank-one module over `ℤ/4ℤ`, multiplication by
+`0` and by `2` commute and have nonzero nilpotent polynomial difference `2`,
+so reducedness is necessary for equality. In contrast, `a • id + E₁₂` and
+`a • id` are unequal commuting operators with the same polynomial `(X - a)²`.
+Varying rank is retained: the first projection summand over `k × k` has
+characteristic polynomial `1` on its rank-zero component, not a positive
+power of `X` chosen from one global rank.
+
 ## Exterior series and scalar extension
 
 [ExteriorPowerSeriesScalarExtension](ProjectiveModules/KTheory/ExteriorPowerSeriesScalarExtension.lean)
@@ -824,3 +843,11 @@ projective `R`-module, without a finite-generation hypothesis.
 retains finite generation when the given quotient-ring module is finitely
 generated. The ring may be zero or noncommutative, the scalar and module
 universes are independent, and no finite-generation assumption on `I` is needed.
+
+## Units from finitely generated radical images
+
+[`LinearMap.isUnit_one_sub_of_projective_of_fg_range`](ProjectiveModules/LinearMap/ProjectiveUnits.lean)
+says that, over any ring, an endomorphism `T` of a projective module whose image
+is finitely generated and contained in `J(R)M` has invertible complement `1 - T`.
+The given module need not be finitely generated, and the ring need not be
+commutative.

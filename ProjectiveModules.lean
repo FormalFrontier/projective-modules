@@ -104,6 +104,8 @@ public import ProjectiveModules.Free.StableKernel
 public import ProjectiveModules.LinearAlgebra.Charpoly.Affine
 public import ProjectiveModules.LinearAlgebra.Charpoly.CayleyHamilton
 public import ProjectiveModules.LinearAlgebra.Charpoly.CayleyHamilton.Nilpotent
+public import ProjectiveModules.LinearMap.ProjectiveUnits
+public import ProjectiveModules.LinearAlgebra.Charpoly.CommutingNilpotent
 public import ProjectiveModules.LinearAlgebra.Charpoly.Composition
 public import ProjectiveModules.LinearAlgebra.Charpoly.ContentIdeal
 public import ProjectiveModules.LinearAlgebra.Charpoly.ZeroComp
