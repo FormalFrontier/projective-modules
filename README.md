@@ -7,6 +7,8 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **Quadratic powers of projective modules.** Over a commutative ring, antisymmetrization embeds the second exterior power of any projective module in its tensor square. The tensor square is noncanonically the product of its second exterior and symmetric powers, with the canonical antisymmetrization and symmetric quotient as inclusion and projection. No finite-generation or characteristic restriction is required. See [`ExteriorPower/QuadraticProjective.lean`](ProjectiveModules/ExteriorPower/QuadraticProjective.lean).
+
 - **[Nilpotent characteristic polynomials](ProjectiveModules/LinearAlgebra/Charpoly/Nilpotent.lean).**
   For a nilpotent endomorphism of a finite projective module over a commutative
   ring, its intrinsic characteristic polynomial differs from that of zero by a

@@ -76,6 +76,7 @@ public import ProjectiveModules.Module.ScalarExtensionTensorProduct
 public import ProjectiveModules.ExteriorPower.Projective
 public import ProjectiveModules.ExteriorPower.RightScalarExtension
 public import ProjectiveModules.ExteriorPower.Quadratic
+public import ProjectiveModules.ExteriorPower.QuadraticProjective
 public import ProjectiveModules.ExteriorPower.Rank
 public import ProjectiveModules.ExteriorPower.StalkRank
 public import ProjectiveModules.ExteriorPower.Surjectivity
