@@ -170,6 +170,7 @@ public import ProjectiveModules.Module.Injective
 public import ProjectiveModules.Module.InvariantSupportedProjection
 public import ProjectiveModules.Module.IsotypicMultiplicity
 public import ProjectiveModules.Module.MatrixRow
+public import ProjectiveModules.Module.Nakayama
 public import ProjectiveModules.Module.NilpotentEndomorphism
 public import ProjectiveModules.Module.ScalarRank
 public import ProjectiveModules.Module.LaurentPolynomial
