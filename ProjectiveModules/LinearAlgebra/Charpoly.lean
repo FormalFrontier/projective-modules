@@ -7,11 +7,13 @@ module
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Stabilization
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Product
+import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Pi
 import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.ShortExact
 import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Dual
 import ProjectiveModules.Dual.BaseChange
 import Mathlib.Algebra.Polynomial.Basis
 import Mathlib.LinearAlgebra.TensorProduct.Prod
+import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.Tactic.Abel
 
@@ -28,6 +30,7 @@ It gives ordinary scalar evaluation and compatibility with arbitrary scalar
 extension. For finite free modules, `Module.charpoly_eq_charpoly` identifies this
 construction with Mathlib's characteristic polynomial. Characteristic polynomials
 multiply under binary products of finite projective modules.
+`Module.charpoly_piMap` gives the corresponding formula for finite dependent products.
 `Module.charpoly_eq_of_intertwining` gives invariance under linear equivalences,
 and `Module.charpoly_conj` specializes it to conjugation.
 `Module.charpoly_dualMap` identifies the characteristic polynomial with that of
@@ -262,6 +265,37 @@ theorem charpoly_prodMap
   rw [charpoly_def, determinant_of_subsingleton]
 
 end FiniteProjective
+
+/-- The characteristic polynomial of a finite dependent product endomorphism is
+the product of the characteristic polynomials of its factors. -/
+theorem charpoly_piMap {I : Type w} [_root_.Finite I]
+    (P : I → Type v) [∀ i, AddCommGroup (P i)] [∀ i, Module R (P i)]
+    [∀ i, Module.Finite R (P i)] [∀ i, Module.Projective R (P i)]
+    (f : ∀ i, Module.End R (P i)) :
+    charpoly R (∀ i, P i) (LinearMap.piMap f) =
+      ∏ᶠ i, charpoly R (P i) (f i) := by
+  classical
+  let := Fintype.ofFinite I
+  calc
+    charpoly R (∀ i, P i) (LinearMap.piMap f) =
+        Module.determinant R[X] (∀ i, R[X] ⊗[R] P i)
+          (LinearMap.piMap fun i =>
+            (Polynomial.X : R[X]) •
+              (LinearMap.id : Module.End R[X] (R[X] ⊗[R] P i)) -
+                (f i).baseChange R[X]) := by
+      rw [charpoly_def]
+      apply determinant_eq_of_intertwining
+        (e := TensorProduct.piRight R R[X] R[X] P)
+      apply TensorProduct.AlgebraTensorModule.ext
+      intro a x
+      ext i
+      simp [TensorProduct.piRight_apply, TensorProduct.piRightHom_tmul]
+    _ = ∏ᶠ i, charpoly R (P i) (f i) := by
+      simpa only [charpoly_def] using
+        (determinant_piMap R[X] (fun i => R[X] ⊗[R] P i)
+          (fun i => (Polynomial.X : R[X]) •
+            (LinearMap.id : Module.End R[X] (R[X] ⊗[R] P i)) -
+              (f i).baseChange R[X]))
 
 /-- On a finite free module, the determinant-line characteristic polynomial
 agrees with Mathlib's characteristic polynomial. -/

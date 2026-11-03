@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Group.Int.Units
 import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Module.RingHom
@@ -21,7 +22,9 @@ import Mathlib.Tactic.NormNum
 The projection summand of `ℤ × ℤ` has rank one on the first component and rank
 zero on the second. Doubling its dual therefore has determinant `(2, 1)`, even
 though the summand is neither free nor faithful. A Schur computation on the same
-summand retains that second component with a nonunit complement. Over `ZMod 8`,
+summand retains that second component with a nonunit complement. A dependent product
+of the summand, its square and a zero module, with maps `2 • id`,
+`(3 • id).prodMap (5 • id)` and `0`, has determinant `(30, 1)`. Over `ZMod 8`,
 upper and lower triangular endomorphisms with diagonal entries `2` and
 off-diagonal entry `1` have the same nonzero square-zero determinant. A `ZMod 9`
 Schur computation distinguishes the inverse pivot from the forward pivot and
@@ -157,6 +160,58 @@ example :
     rw [htwice] at hdet
     have hfst : IsUnit (2 : ℤ) := hdet.map (RingHom.fst ℤ ℤ)
     norm_num [Int.isUnit_iff] at hfst
+
+private abbrev piFactor : Fin 3 → Type :=
+  Fin.cases P (Fin.cases (P × P) (fun _ ↦ Fin 0 → R))
+
+local instance : ∀ i, AddCommGroup (piFactor i) :=
+  Fin.cases (inferInstance : AddCommGroup P)
+    (Fin.cases (inferInstance : AddCommGroup (P × P))
+      (fun _ ↦ (inferInstance : AddCommGroup (Fin 0 → R))))
+
+local instance : ∀ i, Module R (piFactor i) :=
+  Fin.cases (inferInstance : Module R P)
+    (Fin.cases (inferInstance : Module R (P × P))
+      (fun _ ↦ (inferInstance : Module R (Fin 0 → R))))
+
+local instance : ∀ i, Module.Finite R (piFactor i) :=
+  Fin.cases (inferInstance : Module.Finite R P)
+    (Fin.cases (inferInstance : Module.Finite R (P × P))
+      (fun _ ↦ (inferInstance : Module.Finite R (Fin 0 → R))))
+
+local instance : ∀ i, Module.Projective R (piFactor i) :=
+  Fin.cases (inferInstance : Module.Projective R P)
+    (Fin.cases (inferInstance : Module.Projective R (P × P))
+      (fun _ ↦ (inferInstance : Module.Projective R (Fin 0 → R))))
+
+private def piEnd : ∀ i, Module.End R (piFactor i) :=
+  Fin.cases twice
+    (Fin.cases
+      (((3 : R) • (LinearMap.id : Module.End R P)).prodMap
+        ((5 : R) • (LinearMap.id : Module.End R P)))
+      (fun _ ↦ (0 : Module.End R (Fin 0 → R))))
+
+-- The zero factor contributes one, as does the rank-zero second component of
+-- every factor; the heterogeneous first-component ranks are `1`, `2`, and `0`.
+example :
+    Module.determinant R (∀ i, piFactor i) (LinearMap.piMap piEnd) =
+      ((30, 1) : R) := by
+  have hfirst :
+      Module.determinant R (piFactor 0) (piEnd 0) = ((2, 1) : R) :=
+    determinant_scalar 2
+  have hpair :
+      Module.determinant R (piFactor 1) (piEnd 1) = ((15, 1) : R) := by
+    change Module.determinant R (P × P)
+        (((3 : R) • (LinearMap.id : Module.End R P)).prodMap
+          ((5 : R) • (LinearMap.id : Module.End R P))) = ((15, 1) : R)
+    rw [Module.determinant_prodMap, determinant_scalar, determinant_scalar]
+    norm_num
+  have hzero : Module.determinant R (piFactor 2) (piEnd 2) = 1 :=
+    Module.determinant_of_subsingleton R (Fin 0 → R)
+      (0 : Module.End R (Fin 0 → R))
+  rw [Module.determinant_piMap, finprod_eq_prod_of_fintype,
+    Fin.prod_univ_three, hfirst, hpair, hzero]
+  norm_num
 
 end ProjectionSummand
 

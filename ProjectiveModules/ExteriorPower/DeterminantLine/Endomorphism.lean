@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Dual
+public import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Pi
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Product
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Schur
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.ShortExact
@@ -16,8 +17,8 @@ import ProjectiveModules.ExteriorPower.ProdPairing
 # Scalar determinants of finite projective endomorphisms
 
 Endomorphisms act on the invertible determinant line, and their scalar determinants
-multiply under composition, direct products and short exact sequences, and are
-preserved by linear duality.
+multiply under composition, finite dependent products and short exact sequences,
+and are preserved by linear duality.
 An endomorphism is a unit if and only if its scalar determinant is a unit. The
 modules need not have constant stalk rank or be faithful, and the determinant is
 defined even for endomorphisms that are not invertible.
