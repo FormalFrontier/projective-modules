@@ -665,3 +665,16 @@ and Alex J. Best and Yaël Dillies' Mathlib completion formalization.
 Scalar extension on the tensor semiring of projective classes descends these
 comparisons through the existing additive class maps, following Weibel's
 change-of-rings construction and Mathlib's bundled homomorphism interfaces.
+
+## Exterior powers and scalar extension
+
+For a homomorphism of commutative rings, extension of scalars commutes with every
+exterior power of a right module. The linear equivalence
+`exteriorPower.rightExtensionEquiv` preserves alternating generators, with the
+extended scalar acting once outside the wedge.
+
+The comparison uses the tensor-product description of scalar extension through
+`ModuleCat.extendScalarsTensorEquiv`, which preserves elementary tensors in both
+directions. For finite projective right modules,
+`KTheory.K0.mapRingHom_exteriorPower` gives the resulting equality of projective
+classes in every degree, without freeness, constant rank, or flatness assumptions.

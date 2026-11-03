@@ -66,7 +66,9 @@ public import ProjectiveModules.ExteriorPower.Invertible
 public import ProjectiveModules.ExteriorPower.InvertibleTwist
 public import ProjectiveModules.ExteriorPower.Map
 public import ProjectiveModules.ExteriorPower.ProdPairing
+public import ProjectiveModules.Module.ScalarExtensionTensorProduct
 public import ProjectiveModules.ExteriorPower.Projective
+public import ProjectiveModules.ExteriorPower.RightScalarExtension
 public import ProjectiveModules.ExteriorPower.Quadratic
 public import ProjectiveModules.ExteriorPower.Rank
 public import ProjectiveModules.ExteriorPower.StalkRank
@@ -212,6 +214,7 @@ public import ProjectiveModules.Topology.Projective
 public import ProjectiveModules.Topology.Splitting
 public import ProjectiveModules.Topology.KernelComparison
 public import ProjectiveModules.KTheory.SymmetricPowerSeries
+public import ProjectiveModules.KTheory.ExteriorPowerScalarExtension
 public import ProjectiveModules.KTheory.ExteriorPowerSeries
 public import ProjectiveModules.KTheory.ExteriorPowerSeriesInvertible
 
