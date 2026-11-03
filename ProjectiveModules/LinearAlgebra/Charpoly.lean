@@ -13,6 +13,7 @@ import ProjectiveModules.Dual.BaseChange
 import Mathlib.Algebra.Polynomial.Basis
 import Mathlib.LinearAlgebra.TensorProduct.Prod
 import Mathlib.RingTheory.Flat.Basic
+import Mathlib.Tactic.Abel
 
 /-!
 # Characteristic polynomials of finite projective modules
@@ -340,5 +341,44 @@ theorem charpoly_eq_mul_of_exact
     (R[X] ⊗[R] P) (R[X] ⊗[R] M) (R[X] ⊗[R] Q)
     (i.baseChange R[X]) (q.baseChange R[X]) hiS hqS hexS
     pencilP pencilM pencilQ hP hQ
+
+end Module
+
+namespace Module
+
+/-- Translating an endomorphism of a finite projective module by a scalar translates its
+intrinsic characteristic polynomial. This generalizes `LinearMap.charpoly_sub_smul`,
+using the usual determinant comparison after shifting the indeterminate. -/
+theorem charpoly_sub_smul
+    (R : Type u) [CommRing R]
+    (P : Type v) [AddCommGroup P] [Module R P]
+    [Module.Finite R P] [Module.Projective R P]
+    (f : Module.End R P) (μ : R) :
+    Module.charpoly R P (f - μ • (1 : Module.End R P)) =
+      (Module.charpoly R P f).comp (Polynomial.X + Polynomial.C μ) := by
+  calc
+    Module.charpoly R P (f - μ • (1 : Module.End R P)) =
+        Module.determinant (Polynomial R) ((Polynomial R) ⊗[R] P)
+          ((Polynomial.X : Polynomial R) •
+              (LinearMap.id : Module.End (Polynomial R) ((Polynomial R) ⊗[R] P)) -
+            (f - μ • (1 : Module.End R P)).baseChange (Polynomial R)) :=
+      Module.charpoly_def R P _
+    _ = Module.determinant (Polynomial R) ((Polynomial R) ⊗[R] P)
+          ((Polynomial.X + Polynomial.C μ) •
+              (LinearMap.id : Module.End (Polynomial R) ((Polynomial R) ⊗[R] P)) -
+            f.baseChange (Polynomial R)) := by
+      congr 1
+      rw [LinearMap.baseChange_sub, LinearMap.baseChange_smul,
+        LinearMap.baseChange_one, Module.End.one_eq_id, add_smul,
+        Polynomial.C_eq_algebraMap, IsScalarTower.algebraMap_smul]
+      abel
+    _ = Polynomial.eval₂ (algebraMap R (Polynomial R))
+          (Polynomial.X + Polynomial.C μ) (Module.charpoly R P f) :=
+      (Module.eval₂_charpoly R P f (Polynomial R) (Polynomial.X + Polynomial.C μ)).symm
+    _ = (Module.charpoly R P f).comp (Polynomial.X + Polynomial.C μ) := by
+      simpa only [Polynomial.algebraMap_eq, Polynomial.eval₂_C_X] using
+        (Polynomial.eval₂_comp' (R := R) (S := Polynomial R)
+          (Polynomial.X : Polynomial R) (Module.charpoly R P f)
+          (Polynomial.X + Polynomial.C μ)).symm
 
 end Module

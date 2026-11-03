@@ -678,3 +678,13 @@ The comparison uses the tensor-product description of scalar extension through
 directions. For finite projective right modules,
 `KTheory.K0.mapRingHom_exteriorPower` gives the resulting equality of projective
 classes in every degree, without freeness, constant rank, or flatness assumptions.
+
+## Scalar translation of characteristic polynomials
+
+For a finite projective module over an arbitrary commutative ring,
+`Module.charpoly_sub_smul` expresses subtraction of a scalar multiple of the
+identity as composition of the intrinsic characteristic polynomial with
+`X + C μ`. This generalizes `LinearMap.charpoly_sub_smul` without assuming
+freeness, faithfulness, or constant rank. The existing
+`Module.charpoly_eq_charpoly` identifies the intrinsic and finite-free
+characteristic polynomials.
