@@ -304,6 +304,10 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   `Module.aeval_self_charpoly` gives Cayley–Hamilton in the endomorphism ring,
   without a faithfulness assumption. Varying ranks and zero rings are included:
   the polynomial need not be monic, and on the zero module it is `1`.
+  The [unit and spectrum criteria](ProjectiveModules/LinearAlgebra/Charpoly/Spectrum.lean)
+  give `IsUnit ((Module.charpoly R P f).eval r) ↔ IsUnit (r • 1 - f)`.
+  Thus the algebraic spectrum is the set of scalars with nonunit polynomial value,
+  and `f` is invertible exactly when the constant coefficient is a unit.
 
 - **[Partial trace](ProjectiveModules/Module/Trace/Partial.lean):** over a commutative
   semiring `R`, contraction in a finite-projective tensor factor `M` defines an
