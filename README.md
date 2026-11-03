@@ -7,6 +7,17 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **Nilpotence from characteristic polynomials.** For a finite projective module
+  over any commutative ring,
+  [`Module.isNilpotent_of_isNilpotent_charpoly_sub_charpoly_zero`](ProjectiveModules/LinearAlgebra/Charpoly/CayleyHamilton/Nilpotent.lean)
+  shows that a nilpotent difference between the characteristic polynomials of an
+  endomorphism and zero forces the endomorphism to be nilpotent. Equality is a
+  special case. The underlying
+  [`Module.charpoly_zero_dvd_X_pow`](ProjectiveModules/LinearAlgebra/Charpoly/MonicMultiple.lean)
+  needs no constant-rank, faithfulness or global-monicity assumption. The given
+  module action and independent universes are retained; the `LinearMap` corollary
+  agrees with the ordinary characteristic polynomial on finite free modules.
+
 - **Quadratic powers of projective modules.** Over a commutative ring, antisymmetrization embeds the second exterior power of any projective module in its tensor square. The tensor square is noncanonically the product of its second exterior and symmetric powers, with the canonical antisymmetrization and symmetric quotient as inclusion and projection. No finite-generation or characteristic restriction is required. See [`ExteriorPower/QuadraticProjective.lean`](ProjectiveModules/ExteriorPower/QuadraticProjective.lean).
 
 - **[Nilpotent characteristic polynomials](ProjectiveModules/LinearAlgebra/Charpoly/Nilpotent.lean).**
