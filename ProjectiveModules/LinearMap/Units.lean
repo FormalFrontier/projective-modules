@@ -6,6 +6,8 @@ module
 
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Algebra.Module.LinearMap.End
+import Mathlib.Algebra.Group.Units.Equiv
+import Mathlib.Algebra.Group.Units.Opposite
 import Mathlib.Tactic.Abel
 
 /-!
@@ -17,6 +19,11 @@ is a unit. If `V` is a two-sided inverse of `1 - r.comp i`, the inverse of
 `1 - i.comp r` is `1 + i.comp (V.comp r)`.
 
 Only additive-group module structures over a semiring are required.
+
+For a linear functional `φ : M →ₗ[R] R` over a ring and `x : M`, this gives the
+rank-one criterion: `1 - φ.smulRight x` is a unit if and only if `1 - φ x` is a
+unit in `R`. The regular-module composition is right multiplication by `φ x`,
+so the proof uses Mathlib's equivalence with the opposite ring.
 
 ## References
 
@@ -67,3 +74,16 @@ theorem LinearMap.isUnit_one_sub_comp_iff
     IsUnit ((1 : Module.End R M) - i.comp r) ↔
       IsUnit ((1 : Module.End R N) - r.comp i) :=
   ⟨isUnit_one_sub_comp r i, isUnit_one_sub_comp i r⟩
+
+/-- The identity minus the rank-one map `m ↦ φ m • x` is a unit if and only if
+`1 - φ x` is a unit in the scalar ring. No finiteness or commutativity is required. -/
+theorem LinearMap.isUnit_one_sub_smulRight_iff
+    {R : Type u} [Ring R]
+    {M : Type v} [AddCommGroup M] [Module R M]
+    (φ : M →ₗ[R] R) (x : M) :
+    IsUnit ((1 : Module.End R M) - φ.smulRight x) ↔ IsUnit ((1 : R) - φ x) := by
+  let i : R →ₗ[R] M := (LinearMap.id : Module.End R R).smulRight x
+  refine (LinearMap.isUnit_one_sub_comp_iff i φ).trans ?_
+  simpa [i, LinearMap.smulRight_apply] using
+    ((MulEquiv.isUnit_map (RingEquiv.moduleEndSelf R).symm
+      (x := (1 : Module.End R R) - φ.comp i)).symm.trans isUnit_unop.symm)

@@ -24,6 +24,9 @@ endomorphism need not be nilpotent. The proof applies the finite-module
 Cayley–Hamilton theorem to the image, evaluates its annihilating polynomial at one,
 and transports a two-sided inverse back to the ambient module.
 
+For a rank-one map `m ↦ φ m • x`, it suffices that the single scalar `φ x` lies
+in the Jacobson radical; no condition on the whole image is needed.
+
 ## References
 
 The finite-module Cayley–Hamilton, Jacobson-radical unit criterion, and polynomial
@@ -82,6 +85,17 @@ theorem Submodule.eq_top_of_finite_quotient_of_sup_smul_eq_top
   simpa only [Submodule.Quotient.mk_eq_zero] using hxzero
 
 universe u v
+
+/-- The identity minus `m ↦ φ m • x` is a unit when the evaluation `φ x` lies
+in the Jacobson radical. No condition on the whole image is required. -/
+theorem LinearMap.isUnit_one_sub_smulRight_of_apply_mem_jacobson
+    {R : Type u} [CommRing R]
+    {M : Type v} [AddCommGroup M] [Module R M]
+    (φ : M →ₗ[R] R) (x : M) (hx : φ x ∈ (⊥ : Ideal R).jacobson) :
+    IsUnit ((1 : Module.End R M) - φ.smulRight x) := by
+  apply (φ.isUnit_one_sub_smulRight_iff x).mpr
+  apply Ideal.isUnit_of_sub_one_mem_jacobson_bot
+  simpa only [sub_sub_cancel_left] using (⊥ : Ideal R).jacobson.neg_mem hx
 
 namespace Polynomial
 
