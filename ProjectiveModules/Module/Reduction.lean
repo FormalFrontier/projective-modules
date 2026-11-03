@@ -109,7 +109,7 @@ theorem reductionMk_surjective {M : Type v} [AddCommGroup M] [Module R M] :
 
 /-- Quotient-linear maps out of a reduction are determined by representatives. -/
 theorem reduction_hom_ext {M : Type p} {N : Type q}
-    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module (R ⧸ I) N]
+    [AddCommGroup M] [Module R M] [AddCommMonoid N] [Module (R ⧸ I) N]
     {f g : Reduction I M →ₗ[R ⧸ I] N}
     (h : ∀ m, f (reductionMk I M m) = g (reductionMk I M m)) : f = g := by
   apply LinearMap.ext
@@ -123,6 +123,22 @@ theorem reduction_hom_ext {M : Type p} {N : Type q}
     (f : M →ₗ[R] N) (m : M) :
     reductionMap I f (reductionMk I M m) = reductionMk I N (f m) := by
   rfl
+
+/-- A reduced map is zero exactly when its image lies in the ideal-action submodule. -/
+theorem reductionMap_eq_zero_iff {M : Type p} {N : Type q}
+    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+    (f : M →ₗ[R] N) :
+    reductionMap I f = 0 ↔ ∀ x, f x ∈ I • (⊤ : Submodule R N) := by
+  constructor
+  · intro h x
+    apply (reductionMk_eq_zero_iff_mem I (f x)).mp
+    exact (reductionMap_mk I f x).symm.trans
+      (LinearMap.congr_fun h (reductionMk I M x))
+  · intro h
+    apply reduction_hom_ext I
+    intro x
+    exact (reductionMap_mk I f x).trans
+      ((reductionMk_eq_zero_iff_mem I (f x)).mpr (h x))
 
 /-- Reduction preserves the identity map. -/
 @[simp] theorem reductionMap_id {M : Type v} [AddCommGroup M] [Module R M] :
@@ -228,8 +244,14 @@ theorem reductionMk_smul {M : Type v} [AddCommGroup M] [Module R M]
     reductionMk I M (r • m) = Ideal.Quotient.mk I r • reductionMk I M m := by
   rfl
 
+/-- The action of a scalar's quotient class on reduction agrees with its original action. -/
+theorem quotient_mk_smul_reduction {M : Type v} [AddCommGroup M] [Module R M]
+    (r : R) (x : Reduction I M) : Ideal.Quotient.mk I r • x = r • x := by
+  obtain ⟨m, rfl⟩ := reductionMk_surjective I x
+  exact (reductionMk_smul I r m).symm.trans ((reductionMk I M).map_smul r m)
+
 private theorem eq_zero_of_mem_ideal_smul_top {M : Type p} {N : Type q}
-    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module (R ⧸ I) N]
+    [AddCommGroup M] [Module R M] [AddCommMonoid N] [Module (R ⧸ I) N]
     (f : M →+ N)
     (hf : ∀ (r : R) (m : M), f (r • m) = Ideal.Quotient.mk I r • f m)
     {m : M} (hm : m ∈ I • (⊤ : Submodule R M)) : f m = 0 := by
@@ -240,18 +262,21 @@ private theorem eq_zero_of_mem_ideal_smul_top {M : Type p} {N : Type q}
     rw [map_add, hx, hy, zero_add]
 
 private theorem reduction_lift_rel {M : Type p} {N : Type q}
-    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module (R ⧸ I) N]
+    [AddCommGroup M] [Module R M] [AddCommMonoid N] [Module (R ⧸ I) N]
     (f : M →+ N)
     (hf : ∀ (r : R) (m : M), f (r • m) = Ideal.Quotient.mk I r • f m)
     {a b : M} (h : (I • (⊤ : Submodule R M)).quotientRel a b) : f a = f b := by
   simp only [Submodule.quotientRel_def] at h
   have hh := eq_zero_of_mem_ideal_smul_top I f hf h
-  exact sub_eq_zero.mp (by simpa only [map_sub] using hh)
+  calc
+    f a = f ((a - b) + b) := by rw [sub_add_cancel]
+    _ = f (a - b) + f b := f.map_add _ _
+    _ = f b := by rw [hh, zero_add]
 
-/-- The quotient-linear map induced by an additive map compatible with the quotient
-scalar action. -/
+/-- The quotient-linear map to an additive commutative monoid induced by an additive
+map compatible with the quotient scalar action. -/
 def reductionLift {M : Type p} {N : Type q}
-    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module (R ⧸ I) N]
+    [AddCommGroup M] [Module R M] [AddCommMonoid N] [Module (R ⧸ I) N]
     (f : M →+ N)
     (hf : ∀ (r : R) (m : M), f (r • m) = Ideal.Quotient.mk I r • f m) :
     Reduction I M →ₗ[R ⧸ I] N where
@@ -271,7 +296,7 @@ def reductionLift {M : Type p} {N : Type q}
 
 /-- A descended map has the prescribed value on representatives. -/
 @[simp] theorem reductionLift_mk {M : Type p} {N : Type q}
-    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module (R ⧸ I) N]
+    [AddCommGroup M] [Module R M] [AddCommMonoid N] [Module (R ⧸ I) N]
     (f : M →+ N)
     (hf : ∀ (r : R) (m : M), f (r • m) = Ideal.Quotient.mk I r • f m) (m : M) :
     reductionLift I f hf (reductionMk I M m) = f m := by
@@ -279,7 +304,7 @@ def reductionLift {M : Type p} {N : Type q}
 
 /-- A quotient-linear map with the prescribed representative values is the descent. -/
 theorem reductionLift_unique {M : Type p} {N : Type q}
-    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module (R ⧸ I) N]
+    [AddCommGroup M] [Module R M] [AddCommMonoid N] [Module (R ⧸ I) N]
     (f : M →+ N)
     (hf : ∀ (r : R) (m : M), f (r • m) = Ideal.Quotient.mk I r • f m)
     (g : Reduction I M →ₗ[R ⧸ I] N) (hg : ∀ m, g (reductionMk I M m) = f m) :
@@ -291,11 +316,22 @@ theorem reductionLift_unique {M : Type p} {N : Type q}
 /-- Every additive map on representatives compatible with the quotient scalar action
 descends uniquely to a quotient-linear map. -/
 theorem reduction_lift_unique {M : Type p} {N : Type q}
-    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module (R ⧸ I) N]
+    [AddCommGroup M] [Module R M] [AddCommMonoid N] [Module (R ⧸ I) N]
     (f : M →+ N)
     (hf : ∀ (r : R) (m : M), f (r • m) = Ideal.Quotient.mk I r • f m) :
     ∃! g : Reduction I M →ₗ[R ⧸ I] N, ∀ m, g (reductionMk I M m) = f m := by
   exact ⟨reductionLift I f hf, reductionLift_mk I f hf,
     fun g hg => reductionLift_unique I f hf g hg⟩
+
+/-- Reduction of a finite module is finite over the quotient ring. -/
+theorem finite_reduction {M : Type v} [AddCommGroup M] [Module R M] [Module.Finite R M] :
+    Module.Finite (R ⧸ I) (Reduction I M) := by
+  have : Module.Finite R (Reduction I M) := by
+    change Module.Finite R (M ⧸ (I • (⊤ : Submodule R M)))
+    infer_instance
+  let : Module R (R ⧸ I) := Module.compHom (R ⧸ I) (Ideal.Quotient.mk I)
+  have : IsScalarTower R (R ⧸ I) (Reduction I M) := by
+    infer_instance
+  exact Module.Finite.of_restrictScalars_finite R (R ⧸ I) (Reduction I M)
 
 end Module
