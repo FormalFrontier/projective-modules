@@ -689,9 +689,19 @@ classes in every degree, without freeness, constant rank, or flatness assumption
 ## Scalar translation of characteristic polynomials
 
 For a finite projective module over an arbitrary commutative ring,
-`Module.charpoly_sub_smul` expresses subtraction of a scalar multiple of the
-identity as composition of the intrinsic characteristic polynomial with
+[`Module.charpoly_sub_smul`](ProjectiveModules/LinearAlgebra/Charpoly.lean)
+expresses subtraction of a scalar multiple of the identity as composition of the intrinsic characteristic polynomial with
 `X + C μ`. This generalizes `LinearMap.charpoly_sub_smul` without assuming
 freeness, faithfulness, or constant rank. The existing
 `Module.charpoly_eq_charpoly` identifies the intrinsic and finite-free
 characteristic polynomials.
+
+## Exterior series and scalar extension
+
+[ExteriorPowerSeriesScalarExtension](ProjectiveModules/KTheory/ExteriorPowerSeriesScalarExtension.lean)
+proves that extension of scalars commutes with the total exterior series on every
+virtual finite-projective class. `KTheory.K0.totalExteriorSeries_naturality` is an
+equality of homomorphisms with values in units of power series. Its pointwise and
+coefficient formulas use the underlying additive scalar-extension map on K₀,
+including on negative virtual classes. The result extends exterior-power base
+change from projective-module generators to the whole virtual group.

@@ -217,6 +217,7 @@ public import ProjectiveModules.Topology.Splitting
 public import ProjectiveModules.Topology.KernelComparison
 public import ProjectiveModules.KTheory.SymmetricPowerSeries
 public import ProjectiveModules.KTheory.ExteriorPowerScalarExtension
+public import ProjectiveModules.KTheory.ExteriorPowerSeriesScalarExtension
 public import ProjectiveModules.KTheory.ExteriorPowerSeries
 public import ProjectiveModules.KTheory.ExteriorPowerSeriesInvertible
 
