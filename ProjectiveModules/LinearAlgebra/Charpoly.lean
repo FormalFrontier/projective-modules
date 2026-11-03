@@ -7,7 +7,12 @@ module
 public import ProjectiveModules.ExteriorPower.DeterminantLine.Stabilization
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Product
+import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.ShortExact
+import ProjectiveModules.ExteriorPower.DeterminantLine.Endomorphism.Dual
+import ProjectiveModules.Dual.BaseChange
+import Mathlib.Algebra.Polynomial.Basis
 import Mathlib.LinearAlgebra.TensorProduct.Prod
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Characteristic polynomials of finite projective modules
@@ -24,6 +29,14 @@ construction with Mathlib's characteristic polynomial. Characteristic polynomial
 multiply under binary products of finite projective modules.
 `Module.charpoly_eq_of_intertwining` gives invariance under linear equivalences,
 and `Module.charpoly_conj` specializes it to conjugation.
+`Module.charpoly_dualMap` identifies the characteristic polynomial with that of
+the algebraic dual endomorphism. Its proof uses the finite-projective dual/base-change
+equivalence `IsBaseChange.toDualBaseChangeOfProjective` and
+`Module.determinant_dualMap`.
+
+For an invariant short exact sequence, `Module.charpoly_eq_mul_of_exact` expresses
+its middle characteristic polynomial as the product of the characteristic
+polynomials on the submodule and quotient.
 
 ## References
 
@@ -96,6 +109,40 @@ theorem charpoly_conj
   apply charpoly_eq_of_intertwining R P Q f _ e
   ext x
   simp
+
+/-- An endomorphism and its algebraic dual have the same characteristic
+polynomial. The finite-projective dual/base-change equivalence identifies the
+scalar pencil of the dual endomorphism with the dual of the scalar pencil. -/
+theorem charpoly_dualMap (f : Module.End R P) :
+    charpoly R (Module.Dual R P) f.dualMap = charpoly R P f := by
+  let S := R[X]
+  let V := S ⊗[R] P
+  let U := S ⊗[R] Module.Dual R P
+  let ibc := TensorProduct.isBaseChange (R := R) (M := P) (S := S)
+  let e : U ≃ₗ[S] Module.Dual S V := ibc.toDualBaseChangeOfProjective
+  let H : Module.End S V :=
+    (Polynomial.X : R[X]) • LinearMap.id - f.baseChange S
+  let K : Module.End S U :=
+    (Polynomial.X : R[X]) • LinearMap.id - f.dualMap.baseChange S
+  have heval (ψ : Module.Dual R P) (x : P) :
+      ibc.toDual ψ (1 ⊗ₜ[R] x) = algebraMap R S (ψ x) := by
+    simpa only [TensorProduct.mk_apply] using ibc.toDual_comp_apply ψ x
+  have h : e.toLinearMap.comp K = H.dualMap.comp e.toLinearMap := by
+    -- Both sides are determined by their values on the canonical tensor generators.
+    apply (TensorProduct.isBaseChange (R := R) (M := Module.Dual R P) (S := S)).algHom_ext
+    intro φ
+    apply ibc.algHom_ext
+    intro p
+    -- Use the comparison's characteristic equation when evaluating the scalar pencils.
+    simp [e, H, K, LinearMap.dualMap_apply, map_sub, map_smul,
+      ibc.toDualBaseChangeOfProjective_one_tmul, heval]
+  calc
+    charpoly R (Module.Dual R P) f.dualMap = determinant S U K :=
+      charpoly_def R (Module.Dual R P) f.dualMap
+    _ = determinant S (Module.Dual S V) H.dualMap :=
+      determinant_eq_of_intertwining S U (Module.Dual S V) e K H.dualMap h
+    _ = determinant S V H := determinant_dualMap S V H
+    _ = charpoly R P f := (charpoly_def R P f).symm
 
 /-- Evaluating the characteristic polynomial at an element of any commutative
 algebra gives the determinant of the corresponding scalar pencil after base
@@ -224,5 +271,74 @@ theorem charpoly_eq_charpoly [Module.Finite R P] [Module.Free R P]
   rw [LinearMap.charpoly_baseChange, Polynomial.eval_map_algebraMap,
     Polynomial.aeval_X_left_apply] at h
   simpa only [Algebra.algebraMap_eq_smul_one, Module.End.one_eq_id] using h.symm
+
+universe uR uP uM uQ
+
+/-- Characteristic polynomials multiply in an invariant short exact sequence of
+finite projective modules. The proof applies
+`Module.determinant_eq_mul_of_exact` to the universal scalar pencils over `R[X]`. -/
+theorem charpoly_eq_mul_of_exact
+    (R : Type uR) [CommRing R]
+    (P : Type uP) [AddCommGroup P] [Module R P]
+    [Module.Finite R P] [Module.Projective R P]
+    (M : Type uM) [AddCommGroup M] [Module R M]
+    [Module.Finite R M] [Module.Projective R M]
+    (Q : Type uQ) [AddCommGroup Q] [Module R Q]
+    [Module.Finite R Q] [Module.Projective R Q]
+    (i : P →ₗ[R] M) (q : M →ₗ[R] Q)
+    (hi : Function.Injective i) (hq : Function.Surjective q)
+    (hex : LinearMap.range i = LinearMap.ker q)
+    (fp : Module.End R P) (fm : Module.End R M) (fq : Module.End R Q)
+    (hp : fm.comp i = i.comp fp) (hfq : q.comp fm = fq.comp q) :
+    charpoly R M fm = charpoly R P fp * charpoly R Q fq := by
+  let : Module.Projective R R[X] :=
+    Module.Projective.of_basis (Polynomial.basisMonomials R)
+  let : Module.Flat R R[X] := Module.Flat.of_projective
+  let : Module.Projective R[X] R[X] :=
+    Module.Projective.of_basis (Module.Free.chooseBasis R[X] R[X])
+  have hexact : Function.Exact i q := LinearMap.exact_iff.mpr hex.symm
+  have hiS : Function.Injective (i.baseChange R[X]) := by
+    simpa only [LinearMap.baseChange_eq_ltensor] using
+      (Module.Flat.lTensor_preserves_injective_linearMap (M := R[X]) i hi)
+  have hqS : Function.Surjective (q.baseChange R[X]) :=
+    LinearMap.baseChange_surjective R[X] hq
+  have hexS : Function.Exact (i.baseChange R[X]) (q.baseChange R[X]) := by
+    simpa only [LinearMap.baseChange_eq_ltensor] using
+      (Module.Flat.lTensor_exact R[X] hexact)
+  have hpS : (fm.baseChange R[X]).comp (i.baseChange R[X]) =
+      (i.baseChange R[X]).comp (fp.baseChange R[X]) := by
+    simpa only [LinearMap.baseChange_comp] using
+      congrArg (fun k : P →ₗ[R] M => k.baseChange R[X]) hp
+  have hfqS : (q.baseChange R[X]).comp (fm.baseChange R[X]) =
+      (fq.baseChange R[X]).comp (q.baseChange R[X]) := by
+    simpa only [LinearMap.baseChange_comp] using
+      congrArg (fun k : M →ₗ[R] Q => k.baseChange R[X]) hfq
+  let pencilP : Module.End R[X] (R[X] ⊗[R] P) :=
+    (Polynomial.X : R[X]) • LinearMap.id - fp.baseChange R[X]
+  let pencilM : Module.End R[X] (R[X] ⊗[R] M) :=
+    (Polynomial.X : R[X]) • LinearMap.id - fm.baseChange R[X]
+  let pencilQ : Module.End R[X] (R[X] ⊗[R] Q) :=
+    (Polynomial.X : R[X]) • LinearMap.id - fq.baseChange R[X]
+  have hP : pencilM.comp (i.baseChange R[X]) =
+      (i.baseChange R[X]).comp pencilP := by
+    apply LinearMap.ext
+    intro x
+    simpa only [pencilP, pencilM, LinearMap.comp_apply, LinearMap.sub_apply,
+      LinearMap.smul_apply, LinearMap.id_apply, map_sub, map_smul] using
+      congrArg (fun k : R[X] ⊗[R] P →ₗ[R[X]] R[X] ⊗[R] M =>
+        (Polynomial.X : R[X]) • (i.baseChange R[X]) x - k x) hpS
+  have hQ : (q.baseChange R[X]).comp pencilM =
+      pencilQ.comp (q.baseChange R[X]) := by
+    apply LinearMap.ext
+    intro x
+    simpa only [pencilM, pencilQ, LinearMap.comp_apply, LinearMap.sub_apply,
+      LinearMap.smul_apply, LinearMap.id_apply, map_sub, map_smul] using
+      congrArg (fun k : R[X] ⊗[R] M →ₗ[R[X]] R[X] ⊗[R] Q =>
+        (Polynomial.X : R[X]) • (q.baseChange R[X]) x - k x) hfqS
+  rw [charpoly_def, charpoly_def, charpoly_def]
+  exact determinant_eq_mul_of_exact R[X]
+    (R[X] ⊗[R] P) (R[X] ⊗[R] M) (R[X] ⊗[R] Q)
+    (i.baseChange R[X]) (q.baseChange R[X]) hiS hqS hexS
+    pencilP pencilM pencilQ hP hQ
 
 end Module
