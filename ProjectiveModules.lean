@@ -8,7 +8,12 @@ module
 
 public import ProjectiveModules.LinearAlgebra.Charpoly.Nilpotent
 public import ProjectiveModules.Module.Reduction
+public import ProjectiveModules.Module.ReductionSelf
+public import ProjectiveModules.Module.ReductionRange
 public import ProjectiveModules.Module.ProjectiveReduction
+public import ProjectiveModules.Module.ReductionEndomorphism
+public import ProjectiveModules.Module.ReductionBijective
+public import ProjectiveModules.Module.ReductionEquiv
 public import ProjectiveModules.Module.Koszul.Basic
 public import ProjectiveModules.Module.Koszul.FreeContraction
 public import ProjectiveModules.Module.Koszul.FreeHomotopy

@@ -759,3 +759,32 @@ ideals with spans of coefficient ranges over any semiring.
 `Module.charpoly_dvd_monic` supplies a monic multiple of the intrinsic
 characteristic polynomial. Regularity and the unit coefficient ideal share this
 argument without a constant-rank hypothesis.
+
+
+## Regular reduction coefficients
+
+[Reduction of the regular module](ProjectiveModules/Module/ReductionSelf.lean)
+identifies its canonical reduction with the quotient ring over the quotient scalars,
+and transports reduced scalar-to-vector maps to scalar multiplication.
+
+
+## Idempotent images and reduction
+
+For an idempotent endomorphism of a module over any ring and a two-sided ideal,
+[`Module.reductionRangeEquiv`](ProjectiveModules/Module/ReductionRange.lean)
+identifies the canonical reduction of its range with the range of its reduction.
+The forward map is induced by range inclusion and the inverse by corestriction;
+no nilpotence, finite generation or projectivity hypothesis is required.
+
+
+## Isomorphisms modulo nilpotent ideals
+
+Over any ring `R`, possibly zero and not assumed commutative, let `I` be a
+nilpotent two-sided ideal.
+[`Module.reductionMap_bijective_iff`](ProjectiveModules/Module/ReductionBijective.lean)
+says that an `R`-linear map from any `R`-module to a projective `R`-module is
+bijective exactly when its canonical reduction modulo `I` is bijective; neither
+finite generation nor projectivity of the source is required.
+[`Module.exists_linearEquiv_lift`](ProjectiveModules/Module/ReductionEquiv.lean)
+lifts every specified `R ⧸ I`-linear equivalence between reductions of projective
+`R`-modules to an `R`-linear equivalence with exactly the prescribed reduced map.

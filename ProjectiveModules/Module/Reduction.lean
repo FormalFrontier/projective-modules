@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import Mathlib
+public import Mathlib.RingTheory.Ideal.Lattice
 
 /-!
 # Reduction of modules modulo a two-sided ideal
@@ -333,5 +334,49 @@ theorem finite_reduction {M : Type v} [AddCommGroup M] [Module R M] [Module.Fini
   have : IsScalarTower R (R ⧸ I) (Reduction I M) := by
     infer_instance
   exact Module.Finite.of_restrictScalars_finite R (R ⧸ I) (Reduction I M)
+
+section ZeroReduction
+
+omit [I.IsTwoSided] in
+/-- The canonical R-linear equivalence from reduction by the zero ideal to the original
+module, inverse to the reduction map. -/
+noncomputable def reductionZeroEquiv {M : Type v} [AddCommGroup M] [Module R M] :
+    Reduction (⊥ : Ideal R) M ≃ₗ[R] M :=
+  Submodule.quotEquivOfEqBot ((⊥ : Ideal R) • (⊤ : Submodule R M))
+    (Submodule.bot_smul _)
+
+omit [I.IsTwoSided] in
+/-- The zero-ideal reduction equivalence sends the class of `x` to `x`. -/
+@[simp] theorem reductionZeroEquiv_mk {M : Type v} [AddCommGroup M] [Module R M]
+    (x : M) :
+    reductionZeroEquiv (R := R) (M := M) (reductionMk (⊥ : Ideal R) M x) = x := by
+  exact Submodule.quotEquivOfEqBot_apply_mk
+    ((⊥ : Ideal R) • (⊤ : Submodule R M)) (Submodule.bot_smul _) x
+
+omit [I.IsTwoSided] in
+/-- The inverse zero-ideal reduction equivalence is the canonical reduction map. -/
+@[simp] theorem reductionZeroEquiv_symm_apply {M : Type v}
+    [AddCommGroup M] [Module R M] (x : M) :
+    (reductionZeroEquiv (R := R) (M := M)).symm x = reductionMk (⊥ : Ideal R) M x := by
+  exact Submodule.quotEquivOfEqBot_symm_apply
+    ((⊥ : Ideal R) • (⊤ : Submodule R M)) (Submodule.bot_smul _) x
+
+omit [I.IsTwoSided] in
+/-- The zero-ideal reduction equivalence intertwines every linear map with its reduction. -/
+theorem reductionZeroEquiv_naturality {M : Type v} {N : Type w}
+    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+    (f : M →ₗ[R] N) (z : Reduction (0 : Ideal R) M) :
+    reductionZeroEquiv (R := R) (M := N)
+      (@reductionMap R _ (0 : Ideal R)
+        (by
+          rw [Ideal.zero_eq_bot]
+          infer_instance) M N _ _ _ _ f z) =
+      f (reductionZeroEquiv (R := R) (M := M) z) := by
+  obtain ⟨x, rfl⟩ := reductionMk_surjective (0 : Ideal R) z
+  simp only [reductionMap_mk]
+  exact (reductionZeroEquiv_mk (R := R) (M := N) (f x)).trans
+    (congrArg f (reductionZeroEquiv_mk (R := R) (M := M) x)).symm
+
+end ZeroReduction
 
 end Module
