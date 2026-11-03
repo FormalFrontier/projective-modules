@@ -417,6 +417,17 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   spectra. Scalar, module and index universes are independent; empty products
   and zero rings are included. These are module-level laws, not a class or K₀ map.
 
+### Frobenius functionals and self-injectivity
+
+For a finite-dimensional algebra `A` over a field `K`,
+[`Module.injective_of_nondegenerate_mul`](ProjectiveModules/Module/Injective/Frobenius.lean)
+proves `Module.Injective A A` from a given linear functional
+`l : A →ₗ[K] K` whose multiplication pairing `l (x * y)` is nondegenerate.
+The algebra may be noncommutative, the scalar and algebra universes are independent,
+and no normalization such as `l 1 = 1` is required. The resulting injectivity applies
+to arbitrary left modules, without finiteness or common-universe assumptions.
+This is conditional on the functional, not a construction of one.
+
 ### Detailed results
 
 [Detailed headline results](docs/HeadlineResults.md)
