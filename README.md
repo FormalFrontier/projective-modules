@@ -705,3 +705,26 @@ equality of homomorphisms with values in units of power series. Its pointwise an
 coefficient formulas use the underlying additive scalar-extension map on K₀,
 including on negative virtual classes. The result extends exterior-power base
 change from projective-module generators to the whole virtual group.
+
+## Regular characteristic polynomials and stable cancellation
+
+For a finite projective module over an arbitrary commutative ring,
+`Module.charpoly_mem_nonZeroDivisors` states that its intrinsic characteristic
+polynomial is regular. This permits cancellation even when varying rank prevents
+monicity: over `ℤ × ℤ`, the zero endomorphism of the first projection summand has
+polynomial `(X, 1)`. The canonical regularity predicate also includes the zero ring.
+
+`Module.charpoly_eq_of_stable_intertwining` cancels the common factor arising from
+a shared finite projective endomorphism. An intertwining equivalence between the
+stabilized modules need not preserve the displayed summands.
+
+### Affine changes of characteristic polynomials
+
+For an endomorphism `f` of a finite projective module and arbitrary scalars `a`, `b`,
+[affine covariance](ProjectiveModules/LinearAlgebra/Charpoly/Affine.lean) gives
+`χ_(a • f + b • 1)(a * X + b) = det(a • 1) * χ_f(X)`. The multiplier is the
+intrinsic determinant of the scalar endomorphism, not a single power of `a`
+chosen from a global rank. Neither invertibility nor regularity of `a` is needed.
+The homothety identity is also available separately. In rank zero the scalar
+determinant is `1`, even at `a = 0`; on modules of varying rank the multiplier
+therefore retains the rank-zero contribution.
