@@ -9,6 +9,7 @@ public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 import ProjectiveModules.Module.RightEndomorphismMatrix
 import ProjectiveModules.Module.RightRegular
+import ProjectiveModules.Module.RightExtensionReflection
 import Mathlib.RingTheory.Idempotents
 import Mathlib.RingTheory.Nilpotent.Basic
 import GeneralLinearGroups.MatrixNilpotentIdeal
@@ -16,11 +17,15 @@ import GeneralLinearGroups.MatrixNilpotentIdeal
 /-!
 # Nilpotent change of rings on finite-projective classes and K₀
 
-A surjective homomorphism of rings with nilpotent kernel induces additive
+A surjective homomorphism whose kernel elements are nilpotent induces an
+injective map on finite-projective right-module classes. No common exponent of
+nilpotence is required for this injectivity statement.
+
+If one power of the kernel ideal is zero, scalar extension induces additive
 bijections on finite-projective right-module classes and on K₀. The associated
 additive equivalences have precisely the scalar-extension maps as their forward
-homomorphisms. Here nilpotence means that one power of the kernel ideal is zero;
-it is not merely the assertion that each kernel element is nilpotent.
+homomorphisms. These bijectivity and equivalence statements retain the stronger
+ideal-nilpotence hypothesis.
 
 The rings need not be commutative or nontrivial. Their universes, and the carrier
 universe of a finite projective module used in a generator formula, are independent.
@@ -44,6 +49,38 @@ universe uR uS uT v
 
 namespace KTheory
 
+namespace ProjectiveClass
+
+/-- A surjective homomorphism whose kernel elements are nilpotent induces an
+injective scalar-extension map on finite-projective right-module classes.
+No common nilpotence exponent is required. This gives the injectivity part of
+nil-ideal invariance from Weibel's *The K-book*, Chapter II, §2, for arbitrary,
+possibly noncommutative rings. -/
+theorem map_injective_of_surjective_of_isNilpotent_mem_ker
+    {R : Type uR} {S : Type uS} [Ring R] [Ring S]
+    (f : R →+* S) (hf : Function.Surjective f)
+    (hnil : ∀ r ∈ RingHom.ker f, IsNilpotent r) :
+    Function.Injective (map f) := by
+  classical
+  intro a b hab
+  obtain ⟨P, rfl⟩ := of_surjective R a
+  obtain ⟨Q, rfl⟩ := of_surjective R b
+  simp only [map_of] at hab
+  obtain ⟨e⟩ :=
+    (of_eq_iff S (ModuleCat.RightExtension.Obj f P)
+      (ModuleCat.RightExtension.Obj f Q)).mp hab
+  obtain ⟨g, hg⟩ :=
+    ModuleCat.RightExtension.map_surjective_of_surjective f hf e.toLinearMap
+  have hmap : Function.Bijective (ModuleCat.RightExtension.map f g) := by
+    rw [hg]
+    exact e.bijective
+  have hbij : Function.Bijective g :=
+    ModuleCat.RightExtension.bijective_of_bijective_map_of_isNilpotent_mem_ker_of_finite_source
+      f hf hnil g hmap
+  exact of_eq_of_equiv R P (LinearEquiv.ofBijective g hbij)
+
+end ProjectiveClass
+
 variable {R : Type uR} {S : Type uS} {T : Type uT}
 variable [Ring R] [Ring S] [Ring T]
 variable (f : R →+* S) (hf : Function.Surjective f)
@@ -57,141 +94,14 @@ theorem map_bijective_of_surjective_of_isNilpotent_ker
     (hf : Function.Surjective f) (hker : IsNilpotent (RingHom.ker f)) :
     Function.Bijective (map f) := by
   constructor
-  · exact (by
-      classical
-      intro a b hab
-      obtain ⟨P, rfl⟩ := KTheory.ProjectiveClass.of_surjective R a
-      obtain ⟨Q, rfl⟩ := KTheory.ProjectiveClass.of_surjective R b
-      simp only [KTheory.ProjectiveClass.map_of] at hab
-      obtain ⟨e⟩ :=
-        (KTheory.ProjectiveClass.of_eq_iff S
-          (ModuleCat.RightExtension.Obj f P)
-          (ModuleCat.RightExtension.Obj f Q)).mp hab
-      obtain ⟨n, hn⟩ := hker
-      let J : Ideal Rᵐᵒᵖ :=
-        ModuleCat.RightExtension.oppositeIdeal (RingHom.ker f)
-      have hJpow : J ^ n = 0 := by
-        change (ModuleCat.RightExtension.oppositeIdeal (RingHom.ker f)) ^ n = 0
-        have hmem (k : ℕ) :
-            ∀ x ∈ (ModuleCat.RightExtension.oppositeIdeal (RingHom.ker f)) ^ k,
-              x.unop ∈ (RingHom.ker f) ^ k := by
-          induction k with
-          | zero =>
-              intro x _
-              simp only [Submodule.pow_zero, Ideal.one_eq_top, Submodule.mem_top]
-          | succ k ih =>
-              intro x hx
-              rw [Submodule.pow_succ] at hx
-              exact Submodule.mul_induction_on hx
-                (fun a ha b hb => by
-                  have hb' : b.unop ∈ RingHom.ker f := by
-                    apply (ModuleCat.RightExtension.mem_oppositeIdeal_iff
-                      (RingHom.ker f) b.unop).mp
-                    simpa only [MulOpposite.op_unop] using hb
-                  rw [MulOpposite.unop_mul, Ideal.IsTwoSided.pow_succ]
-                  exact Ideal.mul_mem_mul hb' (ih a ha))
-                (fun a b ha hb => by
-                  rw [MulOpposite.unop_add]
-                  exact add_mem ha hb)
-        apply le_antisymm
-        · intro x hx
-          have hx' := hmem n x hx
-          rw [hn] at hx'
-          simpa only [Ideal.zero_eq_bot, Submodule.mem_bot,
-            MulOpposite.unop_eq_zero_iff] using hx'
-        · rw [Ideal.zero_eq_bot]
-          exact bot_le
-      have uniformEndPower :
-          ∀ {X : Type uR} [AddCommGroup X] [Module Rᵐᵒᵖ X]
-            (d : Module.End Rᵐᵒᵖ X),
-            LinearMap.range d ≤ J • (⊤ : Submodule Rᵐᵒᵖ X) → d ^ n = 0 := by
-        intro X _ _ d hd
-        have hpow : ∀ k : ℕ,
-            LinearMap.range (d ^ k) ≤ J ^ k • (⊤ : Submodule Rᵐᵒᵖ X) := by
-          intro k
-          induction k with
-          | zero =>
-              rw [Submodule.pow_zero, Ideal.one_eq_top, Submodule.top_smul]
-              exact le_top
-          | succ k ih =>
-              calc
-                LinearMap.range (d ^ (k + 1)) =
-                    (LinearMap.range (d ^ k)).map d := by
-                  rw [Module.End.iterate_succ', LinearMap.range_comp]
-                _ ≤ (J ^ k • (⊤ : Submodule Rᵐᵒᵖ X)).map d :=
-                  Submodule.map_mono ih
-                _ = J ^ k • LinearMap.range d := by
-                  rw [Submodule.map_smul'', Submodule.map_top]
-                _ ≤ J ^ k • (J • (⊤ : Submodule Rᵐᵒᵖ X)) :=
-                  Submodule.smul_mono le_rfl hd
-                _ = J ^ (k + 1) • (⊤ : Submodule Rᵐᵒᵖ X) := by
-                  rw [Submodule.pow_succ, Submodule.mul_smul]
-        apply (LinearMap.range_le_bot_iff (d ^ n)).mp
-        simpa only [hJpow, Ideal.zero_eq_bot, Submodule.bot_smul] using hpow n
-      obtain ⟨u, hu⟩ :=
-        ModuleCat.RightExtension.map_surjective_of_surjective f hf e.toLinearMap
-      obtain ⟨v, hv⟩ :=
-        ModuleCat.RightExtension.map_surjective_of_surjective f hf e.symm.toLinearMap
-      have hu' (p : P) : ModuleCat.RightExtension.tmulOne f (u p) =
-          e (ModuleCat.RightExtension.tmulOne f p) := by
-        simpa [ModuleCat.RightExtension.tmulOne_apply,
-          ModuleCat.RightExtension.map_tmul] using
-          congrArg
-            (fun g : ModuleCat.RightExtension.Obj f P →ₗ[Sᵐᵒᵖ]
-                ModuleCat.RightExtension.Obj f Q =>
-              g (ModuleCat.RightExtension.tmulOne f p)) hu
-      have hv' (q : Q) : ModuleCat.RightExtension.tmulOne f (v q) =
-          e.symm (ModuleCat.RightExtension.tmulOne f q) := by
-        simpa [ModuleCat.RightExtension.tmulOne_apply,
-          ModuleCat.RightExtension.map_tmul] using
-          congrArg
-            (fun g : ModuleCat.RightExtension.Obj f Q →ₗ[Sᵐᵒᵖ]
-                ModuleCat.RightExtension.Obj f P =>
-              g (ModuleCat.RightExtension.tmulOne f q)) hv
-      let dP : Module.End Rᵐᵒᵖ P := v.comp u - LinearMap.id
-      let dQ : Module.End Rᵐᵒᵖ Q := u.comp v - LinearMap.id
-      have hdPzero (p : P) : ModuleCat.RightExtension.tmulOne f (dP p) = 0 := by
-        change ModuleCat.RightExtension.tmulOne f (v (u p) - p) = 0
-        rw [map_sub, hv', hu', e.symm_apply_apply, sub_self]
-      have hdQzero (q : Q) : ModuleCat.RightExtension.tmulOne f (dQ q) = 0 := by
-        change ModuleCat.RightExtension.tmulOne f (u (v q) - q) = 0
-        rw [map_sub, hu', hv', e.apply_symm_apply, sub_self]
-      have hdP : LinearMap.range dP ≤ J • (⊤ : Submodule Rᵐᵒᵖ P) := by
-        rintro x ⟨p, rfl⟩
-        change dP p ∈ ModuleCat.RightExtension.idealSubmodule (M := P) (RingHom.ker f)
-        rw [← ModuleCat.RightExtension.tmulOne_ker_of_surjective (M := P) f hf]
-        exact hdPzero p
-      have hdQ : LinearMap.range dQ ≤ J • (⊤ : Submodule Rᵐᵒᵖ Q) := by
-        rintro x ⟨q, rfl⟩
-        change dQ q ∈ ModuleCat.RightExtension.idealSubmodule (M := Q) (RingHom.ker f)
-        rw [← ModuleCat.RightExtension.tmulOne_ker_of_surjective (M := Q) f hf]
-        exact hdQzero q
-      have hdPnil : IsNilpotent dP := ⟨n, uniformEndPower dP hdP⟩
-      have hdQnil : IsNilpotent dQ := ⟨n, uniformEndPower dQ hdQ⟩
-      have hPunit : IsUnit (v.comp u : Module.End Rᵐᵒᵖ P) := by
-        have h := hdPnil.isUnit_one_add
-        change IsUnit ((1 : Module.End Rᵐᵒᵖ P) + (v.comp u - 1)) at h
-        rw [sub_eq_add_neg, add_left_comm, add_neg_cancel, add_zero] at h
-        exact h
-      have hQunit : IsUnit (u.comp v : Module.End Rᵐᵒᵖ Q) := by
-        have h := hdQnil.isUnit_one_add
-        change IsUnit ((1 : Module.End Rᵐᵒᵖ Q) + (u.comp v - 1)) at h
-        rw [sub_eq_add_neg, add_left_comm, add_neg_cancel, add_zero] at h
-        exact h
-      have hPbij : Function.Bijective (v.comp u) :=
-        (Module.End.isUnit_iff (v.comp u)).mp hPunit
-      have hQbij : Function.Bijective (u.comp v) :=
-        (Module.End.isUnit_iff (u.comp v)).mp hQunit
-      have huinj : Function.Injective u := by
-        intro p p' h
-        exact hPbij.1 (congrArg v h)
-      have husurj : Function.Surjective u := by
-        intro q
-        obtain ⟨q', hq'⟩ := hQbij.2 q
-        exact ⟨v q', hq'⟩
-      exact KTheory.ProjectiveClass.of_eq_of_equiv R P
-        (LinearEquiv.ofBijective u ⟨huinj, husurj⟩)
-    )
+  · apply map_injective_of_surjective_of_isNilpotent_mem_ker f hf
+    obtain ⟨n, hn⟩ := hker
+    intro r hr
+    refine ⟨n, ?_⟩
+    have hrn : r ^ n ∈ (RingHom.ker f) ^ n :=
+      Ideal.pow_mem_pow hr n
+    rw [hn] at hrn
+    simpa only [Ideal.zero_eq_bot, Submodule.mem_bot] using hrn
   · apply map_surjective_of_lift_idempotents f
     intro n E hE
     let F : Matrix (Fin n) (Fin n) R →+* Matrix (Fin n) (Fin n) S :=

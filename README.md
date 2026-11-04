@@ -414,11 +414,13 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   division rings. For an infinite product of division rings, the comparison is
   not surjective.
 
-- **[Nilpotent-kernel invariance](ProjectiveModules/KTheory/Nilpotent.lean):**
-  for a surjective unital homomorphism of arbitrary, possibly noncommutative rings
-  with uniformly nilpotent two-sided kernel ideal, the scalar-extension maps on
-  finite-projective right-module isomorphism-class monoids and on K₀
-  are additive equivalences.
+- **[Nil-kernel injectivity and nilpotent-kernel invariance](ProjectiveModules/KTheory/Nilpotent.lean):**
+  for a surjective unital homomorphism of arbitrary, possibly noncommutative rings,
+  scalar extension is injective on finite-projective right-module isomorphism
+  classes whenever every kernel element is nilpotent; no common exponent is
+  required. If some power of the two-sided kernel ideal is zero, the
+  scalar-extension maps on finite-projective right-module isomorphism-class monoids
+  and on K₀ are additive equivalences.
 
 - **[Locally constant module rank](ProjectiveModules/Module/RankLocallyConstant.lean):**
   `Module.rankLocallyConstant R M` assigns a locally constant natural-valued
