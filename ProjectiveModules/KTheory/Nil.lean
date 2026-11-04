@@ -121,3 +121,40 @@ theorem equivOfSurjectiveOfIsNilpotentMemKer_eq_equivOfSurjectiveOfIsNilpotentKe
     equivOfSurjectiveOfIsNilpotentKer_apply]
 
 end KTheory.ProjectiveClass
+
+namespace KTheory.K0
+
+variable {R : Type u} {S : Type v} [CommRing R] [Ring S]
+
+/-- The additive equivalence on `K0` induced by a surjective homomorphism with nil kernel. -/
+noncomputable def equivOfSurjectiveOfIsNilpotentMemKer (f : R →+* S)
+    (hf : Function.Surjective f) (hnil : ∀ r ∈ RingHom.ker f, IsNilpotent r) :
+    K0 R ≃+ K0 S :=
+  AddEquiv.ofBijective (map f) (by
+    apply map_bijective_of_projectiveClass_map_bijective (f := f)
+    rw [← ProjectiveClass.equivOfSurjectiveOfIsNilpotentMemKer_toAddMonoidHom f hf hnil]
+    exact (ProjectiveClass.equivOfSurjectiveOfIsNilpotentMemKer f hf hnil).bijective)
+
+/-- The forward homomorphism of the equivalence induced by a surjective map with nil kernel. -/
+@[simp] theorem equivOfSurjectiveOfIsNilpotentMemKer_toAddMonoidHom
+    (f : R →+* S) (hf : Function.Surjective f)
+    (hnil : ∀ r ∈ RingHom.ker f, IsNilpotent r) :
+    (equivOfSurjectiveOfIsNilpotentMemKer f hf hnil : K0 R →+ K0 S) = map f :=
+  rfl
+
+/-- The equivalence induced by a surjective map with nil kernel acts by scalar extension. -/
+@[simp] theorem equivOfSurjectiveOfIsNilpotentMemKer_apply
+    (f : R →+* S) (hf : Function.Surjective f)
+    (hnil : ∀ r ∈ RingHom.ker f, IsNilpotent r) (x : K0 R) :
+    equivOfSurjectiveOfIsNilpotentMemKer f hf hnil x = map f x :=
+  rfl
+
+/-- A surjective homomorphism with nil kernel induces a bijection on `K0`. -/
+theorem map_bijective_of_surjective_of_isNilpotent_mem_ker
+    (f : R →+* S) (hf : Function.Surjective f)
+    (hnil : ∀ r ∈ RingHom.ker f, IsNilpotent r) :
+    Function.Bijective (map f) := by
+  rw [← equivOfSurjectiveOfIsNilpotentMemKer_toAddMonoidHom f hf hnil]
+  exact (equivOfSurjectiveOfIsNilpotentMemKer f hf hnil).bijective
+
+end KTheory.K0
