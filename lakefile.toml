@@ -22,7 +22,7 @@ rev = "c9705889a85f85cc89d92d21372bb9bc360162c8"
 [[require]]
 name = "stable-range"
 git = "https://github.com/FormalFrontier/stable-range.git"
-rev = "c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e"
+rev = "70231e01f5383c3882231f244612ded7283e77c8"
 
 [[require]]
 name = "groupTheory"
@@ -32,7 +32,7 @@ rev = "f9e80eca0e80eb54da0d0448ce199edd3b6984bc"
 [[require]]
 name = "homological_algebra"
 git = "https://github.com/FormalFrontier/homological-algebra.git"
-rev = "1ecd25213926138278dbd661bd516de9135d944a"
+rev = "6c7f755cf87e91faff497a7da85e4ddfed431613"
 
 [[require]]
 name = "adic-modules"
@@ -42,7 +42,7 @@ rev = "4487e8c4c5106b19fc3305b76a188c763517ceae"
 [[require]]
 name = "coherent-modules"
 git = "https://github.com/FormalFrontier/coherent-modules.git"
-rev = "0bcb335a180c39e599086aefb505efbe84523e2f"
+rev = "4d48748c58ddf0bf709b6fb7f572c533dfbf05c9"
 
 [[require]]
 name = "batteries"

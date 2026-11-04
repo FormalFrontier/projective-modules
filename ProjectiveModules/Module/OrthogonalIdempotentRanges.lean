@@ -4,8 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import Mathlib.RingTheory.Idempotents
-public import Mathlib.LinearAlgebra.Pi
+public import CoherentModules.LinearAlgebra.DirectSum.Idempotents
 
 /-!
 # Products of ranges of orthogonal idempotents
@@ -14,7 +13,8 @@ A finite complete family of orthogonal endomorphisms of a semimodule gives a can
 linear equivalence with the product of their ranges. Its coordinates are the given
 endomorphisms, and its inverse sums the ambient values of the coordinates.
 
-`CompleteOrthogonalIdempotents.linearEquivPiRange` uses Mathlib's complete orthogonal
+`CompleteOrthogonalIdempotents.linearEquivPiRange`, reexported from
+`CoherentModules.LinearAlgebra.DirectSum.Idempotents`, uses Mathlib's complete orthogonal
 idempotent predicate on the endomorphism semiring. Completeness is an input. No commutativity
 of the scalar semiring or additive inverses in the semimodule are required.
 
@@ -114,34 +114,11 @@ theorem sum_apply (he : CompleteOrthogonalIdempotents e) (m : M) :
     ∑ i, e i m = m := by
   simpa using congrArg (fun p : Module.End R M => p m) he.complete
 
-/-- A finite complete orthogonal family identifies a semimodule with the product of its
-ranges. The coordinates are the projections and the inverse is the sum of ambient values. -/
-noncomputable def linearEquivPiRange (he : CompleteOrthogonalIdempotents e) :
-    M ≃ₗ[R] (∀ i : I, LinearMap.range (e i)) where
-  toFun m i := ⟨e i m, ⟨m, rfl⟩⟩
-  invFun x := ∑ i, (x i : M)
-  map_add' m n := by
-    funext i
-    exact Subtype.ext ((e i).map_add m n)
-  map_smul' r m := by
-    funext i
-    exact Subtype.ext ((e i).map_smul r m)
-  left_inv := he.sum_apply
-  right_inv x := by
-    funext i
-    exact Subtype.ext (he.toOrthogonalIdempotents.apply_sum_coe x i)
-
 /-- The ambient value of a coordinate of the decomposition is the given projection. -/
-@[simp]
 theorem linearEquivPiRange_apply_coe
     (he : CompleteOrthogonalIdempotents e) (m : M) (i : I) :
-    ((he.linearEquivPiRange m) i : M) = e i m := rfl
-
-/-- The inverse decomposition sums the ambient values of the coordinates. -/
-@[simp]
-theorem linearEquivPiRange_symm_apply
-    (he : CompleteOrthogonalIdempotents e) (x : ∀ i : I, LinearMap.range (e i)) :
-    he.linearEquivPiRange.symm x = ∑ i, (x i : M) := rfl
+    ((he.linearEquivPiRange m) i : M) = e i m :=
+  he.linearEquivPiRange_apply m i
 
 /-- Vectors are equal exactly when all their projections agree. -/
 theorem eq_iff_forall_apply_eq
@@ -154,7 +131,7 @@ theorem eq_iff_forall_apply_eq
     apply he.linearEquivPiRange.injective
     funext i
     apply Subtype.ext
-    simpa only [linearEquivPiRange_apply_coe] using h i
+    simpa only [linearEquivPiRange_apply] using h i
 
 /-- The product coordinates commute with every intertwining linear map. -/
 theorem linearEquivPiRange_natural
@@ -165,7 +142,7 @@ theorem linearEquivPiRange_natural
       fun i => T.mapRangeOfIntertwines (hT i) ((he.linearEquivPiRange m) i) := by
   funext i
   apply Subtype.ext
-  simp only [linearEquivPiRange_apply_coe, LinearMap.mapRangeOfIntertwines_apply]
+  simp only [linearEquivPiRange_apply, LinearMap.mapRangeOfIntertwines_apply]
   exact (congrArg (fun U : M →ₗ[R] N => U m) (hT i)).symm
 
 /-- Summation of range coordinates commutes with every intertwining linear map. -/
