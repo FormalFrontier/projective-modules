@@ -13,6 +13,13 @@ Maintained by the Formal Frontier source-maintainer team.
   isomorphism classes of finitely generated projective right modules and on `K₀`.
   The rings may lie in independent universes; zero rings are included.
 
+- **[Stable freeness and the regular class](ProjectiveModules/KTheory/Reduced.lean).**
+  Over any unital ring `R`, the canonical homomorphism `ℤ → K₀(R)` sending
+  `n` to `n[R]` is surjective exactly when every finitely generated projective
+  right `R`-module is stably free. It is bijective exactly when this condition
+  holds and `R` has invariant basis number. This concerns the specified regular
+  class, not an arbitrary abstract isomorphism `K₀(R) ≅ ℤ`; zero rings are included.
+
 - **Algebra-valued pairing matrices.** For finite based modules over a commutative semiring
   `R` and a semiring `R`-algebra `S`,
   [`LinearMap.toMatrix₂_compl₁₂_algebra`](ProjectiveModules/Free/BilinearMatrix.lean)

@@ -11,6 +11,7 @@ public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 import ProjectiveModules.Free.StablePresentation
 import ProjectiveModules.KTheory.FiniteFree
+import ProjectiveModules.KTheory.InvariantBasisNumber
 import Mathlib.LinearAlgebra.Pi
 
 /-!
@@ -30,6 +31,12 @@ summand vanishes under the projection. The construction `KTheory.ReducedK0.lift`
 and the equivalence `KTheory.ReducedK0.liftEquiv` express the universal property:
 additive maps from reduced K₀ correspond to additive maps from K₀ killing the
 regular class.
+
+The canonical map from the integers to K₀ is surjective exactly when every finite
+projective right module is stably free. It is bijective exactly when, in addition,
+the ring has invariant basis number. These statements specify the regular class
+as the image of one; an unprescribed abstract isomorphism with the integers is not
+the same condition.
 
 ## References
 
@@ -218,5 +225,45 @@ theorem mk_of_eq_zero_iff_isStablyFree
   exact ⟨fun h => h.2, fun h => ⟨inferInstance, h⟩⟩
 
 end ReducedK0
+
+namespace K0
+
+/-- Integer multiples of the regular class exhaust K₀ if and only if every finite
+projective right module is stably free, using ring-universe representatives of
+projective isomorphism classes.
+
+This is the canonical-map formulation of the stable-freeness criterion in
+Weibel's *The K-book*, Chapter II, Lemma 2.1. It fixes the regular class as the image
+of one, rather than asking only for an abstract additive isomorphism with `ℤ`. -/
+theorem surjective_zmultiplesHom_iff_isStablyFree :
+    Function.Surjective (zmultiplesHom (K0 R) (of R Rᵐᵒᵖ)) ↔
+      ∀ P : ModuleCat.FiniteProjective.{u, u} Rᵐᵒᵖ,
+        Module.IsStablyFree Rᵐᵒᵖ P := by
+  constructor
+  · intro h P
+    exact (ReducedK0.mk_of_eq_zero_iff_isStablyFree R P).mp
+      ((ReducedK0.mk_eq_zero_iff_exists_zsmul R _).mpr (h _))
+  · intro h x
+    apply (ReducedK0.mk_eq_zero_iff_exists_zsmul R x).mp
+    obtain ⟨P, hP⟩ := ReducedK0.exists_eq_mk_of R (ReducedK0.mk R x)
+    rw [hP]
+    exact (ReducedK0.mk_of_eq_zero_iff_isStablyFree R P).mpr (h P)
+
+/-- The canonical homomorphism sending one to the regular K₀ class is bijective
+if and only if the ring has invariant basis number and every finite projective
+right module is stably free.
+
+This combines the canonical-map stable-freeness criterion from Weibel's
+*The K-book*, Chapter II, Lemma 2.1, with the injectivity criterion for the same map.
+No nontriviality or cancellation hypothesis is imposed. -/
+theorem bijective_zmultiplesHom_iff_invariantBasisNumber_and_isStablyFree :
+    Function.Bijective (zmultiplesHom (K0 R) (of R Rᵐᵒᵖ)) ↔
+      InvariantBasisNumber R ∧
+        ∀ P : ModuleCat.FiniteProjective.{u, u} Rᵐᵒᵖ,
+          Module.IsStablyFree Rᵐᵒᵖ P := by
+  exact and_congr (invariantBasisNumber_iff_injective_zmultiplesHom R).symm
+    (surjective_zmultiplesHom_iff_isStablyFree R)
+
+end K0
 
 end KTheory
