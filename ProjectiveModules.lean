@@ -7,6 +7,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.LinearAlgebra.Charpoly.Nilpotent
+public import ProjectiveModules.LinearAlgebra.Charpoly.DirectSum
 public import ProjectiveModules.Module.Reduction
 public import ProjectiveModules.Module.ReductionSelf
 public import ProjectiveModules.Module.ReductionRange
