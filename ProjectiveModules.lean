@@ -138,6 +138,7 @@ public import ProjectiveModules.KTheory.TensorPower
 public import ProjectiveModules.KTheory.RingScalarExtension
 public import ProjectiveModules.KTheory.ScalarExtension
 public import ProjectiveModules.KTheory.ShortExact
+public import ProjectiveModules.KTheory.Nil
 public import ProjectiveModules.KTheory.Nilpotent
 public import ProjectiveModules.KTheory.Stabilization
 public import ProjectiveModules.KTheory.TensorProduct

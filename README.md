@@ -414,6 +414,12 @@ see [tensor products and products](ProjectiveModules/TensorProduct/Pi.lean).
   division rings. For an infinite product of division rings, the comparison is
   not surjective.
 
+- **[Lifting across nil kernels](ProjectiveModules/KTheory/Nil.lean):**
+  A surjective homomorphism from a commutative ring to a ring induces a surjection
+  on finitely generated projective right-module isomorphism classes whenever every
+  element of its kernel is nilpotent. The nilpotence exponent may depend on the
+  kernel element; no uniform exponent for the whole kernel is required.
+
 - **[Nil-kernel injectivity and nilpotent-kernel invariance](ProjectiveModules/KTheory/Nilpotent.lean):**
   for a surjective unital homomorphism of arbitrary, possibly noncommutative rings,
   scalar extension is injective on finite-projective right-module isomorphism
