@@ -7,6 +7,19 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **Algebra-valued pairing matrices.** For finite based modules over a commutative semiring
+  `R` and a semiring `R`-algebra `S`,
+  [`LinearMap.toMatrix₂_compl₁₂_algebra`](ProjectiveModules/Free/BilinearMatrix.lean)
+  expresses composition of an `S`-valued `R`-bilinear map by coefficient-matrix
+  multiplication after `algebraMap R S`. The target algebra need not be commutative,
+  finite or projective over `R`; the identity-algebra formula recovers the scalar case.
+  For integer-bilinear pairings into a linearly ordered commutative ring,
+  [subgroup-index comparison](ProjectiveModules/Free/BilinearIndex.lean) scales absolute
+  Gram determinants by the relative indices of nested free subgroups of equal finite
+  rank. The ambient groups need not be free or finitely generated, and a one-sided
+  comparison allows an arbitrary family in the other variable. Empty matrices and
+  zero determinants are included.
+
 - **Nilpotence from characteristic polynomials.** For a finite projective module
   over any commutative ring,
   [`Module.isNilpotent_of_isNilpotent_charpoly_sub_charpoly_zero`](ProjectiveModules/LinearAlgebra/Charpoly/CayleyHamilton/Nilpotent.lean)
@@ -529,6 +542,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Semilinear scalar restriction](ProjectiveModules/LinearMap/ChangeOfScalars.lean), [categorical comparison](ProjectiveModules/Category/ChangeOfScalars.lean) | Pointwise auxiliary-linear equivalence between semilinear Hom and Hom into the canonically restricted target, over three arbitrary semirings with commuting target actions; full ring-category additive comparison |
 | [Finsupp–Hom comparison](ProjectiveModules/LinearMap/Finsupp.lean) | Coordinatewise comparison from finitely supported families of semilinear maps to semilinear maps with finitely supported values: always injective and bijective for a finitely generated source, over arbitrary semirings with commuting auxiliary scalar actions, arbitrary index type and independent universes |
 | [Linear-map modules](ProjectiveModules/Free/LinearMap.lean) | Finite free semiring source and commuting target actions; independent freeness and finiteness conclusions for Hom over the outer semiring, with independent universes and chosen-basis inverse factorization |
+| [Algebra-valued pairing matrices](ProjectiveModules/Free/BilinearMatrix.lean), [subgroup-index comparison](ProjectiveModules/Free/BilinearIndex.lean) | Finite-basis composition over a commutative semiring with noncommutative target algebras; relative-index scaling of absolute Gram determinants for integer-bilinear pairings into linearly ordered commutative rings |
 | [Free-word semirings](ProjectiveModules/Free/FreeWordAlgebra.lean) | Rank-two to rank-one left-linear injection by distinct right suffixes and strong-rank obstruction; arbitrary semiring coefficients and alphabet |
 | [Free-word augmentation](ProjectiveModules/Free/FreeWordAugmentation.lean), [augmentation kernel](ProjectiveModules/Free/FreeWordAugmentationKernel.lean) | Zero-generator homomorphism returns the empty-word coefficient; full-letter left-linear combination has range equal to its canonical semilinear kernel, for arbitrary semiring coefficients and independent alphabet universe |
 | [Fixed-simple multiplicity](ProjectiveModules/Module/IsotypicMultiplicity.lean) | Hom-dimension cardinal of a semisimple isotypic module, direct-sum cardinal statements and invariance under compatible linear or chosen-ring semilinear equivalences, with universe lifts |

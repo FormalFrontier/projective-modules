@@ -52,7 +52,7 @@ rev = "4cac2177c37f5530c4da76aa8e4307f3fc9e4dcb"
 
 [[lean_lib]]
 name = "ProjectiveModules"
-roots = ["ProjectiveModules", "ProjectiveModules.Module.DirectSum", "ProjectiveModules.Module.ComponentwiseFreeExamples", "ProjectiveModules.Topology.SplitExact", "ProjectiveModules.Topology.OpenSubmodule", "ProjectiveModules.LinearAlgebra.Matrix.Projective"]
+roots = ["ProjectiveModules", "ProjectiveModules.Module.DirectSum", "ProjectiveModules.Module.ComponentwiseFreeExamples", "ProjectiveModules.Topology.SplitExact", "ProjectiveModules.Topology.OpenSubmodule", "ProjectiveModules.LinearAlgebra.Matrix.Projective", "ProjectiveModules.Free.BilinearMatrix", "ProjectiveModules.Free.BilinearIndex"]
 
 [[lean_lib]]
 name = "ProjectiveModulesTests"
