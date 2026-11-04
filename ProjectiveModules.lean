@@ -39,6 +39,7 @@ public import ProjectiveModules.ExteriorAlgebra.ContractionRightModule
 public import ProjectiveModules.Module.SymmetricAlgebra
 public import ProjectiveModules.Module.SymmetricPower
 
+public import ProjectiveModules.Category.Artinian
 public import ProjectiveModules.Category.ChangeOfRings
 public import ProjectiveModules.Category.ChangeOfScalars
 public import ProjectiveModules.Category.FiniteModuleDimension
@@ -47,6 +48,7 @@ public import ProjectiveModules.Category.FiniteProjectiveRestriction
 public import ProjectiveModules.Category.FiniteProjectiveSmallness
 public import ProjectiveModules.Category.Free
 public import ProjectiveModules.Category.ModuleEquivalence
+public import ProjectiveModules.Category.Semisimple
 public import ProjectiveModules.Category.Stable
 public import ProjectiveModules.CategoryTheory.FunctorIsoLifting
 public import ProjectiveModules.Contraction.BaseChange

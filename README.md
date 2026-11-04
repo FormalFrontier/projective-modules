@@ -7,6 +7,14 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **[Artinian](ProjectiveModules/Category/Artinian.lean) and
+  [semisimple](ProjectiveModules/Category/Semisimple.lean) module-category invariance.**
+  Ordinary equivalences preserve and reflect Artinianness and semisimplicity of
+  modules over arbitrary rings, with independent scalar and carrier universes.
+  The forward ring theorems use a target carrier universe containing its ring;
+  the ring equivalence theorems use this bound on both sides. Zero rings are
+  included, without finite-generation or commutativity assumptions.
+
 - **[Jacobson-kernel reduction injectivity](ProjectiveModules/KTheory/Jacobson.lean).**
   For a surjective ring homomorphism `f : R →+* S` between arbitrary rings with
   `RingHom.ker f ≤ Ideal.jacobson (⊥ : Ideal R)`, scalar extension is injective on
@@ -613,6 +621,8 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Projective scalar towers](ProjectiveModules/Module/ScalarRestriction.lean), [finite-projective restriction](ProjectiveModules/Category/FiniteProjectiveRestriction.lean) | Projectivity through semiring towers with projective coefficients; finite-projective ring-homomorphism restriction under its canonical coefficient hypothesis, with carrier, stored-action and map-application laws, both directions of the underlying-functor comparison, and identity/composition functor laws |
 | [Module-category equivalences](ProjectiveModules/Category/ModuleEquivalence.lean) | Finite-generation preservation and reflection at independent universes; canonical finite-presentation preservation with unrestricted source and target at the scalar/carrier maximum, and preservation and reflection with both carriers at their maxima; the same bounds for finite projectivity; left self-injectivity of the two rings is equivalent under any given equivalence with both carriers at their scalar/carrier maxima |
 | [Noetherian objects, modules and rings](ProjectiveModules/Category/Noetherian.lean) | Canonical subobject/submodule ascending-chain bridge `ModuleCat.isNoetherianObject_iff` re-exported from `HomologicalAlgebra.ShortComplex.ModuleCatNoetherian`; local Noetherian-module preservation and reflection at independent universes; left-Noetherian ring transport with target at the scalar/carrier maximum and unrestricted source, and ring iff at both maxima |
+| [Artinian modules and rings](ProjectiveModules/Category/Artinian.lean) | Ordinary module-category equivalences preserve and reflect Artinian modules over arbitrary rings, with independent scalar/carrier universes and no finite-generation assumption; left-Artinian ring transport with target at the scalar/carrier maximum and unrestricted source, and ring iff at both maxima; zero rings included |
+| [Semisimple modules and rings](ProjectiveModules/Category/Semisimple.lean) | Preservation and reflection of module semisimplicity under ordinary module-category equivalences at independent universes; forward ring transport with target at the scalar/carrier maximum and unrestricted source, and ring iff at both maxima; arbitrary rings including zero rings, with no finite-generation assumption |
 | [Submodule equivalences](ProjectiveModules/Category/SubmoduleEquivalence.lean), [length](ProjectiveModules/Category/Length.lean) | Canonical submodule order isomorphism, numerical length equality in `ℕ∞` for all modules (including `⊤`), and finite-length equivalence; arbitrary rings and independent scalar/carrier universes, without maximum-universe or finiteness hypotheses |
 | [Compact elements](ProjectiveModules/Order/CompactlyGenerated.lean) | Order isomorphisms preserve and reflect compact elements of arbitrary partial orders; no completeness or top element required |
 | [Finite-projective representatives](ProjectiveModules/Category/FiniteProjectiveSmallness.lean) | Derived ring-universe essential smallness at independent carrier universes; ring-sized representatives, linear equivalences and class equality in one reference skeleton |
