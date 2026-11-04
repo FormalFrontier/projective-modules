@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import ProjectiveModules.KTheory.ScalarExtension
+public import ProjectiveModules.KTheory.Nilpotent
 import Mathlib.RingTheory.Idempotents
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import GeneralLinearGroups.MatrixNilpotentIdeal
@@ -74,5 +75,49 @@ theorem map_surjective_of_isNilpotent_mem_ker
     refine ⟨A, ?_⟩
     ext i j
     exact hA i j
+
+end KTheory.ProjectiveClass
+
+namespace KTheory.ProjectiveClass
+
+variable {R : Type u} {S : Type v} [CommRing R] [Ring S]
+
+/-- Scalar extension along a surjective ring homomorphism with pointwise nilpotent kernel
+is an additive equivalence on finite projective classes. -/
+noncomputable def equivOfSurjectiveOfIsNilpotentMemKer (f : R →+* S)
+    (hf : Function.Surjective f) (hnil : ∀ r ∈ RingHom.ker f, IsNilpotent r) :
+    ProjectiveClass R ≃+ ProjectiveClass S :=
+  AddEquiv.ofBijective (map f)
+    ⟨map_injective_of_surjective_of_isNilpotent_mem_ker f hf hnil,
+      map_surjective_of_isNilpotent_mem_ker f hf hnil⟩
+
+/-- The forward homomorphism of the pointwise-nilpotent-kernel equivalence is scalar
+extension. -/
+@[simp]
+theorem equivOfSurjectiveOfIsNilpotentMemKer_toAddMonoidHom (f : R →+* S)
+    (hf : Function.Surjective f) (hnil : ∀ r ∈ RingHom.ker f, IsNilpotent r) :
+    (equivOfSurjectiveOfIsNilpotentMemKer f hf hnil :
+      ProjectiveClass R →+ ProjectiveClass S) = map f :=
+  rfl
+
+/-- The pointwise-nilpotent-kernel equivalence sends each finite projective class to its
+scalar extension. -/
+@[simp]
+theorem equivOfSurjectiveOfIsNilpotentMemKer_apply (f : R →+* S)
+    (hf : Function.Surjective f) (hnil : ∀ r ∈ RingHom.ker f, IsNilpotent r)
+    (x : ProjectiveClass R) :
+    equivOfSurjectiveOfIsNilpotentMemKer f hf hnil x = map f x :=
+  rfl
+
+/-- When the kernel is nilpotent as an ideal, the pointwise-nilpotent-kernel equivalence
+agrees with the nilpotent-kernel equivalence. -/
+theorem equivOfSurjectiveOfIsNilpotentMemKer_eq_equivOfSurjectiveOfIsNilpotentKer
+    (f : R →+* S) (hf : Function.Surjective f)
+    (hnil : ∀ r ∈ RingHom.ker f, IsNilpotent r) (hker : IsNilpotent (RingHom.ker f)) :
+    equivOfSurjectiveOfIsNilpotentMemKer f hf hnil =
+      equivOfSurjectiveOfIsNilpotentKer f hf hker := by
+  ext x
+  simp only [equivOfSurjectiveOfIsNilpotentMemKer_apply,
+    equivOfSurjectiveOfIsNilpotentKer_apply]
 
 end KTheory.ProjectiveClass
