@@ -123,6 +123,7 @@ public import ProjectiveModules.KTheory.DeterminantNaturality
 public import ProjectiveModules.KTheory.DiagonalQuotient
 public import ProjectiveModules.KTheory.Dual
 public import ProjectiveModules.KTheory.FiniteFree
+public import ProjectiveModules.KTheory.Jacobson
 public import ProjectiveModules.KTheory.InvariantBasisNumber
 public import ProjectiveModules.KTheory.K0
 public import ProjectiveModules.KTheory.Matrix

@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import ProjectiveModules.KTheory.Jacobson
 public import ProjectiveModules.KTheory.ScalarExtension
 public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.RingTheory.Ideal.Maps
@@ -61,23 +62,8 @@ theorem map_injective_of_surjective_of_isNilpotent_mem_ker
     (f : R →+* S) (hf : Function.Surjective f)
     (hnil : ∀ r ∈ RingHom.ker f, IsNilpotent r) :
     Function.Injective (map f) := by
-  classical
-  intro a b hab
-  obtain ⟨P, rfl⟩ := of_surjective R a
-  obtain ⟨Q, rfl⟩ := of_surjective R b
-  simp only [map_of] at hab
-  obtain ⟨e⟩ :=
-    (of_eq_iff S (ModuleCat.RightExtension.Obj f P)
-      (ModuleCat.RightExtension.Obj f Q)).mp hab
-  obtain ⟨g, hg⟩ :=
-    ModuleCat.RightExtension.map_surjective_of_surjective f hf e.toLinearMap
-  have hmap : Function.Bijective (ModuleCat.RightExtension.map f g) := by
-    rw [hg]
-    exact e.bijective
-  have hbij : Function.Bijective g :=
-    ModuleCat.RightExtension.bijective_of_bijective_map_of_isNilpotent_mem_ker_of_finite_source
-      f hf hnil g hmap
-  exact of_eq_of_equiv R P (LinearEquiv.ofBijective g hbij)
+  exact map_injective_of_surjective_of_ker_le_jacobson f hf
+    (Ideal.le_jacobson_bot_of_isNilpotent_mem (RingHom.ker f) hnil)
 
 end ProjectiveClass
 

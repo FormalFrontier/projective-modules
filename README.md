@@ -7,6 +7,12 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **[Jacobson-kernel reduction injectivity](ProjectiveModules/KTheory/Jacobson.lean).**
+  For a surjective ring homomorphism `f : R →+* S` between arbitrary rings with
+  `RingHom.ker f ≤ Ideal.jacobson (⊥ : Ideal R)`, scalar extension is injective on
+  isomorphism classes of finitely generated projective right modules and on `K₀`.
+  The rings may lie in independent universes; zero rings are included.
+
 - **Algebra-valued pairing matrices.** For finite based modules over a commutative semiring
   `R` and a semiring `R`-algebra `S`,
   [`LinearMap.toMatrix₂_compl₁₂_algebra`](ProjectiveModules/Free/BilinearMatrix.lean)
