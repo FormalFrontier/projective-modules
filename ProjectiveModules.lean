@@ -171,6 +171,7 @@ public import ProjectiveModules.Module.CommutingIdempotentRanges
 public import ProjectiveModules.Module.CommutingIdempotents
 public import ProjectiveModules.Module.DiagonalQuotient
 public import ProjectiveModules.Module.DiagonalQuotientSplitting
+public import ProjectiveModules.Module.DirectLimit
 public import ProjectiveModules.Module.EndomorphismIdeals
 public import ProjectiveModules.Module.EndomorphismIdeals.DirectSum
 public import ProjectiveModules.Module.FiniteProjectiveHom

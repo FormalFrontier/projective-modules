@@ -7,6 +7,14 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **[Finite-projective descent along directed limits](ProjectiveModules/Module/DirectLimit.lean).**
+  Over a nonempty directed limit of arbitrary unital rings, every finitely generated
+  projective right module is linearly equivalent to scalar extension of a finite
+  idempotent matrix range from some stage, along the canonical stage map. The stage
+  may depend on the module; transition maps need not be injective. Index, ring and
+  module universes are independent, and zero rings and size-zero matrices are allowed.
+  This is existence of descent, not eventual equivalence or continuity of K₀.
+
 - **[Scalar extension of idempotent images](ProjectiveModules/Module/RightExtensionRange.lean).**
   Over arbitrary rings, extension of scalars carries the original range of an
   idempotent endomorphism to the range of its extended endomorphism, through the
@@ -602,6 +610,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Scalar rank](ProjectiveModules/Module/ScalarRank.lean) | Compatible-scalar rank times fixed-simple multiplicity; canonical noncommutative right matrix-row dimension |
 | [Finite stable presentations](ProjectiveModules/Free/StablePresentation.lean) | Arbitrary-ring finite/stably-free existence equivalence; IBN-only cross-sum and integer-difference invariance for semirings |
 | [Balanced tensor](ProjectiveModules/Module/BalancedTensorProduct.lean), [right extension](ProjectiveModules/Module/RightExtension.lean) | Right-module scalar extension over arbitrary ring homomorphisms, quotients, finite free coordinates |
+| [Directed-limit descent](ProjectiveModules/Module/DirectLimit.lean) | Every finite projective right module over a nonempty directed limit of arbitrary unital rings is equivalent to canonical scalar extension of a finite idempotent matrix range from some stage; noninjective transition maps, independent universes and zero rings are allowed |
 | [Idempotent-range extension](ProjectiveModules/Module/RightExtensionRange.lean), [matrix ranges](ProjectiveModules/Module/RightExtensionMatrixRange.lean) | Canonical comparison of the scalar extension of an original idempotent range with the range of its extended endomorphism, with original-inclusion, pure-tensor and inverse formulas; finite-matrix specialization with entrywise coefficients and the original right column action, over arbitrary rings with independent universes and no flatness or caller equality-decision hypothesis |
 | [Left coefficient products](ProjectiveModules/Module/Product.lean) | `Module.finite_pi` and `Module.projective_pi`: finite-family closure over the coefficient semiring product for the canonical pointwise left action, with independent index, coefficient and carrier universes |
 | [Right coefficient products](ProjectiveModules/Module/RightProduct.lean) | Named Pi/binary opposite-scalar actions; finite arbitrary-projective closure; canonical finite-projective bundles; coordinate recovery and finite reconstruction along projection scalar extension, with independent universes |
