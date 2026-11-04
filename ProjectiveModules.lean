@@ -223,7 +223,9 @@ public import ProjectiveModules.Module.RightExtensionConjugacy
 public import ProjectiveModules.Module.RightExtensionFiniteResidue
 public import ProjectiveModules.Module.RightExtensionFree
 public import ProjectiveModules.Module.RightExtensionIdeal
+public import ProjectiveModules.Module.RightExtensionMatrixRange
 public import ProjectiveModules.Module.RightExtensionQuotient
+public import ProjectiveModules.Module.RightExtensionRange
 public import ProjectiveModules.Module.RightExtensionTensorProduct
 public import ProjectiveModules.Module.Trace
 public import ProjectiveModules.Module.Trace.BaseChange

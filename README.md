@@ -7,6 +7,14 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **[Scalar extension of idempotent images](ProjectiveModules/Module/RightExtensionRange.lean).**
+  Over arbitrary rings, extension of scalars carries the original range of an
+  idempotent endomorphism to the range of its extended endomorphism, through the
+  original range inclusion and corestriction. No flatness or finiteness is needed.
+  The [finite-matrix comparison](ProjectiveModules/Module/RightExtensionMatrixRange.lean)
+  has the entrywise target matrix and the column formula `f (x i) * s`, without a
+  caller equality-decision instance; empty indices and zero rings are included.
+
 - **[Artinian](ProjectiveModules/Category/Artinian.lean) and
   [semisimple](ProjectiveModules/Category/Semisimple.lean) module-category invariance.**
   Ordinary equivalences preserve and reflect Artinianness and semisimplicity of
@@ -594,6 +602,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Scalar rank](ProjectiveModules/Module/ScalarRank.lean) | Compatible-scalar rank times fixed-simple multiplicity; canonical noncommutative right matrix-row dimension |
 | [Finite stable presentations](ProjectiveModules/Free/StablePresentation.lean) | Arbitrary-ring finite/stably-free existence equivalence; IBN-only cross-sum and integer-difference invariance for semirings |
 | [Balanced tensor](ProjectiveModules/Module/BalancedTensorProduct.lean), [right extension](ProjectiveModules/Module/RightExtension.lean) | Right-module scalar extension over arbitrary ring homomorphisms, quotients, finite free coordinates |
+| [Idempotent-range extension](ProjectiveModules/Module/RightExtensionRange.lean), [matrix ranges](ProjectiveModules/Module/RightExtensionMatrixRange.lean) | Canonical comparison of the scalar extension of an original idempotent range with the range of its extended endomorphism, with original-inclusion, pure-tensor and inverse formulas; finite-matrix specialization with entrywise coefficients and the original right column action, over arbitrary rings with independent universes and no flatness or caller equality-decision hypothesis |
 | [Left coefficient products](ProjectiveModules/Module/Product.lean) | `Module.finite_pi` and `Module.projective_pi`: finite-family closure over the coefficient semiring product for the canonical pointwise left action, with independent index, coefficient and carrier universes |
 | [Right coefficient products](ProjectiveModules/Module/RightProduct.lean) | Named Pi/binary opposite-scalar actions; finite arbitrary-projective closure; canonical finite-projective bundles; coordinate recovery and finite reconstruction along projection scalar extension, with independent universes |
 | [Right coefficient-product maps](ProjectiveModules/Module/RightProduct/Hom.lean) | `Module.piRightHomAddEquiv`: additive component correspondence for maps linear under the canonical right coefficient-product action on arbitrary-index families over semirings with additive-commutative-monoid fibers; supported-input components, coordinatewise inverse, identity and composition laws. `Module.piRightEndEquiv`: semiring equivalence with the family of factor endomorphism semirings, using the same additive data and `f * g = f.comp g`; independent index, coefficient and carrier universes, without finiteness, finite generation, projectivity, presentation or commutativity assumptions |

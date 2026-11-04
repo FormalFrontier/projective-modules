@@ -8,8 +8,9 @@ public import ProjectiveModules.KTheory.K0
 public import ProjectiveModules.Module.RightExtensionComparison
 public import ProjectiveModules.Module.RightExtension
 
+import ProjectiveModules.LinearAlgebra.Matrix.Projective
 import ProjectiveModules.Module.RightExtensionFree
-import ProjectiveModules.Module.RightEndomorphismMatrix
+import ProjectiveModules.Module.RightExtensionMatrixRange
 import ProjectiveModules.Module.RightRegular
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.LinearAlgebra.Basis.VectorSpace
@@ -121,9 +122,10 @@ theorem map_of (φ : R →+* S) (M : Type uM) [AddCommGroup M] [Module Rᵐᵒ�
         (ModuleCat.RightExtension.mapLinearEquiv φ (FiniteProjective.reprEquiv Rᵐᵒᵖ M))
 
 /-- If every finite idempotent matrix lifts along a ring homomorphism, scalar
-extension is surjective on finite-projective right-module classes. A finite
-projective module is a retract of a finite free module; extending the split
-maps compares it with the range of the lifted idempotent. -/
+extension is surjective on finite-projective right-module classes. The
+idempotent-matrix classification represents a target module as a matrix range;
+the matrix-range comparison identifies it with scalar extension of the range
+of a lifted idempotent. -/
 theorem map_surjective_of_lift_idempotents (f : R →+* S)
     (hlift : ∀ (n : ℕ) (E : Matrix (Fin n) (Fin n) S),
       IsIdempotentElem E →
@@ -133,121 +135,24 @@ theorem map_surjective_of_lift_idempotents (f : R →+* S)
   classical
   intro y
   obtain ⟨M, rfl⟩ := KTheory.ProjectiveClass.of_surjective S y
-  obtain ⟨n, p₀, i₀, _, _, hp₀i₀⟩ :=
-    Module.Finite.exists_comp_eq_id_of_projective Sᵐᵒᵖ M
-  let coord := Module.rightFreeCoordEquiv S (Fin n)
-  let p : (Fin n → S) →ₗ[Sᵐᵒᵖ] M := p₀.comp coord.symm.toLinearMap
-  let i : M →ₗ[Sᵐᵒᵖ] (Fin n → S) := coord.toLinearMap.comp i₀
-  have hpi : p.comp i = LinearMap.id := by
-    apply LinearMap.ext
-    intro x
-    change p₀ (coord.symm (coord (i₀ x))) = x
-    rw [coord.symm_apply_apply]
-    exact DFunLike.congr_fun hp₀i₀ x
-  let e : Module.End Sᵐᵒᵖ (Fin n → S) := i.comp p
-  have he : e.comp e = e := by
-    apply LinearMap.ext
-    intro x
-    change i (p (i (p x))) = i (p x)
-    exact congrArg i (DFunLike.congr_fun hpi (p x))
-  let ER := Module.rightEndomorphismMatrixEquiv R (Fin n)
-  let ES := Module.rightEndomorphismMatrixEquiv S (Fin n)
-  let F : Matrix (Fin n) (Fin n) R →+* Matrix (Fin n) (Fin n) S :=
-    RingHom.mapMatrix f
-  have heMatrix : IsIdempotentElem (ES e) := by
-    change ES e * ES e = ES e
-    calc
-      ES e * ES e = ES (e.comp e) :=
-        (Module.rightEndomorphismMatrixEquiv_comp S (Fin n) e e).symm
-      _ = ES e := congrArg ES he
-  obtain ⟨A, hA, hFA⟩ := hlift n (ES e) heMatrix
-  let d : Module.End Rᵐᵒᵖ (Fin n → R) := ER.symm A
-  have hERd : ER d = A := ER.apply_symm_apply A
-  have hd : d.comp d = d := by
-    apply ER.injective
-    calc
-      ER (d.comp d) = ER d * ER d :=
-        Module.rightEndomorphismMatrixEquiv_comp R (Fin n) d d
-      _ = A * A := by simp only [hERd]
-      _ = A := hA.eq
-      _ = ER d := hERd.symm
-  have hds : Module.rightEndomorphismScalarExtension R (Fin n) f d = e := by
-    apply ES.injective
-    calc
-      ES (Module.rightEndomorphismScalarExtension R (Fin n) f d) = F (ER d) :=
-        (Module.rightEndomorphismMatrixEquiv_scalarExtension R (Fin n) f d).symm
-      _ = F A := congrArg F hERd
-      _ = ES e := hFA
-  let Q := LinearMap.range d
-  let j : Q →ₗ[Rᵐᵒᵖ] (Fin n → R) := Q.subtype
-  let r : (Fin n → R) →ₗ[Rᵐᵒᵖ] Q := d.rangeRestrict
-  have hjr : j.comp r = d := LinearMap.subtype_comp_rangeRestrict d
-  have hrj : r.comp j = LinearMap.id := by
-    apply LinearMap.ext
-    intro x
-    apply Subtype.ext
-    obtain ⟨z, hz⟩ := x.property
-    change d x.val = x.val
-    calc
-      d x.val = d (d z) := congrArg d hz.symm
-      _ = d z := DFunLike.congr_fun hd z
-      _ = x.val := hz
-  let : Module.Finite Rᵐᵒᵖ Q :=
-    Module.Finite.of_surjective r (LinearMap.surjective_rangeRestrict d)
-  let : Module.Projective Rᵐᵒᵖ Q := Module.Projective.of_split j r hrj
-  let c := ModuleCat.RightExtension.rightFreeLinearEquiv f (Fin n)
-  let J := ModuleCat.RightExtension.map f j
-  let B := ModuleCat.RightExtension.map f r
-  have hBJ : B.comp J = LinearMap.id := by
-    calc
-      B.comp J = ModuleCat.RightExtension.map f (r.comp j) :=
-        (ModuleCat.RightExtension.map_comp f j r).symm
-      _ = ModuleCat.RightExtension.map f LinearMap.id :=
-        congrArg (ModuleCat.RightExtension.map f) hrj
-      _ = LinearMap.id := ModuleCat.RightExtension.map_id f
-  have hJB : J.comp B = ModuleCat.RightExtension.map f d := by
-    calc
-      J.comp B = ModuleCat.RightExtension.map f (j.comp r) :=
-        (ModuleCat.RightExtension.map_comp f r j).symm
-      _ = ModuleCat.RightExtension.map f d :=
-        congrArg (ModuleCat.RightExtension.map f) hjr
-  have hconj :
-      c.toLinearMap.comp ((J.comp B).comp c.symm.toLinearMap) = e := by
-    rw [hJB]
-    exact (Module.rightEndomorphismScalarExtension_eq_tensor R (Fin n) f d).symm.trans hds
-  let alpha : ModuleCat.RightExtension.Obj f Q →ₗ[Sᵐᵒᵖ] M :=
-    p.comp (c.toLinearMap.comp J)
-  let beta : M →ₗ[Sᵐᵒᵖ] ModuleCat.RightExtension.Obj f Q :=
-    B.comp (c.symm.toLinearMap.comp i)
-  have hab : alpha.comp beta = LinearMap.id := by
-    apply LinearMap.ext
-    intro x
-    have hx : p (i x) = x := DFunLike.congr_fun hpi x
-    have hc : c (J (B (c.symm (i x)))) = i (p (i x)) :=
-      DFunLike.congr_fun hconj (i x)
-    change p (c (J (B (c.symm (i x))))) = x
-    exact (congrArg p hc).trans
-      ((congrArg (fun z ↦ p (i z)) hx).trans hx)
-  have hba : beta.comp alpha = LinearMap.id := by
-    apply LinearMap.ext
-    intro z
-    have hz : B (J z) = z := DFunLike.congr_fun hBJ z
-    have hfix : i (p (c (J z))) = c (J z) := by
-      have hh := DFunLike.congr_fun hconj (c (J z))
-      change c (J (B (c.symm (c (J z))))) = i (p (c (J z))) at hh
-      rw [c.symm_apply_apply, hz] at hh
-      exact hh.symm
-    change B (c.symm (i (p (c (J z))))) = z
-    calc
-      B (c.symm (i (p (c (J z))))) = B (c.symm (c (J z))) :=
-        congrArg (fun w ↦ B (c.symm w)) hfix
-      _ = B (J z) := congrArg B (c.symm_apply_apply (J z))
-      _ = z := hz
-  let equiv : ModuleCat.RightExtension.Obj f Q ≃ₗ[Sᵐᵒᵖ] M :=
-    LinearEquiv.ofLinearMap alpha beta hab hba
+  obtain ⟨n, E, hE, ⟨eM⟩⟩ :=
+    Module.Projective.exists_equiv_range_idempotent_matrix (R := S) (P := M)
+  obtain ⟨A, hA, hFA⟩ := hlift n E hE
+  let Q := LinearMap.range (Matrix.mulVecBilin R Rᵐᵒᵖ A)
+  have hQ : Module.Finite Rᵐᵒᵖ Q ∧ Module.Projective Rᵐᵒᵖ Q :=
+    (Module.finite_projective_iff_exists_equiv_range_idempotent_matrix
+      (R := R) (P := Q)).2 ⟨n, A, hA.eq, ⟨LinearEquiv.refl Rᵐᵒᵖ Q⟩⟩
+  let : Module.Finite Rᵐᵒᵖ Q := hQ.1
+  let : Module.Projective Rᵐᵒᵖ Q := hQ.2
+  have hmap : A.map f = E := by
+    simpa only [RingHom.mapMatrix_apply] using hFA
+  have eQ : ModuleCat.RightExtension.Obj f Q ≃ₗ[Sᵐᵒᵖ]
+      LinearMap.range (Matrix.mulVecBilin S Sᵐᵒᵖ E) := by
+    rw [← hmap]
+    exact ModuleCat.RightExtension.idempotentMatrixRangeLinearEquiv f A hA
   refine ⟨KTheory.ProjectiveClass.of R Q, ?_⟩
   exact (KTheory.ProjectiveClass.map_of f Q).trans
-    (KTheory.ProjectiveClass.of_eq_of_equiv S _ equiv)
+    (KTheory.ProjectiveClass.of_eq_of_equiv S _ (eQ.trans eM.symm))
 
 /-- Scalar extension sends the scalar-self regular right-module class to the
 scalar-self regular right-module class of the target ring. -/

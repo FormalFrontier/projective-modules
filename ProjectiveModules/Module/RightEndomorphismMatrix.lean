@@ -87,6 +87,23 @@ theorem rightEndomorphismMatrixEquiv_mulVec
   rw [hsingle, map_smul]
   rfl
 
+/-- The inverse matrix equivalence sends a matrix to its column-vector action. -/
+@[simp]
+theorem rightEndomorphismMatrixEquiv_symm_apply
+    (A : Matrix ι ι R) (x : ι → R) :
+    (rightEndomorphismMatrixEquiv R ι).symm A x = A *ᵥ x := by
+  simpa only [RingEquiv.apply_symm_apply] using
+    (rightEndomorphismMatrixEquiv_mulVec R ι
+      ((rightEndomorphismMatrixEquiv R ι).symm A) x).symm
+
+/-- The coefficient matrix of a matrix's column-vector action is the matrix itself. -/
+@[simp]
+theorem rightEndomorphismMatrixEquiv_mulVecBilin (A : Matrix ι ι R) :
+    rightEndomorphismMatrixEquiv R ι (Matrix.mulVecBilin R Rᵐᵒᵖ A) = A := by
+  ext i j
+  simp only [rightEndomorphismMatrixEquiv_apply, Matrix.mulVecBilin_apply,
+    Matrix.mulVec_single_one, Matrix.col_apply]
+
 /-- Composition of right-linear endomorphisms is represented by matrix
 multiplication in the same order. -/
 theorem rightEndomorphismMatrixEquiv_comp
@@ -543,6 +560,19 @@ theorem rightEndomorphismMatrixEquiv_scalarExtension
         (rightEndomorphismScalarExtension R ι f g) := by
   ext i j
   simp
+
+omit [DecidableEq ι] in
+/-- Scalar extension of a matrix's column-vector action applies the coefficient
+homomorphism to each matrix entry. -/
+theorem rightEndomorphismScalarExtension_mulVecBilin
+    {S : Type uS} [Semiring S] (f : R →+* S) (A : Matrix ι ι R) :
+    rightEndomorphismScalarExtension R ι f (Matrix.mulVecBilin R Rᵐᵒᵖ A) =
+      Matrix.mulVecBilin S Sᵐᵒᵖ (A.map f) := by
+  classical
+  apply (rightEndomorphismMatrixEquiv S ι).injective
+  simpa only [rightEndomorphismMatrixEquiv_mulVecBilin, RingHom.mapMatrix_apply] using
+    (rightEndomorphismMatrixEquiv_scalarExtension R ι f
+      (Matrix.mulVecBilin R Rᵐᵒᵖ A)).symm
 
 end SquareScalarExtension
 
