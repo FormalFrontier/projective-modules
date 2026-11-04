@@ -11,6 +11,7 @@ public import ProjectiveModules.KTheory.SemisimpleRegularClass
 public import ProjectiveModules.RingTheory.Ideal.Complemented
 public import ProjectiveModules.LinearAlgebra.Charpoly.Nilpotent
 public import ProjectiveModules.LinearAlgebra.Charpoly.DirectSum
+public import ProjectiveModules.LinearAlgebra.Matrix.IdempotentRanges
 public import ProjectiveModules.Module.Reduction
 public import ProjectiveModules.Module.ReductionSelf
 public import ProjectiveModules.Module.ReductionRange
