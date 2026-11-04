@@ -339,7 +339,7 @@ theorem existsUnique_matrixFamilyEquivOfRingEquiv (z : ι → ℤ) :
     (hx.trans ((matrixFamilyEquivOfRingEquiv D κ e).apply_symm_apply z).symm)
 
 /-- The completion square commutes in every chosen block coordinate. -/
-@[simp]
+@[simp↓]
 theorem matrixFamilyEquivOfRingEquiv_ofClass (a : ProjectiveClass R) (i : ι) :
     matrixFamilyEquivOfRingEquiv D κ e (ofClass R a) i =
       (ProjectiveClass.matrixFamilyEquivOfRingEquiv D κ e a i : ℤ) := by
@@ -362,7 +362,7 @@ theorem matrixFamilyBasisOfRingEquiv_apply [DecidableEq ι] (i : ι) :
   rfl
 
 /-- The transported basis vectors have the standard unit coordinates. -/
-@[simp]
+@[simp↓]
 theorem matrixFamilyEquivOfRingEquiv_basis [DecidableEq ι] (i : ι) :
     matrixFamilyEquivOfRingEquiv D κ e (matrixFamilyBasisOfRingEquiv D κ e i) =
       Pi.single i 1 := by

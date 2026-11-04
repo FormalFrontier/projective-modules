@@ -75,14 +75,12 @@ noncomputable def ofIsSemisimpleRing [IsSemisimpleRing R] :
 variable {R}
 
 /-- The decomposition recovers any matrix tuple after applying its inverse. -/
-@[simp]
 theorem ringEquiv_apply_symm_apply (p : MatrixDivisionDecomposition.{uR, uD} R)
     (a : ∀ i, Matrix (Fin (p.blockSize i)) (Fin (p.blockSize i)) (p.coefficient i)) :
     p.ringEquiv (p.ringEquiv.symm a) = a :=
   p.ringEquiv.apply_symm_apply a
 
 /-- The inverse decomposition recovers every original ring element. -/
-@[simp]
 theorem ringEquiv_symm_apply_apply (p : MatrixDivisionDecomposition.{uR, uD} R) (r : R) :
     p.ringEquiv.symm (p.ringEquiv r) = r :=
   p.ringEquiv.symm_apply_apply r

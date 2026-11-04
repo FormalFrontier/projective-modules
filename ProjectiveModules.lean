@@ -6,6 +6,8 @@ Authors: Formal Frontier Agents
 -- Contributors: Prism
 module
 
+public import ProjectiveModules.KTheory.SemisimpleRegularClass
+
 public import ProjectiveModules.LinearAlgebra.Charpoly.Nilpotent
 public import ProjectiveModules.LinearAlgebra.Charpoly.DirectSum
 public import ProjectiveModules.Module.Reduction

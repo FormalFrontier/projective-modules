@@ -233,7 +233,7 @@ theorem existsUnique_matrixFamilyEquiv (n : ι → ℕ) :
 
 /-- The regular right module has one coordinate for each row of each block.
 -/
-@[simp]
+@[simp↓]
 theorem matrixFamilyEquiv_regular (i : ι) :
     matrixFamilyEquiv D κ
         (of (∀ j, Matrix (κ j) (κ j) (D j))
@@ -342,7 +342,7 @@ theorem existsUnique_matrixFamilyEquiv (z : ι → ℤ) :
     (hx.trans ((matrixFamilyEquiv D κ).apply_symm_apply z).symm)
 
 /-- Group completion sends natural block coordinates to their integer casts. -/
-@[simp]
+@[simp↓]
 theorem matrixFamilyEquiv_ofClass
     (a : ProjectiveClass (∀ i, Matrix (κ i) (κ i) (D i))) (i : ι) :
     matrixFamilyEquiv D κ
@@ -353,7 +353,7 @@ theorem matrixFamilyEquiv_ofClass
 
 /-- The regular right-module generator has integer coordinates equal to the
 sizes of its matrix blocks. -/
-@[simp]
+@[simp↓]
 theorem matrixFamilyEquiv_regular (i : ι) :
     matrixFamilyEquiv D κ
         (of (∀ j, Matrix (κ j) (κ j) (D j))
