@@ -704,17 +704,10 @@ check after the cache fetch is `lake build ProjectiveModules` or
 `lake build ProjectiveModulesTests`. The test target includes intentionally
 private importing clients for finite-projective modules and right-extension
 comparison coherence, which can report a `privateModule` warning. These
-ordinary commands do not make warnings fatal. The root resolves
-mathlib `83abb3e776bdefcbc447a1e44d0debe4010039e5`, GLG
-`c9705889a85f85cc89d92d21372bb9bc360162c8` and Stable Range
-[`c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e`](https://github.com/FormalFrontier/stable-range/commit/c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e),
-with Group Theory
-[`f9e80eca0e80eb54da0d0448ce199edd3b6984bc`](https://github.com/FormalFrontier/group-theory/commit/f9e80eca0e80eb54da0d0448ce199edd3b6984bc)
-and Homological Algebra
-[`1ecd25213926138278dbd661bd516de9135d944a`](https://github.com/FormalFrontier/homological-algebra/commit/1ecd25213926138278dbd661bd516de9135d944a).
-These four libraries declare the same mathlib revision and Lean `4.34.0-rc2`
-toolchain as this root.
-Dependencies are not vendored.
+ordinary commands do not make warnings fatal. Exact dependency revisions and
+explicit overrides are recorded in [lakefile.toml](lakefile.toml) and the resolved
+[lake-manifest.json](lake-manifest.json); the compiler version is recorded in
+[lean-toolchain](lean-toolchain). Dependencies are not vendored.
 
 ## Documentation limits
 
