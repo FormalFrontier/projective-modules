@@ -923,3 +923,12 @@ says that, over any ring, an endomorphism `T` of a projective module whose image
 is finitely generated and contained in `J(R)M` has invertible complement `1 - T`.
 The given module need not be finitely generated, and the ring need not be
 commutative.
+
+
+## Continuous-linear lift spaces
+
+For a split continuous-linear map over a semiring,
+`ContinuousLinearMap.liftsEquivKerOfRightInverse` parametrizes all continuous-linear
+lifts of a fixed map by continuous-linear maps into its kernel. The construction
+retains the original kernel module and subspace topology. It also gives a unique
+kernel-valued parameter for every continuous-linear right inverse.
