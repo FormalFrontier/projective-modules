@@ -1153,6 +1153,39 @@ theorem eq_iff_prod_map_eq (z w : K0 (R × S)) :
 
 end Prod
 
+/-- The finite-product decomposition of `K0` commutes with scalar extension along arbitrary
+componentwise ring homomorphisms. -/
+theorem piEquiv_map_pi {ι : Type uι} [Finite ι]
+    (Ri : ι → Type uR) (Si : ι → Type uS)
+    [∀ i, Ring (Ri i)] [∀ i, Ring (Si i)]
+    (f : ∀ i, Ri i →+* Si i) (z : K0 (∀ i, Ri i)) :
+    piEquiv Si (map (RingHom.pi (fun i => (f i).comp (Pi.evalRingHom Ri i))) z) =
+      fun i => map (f i) (piEquiv Ri z i) := by
+  funext i
+  rw [piEquiv_apply, piEquiv_apply]
+  have eval_comp :
+      (Pi.evalRingHom Si i).comp
+          (RingHom.pi (fun j => (f j).comp (Pi.evalRingHom Ri j))) =
+        (f i).comp (Pi.evalRingHom Ri i) :=
+    RingHom.ext (fun _ => rfl)
+  exact
+    congrArg (fun g : K0 (∀ j, Ri j) →+ K0 (Si i) => g z)
+      ((map_comp
+          (RingHom.pi (fun j => (f j).comp (Pi.evalRingHom Ri j)))
+          (Pi.evalRingHom Si i)).symm.trans
+        ((congrArg map eval_comp).trans
+          (map_comp (Pi.evalRingHom Ri i) (f i))))
+
+/-- The coordinate form of `piEquiv_map_pi`, expressing compatibility of each component of the
+finite-product decomposition with scalar extension. -/
+theorem piEquiv_map_pi_apply {ι : Type uι} [Finite ι]
+    (Ri : ι → Type uR) (Si : ι → Type uS)
+    [∀ i, Ring (Ri i)] [∀ i, Ring (Si i)]
+    (f : ∀ i, Ri i →+* Si i) (z : K0 (∀ i, Ri i)) (i : ι) :
+    piEquiv Si (map (RingHom.pi (fun j => (f j).comp (Pi.evalRingHom Ri j))) z) i =
+      map (f i) (piEquiv Ri z i) :=
+  congrFun (piEquiv_map_pi Ri Si f z) i
+
 end K0
 
 end KTheory
