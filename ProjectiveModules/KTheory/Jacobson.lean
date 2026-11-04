@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import ProjectiveModules.KTheory.FiniteFree
 public import ProjectiveModules.Module.RightExtensionReflection
 
@@ -73,6 +74,16 @@ theorem map_injective_of_surjective_of_ker_le_jacobson
     Function.Injective (map f) := by
   exact map_injective f
     (ProjectiveClass.map_injective_of_surjective_of_ker_le_jacobson f hf hJac)
+
+/-- Reduction modulo the Jacobson radical induces an injective map on `K₀`.
+
+This is the canonical radical-quotient case of the reduction injectivity in Weibel,
+*The K-book*, II, Exercise 2.5.
+-/
+theorem map_quotient_jacobson_injective :
+    Function.Injective (map (Ideal.Quotient.mk (Ideal.jacobson (⊥ : Ideal R)))) := by
+  apply map_injective_of_surjective_of_ker_le_jacobson _ Ideal.Quotient.mk_surjective
+  simp only [Ideal.mk_ker, le_refl]
 
 end K0
 
