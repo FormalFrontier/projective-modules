@@ -26,6 +26,20 @@ Maintained by the Formal Frontier source-maintainer team.
   comparison allows an arbitrary family in the other variable. Empty matrices and
   zero determinants are included.
 
+- **Normalized pairing regulators.** For finitely generated abelian groups of equal
+  integer-module rank and a real-valued integer-bilinear pairing,
+  [`LinearMap.pairingRegulator`](ProjectiveModules/Pairing/Regulator/Basic.lean)
+  is the absolute determinant on independent full frames divided by the product of
+  their spans' indices in the original groups, including torsion. Frame invariance
+  and arbitrary-frame evaluation require neither freeness of the original groups
+  nor nondegeneracy; zero determinants and rank zero are included. Evaluation on
+  [subgroup bases](ProjectiveModules/Pairing/Regulator/Subgroup.lean) uses their
+  whole-group indices, while [lifts of bases modulo torsion](ProjectiveModules/Pairing/Regulator/Torsion.lean)
+  use the two torsion cardinalities. At rank zero the regulator is the reciprocal
+  of the product of the original group cardinalities. The definition and
+  nonnegativity do not require finite generation; infinite indices are represented
+  by zero.
+
 - **Nilpotence from characteristic polynomials.** For a finite projective module
   over any commutative ring,
   [`Module.isNilpotent_of_isNilpotent_charpoly_sub_charpoly_zero`](ProjectiveModules/LinearAlgebra/Charpoly/CayleyHamilton/Nilpotent.lean)
@@ -557,6 +571,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Finsupp–Hom comparison](ProjectiveModules/LinearMap/Finsupp.lean) | Coordinatewise comparison from finitely supported families of semilinear maps to semilinear maps with finitely supported values: always injective and bijective for a finitely generated source, over arbitrary semirings with commuting auxiliary scalar actions, arbitrary index type and independent universes |
 | [Linear-map modules](ProjectiveModules/Free/LinearMap.lean) | Finite free semiring source and commuting target actions; independent freeness and finiteness conclusions for Hom over the outer semiring, with independent universes and chosen-basis inverse factorization |
 | [Algebra-valued pairing matrices](ProjectiveModules/Free/BilinearMatrix.lean), [subgroup-index comparison](ProjectiveModules/Free/BilinearIndex.lean) | Finite-basis composition over a commutative semiring with noncommutative target algebras; relative-index scaling of absolute Gram determinants for integer-bilinear pairings into linearly ordered commutative rings |
+| [Pairing regulators](ProjectiveModules/Pairing/Regulator/Basic.lean), [torsion quotients](ProjectiveModules/Pairing/Regulator/Torsion.lean), [subgroup bases](ProjectiveModules/Pairing/Regulator/Subgroup.lean) | `LinearMap.pairingRegulator`: frame-invariant absolute determinants normalized by whole-group indices for equal-rank finitely generated abelian groups; arbitrary-frame, lifted torsion-quotient basis and subgroup-basis evaluation, including zero determinants and rank zero |
 | [Free-word semirings](ProjectiveModules/Free/FreeWordAlgebra.lean) | Rank-two to rank-one left-linear injection by distinct right suffixes and strong-rank obstruction; arbitrary semiring coefficients and alphabet |
 | [Free-word augmentation](ProjectiveModules/Free/FreeWordAugmentation.lean), [augmentation kernel](ProjectiveModules/Free/FreeWordAugmentationKernel.lean) | Zero-generator homomorphism returns the empty-word coefficient; full-letter left-linear combination has range equal to its canonical semilinear kernel, for arbitrary semiring coefficients and independent alphabet universe |
 | [Fixed-simple multiplicity](ProjectiveModules/Module/IsotypicMultiplicity.lean) | Hom-dimension cardinal of a semisimple isotypic module, direct-sum cardinal statements and invariance under compatible linear or chosen-ring semilinear equivalences, with universe lifts |
@@ -668,7 +683,7 @@ mathlib `83abb3e776bdefcbc447a1e44d0debe4010039e5`, GLG
 `c9705889a85f85cc89d92d21372bb9bc360162c8` and Stable Range
 [`c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e`](https://github.com/FormalFrontier/stable-range/commit/c283b01ed9ebc33c7eefcdb4f3d2ca45141f469e),
 with Group Theory
-[`3b3810d5235d21c55ab65664618a4bd2d0df9be9`](https://github.com/FormalFrontier/group-theory/commit/3b3810d5235d21c55ab65664618a4bd2d0df9be9)
+[`f9e80eca0e80eb54da0d0448ce199edd3b6984bc`](https://github.com/FormalFrontier/group-theory/commit/f9e80eca0e80eb54da0d0448ce199edd3b6984bc)
 and Homological Algebra
 [`1ecd25213926138278dbd661bd516de9135d944a`](https://github.com/FormalFrontier/homological-algebra/commit/1ecd25213926138278dbd661bd516de9135d944a).
 These four libraries declare the same mathlib revision and Lean `4.34.0-rc2`
