@@ -265,6 +265,7 @@ public import ProjectiveModules.KTheory.ExteriorPowerSeriesInvertible
 public import ProjectiveModules.LinearAlgebra.Matrix.IdempotentRangeHomMap
 
 public import ProjectiveModules.LinearAlgebra.Matrix.IdempotentRangeHomDirectLimit
+public import ProjectiveModules.LinearAlgebra.Matrix.IdempotentRangeEquivDirectLimit
 
 /-!
 # Projective module interfaces

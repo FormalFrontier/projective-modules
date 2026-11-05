@@ -191,6 +191,106 @@ theorem rangeHomMap_comp (φ : R →+* S) {C : Matrix ν ν R}
       (rangeHomMap φ hA hB g) (rangeHomMap φ hB hC h),
     Matrix.map_mul, rangeHomEquiv_rangeHomMap]
 
+/-- Canonical coefficient change of a linear equivalence between idempotent
+column ranges, using coefficient change of its forward and inverse maps. -/
+noncomputable def rangeEquivMap (φ : R →+* S)
+    (hA : IsIdempotentElem A) (hB : IsIdempotentElem B)
+    (e : (mulVecBilin R Rᵐᵒᵖ A).range ≃ₗ[Rᵐᵒᵖ]
+      (mulVecBilin R Rᵐᵒᵖ B).range) :
+    (mulVecBilin S Sᵐᵒᵖ (A.map φ)).range ≃ₗ[Sᵐᵒᵖ]
+      (mulVecBilin S Sᵐᵒᵖ (B.map φ)).range := by
+  let g := rangeHomMap φ hA hB e.toLinearMap
+  let h := rangeHomMap φ hB hA e.symm.toLinearMap
+  have hSource : e.symm.toLinearMap.comp e.toLinearMap =
+      (LinearMap.id : (mulVecBilin R Rᵐᵒᵖ A).range →ₗ[Rᵐᵒᵖ]
+        (mulVecBilin R Rᵐᵒᵖ A).range) := by
+    apply LinearMap.ext
+    intro x
+    exact e.symm_apply_apply x
+  have hTarget : e.toLinearMap.comp e.symm.toLinearMap =
+      (LinearMap.id : (mulVecBilin R Rᵐᵒᵖ B).range →ₗ[Rᵐᵒᵖ]
+        (mulVecBilin R Rᵐᵒᵖ B).range) := by
+    apply LinearMap.ext
+    intro x
+    exact e.apply_symm_apply x
+  have hgf : h.comp g = LinearMap.id := by
+    exact (rangeHomMap_comp φ hA hB hA
+      e.toLinearMap e.symm.toLinearMap).symm.trans
+        ((congrArg (rangeHomMap φ hA hA) hSource).trans
+          (rangeHomMap_id φ hA))
+  have hfg : g.comp h = LinearMap.id := by
+    exact (rangeHomMap_comp φ hB hA hB
+      e.symm.toLinearMap e.toLinearMap).symm.trans
+        ((congrArg (rangeHomMap φ hB hB) hTarget).trans
+          (rangeHomMap_id φ hB))
+  exact LinearEquiv.ofLinearMap g h hfg hgf
+
+/-- The forward map of canonical coefficient change is the existing range-Hom
+coefficient change of the forward map. -/
+theorem rangeEquivMap_toLinearMap (φ : R →+* S)
+    (hA : IsIdempotentElem A) (hB : IsIdempotentElem B)
+    (e : (mulVecBilin R Rᵐᵒᵖ A).range ≃ₗ[Rᵐᵒᵖ]
+      (mulVecBilin R Rᵐᵒᵖ B).range) :
+    (rangeEquivMap φ hA hB e).toLinearMap =
+      rangeHomMap φ hA hB e.toLinearMap := by
+  rfl
+
+/-- The inverse map of canonical coefficient change is the existing range-Hom
+coefficient change of the inverse map. -/
+theorem rangeEquivMap_symm_toLinearMap (φ : R →+* S)
+    (hA : IsIdempotentElem A) (hB : IsIdempotentElem B)
+    (e : (mulVecBilin R Rᵐᵒᵖ A).range ≃ₗ[Rᵐᵒᵖ]
+      (mulVecBilin R Rᵐᵒᵖ B).range) :
+    (rangeEquivMap φ hA hB e).symm.toLinearMap =
+      rangeHomMap φ hB hA e.symm.toLinearMap := by
+  rfl
+
+/-- Canonical coefficient change evaluates on a coefficient-changed projected
+column by applying the coefficient map to its original image. -/
+theorem rangeEquivMap_apply_projected (φ : R →+* S)
+    (hA : IsIdempotentElem A) (hB : IsIdempotentElem B)
+    (e : (mulVecBilin R Rᵐᵒᵖ A).range ≃ₗ[Rᵐᵒᵖ]
+      (mulVecBilin R Rᵐᵒᵖ B).range) (x : ι → R) :
+    ((rangeEquivMap φ hA hB e)
+      ((mulVecBilin S Sᵐᵒᵖ (A.map φ)).rangeRestrict
+        (fun j ↦ φ (x j))) : κ → S) =
+      fun k ↦ φ ((e ((mulVecBilin R Rᵐᵒᵖ A).rangeRestrict x) :
+        κ → R) k) := by
+  change (((rangeEquivMap φ hA hB e).toLinearMap)
+    ((mulVecBilin S Sᵐᵒᵖ (A.map φ)).rangeRestrict
+      (fun j ↦ φ (x j))) : κ → S) = _
+  rw [rangeEquivMap_toLinearMap]
+  exact rangeHomMap_apply_projected φ hA hB e.toLinearMap x
+
+/-- Canonical coefficient change preserves the identity range equivalence. -/
+theorem rangeEquivMap_refl (φ : R →+* S) (hA : IsIdempotentElem A) :
+    rangeEquivMap φ hA hA
+      (LinearEquiv.refl Rᵐᵒᵖ ((mulVecBilin R Rᵐᵒᵖ A).range)) =
+      LinearEquiv.refl Sᵐᵒᵖ
+        ((mulVecBilin S Sᵐᵒᵖ (A.map φ)).range) := by
+  apply LinearEquiv.toLinearMap_injective
+  rw [rangeEquivMap_toLinearMap]
+  exact rangeHomMap_id φ hA
+
+/-- Canonical coefficient change preserves composition of range equivalences. -/
+theorem rangeEquivMap_trans (φ : R →+* S) {C : Matrix ν ν R}
+    (hA : IsIdempotentElem A) (hB : IsIdempotentElem B)
+    (hC : IsIdempotentElem C)
+    (e : (mulVecBilin R Rᵐᵒᵖ A).range ≃ₗ[Rᵐᵒᵖ]
+      (mulVecBilin R Rᵐᵒᵖ B).range)
+    (d : (mulVecBilin R Rᵐᵒᵖ B).range ≃ₗ[Rᵐᵒᵖ]
+      (mulVecBilin R Rᵐᵒᵖ C).range) :
+    rangeEquivMap φ hA hC (e.trans d) =
+      (rangeEquivMap φ hA hB e).trans (rangeEquivMap φ hB hC d) := by
+  apply LinearEquiv.toLinearMap_injective
+  change (rangeEquivMap φ hA hC (e.trans d)).toLinearMap =
+    (rangeEquivMap φ hB hC d).toLinearMap.comp
+      (rangeEquivMap φ hA hB e).toLinearMap
+  rw [rangeEquivMap_toLinearMap, rangeEquivMap_toLinearMap,
+    rangeEquivMap_toLinearMap]
+  exact rangeHomMap_comp φ hA hB hC e.toLinearMap d.toLinearMap
+
+
 end Semiring
 
 section RingComparison

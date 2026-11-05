@@ -19,7 +19,7 @@ codomains in the original homomorphism spaces.
 
 @[expose] public section
 
-universe uI uR uF uι uκ
+universe uI uR uF uι uκ uν
 
 namespace DirectLimit
 section DirectedRangeHom
@@ -197,6 +197,198 @@ theorem rangeHomEquiv_rangeHomToLimit
       hAφ hBφ hAL hBL eA eB (Matrix.rangeHomMap φ hAk hBk g)).trans
       (congrArg Subtype.val
         (Matrix.rangeHomEquiv_rangeHomMap φ hAk hBk hAφ hBφ g))
+
+omit [IsDirectedOrder I] [Nonempty I] in
+/-- Coefficient transition preserves the identity of a represented range. -/
+theorem rangeHomTransition_map_id
+    (i : I) (A : Matrix ι ι (R i))
+    (k m : I) (hik : i ≤ k) (him : i ≤ m) (hkm : k ≤ m)
+    (hAk : IsIdempotentElem (A.map (f i k hik : R i →+* R k))) :
+    rangeHomTransition R f i i A A k m hik hik him him hkm hAk hAk
+      (LinearMap.id :
+        (Matrix.mulVecBilin (R k) (R k)ᵐᵒᵖ
+          (A.map (f i k hik : R i →+* R k))).range →ₗ[(R k)ᵐᵒᵖ]
+        (Matrix.mulVecBilin (R k) (R k)ᵐᵒᵖ
+          (A.map (f i k hik : R i →+* R k))).range) =
+      (LinearMap.id :
+        (Matrix.mulVecBilin (R m) (R m)ᵐᵒᵖ
+          (A.map (f i m him : R i →+* R m))).range →ₗ[(R m)ᵐᵒᵖ]
+        (Matrix.mulVecBilin (R m) (R m)ᵐᵒᵖ
+          (A.map (f i m him : R i →+* R m))).range) := by
+  classical
+  have eA :
+      (A.map (f i k hik : R i →+* R k)).map (f k m hkm : R k →+* R m) =
+        A.map (f i m him : R i →+* R m) := by
+    ext p q
+    change f k m hkm (f i k hik (A p q)) = f i m him (A p q)
+    exact DirectedSystem.map_map' f hik hkm (A p q)
+  have hAm : IsIdempotentElem (A.map (f i m him : R i →+* R m)) := by
+    rw [← eA]
+    exact hAk.map ((f k m hkm : R k →+* R m).mapMatrix)
+  apply (Matrix.rangeHomEquiv hAm hAm).injective
+  apply Subtype.ext
+  rw [rangeHomEquiv_rangeHomTransition R f i i A A k m
+    hik hik him him hkm hAk hAk hAm hAm,
+    Matrix.coe_rangeHomEquiv_id, Matrix.coe_rangeHomEquiv_id]
+  exact eA
+
+omit [IsDirectedOrder I] [Nonempty I] in
+/-- Coefficient transition preserves composition at one common source stage. -/
+theorem rangeHomTransition_map_comp
+    {ν : Type uν} [Fintype ν]
+    (i j l : I) (A : Matrix ι ι (R i)) (B : Matrix κ κ (R j))
+    (C : Matrix ν ν (R l)) (k m : I)
+    (hik : i ≤ k) (hjk : j ≤ k) (hlk : l ≤ k)
+    (him : i ≤ m) (hjm : j ≤ m) (hlm : l ≤ m) (hkm : k ≤ m)
+    (hAk : IsIdempotentElem (A.map (f i k hik : R i →+* R k)))
+    (hBk : IsIdempotentElem (B.map (f j k hjk : R j →+* R k)))
+    (hCk : IsIdempotentElem (C.map (f l k hlk : R l →+* R k)))
+    (g : (Matrix.mulVecBilin (R k) (R k)ᵐᵒᵖ
+        (A.map (f i k hik : R i →+* R k))).range →ₗ[(R k)ᵐᵒᵖ]
+      (Matrix.mulVecBilin (R k) (R k)ᵐᵒᵖ
+        (B.map (f j k hjk : R j →+* R k))).range)
+    (h : (Matrix.mulVecBilin (R k) (R k)ᵐᵒᵖ
+        (B.map (f j k hjk : R j →+* R k))).range →ₗ[(R k)ᵐᵒᵖ]
+      (Matrix.mulVecBilin (R k) (R k)ᵐᵒᵖ
+        (C.map (f l k hlk : R l →+* R k))).range) :
+    rangeHomTransition R f i l A C k m hik hlk him hlm hkm hAk hCk (h.comp g) =
+      (rangeHomTransition R f j l B C k m hjk hlk hjm hlm hkm hBk hCk h).comp
+        (rangeHomTransition R f i j A B k m hik hjk him hjm hkm hAk hBk g) := by
+  classical
+  have eA :
+      (A.map (f i k hik : R i →+* R k)).map (f k m hkm : R k →+* R m) =
+        A.map (f i m him : R i →+* R m) := by
+    ext p q
+    change f k m hkm (f i k hik (A p q)) = f i m him (A p q)
+    exact DirectedSystem.map_map' f hik hkm (A p q)
+  have eB :
+      (B.map (f j k hjk : R j →+* R k)).map (f k m hkm : R k →+* R m) =
+        B.map (f j m hjm : R j →+* R m) := by
+    ext p q
+    change f k m hkm (f j k hjk (B p q)) = f j m hjm (B p q)
+    exact DirectedSystem.map_map' f hjk hkm (B p q)
+  have eC :
+      (C.map (f l k hlk : R l →+* R k)).map (f k m hkm : R k →+* R m) =
+        C.map (f l m hlm : R l →+* R m) := by
+    ext p q
+    change f k m hkm (f l k hlk (C p q)) = f l m hlm (C p q)
+    exact DirectedSystem.map_map' f hlk hkm (C p q)
+  have hAm : IsIdempotentElem (A.map (f i m him : R i →+* R m)) := by
+    rw [← eA]
+    exact hAk.map ((f k m hkm : R k →+* R m).mapMatrix)
+  have hBm : IsIdempotentElem (B.map (f j m hjm : R j →+* R m)) := by
+    rw [← eB]
+    exact hBk.map ((f k m hkm : R k →+* R m).mapMatrix)
+  have hCm : IsIdempotentElem (C.map (f l m hlm : R l →+* R m)) := by
+    rw [← eC]
+    exact hCk.map ((f k m hkm : R k →+* R m).mapMatrix)
+  apply (Matrix.rangeHomEquiv hAm hCm).injective
+  apply Subtype.ext
+  rw [rangeHomEquiv_rangeHomTransition R f i l A C k m
+      hik hlk him hlm hkm hAk hCk hAm hCm,
+    Matrix.coe_rangeHomEquiv_comp hAk hBk hCk,
+    Matrix.coe_rangeHomEquiv_comp hAm hBm hCm,
+    rangeHomEquiv_rangeHomTransition R f j l B C k m
+      hjk hlk hjm hlm hkm hBk hCk hBm hCm,
+    rangeHomEquiv_rangeHomTransition R f i j A B k m
+      hik hjk him hjm hkm hAk hBk hAm hBm,
+    Matrix.map_mul]
+
+/-- Passage to the limit preserves the identity of a represented range. -/
+theorem rangeHomToLimit_map_id
+    (i : I) (A : Matrix ι ι (R i)) (k : I) (hik : i ≤ k)
+    (hAk : IsIdempotentElem (A.map (f i k hik : R i →+* R k))) :
+    rangeHomToLimit R f i i A A k hik hik hAk hAk
+      (LinearMap.id :
+        (Matrix.mulVecBilin (R k) (R k)ᵐᵒᵖ
+          (A.map (f i k hik : R i →+* R k))).range →ₗ[(R k)ᵐᵒᵖ]
+        (Matrix.mulVecBilin (R k) (R k)ᵐᵒᵖ
+          (A.map (f i k hik : R i →+* R k))).range) =
+      (LinearMap.id :
+        (Matrix.mulVecBilin (DirectLimit R f) (DirectLimit R f)ᵐᵒᵖ
+          (A.map (DirectLimit.Ring.of R f i))).range →ₗ[(DirectLimit R f)ᵐᵒᵖ]
+        (Matrix.mulVecBilin (DirectLimit R f) (DirectLimit R f)ᵐᵒᵖ
+          (A.map (DirectLimit.Ring.of R f i))).range) := by
+  classical
+  have eA :
+      (A.map (f i k hik : R i →+* R k)).map (DirectLimit.Ring.of R f k) =
+        A.map (DirectLimit.Ring.of R f i) := by
+    ext p q
+    change (DirectLimit.Ring.of R f k) (f i k hik (A p q)) =
+      (DirectLimit.Ring.of R f i) (A p q)
+    simp only [DirectLimit.Ring.of_f]
+  have hAL : IsIdempotentElem (A.map (DirectLimit.Ring.of R f i)) := by
+    rw [← eA]
+    exact hAk.map ((DirectLimit.Ring.of R f k).mapMatrix)
+  apply (Matrix.rangeHomEquiv hAL hAL).injective
+  apply Subtype.ext
+  rw [rangeHomEquiv_rangeHomToLimit R f i i A A k
+    hik hik hAk hAk hAL hAL,
+    Matrix.coe_rangeHomEquiv_id, Matrix.coe_rangeHomEquiv_id]
+  exact eA
+
+/-- Passage to the limit preserves composition at one common source stage. -/
+theorem rangeHomToLimit_map_comp
+    {ν : Type uν} [Fintype ν]
+    (i j l : I) (A : Matrix ι ι (R i)) (B : Matrix κ κ (R j))
+    (C : Matrix ν ν (R l)) (k : I)
+    (hik : i ≤ k) (hjk : j ≤ k) (hlk : l ≤ k)
+    (hAk : IsIdempotentElem (A.map (f i k hik : R i →+* R k)))
+    (hBk : IsIdempotentElem (B.map (f j k hjk : R j →+* R k)))
+    (hCk : IsIdempotentElem (C.map (f l k hlk : R l →+* R k)))
+    (g : (Matrix.mulVecBilin (R k) (R k)ᵐᵒᵖ
+        (A.map (f i k hik : R i →+* R k))).range →ₗ[(R k)ᵐᵒᵖ]
+      (Matrix.mulVecBilin (R k) (R k)ᵐᵒᵖ
+        (B.map (f j k hjk : R j →+* R k))).range)
+    (h : (Matrix.mulVecBilin (R k) (R k)ᵐᵒᵖ
+        (B.map (f j k hjk : R j →+* R k))).range →ₗ[(R k)ᵐᵒᵖ]
+      (Matrix.mulVecBilin (R k) (R k)ᵐᵒᵖ
+        (C.map (f l k hlk : R l →+* R k))).range) :
+    rangeHomToLimit R f i l A C k hik hlk hAk hCk (h.comp g) =
+      (rangeHomToLimit R f j l B C k hjk hlk hBk hCk h).comp
+        (rangeHomToLimit R f i j A B k hik hjk hAk hBk g) := by
+  classical
+  have eA :
+      (A.map (f i k hik : R i →+* R k)).map (DirectLimit.Ring.of R f k) =
+        A.map (DirectLimit.Ring.of R f i) := by
+    ext p q
+    change (DirectLimit.Ring.of R f k) (f i k hik (A p q)) =
+      (DirectLimit.Ring.of R f i) (A p q)
+    simp only [DirectLimit.Ring.of_f]
+  have eB :
+      (B.map (f j k hjk : R j →+* R k)).map (DirectLimit.Ring.of R f k) =
+        B.map (DirectLimit.Ring.of R f j) := by
+    ext p q
+    change (DirectLimit.Ring.of R f k) (f j k hjk (B p q)) =
+      (DirectLimit.Ring.of R f j) (B p q)
+    simp only [DirectLimit.Ring.of_f]
+  have eC :
+      (C.map (f l k hlk : R l →+* R k)).map (DirectLimit.Ring.of R f k) =
+        C.map (DirectLimit.Ring.of R f l) := by
+    ext p q
+    change (DirectLimit.Ring.of R f k) (f l k hlk (C p q)) =
+      (DirectLimit.Ring.of R f l) (C p q)
+    simp only [DirectLimit.Ring.of_f]
+  have hAL : IsIdempotentElem (A.map (DirectLimit.Ring.of R f i)) := by
+    rw [← eA]
+    exact hAk.map ((DirectLimit.Ring.of R f k).mapMatrix)
+  have hBL : IsIdempotentElem (B.map (DirectLimit.Ring.of R f j)) := by
+    rw [← eB]
+    exact hBk.map ((DirectLimit.Ring.of R f k).mapMatrix)
+  have hCL : IsIdempotentElem (C.map (DirectLimit.Ring.of R f l)) := by
+    rw [← eC]
+    exact hCk.map ((DirectLimit.Ring.of R f k).mapMatrix)
+  apply (Matrix.rangeHomEquiv hAL hCL).injective
+  apply Subtype.ext
+  rw [rangeHomEquiv_rangeHomToLimit R f i l A C k
+      hik hlk hAk hCk hAL hCL,
+    Matrix.coe_rangeHomEquiv_comp hAk hBk hCk,
+    Matrix.coe_rangeHomEquiv_comp hAL hBL hCL,
+    rangeHomEquiv_rangeHomToLimit R f j l B C k
+      hjk hlk hBk hCk hBL hCL,
+    rangeHomEquiv_rangeHomToLimit R f i j A B k
+      hik hjk hAk hBk hAL hBL,
+    Matrix.map_mul]
 
 omit [IsDirectedOrder I] [Nonempty I] in
 /-- The canonical transition at one stage is the identity additive map. -/
