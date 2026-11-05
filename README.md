@@ -7,6 +7,14 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **[Projective-class continuity along directed limits](ProjectiveModules/KTheory/DirectLimit.lean).**
+  For a nonempty directed system of arbitrary unital rings, two finite-projective
+  right-module classes from prescribed stages have equal canonical scalar extensions
+  exactly when their original transition images agree at one common upper stage.
+  Every class over the limit comes from some stage. Transition maps need not be
+  injective, and index and coefficient universes are independent. These are
+  isomorphism classes before group completion, not K₀.
+
 - **[Multiplicative opposite-ring duality](ProjectiveModules/KTheory/DualRing.lean).**
   For every commutative ring `R`, including zero rings, canonical duality gives
   a semiring equivalence of finite-projective right-module classes over `R` and
@@ -698,6 +706,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Matrix classes and K₀](ProjectiveModules/KTheory/Matrix.lean) | Canonical additive equivalences for arbitrary rings and finite nonempty decidable indices; arbitrary-carrier right-row generators, supported inverse corners, index/height independence and completion compatibility |
 | [Semisimple coordinates and simple rows](ProjectiveModules/KTheory/SemisimpleEquivalence.lean) | `KTheory.matrixBlockModuleOfRingEquiv` restricts supported right rows along a chosen finite matrix decomposition; simple-module classification at arbitrary carrier universes, coefficient endomorphism rings, natural class coordinates, integer K₀ basis and block-size regular coordinates; `IsSemisimpleRing.matrixDivisionDecomposition_simple_basis` uses a decomposition chosen from Mathlib's Wedderburn–Artin theorem, including the empty outer family |
 | [K₀ scalar extension](ProjectiveModules/KTheory/ScalarExtension.lean) | Additive change-of-rings maps with arbitrary-carrier evaluation and whole-map identity/composition laws; independence of the homomorphism for division-ring sources and arbitrary ring targets |
+| [Directed-limit projective classes](ProjectiveModules/KTheory/DirectLimit.lean) | Equality of original canonical scalar-extension images iff the original transition images agree at one common upper stage, and joint surjectivity of stage-class maps; arbitrary unital rings, noninjective transitions and independent index/coefficient universes, before group completion |
 | [Scalar retractions](ProjectiveModules/KTheory/Retraction.lean) | Split ring maps induce left inverses on projective classes and additive K₀; polynomial constant inclusions induce injective maps over arbitrary rings |
 | [Uniform rank bounds](ProjectiveModules/KTheory/RankBound.lean) | One absolute integer-rank bound for each K₀ element along any indexed unital maps from an arbitrary ring to division rings; non-surjectivity of the comparison for infinite products of division rings |
 | [K₀ dimension](ProjectiveModules/KTheory/Rank.lean), [zero rings](ProjectiveModules/KTheory/ZeroRing.lean) | Dimension classifications of projective classes by ℕ and K₀ by ℤ over division rings, and bijectivity of division-ring scalar-extension maps; entire class/group collapse over subsingleton rings |

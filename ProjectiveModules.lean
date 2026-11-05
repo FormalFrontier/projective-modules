@@ -128,6 +128,7 @@ public import ProjectiveModules.Invertible.Topology
 public import ProjectiveModules.KTheory.Determinant
 public import ProjectiveModules.KTheory.DeterminantNaturality
 public import ProjectiveModules.KTheory.DiagonalQuotient
+public import ProjectiveModules.KTheory.DirectLimit
 public import ProjectiveModules.KTheory.Dual
 public import ProjectiveModules.KTheory.DualRing
 public import ProjectiveModules.KTheory.FiniteFree
