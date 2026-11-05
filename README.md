@@ -958,3 +958,19 @@ For a split continuous-linear map over a semiring,
 lifts of a fixed map by continuous-linear maps into its kernel. The construction
 retains the original kernel module and subspace topology. It also gives a unique
 kernel-valued parameter for every continuous-linear right inverse.
+
+## Homomorphisms of idempotent ranges
+
+For idempotent square matrices `A` and `B` over an arbitrary semiring `R`,
+`Matrix.rangeHomEquiv` identifies right-linear maps between their column ranges
+additively with rectangular matrices `Y` satisfying `B * Y = Y` and `Y * A = Y`.
+Columns remain `R`-valued, with their right action expressed as an
+`Rᵐᵒᵖ`-module structure. The two finite index types have independent universes
+and may be empty; neither commutativity nor nontriviality is assumed.
+
+`Matrix.normalizedHom.toRangeHom` gives the induced column action. Its injectivity
+uses source normalization, while surjectivity uses both idempotences. The identity
+range map has coordinate `A`, and the coordinate of `g.comp f` is the matrix of
+`g` multiplied by the matrix of `f`. These constructions and their characteristic
+lemmas are available through
+`ProjectiveModules.LinearAlgebra.Matrix.IdempotentRangeHom`.

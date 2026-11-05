@@ -15,6 +15,8 @@ import ProjectiveModules.Module.RightEndomorphismMatrix
 Rectangular factorizations give and characterize linear equivalences between the
 right-column ranges of idempotent matrices. The columns are `R`-valued and the
 linear equivalences use the opposite semiring, so scalars act on the right.
+Normalized rectangular matrices also describe the right-linear homomorphisms
+between these ranges additively.
 -/
 
 @[expose] public section
@@ -279,5 +281,233 @@ theorem nonempty_rangeEquiv_iff_exists_mul_eq
             (Module.rightEndomorphismMatrixEquiv_mulVec R κ (E.symm B) v)
   · rintro ⟨X, Y, hXY, hYX⟩
     exact ⟨rangeEquivOfMulEq A B hA hB X Y hXY hYX⟩
+
+/-- Rectangular matrices fixed by multiplication by the target matrix on the left
+and by the source matrix on the right. -/
+def normalizedHom (A : Matrix ι ι R) (B : Matrix κ κ R) :
+    AddSubmonoid (Matrix κ ι R) where
+  carrier := {Y | B * Y = Y ∧ Y * A = Y}
+  zero_mem' := by constructor <;> simp
+  add_mem' := by
+    intro X Y hX hY
+    constructor
+    · rw [Matrix.mul_add, hX.1, hY.1]
+    · rw [Matrix.add_mul, hX.2, hY.2]
+
+@[simp]
+theorem mem_normalizedHom (A : Matrix ι ι R) (B : Matrix κ κ R) (Y : Matrix κ ι R) :
+    Y ∈ normalizedHom A B ↔ B * Y = Y ∧ Y * A = Y := Iff.rfl
+
+
+namespace normalizedHom
+
+variable {A : Matrix ι ι R} {B : Matrix κ κ R}
+
+/-- A normalized matrix is fixed by multiplication by its target matrix. -/
+@[simp]
+theorem mul_coe (Y : normalizedHom A B) :
+    B * (Y : Matrix κ ι R) = (Y : Matrix κ ι R) :=
+  ((mem_normalizedHom A B (Y : Matrix κ ι R)).mp Y.property).1
+
+/-- A normalized matrix is fixed by multiplication by its source matrix. -/
+@[simp]
+theorem coe_mul (Y : normalizedHom A B) :
+    (Y : Matrix κ ι R) * A = (Y : Matrix κ ι R) :=
+  ((mem_normalizedHom A B (Y : Matrix κ ι R)).mp Y.property).2
+
+/-- Column multiplication by a normalized matrix, restricted to the source range
+and with codomain the target range, as an additive map of homomorphism spaces. -/
+def toRangeHom :
+    normalizedHom A B →+
+      ((mulVecBilin R Rᵐᵒᵖ A).range →ₗ[Rᵐᵒᵖ]
+        (mulVecBilin R Rᵐᵒᵖ B).range) where
+  toFun Y :=
+    ((mulVecBilin R Rᵐᵒᵖ (Y : Matrix κ ι R)).comp
+      (mulVecBilin R Rᵐᵒᵖ A).range.subtype).codRestrict
+        (mulVecBilin R Rᵐᵒᵖ B).range (by
+          intro v
+          refine ⟨(Y : Matrix κ ι R) *ᵥ (v : ι → R), ?_⟩
+          change B *ᵥ ((Y : Matrix κ ι R) *ᵥ (v : ι → R)) =
+            (Y : Matrix κ ι R) *ᵥ (v : ι → R)
+          simpa only [mulVec_mulVec] using
+            congrArg (fun M : Matrix κ ι R => M *ᵥ (v : ι → R)) (mul_coe Y))
+  map_zero' := by
+    apply LinearMap.ext
+    intro v
+    apply Subtype.ext
+    change (0 : Matrix κ ι R) *ᵥ (v : ι → R) = 0
+    simp
+  map_add' := by
+    intro Y Z
+    apply LinearMap.ext
+    intro v
+    apply Subtype.ext
+    change ((Y : Matrix κ ι R) + (Z : Matrix κ ι R)) *ᵥ (v : ι → R) =
+      (Y : Matrix κ ι R) *ᵥ (v : ι → R) +
+        (Z : Matrix κ ι R) *ᵥ (v : ι → R)
+    exact add_mulVec _ _ _
+
+/-- The induced range map is original-valued column multiplication. -/
+@[simp]
+theorem toRangeHom_apply (Y : normalizedHom A B)
+    (v : (mulVecBilin R Rᵐᵒᵖ A).range) :
+    (toRangeHom Y v : κ → R) =
+      (Y : Matrix κ ι R) *ᵥ (v : ι → R) :=
+  rfl
+
+/-- A source-normalized matrix is determined by its action on the source range. -/
+theorem toRangeHom_injective :
+    Function.Injective (toRangeHom (A := A) (B := B)) := by
+  classical
+  intro Y Z h
+  apply Subtype.ext
+  have hmul : (Y : Matrix κ ι R) * A = (Z : Matrix κ ι R) * A := by
+    apply Matrix.ext_iff_mulVec.mpr
+    intro v
+    let vA : (mulVecBilin R Rᵐᵒᵖ A).range := ⟨A *ᵥ v, ⟨v, rfl⟩⟩
+    have hv := congrArg Subtype.val (LinearMap.congr_fun h vA)
+    simpa only [toRangeHom_apply, vA, mulVec_mulVec] using hv
+  calc
+    (Y : Matrix κ ι R) = (Y : Matrix κ ι R) * A := (coe_mul Y).symm
+    _ = (Z : Matrix κ ι R) * A := hmul
+    _ = (Z : Matrix κ ι R) := coe_mul Z
+
+end normalizedHom
+
+namespace normalizedHom
+
+universe uη
+
+variable {η : Type uη} [Fintype η]
+variable {A : Matrix ι ι R} {B : Matrix κ κ R} {C : Matrix η η R}
+
+/-- An idempotent matrix, viewed as a normalized matrix from itself to itself. -/
+def id (hA : IsIdempotentElem A) : normalizedHom A A :=
+  ⟨A, (mem_normalizedHom A A A).2 ⟨hA, hA⟩⟩
+
+/-- The matrix representing the identity is the source idempotent. -/
+@[simp]
+theorem coe_id (hA : IsIdempotentElem A) :
+    (id hA : Matrix ι ι R) = A :=
+  rfl
+
+/-- Composition of normalized matrices is their matrix product. -/
+def comp (Z : normalizedHom B C) (Y : normalizedHom A B) : normalizedHom A C :=
+  ⟨(Z : Matrix η κ R) * (Y : Matrix κ ι R),
+    (mem_normalizedHom A C _).2 (by
+      constructor
+      · rw [← Matrix.mul_assoc, mul_coe]
+      · rw [Matrix.mul_assoc, coe_mul])⟩
+
+/-- The underlying matrix of a composite is the product of the underlying matrices. -/
+@[simp]
+theorem coe_comp (Z : normalizedHom B C) (Y : normalizedHom A B) :
+    (comp Z Y : Matrix η ι R) =
+      (Z : Matrix η κ R) * (Y : Matrix κ ι R) :=
+  rfl
+
+/-- The range map induced by an idempotent matrix is the identity. -/
+@[simp]
+theorem toRangeHom_id (hA : IsIdempotentElem A) :
+    toRangeHom (id hA) = LinearMap.id := by
+  apply LinearMap.ext
+  intro v
+  apply Subtype.ext
+  simp only [LinearMap.id_apply, toRangeHom_apply, coe_id]
+  obtain ⟨w, hw⟩ := v.property
+  change A *ᵥ w = (v : ι → R) at hw
+  rw [← hw]
+  simpa only [mulVec_mulVec] using
+    congrArg (fun M : Matrix ι ι R => M *ᵥ w) (show A * A = A from hA)
+
+/-- Multiplication of normalized matrices induces composition of their range maps. -/
+@[simp]
+theorem toRangeHom_comp (Z : normalizedHom B C) (Y : normalizedHom A B) :
+    toRangeHom (comp Z Y) = (toRangeHom Z).comp (toRangeHom Y) := by
+  apply LinearMap.ext
+  intro v
+  apply Subtype.ext
+  simp only [LinearMap.comp_apply, toRangeHom_apply, coe_comp, mulVec_mulVec]
+
+end normalizedHom
+
+private theorem isIdempotentElem_mulVecBilin {A : Matrix ι ι R}
+    (hA : IsIdempotentElem A) : IsIdempotentElem (mulVecBilin R Rᵐᵒᵖ A) := by
+  have hAA : A * A = A := hA
+  change (mulVecBilin R Rᵐᵒᵖ A).comp (mulVecBilin R Rᵐᵒᵖ A) =
+    mulVecBilin R Rᵐᵒᵖ A
+  apply LinearMap.ext
+  intro v
+  change A *ᵥ (A *ᵥ v) = A *ᵥ v
+  rw [Matrix.mulVec_mulVec, hAA]
+
+/-- Every right-linear map between idempotent ranges is induced by a normalized matrix. -/
+theorem normalizedHom.toRangeHom_surjective
+    {A : Matrix ι ι R} {B : Matrix κ κ R}
+    (hA : IsIdempotentElem A) (hB : IsIdempotentElem B) :
+    Function.Surjective (normalizedHom.toRangeHom (A := A) (B := B)) := by
+  let a := mulVecBilin R Rᵐᵒᵖ A
+  let b := mulVecBilin R Rᵐᵒᵖ B
+  have ha : IsIdempotentElem a := isIdempotentElem_mulVecBilin hA
+  have hb : IsIdempotentElem b := isIdempotentElem_mulVecBilin hB
+  intro f
+  let F : (ι → R) →ₗ[Rᵐᵒᵖ] κ → R :=
+    b.range.subtype.comp (f.comp a.rangeRestrict)
+  obtain ⟨Y, hY⟩ : ∃ Y : Matrix κ ι R, mulVecBilin R Rᵐᵒᵖ Y = F := by
+    exact exists_mulVecBilin_eq F
+  have hBF : b.comp F = F :=
+    (LinearMap.IsIdempotentElem.comp_eq_right_iff hb F).2 (by
+      rintro z ⟨v, rfl⟩
+      exact (f (a.rangeRestrict v)).property)
+  have hπ : a.rangeRestrict.comp a = a.rangeRestrict := by
+    apply LinearMap.ext
+    intro v
+    apply Subtype.ext
+    change a (a v) = a v
+    exact congrArg (fun q : Module.End Rᵐᵒᵖ (ι → R) => q v) ha
+  have hFA : F.comp a = F := by
+    dsimp only [F]
+    rw [LinearMap.comp_assoc, LinearMap.comp_assoc, hπ]
+  have hBY : B * Y = Y := by
+    apply Matrix.ext_iff_mulVec.mpr
+    intro v
+    rw [← Matrix.mulVec_mulVec]
+    change b ((mulVecBilin R Rᵐᵒᵖ Y) v) = (mulVecBilin R Rᵐᵒᵖ Y) v
+    rw [hY]
+    exact congrArg (fun q : (ι → R) →ₗ[Rᵐᵒᵖ] κ → R => q v) hBF
+  have hYA : Y * A = Y := by
+    apply Matrix.ext_iff_mulVec.mpr
+    intro v
+    rw [← Matrix.mulVec_mulVec]
+    change (mulVecBilin R Rᵐᵒᵖ Y) (a v) = (mulVecBilin R Rᵐᵒᵖ Y) v
+    rw [hY]
+    exact congrArg (fun q : (ι → R) →ₗ[Rᵐᵒᵖ] κ → R => q v) hFA
+  refine ⟨⟨Y, ⟨hBY, hYA⟩⟩, ?_⟩
+  apply LinearMap.ext
+  intro v
+  apply Subtype.ext
+  change (mulVecBilin R Rᵐᵒᵖ Y) (v : ι → R) = (f v : κ → R)
+  rw [hY]
+  have h_on : a.comp a.range.subtype = a.range.subtype :=
+    (LinearMap.IsIdempotentElem.comp_eq_right_iff ha a.range.subtype).2 (by
+      rintro z ⟨w, rfl⟩
+      exact w.property)
+  have hfix : a.rangeRestrict (v : ι → R) = v := by
+    apply Subtype.ext
+    change a (v : ι → R) = (v : ι → R)
+    exact congrArg (fun q : a.range →ₗ[Rᵐᵒᵖ] ι → R => q v) h_on
+  change (f (a.rangeRestrict (v : ι → R)) : κ → R) = (f v : κ → R)
+  rw [hfix]
+
+/-- Homomorphisms between the right ranges of two idempotent matrices correspond
+additively to matrices normalized by those idempotents. -/
+noncomputable def rangeHomEquiv {A : Matrix ι ι R} {B : Matrix κ κ R}
+    (hA : IsIdempotentElem A) (hB : IsIdempotentElem B) :
+    ((mulVecBilin R Rᵐᵒᵖ A).range →ₗ[Rᵐᵒᵖ] (mulVecBilin R Rᵐᵒᵖ B).range) ≃+
+      normalizedHom A B := by
+  exact (AddEquiv.ofBijective
+    (normalizedHom.toRangeHom (A := A) (B := B))
+    ⟨normalizedHom.toRangeHom_injective,
+      normalizedHom.toRangeHom_surjective hA hB⟩).symm
 
 end Matrix
