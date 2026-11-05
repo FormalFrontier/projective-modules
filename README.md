@@ -7,6 +7,14 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **[Annihilator order duality](ProjectiveModules/Dual/Annihilator.lean).**
+  For a reflexive projective module with projective dual over a commutative ring,
+  annihilator and coannihilator give an order anti-isomorphism between submodules
+  with projective original quotient and dual submodules with projective original
+  quotient. Finite projective modules satisfy these ambient hypotheses.
+  The correspondence uses canonical evaluation and has pointwise membership
+  and forward/inverse carrier formulas, with independent ring/module universes.
+
 - **[Projective-class and K₀ comparisons for directed limits](ProjectiveModules/KTheory/DirectLimit.lean).**
   For a nonempty directed system of unital rings, the additive direct limits of
   finite-projective right-module class monoids and K₀ groups are canonically
