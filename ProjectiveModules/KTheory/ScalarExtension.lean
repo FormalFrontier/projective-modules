@@ -226,6 +226,15 @@ theorem map_ofClass (φ : R →+* S) (a : ProjectiveClass R) :
     map φ (ofClass R a) = ofClass S (ProjectiveClass.map φ a) :=
   lift_ofClass R ((ofClass S).comp (ProjectiveClass.map φ)) a
 
+/-- The scalar-extension map on K₀ is the Grothendieck-group lift of the induced
+map on finite-projective right-module classes. -/
+theorem map_eq_grothendieckLift (f : R →+* S) :
+    map f = Algebra.GrothendieckAddGroup.lift
+      ((ofClass S).comp (ProjectiveClass.map f)) := by
+  apply hom_ext_ofClass R
+  intro a
+  simp only [map_ofClass, grothendieckLift_ofClass, AddMonoidHom.comp_apply]
+
 /-- Bijectivity of scalar extension on finite-projective right-module classes
 implies bijectivity on K₀, for arbitrary rings. Group completion preserves
 isomorphisms of commutative monoids. -/
@@ -252,6 +261,36 @@ theorem map_bijective_of_projectiveClass_map_bijective (f : R →+* S)
       (j := e) he a
   rw [← hE]
   exact E.bijective
+
+/-- Surjectivity of scalar extension on finite-projective right-module classes
+implies surjectivity on K₀, for arbitrary rings. -/
+theorem map_surjective_of_projectiveClass_map_surjective (f : R →+* S)
+    (hf : Function.Surjective (ProjectiveClass.map f)) :
+    Function.Surjective (map f) := by
+  have htop : ∀ a : (⊤ : AddSubmonoid (ProjectiveClass R)),
+      ProjectiveClass.map f a ∈ (⊤ : AddSubmonoid (ProjectiveClass S)) := by
+    intro a
+    trivial
+  have hmap :
+      (AddLocalization.addMonoidOf (⊤ : AddSubmonoid (ProjectiveClass R))).map
+        (g := ProjectiveClass.map f) htop
+        (AddLocalization.addMonoidOf (⊤ : AddSubmonoid (ProjectiveClass S))) = map f := by
+    apply hom_ext_ofClass R
+    intro a
+    rw [map_ofClass]
+    exact AddSubmonoid.LocalizationMap.map_eq
+      (g := ProjectiveClass.map f)
+      (AddLocalization.addMonoidOf (⊤ : AddSubmonoid (ProjectiveClass R)))
+      htop (k := AddLocalization.addMonoidOf (⊤ : AddSubmonoid (ProjectiveClass S))) a
+  rw [← hmap]
+  exact AddSubmonoid.LocalizationMap.map_surjective_of_surjOn
+    (g := ProjectiveClass.map f)
+    (AddLocalization.addMonoidOf (⊤ : AddSubmonoid (ProjectiveClass R)))
+    htop (k := AddLocalization.addMonoidOf (⊤ : AddSubmonoid (ProjectiveClass S)))
+    (by
+      intro b _
+      obtain ⟨a, ha⟩ := hf b
+      exact ⟨a, by trivial, ha⟩) hf
 
 /-- Scalar extension evaluates on a finite projective K₀ generator in any
 carrier universe. -/

@@ -11,7 +11,11 @@ import Mathlib.Algebra.Ring.PUnit
 import Mathlib.Algebra.Ring.Rat
 
 /-!
-# Clients of bijectivity transport from projective classes to K₀
+# Clients of completion transport from projective classes to K₀
+
+The projection from `ℤ × ℤ` onto its first factor uses the surjectivity-only
+class-map criterion, with the diagonal as a section. The second projective
+factor is forgotten, so class-map bijectivity is not required.
 
 The identity on the rational field has a bijective class map by the public
 identity contract. Transport to K₀ uses the class-map bijectivity theorem.
@@ -25,6 +29,18 @@ the subsingleton boundary, without a nontrivial-ring premise.
 open KTheory
 
 namespace ProjectiveModulesTests.K0CompletionBijectivityClient
+
+private theorem first_projection_surjective :
+    Function.Surjective (K0.map (RingHom.fst ℤ ℤ)) := by
+  apply K0.map_surjective_of_projectiveClass_map_surjective
+  have h : (RingHom.fst ℤ ℤ).comp ((RingHom.id ℤ).prod (RingHom.id ℤ)) =
+      RingHom.id ℤ := by
+    ext x
+    rfl
+  intro x
+  refine ⟨ProjectiveClass.map ((RingHom.id ℤ).prod (RingHom.id ℤ)) x, ?_⟩
+  rw [← AddMonoidHom.comp_apply, ← ProjectiveClass.map_comp, h,
+    ProjectiveClass.map_id, AddMonoidHom.id_apply]
 
 private theorem rational_identity_bijective_and_nonzero :
     Function.Bijective (K0.map (RingHom.id ℚ)) ∧
