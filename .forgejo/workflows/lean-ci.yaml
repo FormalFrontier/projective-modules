@@ -24,6 +24,7 @@ jobs:
       FF_LEAN_LINT_TOOLS_SHA256: 5e158bd49b7085397aed0f6e451d6a2fe83243c26af35e79c977f41ed76a9bdd
     steps:
       - name: Check out the proposed commit
+        id: own_stage_checkout
         uses: https://data.forgejo.org/actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 0
@@ -37,14 +38,17 @@ jobs:
           FF_LEAN_CI_API_TOKEN: ${{ github.token }}
         run: ff-lean-ci-v6 reuse --github-output "$GITHUB_OUTPUT"
       - name: Set up scoped dependency reads
+        id: own_stage_dependency_auth
         if: steps.reuse.outputs.reused != 'true'
         env:
           LEAN_CI_READ_AUTH: ${{ secrets.LEAN_CI_READ_AUTH }}
         run: ff-lean-auth setup
       - name: Check the pinned toolchain and fetch exact dependencies
+        id: own_stage_prepare
         if: steps.reuse.outputs.reused != 'true'
         run: ff-lean-ci-v6 prepare
       - name: Remove dependency credentials
+        id: own_stage_auth_cleanup
         if: always()
         run: ff-lean-auth cleanup
       - name: Record own setup metadata before the configured build/audit
@@ -98,6 +102,9 @@ jobs:
               "ProjectiveModules/Topology/Splitting",
               "ProjectiveModules/Topology/SplittingPullback",
               "ProjectiveModules/Topology/SplittingPullback/Nat",
+              "ProjectiveModules/Topology/Pullback",
+              "ProjectiveModules/Topology/Pullback/Assoc",
+              "ProjectiveModules/Topology/Pullback/Prod",
           )
           states = {}
           for module in modules:
@@ -179,6 +186,9 @@ jobs:
               "ProjectiveModules/Topology/Splitting",
               "ProjectiveModules/Topology/SplittingPullback",
               "ProjectiveModules/Topology/SplittingPullback/Nat",
+              "ProjectiveModules/Topology/Pullback",
+              "ProjectiveModules/Topology/Pullback/Assoc",
+              "ProjectiveModules/Topology/Pullback/Prod",
           )
           for index, module in enumerate(modules):
               feedback = root / module
@@ -226,9 +236,11 @@ jobs:
                   print(f"module_{index}_complete=true", file=output)
           EOF
       - name: Lint the configured libraries
+        id: own_stage_lint
         if: steps.reuse.outputs.reused != 'true'
         run: ff-lean-lint run
       - name: Show the failed build or audit output
+        id: own_stage_failure_display
         if: failure()
         run: |
           python3 -X utf8 - <<'EOF'
@@ -266,6 +278,7 @@ jobs:
                       show(line)
           EOF
       - name: Preserve commands, inputs, audit output and result
+        id: own_stage_evidence_upload
         if: always()
         uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
         with:
@@ -339,7 +352,47 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
+      - name: Preserve independent pullback Lean diagnostics
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_5_complete == 'true'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: pullback-lean-diagnostics
+          path: |
+            .own-lean-diagnostics/ProjectiveModules/Topology/Pullback/stdout.jsonl
+            .own-lean-diagnostics/ProjectiveModules/Topology/Pullback/stderr.log
+            .own-lean-diagnostics/ProjectiveModules/Topology/Pullback/exit-code.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve independent pullback associativity Lean diagnostics
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_6_complete == 'true'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: pullback-associativity-lean-diagnostics
+          path: |
+            .own-lean-diagnostics/ProjectiveModules/Topology/Pullback/Assoc/stdout.jsonl
+            .own-lean-diagnostics/ProjectiveModules/Topology/Pullback/Assoc/stderr.log
+            .own-lean-diagnostics/ProjectiveModules/Topology/Pullback/Assoc/exit-code.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve independent pullback product Lean diagnostics
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_7_complete == 'true'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: pullback-product-lean-diagnostics
+          path: |
+            .own-lean-diagnostics/ProjectiveModules/Topology/Pullback/Prod/stdout.jsonl
+            .own-lean-diagnostics/ProjectiveModules/Topology/Pullback/Prod/stderr.log
+            .own-lean-diagnostics/ProjectiveModules/Topology/Pullback/Prod/exit-code.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
       - name: Preserve staged Lake cache outputs
+        id: own_stage_cache_upload
         if: >-
           success() && steps.reuse.outputs.reused != 'true' && github.ref == 'refs/heads/main' &&
           (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
@@ -352,3 +405,122 @@ jobs:
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 3
+      - name: Record named public step outcomes
+        id: own_ci_stage_outcomes
+        if: always()
+        continue-on-error: true
+        env:
+          OWN_STAGE_CHECKOUT_OUTCOME: ${{ steps.own_stage_checkout.outcome }}
+          OWN_STAGE_INPUTS_OUTCOME: ${{ steps.inputs.outcome }}
+          OWN_STAGE_REUSE_OUTCOME: ${{ steps.reuse.outcome }}
+          OWN_STAGE_DEPENDENCY_AUTH_OUTCOME: ${{ steps.own_stage_dependency_auth.outcome }}
+          OWN_STAGE_PREPARE_OUTCOME: ${{ steps.own_stage_prepare.outcome }}
+          OWN_STAGE_AUTH_CLEANUP_OUTCOME: ${{ steps.own_stage_auth_cleanup.outcome }}
+          OWN_STAGE_SETUP_BASELINE_OUTCOME: ${{ steps.own_setup_baseline.outcome }}
+          OWN_STAGE_BUILD_OUTCOME: ${{ steps.build.outcome }}
+          OWN_STAGE_DIAGNOSTICS_OUTCOME: ${{ steps.own_diagnostics.outcome }}
+          OWN_STAGE_LINT_OUTCOME: ${{ steps.own_stage_lint.outcome }}
+          OWN_STAGE_FAILURE_DISPLAY_OUTCOME: ${{ steps.own_stage_failure_display.outcome }}
+          OWN_STAGE_EVIDENCE_UPLOAD_OUTCOME: ${{ steps.own_stage_evidence_upload.outcome }}
+          OWN_STAGE_CACHE_UPLOAD_OUTCOME: ${{ steps.own_stage_cache_upload.outcome }}
+        run: |
+          python3 -X utf8 - <<'EOF'
+          import json, os, stat
+          # Only named public outcomes enter this fixed-schema metadata file.
+          stages = (
+              ("own_stage_checkout", "Check out the proposed commit", "OWN_STAGE_CHECKOUT_OUTCOME"),
+              ("inputs", "Record exact inputs", "OWN_STAGE_INPUTS_OUTCOME"),
+              ("reuse", "Check for proven docs-only reuse", "OWN_STAGE_REUSE_OUTCOME"),
+              ("own_stage_dependency_auth", "Set up scoped dependency reads", "OWN_STAGE_DEPENDENCY_AUTH_OUTCOME"),
+              ("own_stage_prepare", "Check the pinned toolchain and fetch exact dependencies", "OWN_STAGE_PREPARE_OUTCOME"),
+              ("own_stage_auth_cleanup", "Remove dependency credentials", "OWN_STAGE_AUTH_CLEANUP_OUTCOME"),
+              ("own_setup_baseline", "Record own setup metadata before the configured build/audit", "OWN_STAGE_SETUP_BASELINE_OUTCOME"),
+              ("build", "Build and run the configured audit", "OWN_STAGE_BUILD_OUTCOME"),
+              ("own_diagnostics", "Produce independent own Lean JSON diagnostics", "OWN_STAGE_DIAGNOSTICS_OUTCOME"),
+              ("own_stage_lint", "Lint the configured libraries", "OWN_STAGE_LINT_OUTCOME"),
+              ("own_stage_failure_display", "Show the failed build or audit output", "OWN_STAGE_FAILURE_DISPLAY_OUTCOME"),
+              ("own_stage_evidence_upload", "Preserve commands, inputs, audit output and result", "OWN_STAGE_EVIDENCE_UPLOAD_OUTCOME"),
+              ("own_stage_cache_upload", "Preserve staged Lake cache outputs", "OWN_STAGE_CACHE_UPLOAD_OUTCOME"),
+          )
+          allowed = {"success", "failure", "cancelled", "skipped", "UNKNOWN"}
+          def outcome(key):
+              value = os.environ.get(key)
+              return value if isinstance(value, str) and value in allowed else "UNKNOWN"
+          payload = {
+              "version": 1,
+              "producer_id": "own_ci_stage_outcomes",
+              "workflow_name": "Lean CI",
+              "job_id": "lean",
+              "stages": [
+                  {"id": step_id, "name": name, "outcome": outcome(key)}
+                  for step_id, name, key in stages
+              ],
+          }
+          encoded = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+          if len(encoded) > 4096:
+              raise ValueError("Public outcome metadata exceeds its fixed bound")
+          # Exclusively create our own output; never read or reuse existing files.
+          directory_name = ".own-ci-stage-outcomes"
+          filename = "own-ci-stage-outcomes.json"
+          directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+          cwd_fd = os.open(".", directory_flags)
+          directory_fd = output_fd = None
+          try:
+              os.mkdir(directory_name, mode=0o755, dir_fd=cwd_fd)
+              created_directory = os.stat(directory_name, dir_fd=cwd_fd, follow_symlinks=False)
+              directory_fd = os.open(directory_name, directory_flags, dir_fd=cwd_fd)
+              held_directory = os.fstat(directory_fd)
+              directory_identity = (held_directory.st_dev, held_directory.st_ino, held_directory.st_mode)
+              if (not stat.S_ISDIR(held_directory.st_mode) or directory_identity != (
+                      created_directory.st_dev, created_directory.st_ino, created_directory.st_mode)):
+                  raise OSError("Public outcome output directory changed")
+              output_fd = os.open(
+                  filename, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                  0o644, dir_fd=directory_fd,
+              )
+              initial = os.fstat(output_fd)
+              if not stat.S_ISREG(initial.st_mode) or initial.st_nlink != 1:
+                  raise OSError("Public outcome output file is not exclusive and regular")
+              remaining = memoryview(encoded)
+              while remaining:
+                  count = os.write(output_fd, remaining)
+                  if count <= 0:
+                      raise OSError("Public outcome metadata write did not complete")
+                  remaining = remaining[count:]
+              finished = os.fstat(output_fd)
+              if (not stat.S_ISREG(finished.st_mode) or finished.st_nlink != 1 or
+                      finished.st_size != len(encoded) or
+                      (finished.st_dev, finished.st_ino, finished.st_mode) != (
+                          initial.st_dev, initial.st_ino, initial.st_mode)):
+                  raise OSError("Public outcome output file changed")
+              os.close(output_fd)
+              output_fd = None
+              published = os.stat(filename, dir_fd=directory_fd, follow_symlinks=False)
+              def file_state(s):
+                  return (s.st_dev, s.st_ino, s.st_mode, s.st_nlink, s.st_size,
+                          s.st_mtime_ns, s.st_ctime_ns)
+              if file_state(published) != file_state(finished):
+                  raise OSError("Public outcome output file changed after close")
+              published_directory = os.stat(directory_name, dir_fd=cwd_fd, follow_symlinks=False)
+              if (published_directory.st_dev, published_directory.st_ino,
+                      published_directory.st_mode) != directory_identity:
+                  raise OSError("Public outcome output directory changed after writing")
+              os.close(directory_fd)
+              directory_fd = None
+          finally:
+              if output_fd is not None:
+                  os.close(output_fd)
+              if directory_fd is not None:
+                  os.close(directory_fd)
+              os.close(cwd_fd)
+          EOF
+      - name: Preserve named public step outcomes
+        if: always() && steps.own_ci_stage_outcomes.outcome == 'success'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: own-ci-stage-outcomes
+          path: .own-ci-stage-outcomes/own-ci-stage-outcomes.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30

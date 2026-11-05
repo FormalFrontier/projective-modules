@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.EqLocus
+public import ProjectiveModules.Topology.Pullback
 public import ProjectiveModules.Topology.Splitting
 
 /-!
@@ -29,7 +29,7 @@ recovers the whole canonical splitting after the graph map `e ↦ (e, f e)`.
 
 @[expose] public section
 
-universe uR uE uF uG
+universe uR uE uF uG uH
 
 namespace ContinuousLinearMap
 
@@ -45,47 +45,25 @@ variable (f : E →L[R] F) (s : F →L[R] E) (hs : Function.RightInverse s f)
 /-- Pulling back a continuous split linear map along `h` preserves its product
 splitting. The source is the equalizer submodule of the original `E × G`, with
 its induced topology, and the second factor is the original kernel of `f`.
-The construction reuses `equivProdKerOfRightInverse` and its whole inverse. -/
+The construction specializes `pullbackEquivProdOfEquiv` using
+`equivProdKerOfRightInverse` and its whole inverse. -/
 def pullbackEquivProdKerOfRightInverse :
     LinearMap.eqLocus
       (f.toLinearMap.comp (LinearMap.fst R E G))
-      (h.toLinearMap.comp (LinearMap.snd R E G)) ≃L[R] (G × f.ker) := by
-  let P := LinearMap.eqLocus
-    (f.toLinearMap.comp (LinearMap.fst R E G))
-    (h.toLinearMap.comp (LinearMap.snd R E G))
-  let C := f.equivProdKerOfRightInverse s hs
-  let πE := (fst R E G).domRestrict P
-  let πG := (snd R E G).domRestrict P
-  let a : P →L[R] (G × f.ker) :=
-    πG.prod ((snd R F f.ker).comp (C.toContinuousLinearMap.comp πE))
-  let b₀ : G × f.ker →L[R] E × G :=
-    (C.symm.toContinuousLinearMap.comp
-      ((h.comp (fst R G f.ker)).prod (snd R G f.ker))).prod (fst R G f.ker)
-  have hb (z : G × f.ker) : b₀ z ∈ P := by
-    change f (C.symm (h z.1, z.2)) = h z.1
-    calc
-      f (C.symm (h z.1, z.2)) = (C (C.symm (h z.1, z.2))).1 :=
-        (fst_equivProdKerOfRightInverse f s hs _).symm
-      _ = h z.1 := congrArg Prod.fst (C.apply_symm_apply (h z.1, z.2))
-  let b : G × f.ker →L[R] P := b₀.codRestrict P hb
-  refine ContinuousLinearEquiv.equivOfInverse a b ?_ ?_
-  · intro p
-    have hp : f p.val.1 = h p.val.2 := p.property
-    have hpair : (h p.val.2, (C p.val.1).2) = C p.val.1 := by
-      apply Prod.ext
-      · exact hp.symm.trans (fst_equivProdKerOfRightInverse f s hs p.val.1).symm
-      · rfl
-    apply Subtype.ext
-    apply Prod.ext
-    · change C.symm (h p.val.2, (C p.val.1).2) = p.val.1
-      rw [hpair]
-      exact C.symm_apply_apply p.val.1
-    · rfl
-  · intro z
-    apply Prod.ext
-    · rfl
-    · change (C (C.symm (h z.1, z.2))).2 = z.2
-      exact congrArg Prod.snd (C.apply_symm_apply (h z.1, z.2))
+      (h.toLinearMap.comp (LinearMap.snd R E G)) ≃L[R] (G × f.ker) :=
+  f.pullbackEquivProdOfEquiv (f.equivProdKerOfRightInverse s hs)
+    (by
+      apply ContinuousLinearMap.ext
+      intro x
+      exact fst_equivProdKerOfRightInverse f s hs x) h
+
+/-- Base change of the canonical product coordinates is the section-based
+pullback splitting, for any proof of the whole first-projection compatibility. -/
+theorem pullbackEquivProdOfEquiv_equivProdKerOfRightInverse
+    (hC : (fst R F f.ker).comp
+      (f.equivProdKerOfRightInverse s hs).toContinuousLinearMap = f) :
+    f.pullbackEquivProdOfEquiv (f.equivProdKerOfRightInverse s hs) hC h =
+      f.pullbackEquivProdKerOfRightInverse s hs h := rfl
 
 /-- The pullback splitting retains the base coordinate and the canonical kernel
 coordinate of the ambient source point. -/
@@ -199,10 +177,38 @@ theorem pullbackEquivProdKerOfRightInverse_comp_graph :
             simp only [LinearMap.comp_apply, ContinuousLinearMap.coe_coe,
               prod_apply, id_apply, LinearMap.fst_apply, LinearMap.snd_apply]))) =
       (f.equivProdKerOfRightInverse s hs).toContinuousLinearMap := by
-  apply ContinuousLinearMap.ext
-  intro x
-  simp only [comp_apply, ContinuousLinearEquiv.coe_coe,
-    pullbackEquivProdKerOfRightInverse_apply, coe_codRestrict_apply, prod_apply, id_apply]
-  exact Prod.ext (fst_equivProdKerOfRightInverse f s hs x).symm rfl
+  have hC : (fst R F f.ker).comp
+      (f.equivProdKerOfRightInverse s hs).toContinuousLinearMap = f := by
+    apply ContinuousLinearMap.ext
+    intro x
+    simpa only [comp_apply, coe_fst', ContinuousLinearEquiv.coe_coe] using
+      (fst_equivProdKerOfRightInverse f s hs x)
+  rw [← pullbackEquivProdOfEquiv_equivProdKerOfRightInverse f s hs
+    (ContinuousLinearMap.id R F) hC]
+  exact pullbackEquivProdOfEquiv_comp_graph f (f.equivProdKerOfRightInverse s hs) hC
+
+variable {H : Type uH} [AddCommMonoid H] [Module R H] [TopologicalSpace H]
+
+/-- Successive base changes of a split map preserve its original kernel
+coordinates through the canonical pullback associator. The second base change
+uses the first whole equivalence and its inverse, so the intermediate pullback
+needs no additive group structure. -/
+theorem pullbackEquivProdKerOfRightInverse_comp (k : H →L[R] G) :
+    let P := LinearMap.eqLocus
+      (f.toLinearMap.comp (LinearMap.fst R E G))
+      (h.toLinearMap.comp (LinearMap.snd R E G))
+    let p : P →L[R] G := (snd R E G).domRestrict P
+    let B_h := f.pullbackEquivProdKerOfRightInverse s hs h
+    p.pullbackEquivProdOfEquiv B_h
+        (fst_comp_pullbackEquivProdKerOfRightInverse f s hs h) k =
+      (f.pullbackAssoc h k).trans
+        (f.pullbackEquivProdKerOfRightInverse s hs (h.comp k)) := by
+  have hC : (fst R F f.ker).comp
+      (f.equivProdKerOfRightInverse s hs).toContinuousLinearMap = f := by
+    apply ContinuousLinearMap.ext
+    intro x
+    exact fst_equivProdKerOfRightInverse f s hs x
+  simpa only [pullbackEquivProdOfEquiv_equivProdKerOfRightInverse] using
+    (pullbackEquivProdOfEquiv_comp f (f.equivProdKerOfRightInverse s hs) hC h k)
 
 end ContinuousLinearMap
