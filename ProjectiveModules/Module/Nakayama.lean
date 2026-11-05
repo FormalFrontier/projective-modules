@@ -10,6 +10,8 @@ public import Mathlib.RingTheory.Jacobson.Radical
 public import Mathlib.RingTheory.Nakayama
 public import ProjectiveModules.LinearMap.Units
 import Mathlib.Algebra.Polynomial.Div
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Nakayama's lemma and finite-range Jacobson perturbations
@@ -238,3 +240,92 @@ theorem bijective_of_comp_eq_id_of_fg_ker_of_ker_le_smul
 end LinearMap
 
 end SplitKernel
+
+@[expose] public section
+
+section QuotientEquivalence
+
+universe uQA uQV uQW
+
+namespace LinearMap
+
+variable {AQ : Type uQA} {VQ : Type uQV} {WQ : Type uQW}
+variable [Ring AQ] [AddCommGroup VQ] [AddCommGroup WQ] [Module AQ VQ] [Module AQ WQ]
+
+/-- A split linear map with finitely generated kernel is injective if its induced
+quotient map modulo a left ideal in the Jacobson radical is injective. -/
+theorem injective_of_comp_eq_id_of_fg_ker_of_injective_mapQ
+    (g : VQ →ₗ[AQ] WQ) (s : WQ →ₗ[AQ] VQ) (hgs : g.comp s = LinearMap.id)
+    (hker : g.ker.FG) (J : Ideal AQ) (hJ : J ≤ Ideal.jacobson ⊥)
+    (hquot : Function.Injective
+      ((J • (⊤ : Submodule AQ VQ)).mapQ (J • (⊤ : Submodule AQ WQ)) g (by
+        refine Submodule.smul_le.mpr ?_
+        intro a ha v _
+        change g (a • v) ∈ J • (⊤ : Submodule AQ WQ)
+        rw [map_smul]
+        exact Submodule.smul_mem_smul ha (by trivial)))) : Function.Injective g := by
+  have hkerJ : g.ker ≤ J • (⊤ : Submodule AQ VQ) := by
+    intro v hv
+    have hv0 : g v = 0 := hv
+    have hvQ : (J • (⊤ : Submodule AQ VQ)).mkQ v = 0 := by
+      apply hquot
+      rw [← LinearMap.comp_apply, Submodule.mapQ_mkQ]
+      simp only [LinearMap.comp_apply, hv0, map_zero]
+    have hvker : v ∈ LinearMap.ker ((J • (⊤ : Submodule AQ VQ)).mkQ) := hvQ
+    rwa [Submodule.ker_mkQ] at hvker
+  exact
+    (LinearMap.bijective_of_comp_eq_id_of_fg_ker_of_ker_le_smul
+      g s hgs hker J hJ hkerJ).1
+
+/-- A split linear map with finitely generated kernel is a linear equivalence if its
+induced quotient map modulo a left Jacobson ideal is injective. Its forward and
+inverse maps are the supplied linear map and section. -/
+def equivOfInjectiveMapQ
+    (g : VQ →ₗ[AQ] WQ) (s : WQ →ₗ[AQ] VQ) (hgs : g.comp s = LinearMap.id)
+    (hker : g.ker.FG) (J : Ideal AQ) (hJ : J ≤ Ideal.jacobson ⊥)
+    (hquot : Function.Injective
+      ((J • (⊤ : Submodule AQ VQ)).mapQ (J • (⊤ : Submodule AQ WQ)) g (by
+        refine Submodule.smul_le.mpr ?_
+        intro a ha v _
+        change g (a • v) ∈ J • (⊤ : Submodule AQ WQ)
+        rw [map_smul]
+        exact Submodule.smul_mem_smul ha (by trivial)))) : VQ ≃ₗ[AQ] WQ := by
+  have hinj : Function.Injective g :=
+    injective_of_comp_eq_id_of_fg_ker_of_injective_mapQ g s hgs hker J hJ hquot
+  have hsg : s.comp g = LinearMap.id := by
+    ext v
+    apply hinj
+    exact congrArg (fun f : WQ →ₗ[AQ] WQ => f (g v)) hgs
+  exact (LinearEquiv.ofLinearMap g s hgs hsg : VQ ≃ₗ[AQ] WQ)
+
+/-- The forward map is the supplied linear map. -/
+@[simp] theorem equivOfInjectiveMapQ_apply
+    (g : VQ →ₗ[AQ] WQ) (s : WQ →ₗ[AQ] VQ) (hgs : g.comp s = LinearMap.id)
+    (hker : g.ker.FG) (J : Ideal AQ) (hJ : J ≤ Ideal.jacobson ⊥)
+    (hquot : Function.Injective
+      ((J • (⊤ : Submodule AQ VQ)).mapQ (J • (⊤ : Submodule AQ WQ)) g (by
+        refine Submodule.smul_le.mpr ?_
+        intro a ha v _
+        change g (a • v) ∈ J • (⊤ : Submodule AQ WQ)
+        rw [map_smul]
+        exact Submodule.smul_mem_smul ha (by trivial))))
+    (v : VQ) : equivOfInjectiveMapQ g s hgs hker J hJ hquot v = g v := by
+  rfl
+
+/-- The inverse map is the supplied section. -/
+@[simp] theorem equivOfInjectiveMapQ_symm_apply
+    (g : VQ →ₗ[AQ] WQ) (s : WQ →ₗ[AQ] VQ) (hgs : g.comp s = LinearMap.id)
+    (hker : g.ker.FG) (J : Ideal AQ) (hJ : J ≤ Ideal.jacobson ⊥)
+    (hquot : Function.Injective
+      ((J • (⊤ : Submodule AQ VQ)).mapQ (J • (⊤ : Submodule AQ WQ)) g (by
+        refine Submodule.smul_le.mpr ?_
+        intro a ha v _
+        change g (a • v) ∈ J • (⊤ : Submodule AQ WQ)
+        rw [map_smul]
+        exact Submodule.smul_mem_smul ha (by trivial))))
+    (w : WQ) : (equivOfInjectiveMapQ g s hgs hker J hJ hquot).symm w = s w := by
+  rfl
+
+end LinearMap
+
+end QuotientEquivalence
