@@ -171,6 +171,16 @@ Maintained by the Formal Frontier source-maintainer team.
   commutativity or full invariance of `U` is assumed. This is not an
   unrestricted lattice equivalence.
 
+- **[Internal pairs and complementary endomorphism ideals](ProjectiveModules/Module/EndomorphismIdeals/DirectSum.lean).**
+  Over a semiring, an internal ordered Bool pair of submodules has
+  complementary range ideals, which evaluate back to the original pair.
+  This direction only needs `AddCommMonoid M`.
+  If `M` is an additive commutative group, complementary ideals conversely
+  evaluate to an internal pair. Each internal pair has a unique complementary
+  ideal pair evaluating to it, and each complementary ideal pair has a unique
+  internal pair with those range ideals. Bool `true` is the first coordinate;
+  these are not inverse maps on the full lattices.
+
 - **[Simultaneous idempotent conjugation](ProjectiveModules/RingTheory/IdempotentConjugation.lean).**
   Let `R` be any ring, `ι` a finite index type, and `a b : ι → R` two
   orthogonal idempotent families with `b i - a i ∈ I` for a two-sided ideal
