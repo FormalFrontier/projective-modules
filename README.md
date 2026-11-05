@@ -7,6 +7,13 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
+- **[Multiplicative opposite-ring duality](ProjectiveModules/KTheory/DualRing.lean).**
+  For every commutative ring `R`, including zero rings, canonical duality gives
+  a semiring equivalence of finite-projective right-module classes over `R` and
+  `Rᵐᵒᵖ`, and a ring equivalence of their K₀ rings. These preserve tensor
+  products and have the canonical duality equivalences as their underlying
+  additive equivalences.
+
 - **[Finite-projective descent along directed limits](ProjectiveModules/Module/DirectLimit.lean).**
   Over a nonempty directed limit of arbitrary unital rings, every finitely generated
   projective right module is linearly equivalent to scalar extension of a finite
@@ -686,7 +693,7 @@ by the aggregate. The dual is reached through the contraction aggregate import.
 | [Tensor-power classes](ProjectiveModules/KTheory/TensorPower.lean) | The class of a tensor power of a finite projective right module is the corresponding power in K₀ |
 | [Exterior series under invertible twists](ProjectiveModules/KTheory/ExteriorPowerSeriesInvertible.lean) | Tensoring any virtual class by an invertible right module rescales its exterior series; all-degree coefficient formula |
 | [Tensor-semiring scalar extension](ProjectiveModules/KTheory/RingScalarExtension.lean) | `ProjectiveClass.mapRingHom` for arbitrary unital commutative rings, including zero rings; whole additive-map compatibility, arbitrary-carrier module evaluation, identity and composition |
-| [Opposite-ring duality](ProjectiveModules/KTheory/Dual.lean) | Canonical additive equivalences of class monoids and K₀ over arbitrary rings; normalized right duals, inverse double-opposite transport, regular generators, completion squares and universal extension |
+| [Opposite-ring duality](ProjectiveModules/KTheory/Dual.lean) and [multiplicative duality](ProjectiveModules/KTheory/DualRing.lean) | Canonical additive equivalences of class monoids and K₀ over arbitrary rings; normalized right duals, inverse double-opposite transport, regular generators, completion squares and universal extension; over commutative rings, including zero rings, product-preserving semiring equivalences of projective classes and ring equivalences of K₀ with these underlying additive equivalences |
 | [Right-module Morita invariance](ProjectiveModules/KTheory/ModuleEquivalence.lean) | Additive equivalences of projective classes and K₀ along ordinary right-module category equivalences; independent scalar/carrier universes, arbitrary-carrier representative/lift evaluation, inverse, completion and coherence laws |
 | [Matrix classes and K₀](ProjectiveModules/KTheory/Matrix.lean) | Canonical additive equivalences for arbitrary rings and finite nonempty decidable indices; arbitrary-carrier right-row generators, supported inverse corners, index/height independence and completion compatibility |
 | [Semisimple coordinates and simple rows](ProjectiveModules/KTheory/SemisimpleEquivalence.lean) | `KTheory.matrixBlockModuleOfRingEquiv` restricts supported right rows along a chosen finite matrix decomposition; simple-module classification at arbitrary carrier universes, coefficient endomorphism rings, natural class coordinates, integer K₀ basis and block-size regular coordinates; `IsSemisimpleRing.matrixDivisionDecomposition_simple_basis` uses a decomposition chosen from Mathlib's Wedderburn–Artin theorem, including the empty outer family |

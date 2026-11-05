@@ -128,6 +128,7 @@ public import ProjectiveModules.KTheory.Determinant
 public import ProjectiveModules.KTheory.DeterminantNaturality
 public import ProjectiveModules.KTheory.DiagonalQuotient
 public import ProjectiveModules.KTheory.Dual
+public import ProjectiveModules.KTheory.DualRing
 public import ProjectiveModules.KTheory.FiniteFree
 public import ProjectiveModules.KTheory.Jacobson
 public import ProjectiveModules.KTheory.InvariantBasisNumber
