@@ -6,6 +6,7 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.Topology.Algebra.Module.Equiv
+public import ProjectiveModules.Topology.Pullback.Map
 
 /-!
 # Associativity of pullbacks of continuous linear maps
@@ -13,6 +14,9 @@ public import Mathlib.Topology.Algebra.Module.Equiv
 `ContinuousLinearMap.pullbackAssoc` identifies the iterated pullback of `f` along `h` and
 then `k` with the pullback of `f` along `h.comp k`. Its forward map forgets the intermediate
 coordinate, and its inverse inserts the image under `k`.
+
+`ContinuousLinearMap.pullbackAssoc_naturality` states that this comparison commutes with
+the maps of pullbacks induced by semilinear maps of the defining diagrams.
 
 The pullbacks are submodules defined by `LinearMap.eqLocus`, with their subtype topologies.
 Only additive commutative monoids and modules over a semiring are needed. The construction
@@ -205,5 +209,59 @@ theorem subtypeL_comp_pullbackAssoc_symm :
         (k.comp ((snd R E H).domRestrict T))).codRestrict P
           (fun t => t.property)).prod ((snd R E H).domRestrict T) :=
   ContinuousLinearMap.ext (fun t => coe_pullbackAssoc_symm_apply f h k t)
+
+section Naturality
+
+universe uS uE₁ uF₁ uG₁ uH₁ uE₂ uF₂ uG₂ uH₂
+
+variable {S : Type uS} [Semiring S] {σ : R →+* S}
+  {E₁ : Type uE₁} {F₁ : Type uF₁} {G₁ : Type uG₁} {H₁ : Type uH₁}
+  {E₂ : Type uE₂} {F₂ : Type uF₂} {G₂ : Type uG₂} {H₂ : Type uH₂}
+  [AddCommMonoid E₁] [Module R E₁] [TopologicalSpace E₁]
+  [AddCommMonoid F₁] [Module R F₁] [TopologicalSpace F₁]
+  [AddCommMonoid G₁] [Module R G₁] [TopologicalSpace G₁]
+  [AddCommMonoid H₁] [Module R H₁] [TopologicalSpace H₁]
+  [AddCommMonoid E₂] [Module S E₂] [TopologicalSpace E₂]
+  [AddCommMonoid F₂] [Module S F₂] [TopologicalSpace F₂]
+  [AddCommMonoid G₂] [Module S G₂] [TopologicalSpace G₂]
+  [AddCommMonoid H₂] [Module S H₂] [TopologicalSpace H₂]
+
+/-- Pullback associativity is natural under commuting semilinear maps of the defining
+diagrams: forgetting the intermediate coordinate commutes with the induced pullback maps. -/
+theorem pullbackAssoc_naturality
+    (f₁ : E₁ →L[R] F₁) (h₁ : G₁ →L[R] F₁) (k₁ : H₁ →L[R] G₁)
+    (f₂ : E₂ →L[S] F₂) (h₂ : G₂ →L[S] F₂) (k₂ : H₂ →L[S] G₂)
+    (u : E₁ →SL[σ] E₂) (v : F₁ →SL[σ] F₂)
+    (w : G₁ →SL[σ] G₂) (z : H₁ →SL[σ] H₂)
+    (hf : f₂.comp u = v.comp f₁) (hh : h₂.comp w = v.comp h₁)
+    (hk : k₂.comp z = w.comp k₁) :
+    let P₁ := LinearMap.eqLocus
+      (f₁.toLinearMap.comp (LinearMap.fst R E₁ G₁))
+      (h₁.toLinearMap.comp (LinearMap.snd R E₁ G₁))
+    let p₁ := (snd R E₁ G₁).domRestrict P₁
+    let P₂ := LinearMap.eqLocus
+      (f₂.toLinearMap.comp (LinearMap.fst S E₂ G₂))
+      (h₂.toLinearMap.comp (LinearMap.snd S E₂ G₂))
+    let p₂ := (snd S E₂ G₂).domRestrict P₂
+    let Pmap := pullbackMap f₁ h₁ f₂ h₂ u v w hf hh
+    let hP : p₂.comp Pmap = w.comp p₁ :=
+      snd_comp_pullbackMap f₁ h₁ f₂ h₂ u v w hf hh
+    let hhk : (h₂.comp k₂).comp z = v.comp (h₁.comp k₁) := by
+      apply DFunLike.ext
+      intro s
+      exact (congrArg h₂ (DFunLike.congr_fun hk s)).trans
+        (DFunLike.congr_fun hh (k₁ s))
+    (pullbackAssoc f₂ h₂ k₂).toContinuousLinearMap.comp (σ₁₃ := σ)
+        (pullbackMap p₁ k₁ p₂ k₂ Pmap w z hP hk) =
+      (pullbackMap f₁ (h₁.comp k₁) f₂ (h₂.comp k₂) u v z hf hhk).comp (σ₁₃ := σ)
+        (pullbackAssoc f₁ h₁ k₁).toContinuousLinearMap := by
+  dsimp only
+  apply DFunLike.ext
+  intro q
+  apply Subtype.ext
+  simp only [comp_apply, ContinuousLinearEquiv.coe_coe, coe_pullbackAssoc_apply,
+    pullbackMap_apply]
+
+end Naturality
 
 end ContinuousLinearMap
