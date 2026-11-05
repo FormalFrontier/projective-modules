@@ -7,13 +7,17 @@ Maintained by the Formal Frontier source-maintainer team.
 
 ## Headline results
 
-- **[Projective-class continuity along directed limits](ProjectiveModules/KTheory/DirectLimit.lean).**
-  For a nonempty directed system of arbitrary unital rings, two finite-projective
-  right-module classes from prescribed stages have equal canonical scalar extensions
-  exactly when their original transition images agree at one common upper stage.
-  Every class over the limit comes from some stage. Transition maps need not be
-  injective, and index and coefficient universes are independent. These are
-  isomorphism classes before group completion, not K₀.
+- **[Projective-class and K₀ comparisons for directed limits](ProjectiveModules/KTheory/DirectLimit.lean).**
+  For a nonempty directed system of unital rings, the additive direct limits of
+  finite-projective right-module class monoids and K₀ groups are canonically
+  additively equivalent to the corresponding objects over the ring limit.
+  The forward comparisons composed with the canonical direct-limit stage maps
+  are the original scalar-extension maps; their inverses send each such image
+  to its canonical direct-limit image. Compatible additive maps extend uniquely
+  from the stages.
+  No commutativity or injective-transition assumption is needed, and index and
+  coefficient universes are independent. For projective classes, equality is
+  detected at a common upper stage and every limit class descends to a stage.
 
 - **[Multiplicative opposite-ring duality](ProjectiveModules/KTheory/DualRing.lean).**
   For every commutative ring `R`, including zero rings, canonical duality gives

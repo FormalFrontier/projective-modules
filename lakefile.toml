@@ -17,7 +17,7 @@ rev = "83abb3e776bdefcbc447a1e44d0debe4010039e5"
 [[require]]
 name = "algebraic-direct-limits"
 git = "https://github.com/FormalFrontier/algebraic-direct-limits.git"
-rev = "c277c13aac0d9edfa67f6dfadef54fabcb0ae4cf"
+rev = "68c8a808da8526d51cf739a3cffeae1b244797ab"
 
 [[require]]
 name = "general-linear-groups"
