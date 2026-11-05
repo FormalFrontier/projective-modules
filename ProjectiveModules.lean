@@ -61,6 +61,7 @@ public import ProjectiveModules.Category.Semisimple
 public import ProjectiveModules.Category.Stable
 public import ProjectiveModules.CategoryTheory.FunctorIsoLifting
 public import ProjectiveModules.Contraction.BaseChange
+public import ProjectiveModules.Dual.Annihilator
 public import ProjectiveModules.Dual.ModuleCat
 public import ProjectiveModules.Dual.Quotient
 public import ProjectiveModules.Dual.TensorProduct
