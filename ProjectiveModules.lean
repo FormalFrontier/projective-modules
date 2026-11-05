@@ -8,6 +8,7 @@ module
 public import ProjectiveModules.Topology.Pullback
 public import ProjectiveModules.Topology.SplittingPullback
 public import ProjectiveModules.Topology.SplittingPullback.Nat
+public import ProjectiveModules.Topology.SplittingPullback.Naturality
 public import ProjectiveModules.Topology.ContinuousLinearMap.Prod
 public import ProjectiveModules.Topology.SplittingNaturality
 

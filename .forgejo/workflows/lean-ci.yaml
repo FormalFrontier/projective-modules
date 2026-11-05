@@ -102,6 +102,8 @@ jobs:
               "ProjectiveModules/Topology/Splitting",
               "ProjectiveModules/Topology/SplittingPullback",
               "ProjectiveModules/Topology/SplittingPullback/Nat",
+              "ProjectiveModules/Topology/Pullback/Map",
+              "ProjectiveModules/Topology/SplittingPullback/Naturality",
               "ProjectiveModules/Topology/Pullback",
               "ProjectiveModules/Topology/Pullback/Assoc",
               "ProjectiveModules/Topology/Pullback/Prod",
@@ -186,10 +188,164 @@ jobs:
               "ProjectiveModules/Topology/Splitting",
               "ProjectiveModules/Topology/SplittingPullback",
               "ProjectiveModules/Topology/SplittingPullback/Nat",
+              "ProjectiveModules/Topology/Pullback/Map",
+              "ProjectiveModules/Topology/SplittingPullback/Naturality",
               "ProjectiveModules/Topology/Pullback",
               "ProjectiveModules/Topology/Pullback/Assoc",
               "ProjectiveModules/Topology/Pullback/Prod",
           )
+          # Optional input observations, not physical-consumption or output-scope evidence.
+          # Only the ten fixed own sources above are read; no setup contents are opened.
+          def ids_close(fds):
+              while fds:
+                  try:
+                      os.close(fds.pop())
+                  except OSError:
+                      pass
+
+          def ids_identity(s):
+              return (s.st_dev, s.st_ino, stat.S_IFMT(s.st_mode))
+
+          def ids_file_state(s):
+              if not stat.S_ISREG(s.st_mode) or s.st_nlink != 1:
+                  raise OSError("Unavailable ordinary file")
+              return (s.st_dev, s.st_ino, s.st_mode, s.st_nlink, s.st_size,
+                      s.st_mtime_ns, s.st_ctime_ns)
+
+          def ids_cwd(cwd_fd):
+              if ids_identity(os.stat(".", follow_symlinks=False)) != ids_identity(os.fstat(cwd_fd)):
+                  raise OSError("Changed observation cwd")
+
+          def ids_root(state):
+              cwd_fd, root_fd = state
+              ids_cwd(cwd_fd)
+              if ids_identity(os.stat(".own-lean-input-identifiers", dir_fd=cwd_fd,
+                                      follow_symlinks=False)) != ids_identity(os.fstat(root_fd)):
+                  raise OSError("Changed metadata directory")
+
+          def ids_start():
+              fds = []
+              try:
+                  flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+                  fds.append(os.open(".", flags))
+                  os.mkdir(".own-lean-input-identifiers", mode=0o700, dir_fd=fds[0])
+                  created = ids_identity(os.stat(".own-lean-input-identifiers", dir_fd=fds[0],
+                                                 follow_symlinks=False))
+                  fds.append(os.open(".own-lean-input-identifiers", flags, dir_fd=fds[0]))
+                  if created != ids_identity(os.fstat(fds[1])):
+                      raise OSError("Changed new metadata directory")
+                  ids_root(fds)
+                  return fds
+              except Exception:
+                  ids_close(fds)
+                  return None
+
+          def ids_sha256(index, cwd_fd):
+              import hashlib
+              parts = (modules[index] + ".lean").split("/")
+              fds = [cwd_fd]
+              opened = []
+              try:
+                  ids_cwd(cwd_fd)
+                  for part in parts[:-1]:
+                      fd = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                                   dir_fd=fds[-1])
+                      opened.append(fd)
+                      fds.append(fd)
+                  fd = os.open(parts[-1], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK,
+                               dir_fd=fds[-1])
+                  opened.append(fd)
+                  before = ids_file_state(os.fstat(fd))
+                  digest = hashlib.sha256()
+                  size = 0
+                  while True:
+                      block = os.read(fd, 1048576)
+                      if not block:
+                          break
+                      size += len(block)
+                      digest.update(block)
+                  if before != ids_file_state(os.fstat(fd)) or size != before[4]:
+                      raise OSError("Unstable source")
+                  if before != ids_file_state(os.stat(parts[-1], dir_fd=fds[-1],
+                                                       follow_symlinks=False)):
+                      raise OSError("Changed source identity")
+                  for parent, child, part in zip(fds, fds[1:], parts[:-1]):
+                      named = ids_identity(os.stat(part, dir_fd=parent, follow_symlinks=False))
+                      if named != ids_identity(os.fstat(child)):
+                          raise OSError("Changed source ancestry")
+                  ids_cwd(cwd_fd)
+                  return digest.hexdigest()
+              finally:
+                  ids_close(opened)
+
+          def ids_observe(index):
+              try:
+                  if ids_state is not None:
+                      return ids_sha256(index, ids_state[0])
+              except Exception:
+                  pass
+              return "UNKNOWN"
+
+          def ids_publish(index, observed_before, observed_after):
+              global ids_state
+              if ids_state is None:
+                  return
+              fds = []
+              try:
+                  ids_root(ids_state)
+                  cwd_fd, root_fd = ids_state
+                  name = f"module_{index}"
+                  os.mkdir(name, mode=0o700, dir_fd=root_fd)
+                  directory_identity = ids_identity(os.stat(name, dir_fd=root_fd, follow_symlinks=False))
+                  directory = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                                      dir_fd=root_fd)
+                  fds.append(directory)
+                  if directory_identity != ids_identity(os.fstat(directory)):
+                      raise OSError("Changed new module directory")
+                  data = (json.dumps({"schema": "own-lean-input-identifiers/v1", "index": index,
+                                      "module": modules[index], "before_sha256": observed_before,
+                                      "after_sha256": observed_after}, separators=(",", ":")) + "\n").encode("utf-8")
+                  if len(data) > 4096:
+                      raise OSError("Oversize metadata")
+                  fd = os.open("inputs.json", os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                               0o600, dir_fd=directory)
+                  fds.append(fd)
+                  ids_file_state(os.fstat(fd))
+                  view = memoryview(data)
+                  while view:
+                      written = os.write(fd, view)
+                      if written <= 0:
+                          raise OSError("Incomplete metadata write")
+                      view = view[written:]
+                  os.fsync(fd)
+                  expected = ids_file_state(os.fstat(fd))
+                  if expected[4] != len(data):
+                      raise OSError("Incomplete metadata size")
+                  os.close(fd)
+                  fds.pop()
+                  if expected != ids_file_state(os.stat("inputs.json", dir_fd=directory,
+                                                        follow_symlinks=False)):
+                      raise OSError("Changed metadata file")
+                  os.fsync(directory)
+                  os.fsync(root_fd)
+                  ids_root(ids_state)
+                  if directory_identity != ids_identity(os.stat(name, dir_fd=root_fd, follow_symlinks=False)):
+                      raise OSError("Changed module directory")
+                  os.close(directory)
+                  fds.pop()
+                  ids_root(ids_state)
+                  if directory_identity != ids_identity(os.stat(name, dir_fd=root_fd, follow_symlinks=False)):
+                      raise OSError("Changed closed module directory")
+                  # This flag is independent of every compiler-trio completion flag.
+                  with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+                      print(f"module_{index}_inputs_complete=true", file=output)
+              except Exception:
+                  ids_close(ids_state)
+                  ids_state = None
+              finally:
+                  ids_close(fds)
+
+          ids_state = ids_start()
           for index, module in enumerate(modules):
               feedback = root / module
               feedback.mkdir(parents=True, exist_ok=True)
@@ -221,6 +377,7 @@ jobs:
                   continue
               # Pass the same-run setup filename unchanged; never read its JSON contents here.
               with (feedback / "stdout.jsonl").open("wb") as stdout, (feedback / "stderr.log").open("wb") as stderr:
+                  observed_before = ids_observe(index)
                   try:
                       result = subprocess.run(
                           ["lake", "env", "lean", source, "--setup", setup, "--json"],
@@ -231,9 +388,13 @@ jobs:
                       (feedback / "stdout.jsonl").unlink()
                       (feedback / "stderr.log").unlink()
                       continue
+                  observed_after = ids_observe(index)
               (feedback / "exit-code.txt").write_text(str(result.returncode) + "\n", encoding="utf-8")
               with open(os.environ["GITHUB_OUTPUT"], "a") as output:
                   print(f"module_{index}_complete=true", file=output)
+              ids_publish(index, observed_before, observed_after)
+          if ids_state is not None:
+              ids_close(ids_state)
           EOF
       - name: Lint the configured libraries
         id: own_stage_lint
@@ -352,8 +513,34 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
-      - name: Preserve independent pullback Lean diagnostics
+      - name: Preserve independent pullback map Lean diagnostics
         if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_5_complete == 'true'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: pullback-map-lean-diagnostics
+          path: |
+            .own-lean-diagnostics/ProjectiveModules/Topology/Pullback/Map/stdout.jsonl
+            .own-lean-diagnostics/ProjectiveModules/Topology/Pullback/Map/stderr.log
+            .own-lean-diagnostics/ProjectiveModules/Topology/Pullback/Map/exit-code.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve independent splitting pullback naturality Lean diagnostics
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_6_complete == 'true'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: splitting-pullback-naturality-lean-diagnostics
+          path: |
+            .own-lean-diagnostics/ProjectiveModules/Topology/SplittingPullback/Naturality/stdout.jsonl
+            .own-lean-diagnostics/ProjectiveModules/Topology/SplittingPullback/Naturality/stderr.log
+            .own-lean-diagnostics/ProjectiveModules/Topology/SplittingPullback/Naturality/exit-code.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve independent pullback Lean diagnostics
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_7_complete == 'true'
         continue-on-error: true
         uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
         with:
@@ -366,7 +553,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Preserve independent pullback associativity Lean diagnostics
-        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_6_complete == 'true'
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_8_complete == 'true'
         continue-on-error: true
         uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
         with:
@@ -379,7 +566,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Preserve independent pullback product Lean diagnostics
-        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_7_complete == 'true'
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_9_complete == 'true'
         continue-on-error: true
         uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
         with:
@@ -388,6 +575,106 @@ jobs:
             .own-lean-diagnostics/ProjectiveModules/Topology/Pullback/Prod/stdout.jsonl
             .own-lean-diagnostics/ProjectiveModules/Topology/Pullback/Prod/stderr.log
             .own-lean-diagnostics/ProjectiveModules/Topology/Pullback/Prod/exit-code.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve own input identifiers for module 0
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_0_inputs_complete == 'true'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: semilinear-product-input-identifiers
+          path: .own-lean-input-identifiers/module_0/inputs.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve own input identifiers for module 1
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_1_inputs_complete == 'true'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: splitting-naturality-input-identifiers
+          path: .own-lean-input-identifiers/module_1/inputs.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve own input identifiers for module 2
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_2_inputs_complete == 'true'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: continuous-splitting-input-identifiers
+          path: .own-lean-input-identifiers/module_2/inputs.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve own input identifiers for module 3
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_3_inputs_complete == 'true'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: splitting-pullback-input-identifiers
+          path: .own-lean-input-identifiers/module_3/inputs.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve own input identifiers for module 4
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_4_inputs_complete == 'true'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: splitting-pullback-nat-input-identifiers
+          path: .own-lean-input-identifiers/module_4/inputs.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve own input identifiers for module 5
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_5_inputs_complete == 'true'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: pullback-map-input-identifiers
+          path: .own-lean-input-identifiers/module_5/inputs.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve own input identifiers for module 6
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_6_inputs_complete == 'true'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: splitting-pullback-naturality-input-identifiers
+          path: .own-lean-input-identifiers/module_6/inputs.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve own input identifiers for module 7
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_7_inputs_complete == 'true'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: pullback-input-identifiers
+          path: .own-lean-input-identifiers/module_7/inputs.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve own input identifiers for module 8
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_8_inputs_complete == 'true'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: pullback-associativity-input-identifiers
+          path: .own-lean-input-identifiers/module_8/inputs.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve own input identifiers for module 9
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_9_inputs_complete == 'true'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: pullback-product-input-identifiers
+          path: .own-lean-input-identifiers/module_9/inputs.json
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
