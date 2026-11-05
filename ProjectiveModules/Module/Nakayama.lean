@@ -5,6 +5,8 @@ Authors: Formal Frontier Agents
 module
 public import Mathlib.Algebra.Group.Commute.Units
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
+public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.RingTheory.Jacobson.Radical
 public import Mathlib.RingTheory.Nakayama
 public import ProjectiveModules.LinearMap.Units
 import Mathlib.Algebra.Polynomial.Div
@@ -183,3 +185,56 @@ theorem isUnit_one_sub_of_fg_range_le_ideal_smul_of_le_jacobson
     (hT.trans (Submodule.smul_mono_left hI))
 
 end Module.End
+
+section SplitKernel
+
+universe uV uW
+
+variable {A : Type uA} {V : Type uV} {W : Type uW}
+variable [Ring A] [AddCommGroup V] [AddCommGroup W] [Module A V] [Module A W]
+
+namespace LinearMap
+
+/-- A split surjective linear map is bijective if its kernel is finitely generated and
+is contained in the scalar multiple of the source by a left ideal in the Jacobson radical.
+Only the kernel, not the source or target, is required to be finitely generated.
+
+The proof uses the projection `id - s ∘ g` and Mathlib's finitely generated Nakayama lemma
+`Submodule.FG.eq_bot_of_le_jacobson_smul` to show that the kernel vanishes. -/
+theorem bijective_of_comp_eq_id_of_fg_ker_of_ker_le_smul
+    (g : V →ₗ[A] W) (s : W →ₗ[A] V) (hgs : g.comp s = LinearMap.id)
+    (hker : g.ker.FG) (J : Ideal A) (hJ : J ≤ Ideal.jacobson ⊥)
+    (hkerJ : g.ker ≤ J • (⊤ : Submodule A V)) : Function.Bijective g := by
+  have hgs_apply (w : W) : g (s w) = w :=
+    congrArg (fun f : W →ₗ[A] W => f w) hgs
+  let p : V →ₗ[A] V := LinearMap.id - s.comp g
+  have hp_mem (v : V) : p v ∈ g.ker := by
+    change g (v - s (g v)) = 0
+    rw [map_sub, hgs_apply, sub_self]
+  have hp_eq (v : V) (hv : v ∈ g.ker) : p v = v := by
+    change v - s (g v) = v
+    rw [show g v = 0 from hv, map_zero, sub_zero]
+  -- The projection sends ideal multiples of the source into ideal multiples of the kernel.
+  have hproj : J • (⊤ : Submodule A V) ≤ (J • g.ker).comap p := by
+    refine Submodule.smul_le.mpr ?_
+    intro a ha v _
+    change p (a • v) ∈ J • g.ker
+    rw [map_smul]
+    exact Submodule.smul_mem_smul ha (hp_mem v)
+  have hKJK : g.ker ≤ J • g.ker := by
+    intro v hv
+    have hmem : p v ∈ J • g.ker := hproj (hkerJ hv)
+    simpa only [hp_eq v hv] using hmem
+  have hJrad : J ≤ Ring.jacobson A := by
+    simpa only [Ideal.jacobson_bot] using hJ
+  have hJK : J • g.ker ≤ Ring.jacobson A • g.ker := by
+    refine Submodule.smul_le.mpr ?_
+    intro a ha v hv
+    exact Submodule.smul_mem_smul (hJrad ha) hv
+  have hker_bot : g.ker = ⊥ :=
+    hker.eq_bot_of_le_jacobson_smul (hKJK.trans hJK)
+  exact ⟨LinearMap.ker_eq_bot.mp hker_bot, fun w => ⟨s w, hgs_apply w⟩⟩
+
+end LinearMap
+
+end SplitKernel
