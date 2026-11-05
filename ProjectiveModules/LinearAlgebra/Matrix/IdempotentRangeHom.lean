@@ -4,6 +4,8 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.Submodule.Equiv
 public import ProjectiveModules.LinearAlgebra.Matrix.IdempotentRanges
 
 /-!
@@ -66,6 +68,28 @@ theorem rangeHomEquiv_apply_mulVec (hA : IsIdempotentElem A)
     (fun g : (mulVecBilin R Rᵐᵒᵖ A).range →ₗ[Rᵐᵒᵖ] (mulVecBilin R Rᵐᵒᵖ B).range =>
       (g v : κ → R)) ((rangeHomEquiv hA hB).symm_apply_apply f)
   simpa only [coe_rangeHomEquiv_symm_apply] using h
+
+/-- Equality-induced range comparisons do not change the coordinate matrix of a
+range homomorphism. -/
+theorem coe_rangeHomEquiv_arrowCongrAddEquiv_ofEq
+    {A' : Matrix ι ι R} {B' : Matrix κ κ R}
+    (hA : IsIdempotentElem A) (hB : IsIdempotentElem B)
+    (hA' : IsIdempotentElem A') (hB' : IsIdempotentElem B')
+    (eA : A = A') (eB : B = B')
+    (g : (mulVecBilin R Rᵐᵒᵖ A).range →ₗ[Rᵐᵒᵖ]
+      (mulVecBilin R Rᵐᵒᵖ B).range) :
+    (rangeHomEquiv hA' hB'
+        (LinearEquiv.arrowCongrAddEquiv
+          (LinearEquiv.ofEq _ _
+            (congrArg (fun C : Matrix ι ι R =>
+              (mulVecBilin R Rᵐᵒᵖ C).range) eA))
+          (LinearEquiv.ofEq _ _
+            (congrArg (fun C : Matrix κ κ R =>
+              (mulVecBilin R Rᵐᵒᵖ C).range) eB)) g) : Matrix κ ι R) =
+      (rangeHomEquiv hA hB g : Matrix κ ι R) := by
+  cases eA
+  cases eB
+  rfl
 
 /-- The identity range map corresponds to the idempotent matrix itself. -/
 @[simp]

@@ -991,3 +991,14 @@ lemmas are available through
 ## Coefficient change of range homomorphisms
 
 A semiring homomorphism induces an additive map on right-linear homomorphisms between finite idempotent column ranges. The normalized-matrix classifier turns this into entrywise coefficient change. These maps respect coefficient identities and composition, as well as identity and composition of range homomorphisms. Over rings they agree with extension of scalars. The finite index types are independent and may be empty; zero semirings are allowed.
+
+## Maps between finite idempotent ranges in directed colimits
+
+For directed systems of possibly noncommutative semirings,
+`DirectLimit.rangeHomTransition` and `DirectLimit.rangeHomToLimit` change
+coefficients on the original right-column-range Hom spaces. Every linear map
+between the limit ranges of prescribed finite stage idempotents descends to a
+common stage. Maps represented at different stages agree over the limit exactly when
+their canonical transitions agree in the same original Hom space at some later
+stage. Empty finite indices, zero semirings and noninjective transitions are
+allowed. The construction reuses the normalized-matrix classifier and descent.
