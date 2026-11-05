@@ -987,3 +987,7 @@ range map has coordinate `A`, and the coordinate of `g.comp f` is the matrix of
 `g` multiplied by the matrix of `f`. These constructions and their characteristic
 lemmas are available through
 `ProjectiveModules.LinearAlgebra.Matrix.IdempotentRangeHom`.
+
+## Coefficient change of range homomorphisms
+
+A semiring homomorphism induces an additive map on right-linear homomorphisms between finite idempotent column ranges. The normalized-matrix classifier turns this into entrywise coefficient change. These maps respect coefficient identities and composition, as well as identity and composition of range homomorphisms. Over rings they agree with extension of scalars. The finite index types are independent and may be empty; zero semirings are allowed.

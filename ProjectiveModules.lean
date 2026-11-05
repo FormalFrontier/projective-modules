@@ -261,6 +261,8 @@ public import ProjectiveModules.KTheory.ExteriorPowerSeriesScalarExtension
 public import ProjectiveModules.KTheory.ExteriorPowerSeries
 public import ProjectiveModules.KTheory.ExteriorPowerSeriesInvertible
 
+public import ProjectiveModules.LinearAlgebra.Matrix.IdempotentRangeHomMap
+
 /-!
 # Projective module interfaces
 
