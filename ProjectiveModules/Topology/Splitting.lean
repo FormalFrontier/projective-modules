@@ -24,6 +24,16 @@ ring whenever the latter is defined.
 
 universe uR uM uN
 
+namespace Submodule
+
+/-- Addition on a submodule is continuous whenever addition on the ambient module is. -/
+instance continuousAdd {R : Type uR} {M : Type uM} [Semiring R]
+    [AddCommMonoid M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
+    (S : Submodule R M) : ContinuousAdd S :=
+  inferInstanceAs (ContinuousAdd S.toAddSubmonoid)
+
+end Submodule
+
 namespace ContinuousLinearMap
 
 private def linearEquivProdKerOfRightInverse
