@@ -5,6 +5,8 @@ Authors: Formal Frontier Agents
 -/
 -- Contributors: Prism
 module
+public import ProjectiveModules.Topology.SplittingPullback
+public import ProjectiveModules.Topology.SplittingPullback.Nat
 public import ProjectiveModules.Topology.ContinuousLinearMap.Prod
 public import ProjectiveModules.Topology.SplittingNaturality
 

@@ -96,6 +96,8 @@ jobs:
               "ProjectiveModules/Topology/ContinuousLinearMap/Prod",
               "ProjectiveModules/Topology/SplittingNaturality",
               "ProjectiveModules/Topology/Splitting",
+              "ProjectiveModules/Topology/SplittingPullback",
+              "ProjectiveModules/Topology/SplittingPullback/Nat",
           )
           states = {}
           for module in modules:
@@ -175,6 +177,8 @@ jobs:
               "ProjectiveModules/Topology/ContinuousLinearMap/Prod",
               "ProjectiveModules/Topology/SplittingNaturality",
               "ProjectiveModules/Topology/Splitting",
+              "ProjectiveModules/Topology/SplittingPullback",
+              "ProjectiveModules/Topology/SplittingPullback/Nat",
           )
           for index, module in enumerate(modules):
               feedback = root / module
@@ -306,6 +310,32 @@ jobs:
             .own-lean-diagnostics/ProjectiveModules/Topology/Splitting/stdout.jsonl
             .own-lean-diagnostics/ProjectiveModules/Topology/Splitting/stderr.log
             .own-lean-diagnostics/ProjectiveModules/Topology/Splitting/exit-code.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve independent splitting pullback Lean diagnostics
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_3_complete == 'true'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: splitting-pullback-lean-diagnostics
+          path: |
+            .own-lean-diagnostics/ProjectiveModules/Topology/SplittingPullback/stdout.jsonl
+            .own-lean-diagnostics/ProjectiveModules/Topology/SplittingPullback/stderr.log
+            .own-lean-diagnostics/ProjectiveModules/Topology/SplittingPullback/exit-code.txt
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve independent splitting pullback Nat Lean diagnostics
+        if: always() && steps.build.outcome == 'failure' && steps.own_diagnostics.outputs.module_4_complete == 'true'
+        continue-on-error: true
+        uses: https://data.forgejo.org/actions/upload-artifact@c6a3b2bd78b3985e4b2f15397fec357f0fd808de # v3.2.2-node20, Forgejo-compatible
+        with:
+          name: splitting-pullback-nat-lean-diagnostics
+          path: |
+            .own-lean-diagnostics/ProjectiveModules/Topology/SplittingPullback/Nat/stdout.jsonl
+            .own-lean-diagnostics/ProjectiveModules/Topology/SplittingPullback/Nat/stderr.log
+            .own-lean-diagnostics/ProjectiveModules/Topology/SplittingPullback/Nat/exit-code.txt
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
